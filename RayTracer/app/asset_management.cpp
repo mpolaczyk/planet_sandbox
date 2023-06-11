@@ -2,26 +2,27 @@
 
 #include "app/asset_management.h"
 
-#include "math/materials.h"
-
-bool material_instances::is_id_in_use(const std::string& id) const
+template<typename T>
+bool asset_instances<T>::is_id_in_use(const std::string& id) const
 {
   if (id.size() == 0) return true;
   auto obj = registry.find(id);
   return obj != registry.end();
 }
 
-bool material_instances::try_add(material* instance)
+template<typename T>
+bool asset_instances<T>::try_add(T* instance)
 {
   if (instance == nullptr) return false;
   if (instance->id.size() == 0) return false;
   auto obj = registry.find(instance->id);
   if (obj != registry.end()) return false;
-  registry.insert(std::pair<std::string, material*>(instance->id, instance));
+  registry.insert(std::pair<std::string, T*>(instance->id, instance));
   return true;
 }
 
-void material_instances::remove(const std::string& id)
+template<typename T>
+void asset_instances<T>::remove(const std::string& id)
 {
   auto obj = registry.find(id);
   if (obj != registry.end())
@@ -31,7 +32,8 @@ void material_instances::remove(const std::string& id)
   registry.erase(id);
 }
 
-material* material_instances::get_material(const std::string& id) const
+template<typename T>
+T* asset_instances<T>::get(const std::string& id) const
 {
   auto obj = registry.find(id);
   if (obj != registry.end())
@@ -41,7 +43,8 @@ material* material_instances::get_material(const std::string& id) const
   return nullptr;
 }
 
-std::vector<std::string> material_instances::get_material_ids() const
+template<typename T>
+std::vector<std::string> asset_instances<T>::get_ids() const
 {
   std::vector<std::string> names;
   for (auto& pair : registry)
@@ -51,7 +54,8 @@ std::vector<std::string> material_instances::get_material_ids() const
   return names;
 }
 
-std::vector<std::string> material_instances::get_material_names() const
+template<typename T>
+std::vector<std::string> asset_instances<T>::get_names() const
 {
   std::vector<std::string> names;
   for (auto& pair : registry)
@@ -63,9 +67,10 @@ std::vector<std::string> material_instances::get_material_names() const
   return names;
 }
 
-int material_instances::get_index_by_name(const std::string& name) const
+template<typename T>
+int asset_instances<T>::get_index_by_name(const std::string& name) const
 {
-  std::vector<std::string> names = get_material_names();
+  std::vector<std::string> names = get_names();
   for (int i = 0; i < names.size(); i++)
   {
     if (names[i] == name)
@@ -76,9 +81,10 @@ int material_instances::get_index_by_name(const std::string& name) const
   return -1;
 }
 
-int material_instances::get_index_by_id(const std::string& id) const
+template<typename T>
+int asset_instances<T>::get_index_by_id(const std::string& id) const
 {
-  std::vector<std::string> ids = get_material_ids();
+  std::vector<std::string> ids = get_ids();
   for (int i = 0; i < ids.size(); i++)
   {
     if (ids[i] == id)
@@ -88,3 +94,7 @@ int material_instances::get_index_by_id(const std::string& id) const
   }
   return -1;
 }
+
+#include "math/materials.h"
+
+template asset_instances<material>;

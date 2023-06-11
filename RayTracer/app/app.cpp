@@ -4,6 +4,7 @@
 
 #include "app.h"
 #include "app/asset_management.h"
+#include "factories.h"
 #include "math/hittables.h"
 #include "math/camera.h"
 #include "math/materials.h"
@@ -14,7 +15,7 @@ app_instance::app_instance()
   camera_conf = new camera_config();
   scene_root = new scene();
   renderer_conf = new renderer_config();
-  materials = new material_instances();
+  materials = object_factory::spawn_material_instances();
 }
 
 app_instance::~app_instance()

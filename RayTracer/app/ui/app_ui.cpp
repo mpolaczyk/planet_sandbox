@@ -98,9 +98,9 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
 
   draw_material_selection_combo(model.m_model, state);
 
-  std::string material_id = state.materials->get_material_ids()[model.m_model.selected_material_name_index];
+  std::string material_id = state.materials->get_ids()[model.m_model.selected_material_name_index];
 
-  material* mat = state.materials->get_material(material_id);
+  material* mat = state.materials->get(material_id);
   mat->draw_edit_panel();
 }
 
@@ -204,7 +204,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
       m_model.selected_material_name_index = state.materials->get_index_by_id(selected_obj->material_id);
     }
     draw_material_selection_combo(m_model, state);
-    selected_obj->material_id = state.materials->get_material_ids()[m_model.selected_material_name_index];
+    selected_obj->material_id = state.materials->get_ids()[m_model.selected_material_name_index];
 
     ImGui::Separator();
   }
@@ -245,7 +245,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
     if (ImGui::Button("Add", ImVec2(120, 0)) && model.hittable != nullptr)
     {
-      model.hittable->material_id = state.materials->get_material_ids()[model.m_model.selected_material_name_index];
+      model.hittable->material_id = state.materials->get_ids()[model.m_model.selected_material_name_index];
       state.scene_root->add(model.hittable);
       model.hittable = nullptr;
       ImGui::CloseCurrentPopup();
@@ -267,7 +267,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
 void draw_material_selection_combo(material_selection_combo_model& model, app_instance& state)
 {
-  std::vector<std::string> material_names = state.materials->get_material_names();
+  std::vector<std::string> material_names = state.materials->get_names();
   if (material_names.size() > 0)
   {
     ImGui::Separator();

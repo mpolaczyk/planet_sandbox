@@ -8,6 +8,9 @@ class hittable;
 class texture;
 class material_instances;
 
+template<typename T>
+class asset_instances;
+
 enum class material_type
 {
   none = 0,
@@ -85,6 +88,6 @@ public:
 
   static texture* spawn_texture(texture_type type);
 
-  static material_instances* spawn_material_instances();
+  static asset_instances<material>* spawn_material_instances();
 
 };

@@ -62,7 +62,7 @@ texture* object_factory::spawn_texture(texture_type type)
   return nullptr;
 }
 
-class material_instances* object_factory::spawn_material_instances()
+asset_instances<material>* object_factory::spawn_material_instances()
 {
-  return new material_instances();
+  return new asset_instances<material>();
 }

@@ -39,7 +39,7 @@ void scene::build_boxes()
   }
 }
 
-void scene::update_materials(material_instances* materials)
+void scene::update_materials(asset_instances<material>* materials)
 {
   assert(objects.size() > 0);
   // Find material pointers from material ids. We do it here to save processing. 
@@ -47,7 +47,7 @@ void scene::update_materials(material_instances* materials)
   assert(materials != nullptr);
   for (hittable* obj : objects)
   {
-    material* mat_ptr = materials->get_material(obj->material_id);
+    material* mat_ptr = materials->get(obj->material_id);
     assert(mat_ptr != nullptr);
     obj->material_ptr = mat_ptr;
   }
