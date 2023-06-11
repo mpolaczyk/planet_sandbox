@@ -3,7 +3,7 @@
 #include "imgui.h"
 
 #include "app/app.h"
-#include "app/asset_management.h"
+#include "app/asset_registry.h"
 #include "processing/chunk_generator.h"
 #include "processing/async_renderer_base.h"
 #include "math/camera.h"

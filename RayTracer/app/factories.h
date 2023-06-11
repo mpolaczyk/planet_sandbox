@@ -9,7 +9,7 @@ class texture;
 class material_instances;
 
 template<typename T>
-class asset_instances;
+class asset_registry;
 
 enum class material_type
 {
@@ -88,6 +88,6 @@ public:
 
   static texture* spawn_texture(texture_type type);
 
-  static asset_instances<material>* spawn_material_instances();
+  static asset_registry<material>* spawn_material_instances();
 
 };

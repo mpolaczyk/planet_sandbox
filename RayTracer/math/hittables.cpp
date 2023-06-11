@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "app/asset_management.h"
+#include "app/asset_registry.h"
 #include "hittables.h"
 #include "aabb.h"
 #include "materials.h"
@@ -39,7 +39,7 @@ void scene::build_boxes()
   }
 }
 
-void scene::update_materials(asset_instances<material>* materials)
+void scene::update_materials(asset_registry<material>* materials)
 {
   assert(objects.size() > 0);
   // Find material pointers from material ids. We do it here to save processing. 

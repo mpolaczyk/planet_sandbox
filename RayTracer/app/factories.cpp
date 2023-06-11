@@ -15,7 +15,7 @@
 #include "renderers/reference_renderer.h"
 #include "renderers/ispc_renderer.h"
 
-#include "app/asset_management.h"
+#include "app/asset_registry.h"
 
 material* object_factory::spawn_material(material_type type)
 {
@@ -62,7 +62,7 @@ texture* object_factory::spawn_texture(texture_type type)
   return nullptr;
 }
 
-asset_instances<material>* object_factory::spawn_material_instances()
+asset_registry<material>* object_factory::spawn_material_instances()
 {
-  return new asset_instances<material>();
+  return new asset_registry<material>();
 }

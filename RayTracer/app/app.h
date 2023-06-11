@@ -12,7 +12,7 @@ class scene;
 class camera_config;
 
 template<typename T>
-class asset_instances;
+class asset_registry;
 
 class window_config
 {
@@ -98,7 +98,7 @@ public:
 
   // Rendering state
   renderer_config* renderer_conf = nullptr;
-  asset_instances<material>* materials = nullptr;
+  asset_registry<material>* materials = nullptr;
   
   // OS window state
   window_config window_conf;
