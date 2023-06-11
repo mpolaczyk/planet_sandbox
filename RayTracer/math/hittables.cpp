@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "app/asset_management.h"
 #include "hittables.h"
 #include "aabb.h"
 #include "materials.h"

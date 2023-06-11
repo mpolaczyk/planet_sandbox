@@ -2,19 +2,6 @@
 
 #include "vec3.h"
 
-enum class texture_class  // No RTTI, simple type detection
-{
-  none = 0,
-  solid,
-  checker
-};
-static inline const char* texture_class_names[] =
-{
-  "None",
-  "Solid",
-  "Checker"
-};
-
 class texture 
 {
 public:
@@ -53,4 +40,15 @@ public:
 public:
   texture* odd = nullptr;
   texture* even = nullptr;
+};
+
+class asset_texture : public texture
+{
+public:
+  asset_texture() {}
+
+  virtual vec3 value(float u, float v, const vec3& p) const override
+  {
+    return vec3(0,0,0);
+  }
 };

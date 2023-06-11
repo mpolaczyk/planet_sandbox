@@ -3,6 +3,7 @@
 #include "imgui.h"
 
 #include "app.h"
+#include "app/asset_management.h"
 #include "math/hittables.h"
 #include "math/camera.h"
 #include "math/materials.h"

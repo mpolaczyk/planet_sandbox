@@ -3,8 +3,11 @@
 #include "factories.h"
 
 #include "math/materials.h"
+#include "math/textures.h"
+#include "math/hittables.h"
 
 #include "processing/async_renderer_base.h"
+
 #include "renderers/example_renderer.h"
 #include "renderers/preview_renderer.h"
 #include "renderers/preview_normals_renderer.h"
@@ -12,7 +15,7 @@
 #include "renderers/reference_renderer.h"
 #include "renderers/ispc_renderer.h"
 
-#include "math/hittables.h"
+#include "app/asset_management.h"
 
 material* object_factory::spawn_material(material_type type)
 {
@@ -42,10 +45,24 @@ hittable* object_factory::spawn_hittable(hittable_type type)
   else if (type == hittable_type::yz_rect) { obj = new yz_rect(); }
   else if (type == hittable_type::static_mesh) { obj = new static_mesh(); }
 
+  // Unique id for hittables
   if (obj != nullptr)
   {
     obj->id = hittable::last_id;
     hittable::last_id++;
   }
   return obj;
+}
+
+texture* object_factory::spawn_texture(texture_type type)
+{
+  if (type == texture_type::solid) { return new solid_texture(); }
+  else if (type == texture_type::checker) { return new checker_texture(); }
+  else if (type == texture_type::asset) { return new asset_texture(); }
+  return nullptr;
+}
+
+class material_instances* object_factory::spawn_material_instances()
+{
+  return new material_instances();
 }

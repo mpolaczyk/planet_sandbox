@@ -85,7 +85,8 @@ void app_instance::load_rendering_state()
   if (TRY_PARSE(nlohmann::json, j, "renderer_config", jrenderer_conf)) { *renderer_conf = renderer_config_serializer::deserialize(jrenderer_conf); }
 
   nlohmann::json jmaterials;
-  if (TRY_PARSE(nlohmann::json, j, "materials", jmaterials)) { *materials = material_instances_serializer::deserialize(jmaterials); }
+  materials = object_factory::spawn_material_instances();
+  if (TRY_PARSE(nlohmann::json, j, "materials", jmaterials)) { material_instances_serializer::deserialize(jmaterials, materials); }
 
   input_stream.close();
 }
@@ -124,7 +125,7 @@ void app_instance::save_rendering_state()
 {
   nlohmann::json j;
   j["renderer_config"] = renderer_config_serializer::serialize(*renderer_conf);
-  j["materials"] = material_instances_serializer::serialize(*materials);
+  j["materials"] = material_instances_serializer::serialize(materials);
   std::ofstream o(io::get_rendering_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
   if (o.is_open())

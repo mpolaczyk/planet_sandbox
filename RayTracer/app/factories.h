@@ -3,6 +3,11 @@
 // No RTTI, simple type detection for each object type
 
 class material;
+class async_renderer_base;
+class hittable;
+class texture;
+class material_instances;
+
 enum class material_type
 {
   none = 0,
@@ -16,7 +21,6 @@ static inline const char* material_type_names[] =
   "Light"
 };
 
-class async_renderer_base;
 enum class renderer_type
 {
   example = 0,
@@ -36,7 +40,6 @@ static inline const char* renderer_type_names[] =
   "CPU ISPC (Example only)"
 };
 
-class hittable;
 enum class hittable_type
 {
   scene = 0,
@@ -56,6 +59,21 @@ static inline const char* hittable_type_names[] =
   "Static Mesh"
 };
 
+enum class texture_type
+{
+  none = 0,
+  solid,
+  checker,
+  asset
+};
+static inline const char* texture_type_names[] =
+{
+  "None",
+  "Solid",
+  "Checker",
+  "Asset"
+};
+
 class object_factory
 {
 public:
@@ -64,4 +82,9 @@ public:
   static async_renderer_base* spawn_renderer(renderer_type type);
 
   static hittable* spawn_hittable(hittable_type type);
+
+  static texture* spawn_texture(texture_type type);
+
+  static material_instances* spawn_material_instances();
+
 };

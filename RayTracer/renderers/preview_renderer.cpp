@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include <ppl.h>
-
 #include "math/materials.h"
 #include "math/hittables.h"
 #include "math/camera.h"
@@ -35,7 +33,11 @@ void preview_renderer::render_chunk(const chunk& in_chunk)
   benchmark::scope_counter benchmark_render_chunk(oss.str(), false);
 
   hittable* l = job_state.scene_root->lights[0];
-  assert(l != nullptr);
+  if(l == nullptr)
+  {
+    logger::error("Scene needs at least one light source.");
+    return;
+  }
   vec3 light = l->get_origin();
 
   for (int y = in_chunk.y; y < in_chunk.y + in_chunk.size_y; ++y)

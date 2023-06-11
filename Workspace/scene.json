@@ -3,186 +3,42 @@
     "aperture": 0.0,
     "aspect_ratio_h": 1.0,
     "aspect_ratio_w": 1.0,
-    "field_of_view": 38.0,
+    "field_of_view": 45.0,
     "look_dir": {
-      "x": 0.0019719875417649746,
-      "y": 0.03505104407668114,
-      "z": -0.9993277788162231
+      "x": 0.0,
+      "y": 0.0,
+      "z": -1.0
     },
     "look_from": {
-      "x": 278.7850341796875,
-      "y": 277.2590026855469,
-      "z": -699.6903686523438
+      "x": 0.0,
+      "y": 0.0,
+      "z": -3.5
     },
-    "type": 0.0
+    "type": 7.450580596923828e-08
   },
   "scene": {
+    "id": 0,
     "material_id": "",
     "objects": [
       {
-        "material_id": "glossy_green",
-        "type": 4,
-        "x": 555.0,
-        "y0": 0.0,
-        "y1": 555.0,
-        "z0": 0.0,
-        "z1": 555.0
-      },
-      {
-        "material_id": "glossy_red",
-        "type": 4,
-        "x": 0.0,
-        "y0": -13.0,
-        "y1": 555.0,
-        "z0": 0.0,
-        "z1": 555.0
-      },
-      {
+        "id": 2,
         "material_id": "light",
-        "type": 3,
-        "x0": 102.0,
-        "x1": 445.0,
-        "y": 525.0,
-        "z0": -1.0,
-        "z1": 567.0
-      },
-      {
-        "material_id": "metal_white_polished",
-        "type": 3,
-        "x0": 0.0,
-        "x1": 555.0,
-        "y": 2.0,
-        "z0": 0.0,
-        "z1": 555.0
-      },
-      {
-        "material_id": "metal_gold",
         "origin": {
-          "x": 452.0,
-          "y": 300.0,
-          "z": 392.0
+          "x": 50.0,
+          "y": 50.0,
+          "z": -25.000999450683594
         },
         "radius": 60.0,
         "type": 1
       },
       {
-        "material_id": "metal_white_polished",
+        "file_name": "icosphere3.obj",
+        "id": 3,
+        "material_id": "metal_white",
         "origin": {
-          "x": 109.0,
-          "y": 300.0,
-          "z": 392.0
-        },
-        "radius": 60.0,
-        "type": 1
-      },
-      {
-        "material_id": "mirror",
-        "type": 3,
-        "x0": 0.0,
-        "x1": 555.0,
-        "y": 553.0,
-        "z0": 0.0,
-        "z1": 555.0
-      },
-      {
-        "material_id": "metal_white_polished",
-        "type": 2,
-        "x0": 0.0,
-        "x1": 555.0,
-        "y0": 0.0,
-        "y1": 555.0,
-        "z": 552.0
-      },
-      {
-        "material_id": "glossy_green",
-        "origin": {
-          "x": 49.0,
-          "y": 420.0,
-          "z": 220.0
-        },
-        "radius": 50.0,
-        "type": 1
-      },
-      {
-        "material_id": "glossy_red",
-        "origin": {
-          "x": 500.0,
-          "y": 420.0,
-          "z": 220.0
-        },
-        "radius": 50.0,
-        "type": 1
-      },
-      {
-        "file_name": "cube.obj",
-        "material_id": "glass",
-        "origin": {
-          "x": 274.5233459472656,
-          "y": 136.0,
-          "z": -30.966999053955078
-        },
-        "rotation": {
           "x": 0.0,
-          "y": 220.0,
+          "y": 0.0,
           "z": 0.0
-        },
-        "scale": {
-          "x": 55.0,
-          "y": 1.0,
-          "z": 1.0
-        },
-        "shape_index": 0,
-        "type": 5
-      },
-      {
-        "file_name": "cube.obj",
-        "material_id": "glass_red",
-        "origin": {
-          "x": 431.7829895019531,
-          "y": 75.0,
-          "z": 150.3090057373047
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": -41.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 55.0,
-          "y": 1.0,
-          "z": 1.0
-        },
-        "shape_index": 0,
-        "type": 5
-      },
-      {
-        "file_name": "cube.obj",
-        "material_id": "glass_green",
-        "origin": {
-          "x": 122.78299713134766,
-          "y": 75.0,
-          "z": 150.3090057373047
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 77.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 55.0,
-          "y": 1.0,
-          "z": 1.0
-        },
-        "shape_index": 0,
-        "type": 5
-      },
-      {
-        "file_name": "icosphere2.obj",
-        "material_id": "pearl",
-        "origin": {
-          "x": 275.7829895019531,
-          "y": 200.2239990234375,
-          "z": 299.3089904785156
         },
         "rotation": {
           "x": 0.0,
@@ -190,49 +46,7 @@
           "z": 0.0
         },
         "scale": {
-          "x": 89.0,
-          "y": 1.0,
-          "z": 1.0
-        },
-        "shape_index": 0,
-        "type": 5
-      },
-      {
-        "file_name": "icosphere1.obj",
-        "material_id": "glass",
-        "origin": {
-          "x": 452.0,
-          "y": 300.0,
-          "z": 392.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 116.0,
-          "y": 1.0,
-          "z": 1.0
-        },
-        "shape_index": 0,
-        "type": 5
-      },
-      {
-        "file_name": "icosphere1.obj",
-        "material_id": "glass",
-        "origin": {
-          "x": 109.0,
-          "y": 300.0,
-          "z": 392.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 116.0,
+          "x": 1.0,
           "y": 1.0,
           "z": 1.0
         },

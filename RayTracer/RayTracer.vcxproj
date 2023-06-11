@@ -133,6 +133,7 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClCompile Include="app\ui\hittables_ui.cpp" />
     <ClCompile Include="app\ui\materials_ui.cpp" />
     <ClCompile Include="app\factories.cpp" />
+    <ClCompile Include="app\asset_management.cpp" />
     <ClCompile Include="gfx\bmp.cpp" />
     <ClCompile Include="gfx\dx11_helper.cpp" />
     <ClCompile Include="main.cpp" />
@@ -190,6 +191,7 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClInclude Include="app\json\materials_json.h" />
     <ClInclude Include="app\json\serializable.h" />
     <ClInclude Include="app\factories.h" />
+    <ClInclude Include="app\asset_management.h" />
     <ClInclude Include="gfx\bmp.h" />
     <ClInclude Include="gfx\dx11_helper.h" />
     <ClInclude Include="gfx\stb_image.h" />

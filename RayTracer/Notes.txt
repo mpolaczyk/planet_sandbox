@@ -168,3 +168,13 @@
  Building   O(N log N)
  Updating   O(N)
  Traversing O(log N)
+
+
+ TODO
+  - texture support
+  - hdri background
+  - normals from mesh import
+  - static mesh rotation matrix
+  - new scene with complex static mesh
+  - static mesh BVH
+    - count rays

@@ -119,7 +119,7 @@ public:
   float output_window_lmb_x = -1.0f;
   float output_window_lmb_y = -1.0f;
   hittable* selected_object = nullptr;
-  float move_speed = 15.0f;
+  float move_speed = 5.0f;
 
   void load_scene_state();
   void save_scene_state();

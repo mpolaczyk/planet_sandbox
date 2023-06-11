@@ -1,8 +1,10 @@
 #pragma once
 
-//// Common library headers
+// Common library headers
 #include <string>
 #include <vector>
+
+#include <ppl.h>
 
 // Build type detection
 #ifdef _DEBUG

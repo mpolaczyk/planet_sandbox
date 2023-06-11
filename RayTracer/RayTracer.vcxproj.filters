@@ -102,6 +102,9 @@
     <ClCompile Include="renderers\preview_faces_renderer.cpp">
       <Filter>renderers</Filter>
     </ClCompile>
+    <ClCompile Include="app\asset_management.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -237,6 +240,9 @@
     </ClInclude>
     <ClInclude Include="renderers\preview_faces_renderer.h">
       <Filter>renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="app\asset_management.h">
+      <Filter>app</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
