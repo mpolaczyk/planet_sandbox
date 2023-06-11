@@ -30,10 +30,11 @@ public:
 
   void draw_edit_panel();
 
-  std::string id;
+  int id;
+  std::string name;
 
   std::string get_name() const;
-  std::string get_id() const
+  int get_id() const
   {
     return id;
   }

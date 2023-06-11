@@ -98,7 +98,7 @@ public:
 
   // Rendering state
   renderer_config* renderer_conf = nullptr;
-  asset_registry<std::string, material>* materials = nullptr;
+  asset_registry<int, material>* materials = nullptr;
   
   // OS window state
   window_config window_conf;

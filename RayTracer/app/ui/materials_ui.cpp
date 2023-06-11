@@ -6,7 +6,7 @@
 std::string material::get_name() const
 {
   std::ostringstream oss;
-  oss << "/" << material_type_names[(int)type] << "/" << id;
+  oss << "/" << material_type_names[(int)type] << "/" << name;
  return oss.str();
 }
 

@@ -5,11 +5,11 @@
 #include "app/json/vec3_json.h"
 #include "app/json/materials_json.h"
 
-nlohmann::json material_instances_serializer::serialize(const asset_registry<std::string, material>* value)
+nlohmann::json material_instances_serializer::serialize(const asset_registry<int, material>* value)
 {
   assert(value != nullptr);
   nlohmann::json jarr = nlohmann::json::array();
-  for (const std::pair<std::string, material*> pair : value->registry)
+  for (const std::pair<int, material*> pair : value->registry)
   {
     jarr.push_back(material_serializer::serialize(pair.second));
   }
@@ -24,7 +24,8 @@ nlohmann::json material_serializer::serialize(const material* value)
   j["emitted_color"] = vec3_serializer::serialize(value->emitted_color);
   j["gloss_color"] = vec3_serializer::serialize(value->gloss_color);
   j["type"] = value->type;
-  j["id"] = value->id;
+  j["name"] = value->id;
+  j["name"] = value->id;
   j["smoothness"] = value->smoothness;
   j["gloss_probability"] = value->gloss_probability;
   j["refraction_probability"] = value->refraction_probability;
@@ -33,7 +34,7 @@ nlohmann::json material_serializer::serialize(const material* value)
 }
 
 
-void material_instances_serializer::deserialize(const nlohmann::json& j, asset_registry<std::string, material>* out_value)
+void material_instances_serializer::deserialize(const nlohmann::json& j, asset_registry<int, material>* out_value)
 {
   assert(out_value != nullptr);
   for (const auto& element : j)
@@ -49,7 +50,8 @@ void material_serializer::deserialize(const nlohmann::json& j, material* out_val
   assert(out_value != nullptr);
 
   TRY_PARSE(material_type, j, "type", out_value->type);
-  TRY_PARSE(std::string, j, "id", out_value->id);
+  TRY_PARSE(int, j, "id", out_value->id);
+  TRY_PARSE(std::string, j, "name", out_value->name);
 
   nlohmann::json jcolor;
   if (TRY_PARSE(nlohmann::json, j, "color", jcolor)) { out_value->color = vec3_serializer::deserialize(jcolor); }

@@ -28,8 +28,8 @@ public:
   void remove(const K& id);
   V* get(const K& id) const;
   std::vector<K> get_ids() const;
-  std::vector<K> get_names() const;
-  int get_index_by_name(const K& name) const;
+  std::vector<std::string> get_names() const;
+  int get_index_by_name(const std::string& name) const;
   int get_index_by_id(const K& id) const;
 
   std::map<K, V*> registry;

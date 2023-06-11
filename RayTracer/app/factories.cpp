@@ -62,7 +62,7 @@ texture* object_factory::spawn_texture(texture_type type)
   return nullptr;
 }
 
-asset_registry<std::string, material>* object_factory::spawn_material_instances()
+asset_registry<int, material>* object_factory::spawn_material_instances()
 {
-  return new asset_registry<std::string, material>();
+  return new asset_registry<int, material>();
 }

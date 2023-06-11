@@ -15,6 +15,6 @@ public:
 class material_instances_serializer
 {
 public:
-  static nlohmann::json serialize(const asset_registry<std::string, material>* value);
-  static void deserialize(const nlohmann::json&, asset_registry<std::string, material>* out_value);
+  static nlohmann::json serialize(const asset_registry<int, material>* value);
+  static void deserialize(const nlohmann::json&, asset_registry<int, material>* out_value);
 };

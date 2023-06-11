@@ -88,6 +88,6 @@ public:
 
   static texture* spawn_texture(texture_type type);
 
-  static asset_registry<std::string, material>* spawn_material_instances();
+  static asset_registry<int, material>* spawn_material_instances();
 
 };

@@ -2,17 +2,14 @@
 
 #include "app/asset_registry.h"
 
-
 #include "math/materials.h"
 #include "math/textures.h"
 
-template asset_registry<std::string, material>;
-//template asset_registry<texture>;
+template asset_registry<int, material>;
 
 template<typename K, typename V>
 bool asset_registry<K,V>::is_id_in_use(const K& id) const
 {
-  if (id.size() == 0) return true;
   auto obj = registry.find(id);
   return obj != registry.end();
 }
@@ -21,7 +18,6 @@ template<typename K, typename V>
 bool asset_registry<K, V>::try_add(V* instance)
 {
   if (instance == nullptr) return false;
-  if (instance->id.size() == 0) return false;
   auto obj = registry.find(instance->id);
   if (obj != registry.end()) return false;
   registry.insert(std::pair<K, V*>(instance->id, instance));
@@ -62,9 +58,9 @@ std::vector<K> asset_registry<K, V>::get_ids() const
 }
 
 template<typename K, typename V>
-std::vector<K> asset_registry<K, V>::get_names() const
+std::vector<std::string> asset_registry<K, V>::get_names() const
 {
-  std::vector<K> names;
+  std::vector<std::string> names;
   for (auto& pair : registry)
   {
     names.push_back(pair.second->get_name());
@@ -73,9 +69,9 @@ std::vector<K> asset_registry<K, V>::get_names() const
 }
 
 template<typename K, typename V>
-int asset_registry<K, V>::get_index_by_name(const K& name) const
+int asset_registry<K, V>::get_index_by_name(const std::string& name) const
 {
-  std::vector<K> names = get_names();
+  std::vector<std::string> names = get_names();
   for (int i = 0; i < names.size(); i++)
   {
     if (names[i] == name)

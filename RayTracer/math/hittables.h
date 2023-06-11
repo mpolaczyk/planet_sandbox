@@ -28,7 +28,7 @@ class hittable
 public:
   hittable() { }
   explicit hittable(const hittable* rhs) { *this = *rhs; };
-  hittable(std::string&& in_material_id, hittable_type in_type) : material_id(std::move(in_material_id)), type(in_type) { };
+  hittable(int in_material_id, hittable_type in_type) : material_id(in_material_id), type(in_type) { };
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const = 0;
   virtual bool get_bounding_box(aabb& out_box) const = 0;
@@ -52,7 +52,7 @@ public:
 
   // Persistent members
   hittable_type type = hittable_type::scene;
-  std::string material_id;
+  int material_id;
     
   // Runtime members
   material* material_ptr = nullptr; // no deep copy for now!
@@ -65,9 +65,9 @@ public:
 class sphere : public hittable
 {
 public:
-  sphere() : hittable("", hittable_type::sphere) {}
+  sphere() : hittable(0, hittable_type::sphere) {}
   explicit sphere(const sphere* rhs) { *this = *rhs; };
-  sphere(std::string&& in_material_id, const vec3& in_origin, float radius) : origin(in_origin), radius(radius), hittable(std::move(in_material_id), hittable_type::sphere) { };
+  sphere(int in_material_id, const vec3& in_origin, float radius) : origin(in_origin), radius(radius), hittable(in_material_id, hittable_type::sphere) { };
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
@@ -96,7 +96,7 @@ public:
 class scene : public hittable
 {
 public:
-  scene() : hittable("", hittable_type::scene) {}
+  scene() : hittable(0, hittable_type::scene) {}
   explicit scene(const scene* rhs) { *this = *rhs; };
   ~scene();
 
@@ -118,7 +118,7 @@ public:
   void remove(int object_id);
 
   void build_boxes();
-  void update_materials(asset_registry<std::string, material>* materials);
+  void update_materials(asset_registry<int, material>* materials);
   void query_lights();
   hittable* get_random_light();
 
@@ -134,10 +134,10 @@ public:
 class xy_rect : public hittable 
 {
 public:
-  xy_rect() : hittable("", hittable_type::xy_rect) {}
+  xy_rect() : hittable(0, hittable_type::xy_rect) {}
   explicit xy_rect(const xy_rect* rhs) { *this = *rhs; };
-  xy_rect(std::string&& in_material_id, float _x0, float _x1, float _y0, float _y1, float _z)
-    : x0(_x0), x1(_x1), y0(_y0), y1(_y1), z(_z), hittable(std::move(in_material_id), hittable_type::xy_rect) { };
+  xy_rect(int in_material_id, float _x0, float _x1, float _y0, float _y1, float _z)
+    : x0(_x0), x1(_x1), y0(_y0), y1(_y1), z(_z), hittable(in_material_id, hittable_type::xy_rect) { };
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
@@ -174,10 +174,10 @@ public:
 class xz_rect : public hittable
 {
 public:
-  xz_rect() : hittable("", hittable_type::xz_rect) {}
+  xz_rect() : hittable(0, hittable_type::xz_rect) {}
   explicit xz_rect(const xz_rect* rhs) { *this = *rhs; };
-  xz_rect(std::string&& in_material_id, float _x0, float _x1, float _z0, float _z1, float _y)
-    : x0(_x0), x1(_x1), z0(_z0), z1(_z1), y(_y), hittable(std::move(in_material_id), hittable_type::xz_rect) { };
+  xz_rect(int in_material_id, float _x0, float _x1, float _z0, float _z1, float _y)
+    : x0(_x0), x1(_x1), z0(_z0), z1(_z1), y(_y), hittable(in_material_id, hittable_type::xz_rect) { };
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
@@ -214,10 +214,10 @@ public:
 class yz_rect : public hittable 
 {
 public:
-  yz_rect() : hittable("", hittable_type::yz_rect) {}
+  yz_rect() : hittable(0, hittable_type::yz_rect) {}
   explicit yz_rect(const yz_rect* rhs) { *this = *rhs; };
-  yz_rect(std::string&& in_material_id, float _y0, float _y1, float _z0, float _z1, float _x)
-    : y0(_y0), y1(_y1), z0(_z0), z1(_z1), x(_x), hittable(std::move(in_material_id), hittable_type::yz_rect) { };
+  yz_rect(int in_material_id, float _y0, float _y1, float _z0, float _z1, float _x)
+    : y0(_y0), y1(_y1), z0(_z0), z1(_z1), x(_x), hittable(in_material_id, hittable_type::yz_rect) { };
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
   virtual bool get_bounding_box(aabb& out_box) const override;
@@ -254,7 +254,7 @@ public:
 class static_mesh : public hittable
 {
 public:
-  static_mesh() : hittable("", hittable_type::static_mesh) {}
+  static_mesh() : hittable(0, hittable_type::static_mesh) {}
   explicit static_mesh(const static_mesh* rhs) { *this = *rhs; };
 
   virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;

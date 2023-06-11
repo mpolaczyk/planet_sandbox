@@ -17,7 +17,8 @@
         "z": 1.0
       },
       "gloss_probability": 0.30000001192092896,
-      "id": "glass",
+      "name": "glass",
+      "id":  0,
       "refraction_index": 1.5,
       "refraction_probability": 1.0,
       "smoothness": 1.0,
@@ -40,7 +41,8 @@
         "z": 1.0
       },
       "gloss_probability": 0.30000001192092896,
-      "id": "glass_green",
+      "name": "glass_green",
+      "id": 1,
       "refraction_index": 1.5,
       "refraction_probability": 1.0,
       "smoothness": 1.0,
@@ -63,7 +65,8 @@
         "z": 1.0
       },
       "gloss_probability": 0.30000001192092896,
-      "id": "glass_green_matt",
+      "name": "glass_green_matt",
+      "id": 2,
       "refraction_index": 1.5,
       "refraction_probability": 1.0,
       "smoothness": 0.8999999761581421,
@@ -86,7 +89,8 @@
         "z": 1.0
       },
       "gloss_probability": 0.30000001192092896,
-      "id": "glass_matt",
+      "name": "glass_matt",
+      "id": 3,
       "refraction_index": 1.5,
       "refraction_probability": 1.0,
       "smoothness": 0.8999999761581421,
@@ -109,7 +113,8 @@
         "z": 1.0
       },
       "gloss_probability": 0.30000001192092896,
-      "id": "glass_red",
+      "name": "glass_red",
+      "id": 4,
       "refraction_index": 1.5,
       "refraction_probability": 1.0,
       "smoothness": 1.0,
@@ -132,7 +137,8 @@
         "z": 1.0
       },
       "gloss_probability": 0.30000001192092896,
-      "id": "glass_red_matt",
+      "name": "glass_red_matt",
+      "id": 5,
       "refraction_index": 1.5,
       "refraction_probability": 1.0,
       "smoothness": 0.8999999761581421,
@@ -155,7 +161,8 @@
         "z": 1.0
       },
       "gloss_probability": 0.20000000298023224,
-      "id": "glossy_green",
+      "name": "glossy_green",
+      "id": 6,
       "refraction_index": 0.0,
       "refraction_probability": 0.0,
       "smoothness": 0.949999988079071,
@@ -178,7 +185,8 @@
         "z": 1.0
       },
       "gloss_probability": 0.20000000298023224,
-      "id": "glossy_red",
+      "name": "glossy_red",
+      "id": 7,
       "refraction_index": 0.0,
       "refraction_probability": 0.0,
       "smoothness": 0.949999988079071,
@@ -201,7 +209,8 @@
         "z": 1.0
       },
       "gloss_probability": 0.20000000298023224,
-      "id": "glossy_white",
+      "name": "glossy_white",
+      "id": 8,
       "refraction_index": 0.0,
       "refraction_probability": 0.0,
       "smoothness": 0.9399999976158142,
@@ -224,7 +233,8 @@
         "z": 0.0
       },
       "gloss_probability": 0.0,
-      "id": "light",
+      "name": "light",
+      "id": 9,
       "refraction_index": 0.0,
       "refraction_probability": 0.0,
       "smoothness": 0.0,
@@ -247,7 +257,8 @@
         "z": 0.0
       },
       "gloss_probability": 0.0,
-      "id": "light_green",
+      "name": "light_green",
+      "id": 10,
       "refraction_index": 0.0,
       "refraction_probability": 0.0,
       "smoothness": 0.0,
@@ -270,7 +281,8 @@
         "z": 0.0
       },
       "gloss_probability": 0.0,
-      "id": "light_red",
+      "name": "light_red",
+      "id": 11,
       "refraction_index": 0.0,
       "refraction_probability": 0.0,
       "smoothness": 0.0,
@@ -293,7 +305,8 @@
         "z": 0.0
       },
       "gloss_probability": 0.0,
-      "id": "metal_copper",
+      "name": "metal_copper",
+      "id": 12,
       "refraction_index": 0.0,
       "refraction_probability": 0.0,
       "smoothness": 0.6000000238418579,
@@ -316,7 +329,8 @@
         "z": 0.0
       },
       "gloss_probability": 0.0,
-      "id": "metal_gold",
+      "name": "metal_gold",
+      "id": 13,
       "refraction_index": 0.0,
       "refraction_probability": 0.0,
       "smoothness": 0.6000000238418579,
@@ -339,7 +353,8 @@
         "z": 0.0
       },
       "gloss_probability": 0.0,
-      "id": "metal_white",
+      "name": "metal_white",
+      "id": 14,
       "refraction_index": 0.0,
       "refraction_probability": 0.0,
       "smoothness": 0.6000000238418579,
@@ -362,7 +377,8 @@
         "z": 0.0
       },
       "gloss_probability": 0.0,
-      "id": "metal_white_polished",
+      "name": "metal_white_polished",
+      "id": 15,
       "refraction_index": 0.0,
       "refraction_probability": 0.0,
       "smoothness": 0.8500000238418579,
@@ -385,7 +401,8 @@
         "z": 0.0
       },
       "gloss_probability": 0.0,
-      "id": "mirror",
+      "name": "mirror",
+      "id": 16,
       "refraction_index": 0.0,
       "refraction_probability": 0.0,
       "smoothness": 1.0,
@@ -408,7 +425,8 @@
         "z": 1.0
       },
       "gloss_probability": 0.6000000238418579,
-      "id": "pearl",
+      "name": "pearl",
+      "id": 17,
       "refraction_index": 0.0,
       "refraction_probability": 0.0,
       "smoothness": 0.699999988079071,

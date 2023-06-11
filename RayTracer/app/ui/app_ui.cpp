@@ -98,7 +98,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
 
   draw_material_selection_combo(model.m_model, state);
 
-  std::string material_id = state.materials->get_ids()[model.m_model.selected_material_name_index];
+  int material_id = state.materials->get_ids()[model.m_model.selected_material_name_index];
 
   material* mat = state.materials->get(material_id);
   mat->draw_edit_panel();
