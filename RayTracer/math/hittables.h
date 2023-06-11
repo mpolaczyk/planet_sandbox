@@ -9,7 +9,7 @@
 class material;
 class material_instances;
 
-template<typename T>
+template<typename K, typename V>
 class asset_registry;
 
 constexpr int32_t MAX_LIGHTS = 50;
@@ -118,7 +118,7 @@ public:
   void remove(int object_id);
 
   void build_boxes();
-  void update_materials(asset_registry<material>* materials);
+  void update_materials(asset_registry<std::string, material>* materials);
   void query_lights();
   hittable* get_random_light();
 

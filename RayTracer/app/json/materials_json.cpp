@@ -5,7 +5,7 @@
 #include "app/json/vec3_json.h"
 #include "app/json/materials_json.h"
 
-nlohmann::json material_instances_serializer::serialize(const asset_registry<material>* value)
+nlohmann::json material_instances_serializer::serialize(const asset_registry<std::string, material>* value)
 {
   assert(value != nullptr);
   nlohmann::json jarr = nlohmann::json::array();
@@ -33,7 +33,7 @@ nlohmann::json material_serializer::serialize(const material* value)
 }
 
 
-void material_instances_serializer::deserialize(const nlohmann::json& j, asset_registry<material>* out_value)
+void material_instances_serializer::deserialize(const nlohmann::json& j, asset_registry<std::string, material>* out_value)
 {
   assert(out_value != nullptr);
   for (const auto& element : j)

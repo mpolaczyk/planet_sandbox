@@ -8,7 +8,7 @@ class hittable;
 class texture;
 class material_instances;
 
-template<typename T>
+template<typename K, typename V>
 class asset_registry;
 
 enum class material_type
@@ -88,6 +88,6 @@ public:
 
   static texture* spawn_texture(texture_type type);
 
-  static asset_registry<material>* spawn_material_instances();
+  static asset_registry<std::string, material>* spawn_material_instances();
 
 };

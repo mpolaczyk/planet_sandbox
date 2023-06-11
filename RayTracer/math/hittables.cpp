@@ -39,7 +39,7 @@ void scene::build_boxes()
   }
 }
 
-void scene::update_materials(asset_registry<material>* materials)
+void scene::update_materials(asset_registry<std::string, material>* materials)
 {
   assert(objects.size() > 0);
   // Find material pointers from material ids. We do it here to save processing. 

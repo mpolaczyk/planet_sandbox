@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "app/factories.h"
 
 class material
@@ -29,8 +28,13 @@ public:
   float refraction_probability = 0.0f;
   float refraction_index = 1.0f;
 
+  void draw_edit_panel();
+
   std::string id;
 
-  void get_name(std::string& out_name, bool with_params=true) const;
-  void draw_edit_panel();  
+  std::string get_name() const;
+  std::string get_id() const
+  {
+    return id;
+  }
 };

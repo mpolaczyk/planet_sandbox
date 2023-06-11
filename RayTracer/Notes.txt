@@ -171,6 +171,10 @@
 
 
  TODO
+  - asset management
+    x asset type
+    - use int  for ids not string
+    - lazy loaded asset reference?
   - texture support
   - hdri background
   - normals from mesh import

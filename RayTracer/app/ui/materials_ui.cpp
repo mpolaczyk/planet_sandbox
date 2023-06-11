@@ -3,20 +3,18 @@
 #include "imgui.h"
 #include "math/materials.h"
 
-void material::get_name(std::string& out_name, bool with_params) const
+std::string material::get_name() const
 {
   std::ostringstream oss;
   oss << "/" << material_type_names[(int)type] << "/" << id;
-  out_name = oss.str();
+ return oss.str();
 }
 
 void material::draw_edit_panel()
 {
-  std::string mat_name;
-  get_name(mat_name);
   ImGui::Text("Material: ");
   ImGui::SameLine();
-  ImGui::Text(mat_name.c_str());
+  ImGui::Text(get_name().c_str());
   
   int type_int = (int)type;
   ImGui::DragInt("Type", &type_int, 1, 1, 2);
