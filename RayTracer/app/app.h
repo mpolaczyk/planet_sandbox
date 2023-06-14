@@ -35,7 +35,7 @@ struct camera_panel_model
 
 struct material_selection_combo_model
 {
-  int selected_material_id = -1;
+  int selected_material_id = 0;
 };
 
 struct renderer_panel_model

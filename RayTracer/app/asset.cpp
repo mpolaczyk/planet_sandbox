@@ -8,7 +8,7 @@
 // TODO move explicit instantiation somewhere else!
 #include "math/materials.h"
 template class soft_asset_ptr<material>;
-template void asset_registry::add<material>(asset* object, const std::string& name);
+template void asset_registry::add<material>(material* object, const std::string& name);
 template material* asset_registry::get_asset(int id) const;
 template material* asset_registry::find_asset(const std::string& name);
 template std::vector<material*> asset_registry::get_assets();
@@ -121,21 +121,21 @@ bool asset_registry::is_valid(int id) const
 }
 
 template<typename T>
-void asset_registry::add(asset* object, const std::string& name)
+void asset_registry::add(T* object, const std::string& name)
 {
   if (object->get_static_asset_type() == asset_type::none)
   {
-    assert("Unable to add none object.");
+    assert(false, "Unable to add none object.");
     return;
   }
   if (object == nullptr)
   {
-    assert("Unable to add nullptr object.");
+    assert(false, "Unable to add nullptr object.");
     return;
   }
   if (std::find(begin(assets), end(assets), object) != end(assets))
   {
-    assert("Unable to add object, it is already registered.");
+    assert(false, "Unable to add object, it is already registered.");
     return;
   }
   object->set_runtime_id(assets.size());

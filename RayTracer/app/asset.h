@@ -76,7 +76,7 @@ public:
 
   // TODO exclude asset class, T needs to be a children
   template<typename T>
-  void add(asset* object, const std::string& name);
+  void add(T* object, const std::string& name);
 
   template<typename T>
   T* get_asset(int id) const;
