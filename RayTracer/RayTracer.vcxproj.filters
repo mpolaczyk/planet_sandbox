@@ -102,9 +102,8 @@
     <ClCompile Include="renderers\preview_faces_renderer.cpp">
       <Filter>renderers</Filter>
     </ClCompile>
-    <ClCompile Include="app\asset_registry.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
+    <ClCompile Include="app\asset.cpp" />
+    <ClCompile Include="math\materials.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -241,9 +240,7 @@
     <ClInclude Include="renderers\preview_faces_renderer.h">
       <Filter>renderers</Filter>
     </ClInclude>
-    <ClInclude Include="app\asset_registry.h">
-      <Filter>app</Filter>
-    </ClInclude>
+    <ClInclude Include="app\asset.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="gfx">

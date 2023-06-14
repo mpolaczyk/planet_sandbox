@@ -3,7 +3,6 @@
 #include "imgui.h"
 
 #include "app/app.h"
-#include "app/asset_registry.h"
 #include "processing/chunk_generator.h"
 #include "processing/async_renderer_base.h"
 #include "math/camera.h"
@@ -98,9 +97,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
 
   draw_material_selection_combo(model.m_model, state);
 
-  int material_id = state.materials->get_ids()[model.m_model.selected_material_name_index];
-
-  material* mat = state.materials->get(material_id);
+  material* mat = globals::get_asset_registry()->get_asset<material>(model.m_model.selected_material_id);
   mat->draw_edit_panel();
 }
 
@@ -169,7 +166,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
       hittable* obj = state.scene_root->objects[n];
       if (state.selected_object != nullptr && obj == state.selected_object)
       {
-        model.m_model.selected_material_name_index = -1;
+        model.m_model.selected_material_id = -1;
         model.selected_id = n;
         model.d_model.selected_id = n;
       }
@@ -179,7 +176,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
       oss << obj_name;
       if (ImGui::Selectable(oss.str().c_str(), model.selected_id == n))
       {
-         model.m_model.selected_material_name_index = -1;
+         model.m_model.selected_material_id = -1;
          model.selected_id = n;
          model.d_model.selected_id = n;
          state.selected_object = nullptr;
@@ -199,12 +196,13 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
     selected_obj->draw_edit_panel();
 
     material_selection_combo_model m_model;
-    if (model.m_model.selected_material_name_index == -1)
+    if (model.m_model.selected_material_id == -1)
     {
-      m_model.selected_material_name_index = state.materials->get_index_by_id(selected_obj->material_id);
+      m_model.selected_material_id = selected_obj->material_ptr.get()->get_runtime_id();
     }
     draw_material_selection_combo(m_model, state);
-    selected_obj->material_id = state.materials->get_ids()[m_model.selected_material_name_index];
+    std::string selected_name =  globals::get_asset_registry()->get_name(m_model.selected_material_id);
+    selected_obj->material_ptr.set_name(selected_name);
 
     ImGui::Separator();
   }
@@ -245,7 +243,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
     if (ImGui::Button("Add", ImVec2(120, 0)) && model.hittable != nullptr)
     {
-      model.hittable->material_id = state.materials->get_ids()[model.m_model.selected_material_name_index];
+      model.hittable->material_ptr.set_name(globals::get_asset_registry()->get_name(model.m_model.selected_material_id));
       state.scene_root->add(model.hittable);
       model.hittable = nullptr;
       ImGui::CloseCurrentPopup();
@@ -267,18 +265,23 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
 void draw_material_selection_combo(material_selection_combo_model& model, app_instance& state)
 {
-  std::vector<std::string> material_names = state.materials->get_names();
-  if (material_names.size() > 0)
+  std::vector<material*> materials = globals::get_asset_registry()->get_assets<material>();
+  material* selected_material = globals::get_asset_registry()->get_asset<material>(model.selected_material_id);
+
+  if (materials.size() > 0)
   {
     ImGui::Separator();
-    if (ImGui::BeginCombo("Material", material_names[model.selected_material_name_index].c_str()))
+    if (ImGui::BeginCombo("Material", selected_material->get_asset_name().c_str()))
     {
-      for (int i = 0; i < material_names.size(); ++i)
+      for (int i = 0; i < materials.size(); ++i)
       {
-        const bool isSelected = (model.selected_material_name_index == i);
-        if (ImGui::Selectable(material_names[i].c_str(), isSelected))
+        int iterated_id = materials[i]->get_runtime_id();
+        std::string iterated_name = materials[i]->get_asset_name();
+
+        const bool isSelected = (model.selected_material_id == iterated_id);
+        if (ImGui::Selectable(iterated_name.c_str(), isSelected))
         {
-          model.selected_material_name_index = i;
+          model.selected_material_id = iterated_id;
         }
         if (isSelected)
         {

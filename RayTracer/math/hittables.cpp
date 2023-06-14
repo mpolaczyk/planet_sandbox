@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "app/asset_registry.h"
 #include "hittables.h"
 #include "aabb.h"
 #include "materials.h"
@@ -39,17 +38,15 @@ void scene::build_boxes()
   }
 }
 
-void scene::update_materials(asset_registry<int, material>* materials)
+void scene::update_materials()
 {
   assert(objects.size() > 0);
-  // Find material pointers from material ids. We do it here to save processing. 
-  // Doing it here is much cheaper than resolve while processing.
-  assert(materials != nullptr);
+
+  // Trigger resource loading for materials.
+  // Soft ptr name change may invalidate it.
   for (hittable* obj : objects)
   {
-    material* mat_ptr = materials->get(obj->material_id);
-    assert(mat_ptr != nullptr);
-    obj->material_ptr = mat_ptr;
+    obj->material_ptr.get();
   }
 }
 
@@ -58,7 +55,7 @@ void scene::query_lights()
   lights_num = 0;
   for (hittable* object : objects)
   {
-    if (object->material_ptr != nullptr && object->material_ptr->type == material_type::light)
+    if (object->material_ptr.get()->type == material_type::light)
     {
       lights[lights_num] = object;
       lights_num++;
@@ -107,7 +104,7 @@ bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hi
 
   out_hit.t = root;
   out_hit.p = in_ray.at(out_hit.t);
-  out_hit.material_ptr = material_ptr;
+  out_hit.material_ptr = material_ptr.get();
 
   // Normal always against the ray
   vec3 outward_normal = (out_hit.p - origin) / radius;
@@ -153,7 +150,7 @@ bool xy_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
   out_hit.v = (y - y0) / (y1 - y0);
   out_hit.t = t;
   out_hit.front_face = math::flip_normal_if_front_face(in_ray.direction, vec3(0.0f, 0.0f, 1.0f), out_hit.normal);
-  out_hit.material_ptr = material_ptr;
+  out_hit.material_ptr = material_ptr.get();
   out_hit.p = in_ray.at(t);
   return true;
 }
@@ -171,7 +168,7 @@ bool xz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
   out_hit.v = (z - z0) / (z1 - z0);
   out_hit.t = t;
   out_hit.front_face = math::flip_normal_if_front_face(in_ray.direction, vec3(0.0f, 1.0f, 0.0f), out_hit.normal);
-  out_hit.material_ptr = material_ptr;
+  out_hit.material_ptr = material_ptr.get();
   out_hit.p = in_ray.at(t);
   return true;
 }
@@ -189,7 +186,7 @@ bool yz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
   out_hit.v = (z - z0) / (z1 - z0);
   out_hit.t = t;
   out_hit.front_face = math::flip_normal_if_front_face(in_ray.direction, vec3(1.0f, 0.0f, 0.0f), out_hit.normal);
-  out_hit.material_ptr = material_ptr;
+  out_hit.material_ptr = material_ptr.get();
   out_hit.p = in_ray.at(t);
   return true;
 }
@@ -222,7 +219,7 @@ bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& o
   if (hits > 0)
   {
     out_hit = best_hit;
-    out_hit.material_ptr = material_ptr;
+    out_hit.material_ptr = material_ptr.get();
     return true;
   }
 
@@ -416,7 +413,7 @@ bool static_mesh::get_bounding_box(aabb& out_box) const
 
 inline uint32_t hittable::get_hash() const
 {
-  return hash::combine(hash::get(material_ptr), (int)type);
+  return hash::combine(material_ptr.get()->get_runtime_id(), (int)type);
 }
 
 inline uint32_t sphere::get_hash() const

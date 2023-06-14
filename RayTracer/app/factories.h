@@ -7,9 +7,7 @@ class async_renderer_base;
 class hittable;
 class texture;
 class material_instances;
-
-template<typename K, typename V>
-class asset_registry;
+class asset;
 
 enum class material_type
 {
@@ -77,17 +75,24 @@ static inline const char* texture_type_names[] =
   "Asset"
 };
 
+enum class asset_type
+{
+  none = 0,
+  material,
+  texture,
+  static_mesh
+};
+
+
+
 class object_factory
 {
 public:
-  static material* spawn_material(material_type type);
+  static material* spawn_material(material_type type); // TODO should we keep it?
 
   static async_renderer_base* spawn_renderer(renderer_type type);
 
   static hittable* spawn_hittable(hittable_type type);
 
-  static texture* spawn_texture(texture_type type);
-
-  static asset_registry<int, material>* spawn_material_instances();
-
+  static texture* spawn_texture(texture_type type); // TODO should we keep it?
 };

@@ -50,3 +50,10 @@
 
 // Common project headers
 #include "math/common.h"
+
+// Declare all globals here
+class asset_registry;
+namespace globals
+{
+  asset_registry* get_asset_registry();
+}

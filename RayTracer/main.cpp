@@ -20,6 +20,7 @@
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern void seh_exception_handler(unsigned int u, _EXCEPTION_POINTERS* pExp);
 
+
 // Win32 message handler
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -178,7 +179,7 @@ int main(int, char**)
             state.scene_root->load_resources();
             state.scene_root->pre_render();
             state.scene_root->build_boxes();
-            state.scene_root->update_materials(state.materials);
+            state.scene_root->update_materials();
             state.scene_root->query_lights();
 
             update_default_spawn_position(state);

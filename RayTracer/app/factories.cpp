@@ -15,7 +15,6 @@
 #include "renderers/reference_renderer.h"
 #include "renderers/ispc_renderer.h"
 
-#include "app/asset_registry.h"
 
 material* object_factory::spawn_material(material_type type)
 {
@@ -60,9 +59,4 @@ texture* object_factory::spawn_texture(texture_type type)
   else if (type == texture_type::checker) { return new checker_texture(); }
   else if (type == texture_type::asset) { return new asset_texture(); }
   return nullptr;
-}
-
-asset_registry<int, material>* object_factory::spawn_material_instances()
-{
-  return new asset_registry<int, material>();
 }

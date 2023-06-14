@@ -12,7 +12,7 @@ nlohmann::json hittable_serializer::serialize(const hittable* value)
   nlohmann::json j;
   j["name"] = value->id;
   j["type"] = value->type;
-  j["material_id"] = value->material_id;
+  j["material_name"] = value->material_ptr.get_name();
   return j;
 }
 
@@ -118,8 +118,9 @@ void hittable_serializer::deserialize(const nlohmann::json& j, hittable* out_val
   assert(out_value != nullptr);
   TRY_PARSE(int, j, "name", out_value->id);
   TRY_PARSE(hittable_type, j, "type", out_value->type);
-  TRY_PARSE(int, j, "material_id", out_value->material_id);
-  assert(out_value->type != hittable_type::scene && out_value->material_id >= 0);
+  std::string material_name;
+  TRY_PARSE(std::string, j, "material_name", material_name);
+  out_value->material_ptr.set_name(material_name);
 }
 
 void sphere_serializer::deserialize(const nlohmann::json& j, sphere* out_value)

@@ -1,10 +1,13 @@
 #pragma once
 
-#include "app/factories.h"
+#include "app/asset.h"
 
-class material
+class material : public asset
 {
 public:
+  static asset_type get_static_asset_type();
+  static material* load(const std::string& name);
+
   material() {}
   explicit material(material_type type) : type(type) 
   {
@@ -30,12 +33,5 @@ public:
 
   void draw_edit_panel();
 
-  int id;
-  std::string name;
-
-  std::string get_name() const;
-  int get_id() const
-  {
-    return id;
-  }
+  std::string get_display_name() const;
 };

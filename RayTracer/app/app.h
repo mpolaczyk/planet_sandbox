@@ -11,9 +11,6 @@ class material_instances;
 class scene;
 class camera_config;
 
-template<typename K, typename V>
-class asset_registry;
-
 class window_config
 {
 public:
@@ -38,7 +35,7 @@ struct camera_panel_model
 
 struct material_selection_combo_model
 {
-  int selected_material_name_index = 0;
+  int selected_material_id = 0;
 };
 
 struct renderer_panel_model
@@ -79,7 +76,6 @@ struct scene_editor_window_model
   material_selection_combo_model m_model;
 };
 
-
 /*
    app_state - root structure for the application
    - accessible from multiple panels/widgets
@@ -98,7 +94,6 @@ public:
 
   // Rendering state
   renderer_config* renderer_conf = nullptr;
-  asset_registry<int, material>* materials = nullptr;
   
   // OS window state
   window_config window_conf;

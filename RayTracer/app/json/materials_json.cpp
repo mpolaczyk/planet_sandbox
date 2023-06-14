@@ -5,13 +5,13 @@
 #include "app/json/vec3_json.h"
 #include "app/json/materials_json.h"
 
-nlohmann::json material_instances_serializer::serialize(const asset_registry<int, material>* value)
+nlohmann::json material_instances_serializer::serialize()
 {
-  assert(value != nullptr);
   nlohmann::json jarr = nlohmann::json::array();
-  for (const std::pair<int, material*> pair : value->registry)
+  std::vector<material*> assets = globals::get_asset_registry()->get_assets<material>();
+  for (auto asset : assets)
   {
-    jarr.push_back(material_serializer::serialize(pair.second));
+    jarr.push_back(material_serializer::serialize(asset));
   }
   return jarr;
 }
@@ -24,24 +24,21 @@ nlohmann::json material_serializer::serialize(const material* value)
   j["emitted_color"] = vec3_serializer::serialize(value->emitted_color);
   j["gloss_color"] = vec3_serializer::serialize(value->gloss_color);
   j["type"] = value->type;
-  j["name"] = value->id;
-  j["name"] = value->id;
   j["smoothness"] = value->smoothness;
   j["gloss_probability"] = value->gloss_probability;
   j["refraction_probability"] = value->refraction_probability;
   j["refraction_index"] = value->refraction_index;
+  j["name"] = value->get_asset_name();
   return j;
 }
 
 
-void material_instances_serializer::deserialize(const nlohmann::json& j, asset_registry<int, material>* out_value)
+void material_instances_serializer::deserialize(const nlohmann::json& j)
 {
-  assert(out_value != nullptr);
   for (const auto& element : j)
   {
     material* obj = object_factory::spawn_material(element["type"]);
     material_serializer::deserialize(element, obj);
-    out_value->try_add(obj);
   }
 }
 
@@ -50,9 +47,7 @@ void material_serializer::deserialize(const nlohmann::json& j, material* out_val
   assert(out_value != nullptr);
 
   TRY_PARSE(material_type, j, "type", out_value->type);
-  TRY_PARSE(int, j, "id", out_value->id);
-  TRY_PARSE(std::string, j, "name", out_value->name);
-
+  
   nlohmann::json jcolor;
   if (TRY_PARSE(nlohmann::json, j, "color", jcolor)) { out_value->color = vec3_serializer::deserialize(jcolor); }
   assert(colors::is_valid(out_value->color));
@@ -74,4 +69,11 @@ void material_serializer::deserialize(const nlohmann::json& j, material* out_val
   TRY_PARSE(float, j, "refraction_probability", out_value->refraction_probability);
   assert(out_value->refraction_probability >= 0.0f && out_value->refraction_probability <= 1.0f);
   TRY_PARSE(float, j, "refraction_index", out_value->refraction_index);
+
+  std::string name;
+  TRY_PARSE(std::string, j, "name", name);
+
+  // Dirty! No resources to load, so we register asset directly in deserialzier
+  // TODO move it away so that deserializer only deserialzies. But at the same time I don't want to keep name on the asset class.
+  globals::get_asset_registry()->add<material>(out_value, name);
 }

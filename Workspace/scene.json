@@ -17,11 +17,11 @@
     "type": 7.450580596923828e-08
   },
   "scene": {
-    "material_id": 0,
+    "material_name": "",
     "name": 0,
     "objects": [
       {
-        "material_id": 9,
+        "material_name": "light",
         "name": 2,
         "origin": {
           "x": 50.0,
@@ -33,7 +33,7 @@
       },
       {
         "file_name": "icosphere3.obj",
-        "material_id": 13,
+        "material_name": "metal_white",
         "name": 3,
         "origin": {
           "x": 0.0,

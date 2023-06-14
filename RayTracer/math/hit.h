@@ -12,7 +12,7 @@ struct hit_record
   float t;        // distance to hit point
   float u;
   float v;
-  material* material_ptr = nullptr;
+  const material* material_ptr = nullptr;
   bool front_face;
   hittable* object = nullptr;
   int face_id = 0;

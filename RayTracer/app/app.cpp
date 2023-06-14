@@ -3,7 +3,6 @@
 #include "imgui.h"
 
 #include "app.h"
-#include "app/asset_registry.h"
 #include "factories.h"
 #include "math/hittables.h"
 #include "math/camera.h"
@@ -15,7 +14,6 @@ app_instance::app_instance()
   camera_conf = new camera_config();
   scene_root = new scene();
   renderer_conf = new renderer_config();
-  materials = object_factory::spawn_material_instances();
 }
 
 app_instance::~app_instance()
@@ -25,7 +23,6 @@ app_instance::~app_instance()
   delete scene_root;
   delete camera_conf;
   delete renderer_conf;
-  delete materials;
 }
 
 void update_default_spawn_position(app_instance& state)
