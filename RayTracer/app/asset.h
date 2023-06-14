@@ -37,12 +37,43 @@ private:
 template<typename T>
 struct soft_asset_ptr
 {
-  void set_name(const std::string& in_name);
-  std::string get_name() const;
+  void set_name(const std::string& in_name)
+  {
+    if (in_name != name)
+    {
+      name = in_name;
+      object = nullptr;
+    }
+  }
 
-  bool is_loaded() const;
+  std::string get_name() const
+  {
+    return name;
+  }
 
-  const T* get() const;
+  bool is_loaded() const
+  {
+    return object != nullptr;
+  }
+
+  const T* get() const
+  {
+    if (!is_loaded())
+    {
+      object = globals::get_asset_registry()->find_asset<T>(name);
+      if (object == nullptr)
+      {
+        object = T::load(name);
+        globals::get_asset_registry()->add<T>(object, name);
+      }
+      if (object == nullptr)
+      {
+        logger::critical("Unable to find asset: {0}", name);
+        // TODO future: use default engine material
+      }
+    }
+    return object;
+  }
 
 private:
 
@@ -72,23 +103,80 @@ public:
   asset_registry(const asset_registry&) = delete;
   asset_registry& operator=(const asset_registry&) = delete;
 
-  bool is_valid(int id) const;
+  bool is_valid(int id) const
+  {
+    return ((id >= 0 && id < assets.size()) && (assets[id] != nullptr));
+  }
 
   // TODO exclude asset class, T needs to be a children
   template<typename T>
-  void add(T* object, const std::string& name);
+  void add(T* object, const std::string& name)
+  {
+    if (object->get_static_asset_type() == asset_type::none)
+    {
+      assert(false, "Unable to add none object.");
+      return;
+    }
+    if (object == nullptr)
+    {
+      assert(false, "Unable to add nullptr object.");
+      return;
+    }
+    if (std::find(begin(assets), end(assets), object) != end(assets))
+    {
+      assert(false, "Unable to add object, it is already registered.");
+      return;
+    }
+    object->set_runtime_id(assets.size());
+    assets.push_back(object);
+    names.push_back(name);
+    types.push_back(T::get_static_asset_type());
+  }
 
   template<typename T>
-  T* get_asset(int id) const;
+  T* get_asset(int id) const
+  {
+    if (is_valid(id))
+    {
+      if (get_type(id) == T::get_static_asset_type())
+      {
+        return static_cast<T*>(assets[id]); // Risky! no RTTI, no dynamic_cast
+      }
+    }
+    return nullptr;
+  }
 
   std::string get_name(int id) const;
   asset_type get_type(int id) const;
 
   template<typename T>
-  T* find_asset(const std::string& name);
+  T* find_asset(const std::string& name)
+  {
+    for (int i = 0; i < types.size(); i++)
+    {
+      if (types[i] == T::get_static_asset_type() && names[i] == name)
+      {
+        assert(assets[i] != nullptr);
+        return static_cast<T*>(assets[i]); // Risky! no RTTI, no dynamic_cast
+      }
+    }
+    return nullptr;
+  }
 
   template<typename T>
-  std::vector<T*> get_assets();
+  std::vector<T*> get_assets()
+  {
+    std::vector<T*> ans;
+    for (int i = 0; i < types.size(); i++)
+    {
+      if (types[i] == T::get_static_asset_type())
+      {
+        assert(assets[i] != nullptr);
+        ans.push_back(static_cast<T*>(assets[i])); // Risky! no RTTI, no dynamic_cast
+      }
+    }
+    return ans;
+  }
 
   std::vector<int> get_ids(asset_type type) const;
   std::vector<std::string> get_names(asset_type type) const;
