@@ -55,14 +55,18 @@ void scene::query_lights()
   lights_num = 0;
   for (hittable* object : objects)
   {
-    if (object->material_ptr.get()->type == material_type::light)
+    const material* mat = object->material_ptr.get();
+    if (mat != nullptr && mat->type == material_type::light)
     {
       lights[lights_num] = object;
       lights_num++;
       assert(lights_num < MAX_LIGHTS);
     }
   }
-  assert(lights_num > 0);
+  if (lights_num == 0)
+  {
+    logger::warn("No lights detected.");
+  }
 }
 
 hittable* scene::get_random_light()
@@ -413,7 +417,7 @@ bool static_mesh::get_bounding_box(aabb& out_box) const
 
 inline uint32_t hittable::get_hash() const
 {
-  return hash::combine(material_ptr.get()->get_runtime_id(), (int)type);
+  return hash::combine(hash::get(material_ptr.get_name()), (int)type);
 }
 
 inline uint32_t sphere::get_hash() const

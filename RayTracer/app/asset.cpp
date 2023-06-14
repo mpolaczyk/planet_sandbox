@@ -83,6 +83,11 @@ const T* soft_asset_ptr<T>::get() const
       object = T::load(name);
       globals::get_asset_registry()->add<T>(object, name);
     }
+    if (object == nullptr)
+    {
+      logger::critical("Unable to find asset: {0}", name);
+      // TODO future: use default engine material
+    }
   }
   return object;
 }
@@ -142,10 +147,12 @@ void asset_registry::add(asset* object, const std::string& name)
 template<typename T>
 T* asset_registry::get_asset(int id) const
 {
-  assert(is_valid(id));
-  if (get_type(id) == T::get_static_asset_type())
+  if(is_valid(id))
   {
-    return static_cast<T*>(assets[id]); // Risky! no RTTI, no dynamic_cast
+    if (get_type(id) == T::get_static_asset_type())
+    {
+      return static_cast<T*>(assets[id]); // Risky! no RTTI, no dynamic_cast
+    }
   }
   return nullptr;
 }

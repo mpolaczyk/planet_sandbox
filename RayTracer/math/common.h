@@ -301,6 +301,7 @@ namespace hash
   uint32_t get(const void* a);
   uint32_t get(void* a);
   uint32_t get(const vec3& a);
+  uint32_t get(const std::string& a);
 }
 
 namespace io

@@ -98,7 +98,10 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
   draw_material_selection_combo(model.m_model, state);
 
   material* mat = globals::get_asset_registry()->get_asset<material>(model.m_model.selected_material_id);
-  mat->draw_edit_panel();
+  if (mat != nullptr)
+  {
+    mat->draw_edit_panel();
+  }
 }
 
 void draw_hotkeys_panel(app_instance& state)
@@ -198,11 +201,18 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
     material_selection_combo_model m_model;
     if (model.m_model.selected_material_id == -1)
     {
-      m_model.selected_material_id = selected_obj->material_ptr.get()->get_runtime_id();
+      const material* mat = selected_obj->material_ptr.get();
+      if (mat != nullptr)
+      {
+        m_model.selected_material_id = mat->get_runtime_id();
+      }
     }
     draw_material_selection_combo(m_model, state);
-    std::string selected_name =  globals::get_asset_registry()->get_name(m_model.selected_material_id);
-    selected_obj->material_ptr.set_name(selected_name);
+    if (m_model.selected_material_id != -1)
+    {
+      std::string selected_name = globals::get_asset_registry()->get_name(m_model.selected_material_id);
+      selected_obj->material_ptr.set_name(selected_name);
+    }
 
     ImGui::Separator();
   }
@@ -268,7 +278,7 @@ void draw_material_selection_combo(material_selection_combo_model& model, app_in
   std::vector<material*> materials = globals::get_asset_registry()->get_assets<material>();
   material* selected_material = globals::get_asset_registry()->get_asset<material>(model.selected_material_id);
 
-  if (materials.size() > 0)
+  if (materials.size() > 0 && selected_material != nullptr)
   {
     ImGui::Separator();
     if (ImGui::BeginCombo("Material", selected_material->get_asset_name().c_str()))

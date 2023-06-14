@@ -116,6 +116,7 @@ int main(int, char**)
     state.load_window_state();
     state.scene_root->load_resources();
     state.renderer = object_factory::spawn_renderer(state.renderer_conf->type);
+    state.renderer->set_config(state.renderer_conf, state.scene_root, state.camera_conf);
     ::SetWindowPos(hwnd, NULL, state.window_conf.x, state.window_conf.y, state.window_conf.w, state.window_conf.h, NULL);
 
     // Auto render on startup

@@ -421,6 +421,10 @@ namespace hash
   {
     return combine(get(a.x), get(a.y), get(a.z), get(a.padding));
   }
+  uint32_t get(const std::string& a)
+  {
+    return std::hash<std::string>{}(a);
+  }
 }
 
 namespace io
