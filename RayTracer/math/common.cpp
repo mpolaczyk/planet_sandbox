@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <random>
+#include <fstream>
 
 #include "gfx/tiny_obj_loader.h"
 #include "spdlog/spdlog.h"
@@ -223,7 +224,7 @@ namespace random_cache
     // Fill float cache
     std::uniform_real_distribution<float> distribution;
     distribution = std::uniform_real_distribution<float>(-1.0f, 1.0f);
-    std::mt19937 generator(std::chrono::system_clock::now().time_since_epoch().count());
+    std::mt19937 generator(static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count()));
     for (int s = 0; s < float_cache.len(); s++)
     {
       float_cache.add(distribution(generator));
@@ -423,7 +424,7 @@ namespace hash
   }
   uint32_t get(const std::string& a)
   {
-    return std::hash<std::string>{}(a);
+    return static_cast<uint32_t>(std::hash<std::string>{}(a));
   }
 }
 
@@ -445,11 +446,35 @@ namespace io
     return oss.str();
   }
 
-  std::string get_objects_dir()
+  std::string get_content_dir()
   {
     std::string workspace_dir = get_workspace_dir();
     std::ostringstream oss;
-    oss << workspace_dir << "Objects\\";
+    oss << workspace_dir << "Content\\";
+    return oss.str();
+  }
+
+  std::string get_materials_dir()
+  {
+    std::string content_dir = get_content_dir();
+    std::ostringstream oss;
+    oss << content_dir << "Materials\\";
+    return oss.str();
+  }
+
+  std::string get_meshes_dir()
+  {
+    std::string content_dir = get_content_dir();
+    std::ostringstream oss;
+    oss << content_dir << "Meshes\\";
+    return oss.str();
+  }
+
+  std::string get_textures_dir()
+  {
+    std::string content_dir = get_content_dir();
+    std::ostringstream oss;
+    oss << content_dir << "Textures\\";
     return oss.str();
   }
 
@@ -478,11 +503,27 @@ namespace io
     return oss.str();
   }
 
-  std::string get_objects_file_path(const char* file_name)
+  std::string get_material_file_path(const char* file_name)
   {
-    std::string objects_dir = get_objects_dir();
+    std::string materials_dir = get_materials_dir();
     std::ostringstream oss;
-    oss << objects_dir << file_name;
+    oss << materials_dir << file_name;
+    return oss.str();
+  }
+
+  std::string get_mesh_file_path(const char* file_name)
+  {
+    std::string meshes_dir = get_meshes_dir();
+    std::ostringstream oss;
+    oss << meshes_dir << file_name;
+    return oss.str();
+  }
+
+  std::string get_texture_file_path(const char* file_name)
+  {
+    std::string textures_dir = get_textures_dir();
+    std::ostringstream oss;
+    oss << textures_dir << file_name;
     return oss.str();
   }
 
@@ -514,6 +555,25 @@ namespace io
     return get_images_file_path(oss.str().c_str());
   }
 
+  std::vector<std::string> discover_files(const std::string& path, const std::string& extension, bool include_extension)
+  {
+    std::vector<std::string> result;
+    for (const auto& entry : std::filesystem::directory_iterator(path))
+    {
+      if (entry.is_regular_file() && entry.path().extension().compare(extension))
+      {
+        std::string file_name = entry.path().filename().string();
+        size_t index = file_name.find_last_of(".");
+        result.push_back(file_name.substr(0, index));
+      }
+    }
+    return result;
+  }
+
+  std::vector<std::string> discover_material_files(bool include_extension)
+  {
+    return discover_files(get_materials_dir(), "json", include_extension);
+  }
 }
 
 namespace obj_helper
@@ -526,18 +586,18 @@ namespace obj_helper
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials; // not implemented
 
-    std::string dir = io::get_objects_dir();
-    std::string path = io::get_objects_file_path(file_name.c_str());
+    std::string dir = io::get_meshes_dir();
+    std::string path = io::get_mesh_file_path(file_name.c_str());
 
     std::string error;
     if (!tinyobj::LoadObj(&attributes, &shapes, &materials, &error, path.c_str(), dir.c_str(), true))
     {
-      logger::error("Unable to load object file: {0}", file_name);
+      logger::error("Unable to load object file: {0}", path);
       return false;
     }
     if (shape_index >= shapes.size())
     {
-      logger::error("Object file: {0} does not have shape index: {1}", file_name, shape_index);
+      logger::error("Object file: {0} does not have shape index: {1}", path, shape_index);
       return false;
     }
 
@@ -545,7 +605,7 @@ namespace obj_helper
     size_t num_faces = shape.mesh.num_face_vertices.size();
     if (num_faces == 0)
     {
-      logger::error("Object file: {0} has no faces", file_name);
+      logger::error("Object file: {0} has no faces", path);
       return false;
     }
     out_faces.reserve(num_faces);
@@ -593,22 +653,35 @@ namespace obj_helper
         face.UVs[vi] = vec3(uvx, uvy, 0.0f);
       }
     }
+    
     return true;
   }
 }
 
 namespace logger
 {
-  static auto console = spdlog::stdout_color_mt("console");
-
   void init()
   {
+    std::vector<spdlog::sink_ptr> sinks;
+    sinks.push_back(std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>());
+    //sinks.push_back(std::make_shared<spdlog::sinks::?>("logfile", 23, 59)); // TODO log to file
+    auto combined_logger = std::make_shared<spdlog::logger>("console", begin(sinks), end(sinks));
+    spdlog::register_logger(combined_logger);
+
     spdlog::flush_every(std::chrono::seconds(3));
 #if BUILD_DEBUG
     spdlog::set_level(spdlog::level::trace);
 #elif BUILD_RELEASE
     spdlog::set_level(spdlog::level::info);
 #endif
-    spdlog::set_pattern("[%H:%M:%S.%e] [thread %t] [%l] %^%v%$");
+    spdlog::set_pattern("[%H:%M:%S.%e] [thread %t] [%^%l%$] %v");
+
+    // Test
+    // logger::trace("trace");
+    // logger::debug("debug");
+    // logger::info("info");
+    // logger::warn("warn");
+    // logger::error("error");
+    // logger::critical("critical");
   }
 }

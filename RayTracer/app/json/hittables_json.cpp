@@ -4,15 +4,16 @@
 
 #include "app/json/vec3_json.h"
 #include "app/json/hittables_json.h"
+#include "app/json/assets_json.h"
 
 
 nlohmann::json hittable_serializer::serialize(const hittable* value)
 {
   assert(value != nullptr);
   nlohmann::json j;
-  j["name"] = value->id;
+  j["name"] = value->id;  // TODO do we need this? also name is misleading
   j["type"] = value->type;
-  j["material_name"] = value->material_ptr.get_name();
+  j["material_asset"] = soft_asset_ptr_base_serializer::serialize(&value->material_asset);
   return j;
 }
 
@@ -104,11 +105,10 @@ nlohmann::json static_mesh_serializer::serialize(const static_mesh* value)
   assert(value != nullptr);
   nlohmann::json j;
   j = hittable_serializer::serialize(value);
-  j["file_name"] = value->file_name;
-  j["shape_index"] = value->shape_index;
   j["origin"] = vec3_serializer::serialize(value->origin);
   j["scale"] = vec3_serializer::serialize(value->scale);
   j["rotation"] = vec3_serializer::serialize(value->rotation);
+  j["mesh_asset"] = soft_asset_ptr_base_serializer::serialize(&value->mesh_asset);
   return j;
 }
 
@@ -118,9 +118,9 @@ void hittable_serializer::deserialize(const nlohmann::json& j, hittable* out_val
   assert(out_value != nullptr);
   TRY_PARSE(int, j, "name", out_value->id);
   TRY_PARSE(hittable_type, j, "type", out_value->type);
-  std::string material_name;
-  TRY_PARSE(std::string, j, "material_name", material_name);
-  out_value->material_ptr.set_name(material_name);
+  
+  nlohmann::json jmaterial;
+  if (TRY_PARSE(nlohmann::json, j, "material_asset", jmaterial)) { soft_asset_ptr_base_serializer::deserialize(jmaterial, &out_value->material_asset); }
 }
 
 void sphere_serializer::deserialize(const nlohmann::json& j, sphere* out_value)
@@ -214,14 +214,14 @@ void static_mesh_serializer::deserialize(const nlohmann::json& j, static_mesh* o
 {
   assert(out_value != nullptr);
   hittable_serializer::deserialize(j, out_value);
-
-  TRY_PARSE(std::string, j, "file_name", out_value->file_name);
-  TRY_PARSE(int32_t, j, "shape_index", out_value->shape_index);
-  
+    
   nlohmann::json jorigin;
   if (TRY_PARSE(nlohmann::json, j, "origin", jorigin)) { out_value->origin = vec3_serializer::deserialize(jorigin); }
   nlohmann::json jscale;
   if (TRY_PARSE(nlohmann::json, j, "scale", jscale)) { out_value->scale = vec3_serializer::deserialize(jscale); }
   nlohmann::json jrotation;
   if (TRY_PARSE(nlohmann::json, j, "rotation", jrotation)) { out_value->rotation = vec3_serializer::deserialize(jrotation); }
+
+  nlohmann::json jmesh;
+  if (TRY_PARSE(nlohmann::json, j, "mesh_asset", jmesh)) { soft_asset_ptr_base_serializer::deserialize(jmesh, &out_value->mesh_asset); }
 }

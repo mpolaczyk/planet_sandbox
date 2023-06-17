@@ -8,6 +8,9 @@
 
 #include "app/factories.h"
 
+// Forward declaration for std::binary_semaphore
+#pragma warning(disable:4091)
+// warning C4091: 'typedef ': ignored on left of '__int64' when no variable is declared
 namespace std
 {
   class thread;
@@ -16,6 +19,8 @@ namespace std
   class counting_semaphore;
   using binary_semaphore = counting_semaphore<1>;
 }
+#pragma warning(default:4091)
+
 namespace bmp
 {
   struct bmp_image;

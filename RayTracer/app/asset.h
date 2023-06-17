@@ -3,16 +3,27 @@
 #include <vector>
 #include <string>
 
-#include "app/factories.h"
+enum class asset_type : int
+{
+  none = 0,
+  material,
+  texture,
+  static_mesh
+};
 
 // Persistent objects or those having resources on disk
 // Base class for all assets, use like abstract
 class asset
 {
+  friend asset_registry;
+
 public:
-  // Implement in child classes
+  // Implement static functions in child classes!
+  // They are not virtual members on purpose, most of the time when they are needed, there is no instance available
   static asset_type get_static_asset_type();
-  static asset* load(const std::string& name);
+  static asset* load(const std::string& asset_name);
+  static void save(asset* object);
+  static asset* spawn();
 
   void set_runtime_id(int id);
   int get_runtime_id() const;
@@ -23,19 +34,26 @@ public:
 private:
   
   // Can be set only once by the registry, index in the vector
-  // Can't change at runtime
+  // Can't change at runtime, can't be cloned
   int runtime_id = -1;
 };
 
-// TODO exclude asset class, T needs to be a children
-// 
-// Soft asset pointer
+struct soft_asset_ptr_base
+{
+  friend class soft_asset_ptr_base_serializer;
+
+protected:
+  // Persistent name, or the one used to discovery on the disk
+  // Can't change at runtime as I have no dependency update mechanism
+  std::string name;
+};
+// Soft asset pointer - persistent weak sync loading pointer to an asset
 // First get() call will trigger sync load and register asset
 // Second get() call will return cached pointer
 // No ref counting, no ownership
 // set_name can be called multiple times with different values, this will invalidate existing pointer and load different asset
 template<typename T>
-struct soft_asset_ptr
+struct soft_asset_ptr : public soft_asset_ptr_base
 {
   void set_name(const std::string& in_name)
   {
@@ -64,22 +82,20 @@ struct soft_asset_ptr
       if (object == nullptr)
       {
         object = T::load(name);
-        globals::get_asset_registry()->add<T>(object, name);
-      }
-      if (object == nullptr)
-      {
-        logger::critical("Unable to find asset: {0}", name);
-        // TODO future: use default engine material
+        if (object != nullptr)
+        {
+          globals::get_asset_registry()->add<T>(object, name);
+        }
+        else
+        {
+          logger::error("Unable to find asset: {0}", name);
+        }
       }
     }
     return object;
   }
 
 private:
-
-  // Persistent name, or the one used to discovery on the disk
-  // Can't change at runtime as I have no dependency update mechanism
-  std::string name;
 
   mutable T* object = nullptr;
 };
@@ -108,29 +124,35 @@ public:
     return ((id >= 0 && id < assets.size()) && (assets[id] != nullptr));
   }
 
-  // TODO exclude asset class, T needs to be a children
   template<typename T>
-  void add(T* object, const std::string& name)
+  bool add(T* object, const std::string& name)
   {
     if (object->get_static_asset_type() == asset_type::none)
     {
-      assert(false, "Unable to add none object.");
-      return;
+      assert(false); // "Unable to add none object."
+      return false;
     }
     if (object == nullptr)
     {
-      assert(false, "Unable to add nullptr object.");
-      return;
+      assert(false); // "Unable to add nullptr object."
+      return false;
     }
+    // Assets should not be added twice, if this happens it is most likely a programmer error
     if (std::find(begin(assets), end(assets), object) != end(assets))
     {
-      assert(false, "Unable to add object, it is already registered.");
-      return;
+      logger::error("Unable to add asset, it is already registered: {0}", name.c_str());
+      return false;
+    }
+    if (std::find(begin(names), end(names), name) != end(names))
+    {
+      logger::error("Unable to add asset, name is already registered. {0}", name.c_str());
+      return false;
     }
     object->set_runtime_id(assets.size());
     assets.push_back(object);
     names.push_back(name);
     types.push_back(T::get_static_asset_type());
+    return true;
   }
 
   template<typename T>
@@ -178,14 +200,45 @@ public:
     return ans;
   }
 
+  template<typename T>
+  T* clone_asset(int source_runtime_id, const std::string& target_name)
+  {
+    if (!is_valid(source_runtime_id))
+    {
+      logger::error("Unable to clone asset: {0} Unknown source runtime id: {1}", target_name.c_str(), source_runtime_id);
+      return nullptr;
+    }
+    if (types[source_runtime_id] != T::get_static_asset_type())
+    {
+      logger::error("Unable to clone asset: {0} Type mismatch: {1} and {2}", target_name.c_str(), static_cast<int>(types[source_runtime_id]), static_cast<int>(T::get_static_asset_type()));
+      return nullptr;
+    }
+    T* source = static_cast<T*>(assets[source_runtime_id]);  // Risky! no RTTI, no dynamic_cast
+    if (source == nullptr)
+    {
+      logger::error("Unable to clone asset: {0} Invalid source object: {1}", target_name.c_str(), source_runtime_id);
+      return nullptr;
+    }
+    // Shallow copy
+    T* obj = T::spawn();
+    *obj = *source;
+    obj->runtime_id = -1;
+    
+    // Register new one
+    if (add<T>(obj, target_name))
+    {
+      return obj;
+    }
+    return nullptr;
+  }
+
   std::vector<int> get_ids(asset_type type) const;
   std::vector<std::string> get_names(asset_type type) const;
 
 private:
-  // Runtime is an index
+  // Runtime id is an index
   // None of this can change at runtime after is added
   std::vector<std::string> names;
   std::vector<asset_type> types;
   std::vector<asset*> assets;
 };
-

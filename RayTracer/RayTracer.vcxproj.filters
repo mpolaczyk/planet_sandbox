@@ -42,7 +42,7 @@
     <ClCompile Include="app\json\hittables_json.cpp">
       <Filter>app\json</Filter>
     </ClCompile>
-    <ClCompile Include="app\json\materials_json.cpp">
+    <ClCompile Include="app\json\assets_json.cpp">
       <Filter>app\json</Filter>
     </ClCompile>
     <ClCompile Include="app\json\vec3_json.cpp">
@@ -102,8 +102,14 @@
     <ClCompile Include="renderers\preview_faces_renderer.cpp">
       <Filter>renderers</Filter>
     </ClCompile>
-    <ClCompile Include="app\asset.cpp" />
     <ClCompile Include="math\materials.cpp" />
+    <ClCompile Include="math\mesh.cpp" />
+    <ClCompile Include="app\asset_discovery.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="app\asset.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -198,7 +204,7 @@
     <ClInclude Include="app\json\app_json.h">
       <Filter>app\json</Filter>
     </ClInclude>
-    <ClInclude Include="app\json\materials_json.h">
+    <ClInclude Include="app\json\assets_json.h">
       <Filter>app\json</Filter>
     </ClInclude>
     <ClInclude Include="app\json\hittables_json.h">
@@ -240,7 +246,13 @@
     <ClInclude Include="renderers\preview_faces_renderer.h">
       <Filter>renderers</Filter>
     </ClInclude>
-    <ClInclude Include="app\asset.h" />
+    <ClInclude Include="math\mesh.h" />
+    <ClInclude Include="app\asset_discovery.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="app\asset.h">
+      <Filter>app</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="gfx">

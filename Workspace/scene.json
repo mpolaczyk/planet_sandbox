@@ -3,6 +3,7 @@
     "aperture": 0.0,
     "aspect_ratio_h": 1.0,
     "aspect_ratio_w": 1.0,
+    "dist_to_focus": 1.0,
     "field_of_view": 45.0,
     "look_dir": {
       "x": 0.0,
@@ -21,7 +22,7 @@
     "name": 0,
     "objects": [
       {
-        "material_name": "light",
+        "material_asset": { "name": "light" },
         "name": 2,
         "origin": {
           "x": 50.0,
@@ -32,8 +33,8 @@
         "type": 1
       },
       {
-        "file_name": "icosphere3.obj",
-        "material_name": "metal_white",
+        "mesh_asset": { "name": "icosphere3" },
+		"material_asset": { "name": "metal_white" },
         "name": 3,
         "origin": {
           "x": 0.0,
@@ -50,7 +51,6 @@
           "y": 1.0,
           "z": 1.0
         },
-        "shape_index": 0,
         "type": 5
       }
     ],

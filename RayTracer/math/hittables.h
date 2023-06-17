@@ -8,7 +8,7 @@
 #include "app/asset.h"
 
 class material;
-class material_instances;
+class mesh;
 
 constexpr int32_t MAX_LIGHTS = 50;
 
@@ -48,12 +48,12 @@ public:
   virtual void draw_edit_panel();
   virtual uint32_t get_hash() const;
   virtual hittable* clone() const = 0;
-  virtual void load_resources() {};
+  virtual void load_resources();
   virtual void pre_render() {};
 
   // Persistent members
   hittable_type type = hittable_type::scene;
-  soft_asset_ptr<material> material_ptr;
+  soft_asset_ptr<material> material_asset;
 
   // Runtime members
   aabb bounding_box;
@@ -272,15 +272,14 @@ public:
   virtual void pre_render() override;
   
   // Persistent state
-  std::string file_name;
   vec3 origin = { 0,0,0 };
   vec3 scale = { 1,1,1 };
   vec3 rotation = { 0,0,0 };  // degrees
-  int32_t shape_index = 0;
+  soft_asset_ptr<mesh> mesh_asset;
 
   // Runtime state
-  std::vector<triangle_face> faces; // World coordinates.
-  std::vector<triangle_face> asset; // TODO copy for now, but convert to a pointer to a static mesh asset. No world coordinates
+  mesh* runtime_asset;  // Vertices translated to the world coordinates
+   
+
   float extent = 0.0f;
-  bool resources_dirty = true;
 };

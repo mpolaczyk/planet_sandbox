@@ -16,6 +16,7 @@ void draw_raytracer_window(raytracer_window_model& model, app_instance& state)
   if (ImGui::MenuItem("SAVE STATE"))
   {
     state.save_rendering_state();
+    state.save_materials();
   }
   ImGui::Separator();
 
@@ -201,7 +202,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
     material_selection_combo_model m_model;
     if (model.m_model.selected_material_id == -1)
     {
-      const material* mat = selected_obj->material_ptr.get();
+      const material* mat = selected_obj->material_asset.get();
       if (mat != nullptr)
       {
         m_model.selected_material_id = mat->get_runtime_id();
@@ -211,7 +212,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
     if (m_model.selected_material_id != -1)
     {
       std::string selected_name = globals::get_asset_registry()->get_name(m_model.selected_material_id);
-      selected_obj->material_ptr.set_name(selected_name);
+      selected_obj->material_asset.set_name(selected_name);
     }
 
     ImGui::Separator();
@@ -253,7 +254,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
     if (ImGui::Button("Add", ImVec2(120, 0)) && model.hittable != nullptr)
     {
-      model.hittable->material_ptr.set_name(globals::get_asset_registry()->get_name(model.m_model.selected_material_id));
+      model.hittable->material_asset.set_name(globals::get_asset_registry()->get_name(model.m_model.selected_material_id));
       state.scene_root->add(model.hittable);
       model.hittable = nullptr;
       ImGui::CloseCurrentPopup();
@@ -278,8 +279,13 @@ void draw_material_selection_combo(material_selection_combo_model& model, app_in
   std::vector<material*> materials = globals::get_asset_registry()->get_assets<material>();
   material* selected_material = globals::get_asset_registry()->get_asset<material>(model.selected_material_id);
 
-  if (materials.size() > 0 && selected_material != nullptr)
+  if (materials.size() > 0)
   {
+    if (selected_material == nullptr)
+    {
+      selected_material = materials[0];
+      model.selected_material_id = selected_material->get_runtime_id();
+    }
     ImGui::Separator();
     if (ImGui::BeginCombo("Material", selected_material->get_asset_name().c_str()))
     {

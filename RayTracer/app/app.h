@@ -7,7 +7,6 @@ class async_renderer_base;
 class material;
 class hittable;
 class renderer_config;
-class material_instances;
 class scene;
 class camera_config;
 
@@ -110,7 +109,6 @@ public:
   ID3D11ShaderResourceView* output_srv = nullptr;
   ID3D11Texture2D* output_texture = nullptr;
   async_renderer_base* renderer = nullptr;
-  material* default_material = nullptr;
   vec3 center_of_scene;
   float distance_to_center_of_scene = 0.0f;
 
@@ -123,6 +121,8 @@ public:
   void save_scene_state();
   void load_rendering_state();
   void save_rendering_state();
+  void load_materials();
+  void save_materials();
   void load_window_state();
   void save_window_state();
 };

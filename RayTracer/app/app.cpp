@@ -19,7 +19,6 @@ app_instance::app_instance()
 app_instance::~app_instance()
 {
   delete renderer;
-  delete default_material;
   delete scene_root;
   delete camera_conf;
   delete renderer_conf;

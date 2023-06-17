@@ -6,11 +6,24 @@
 
 asset_type asset::get_static_asset_type()
 {
+  assert(false); // Not implemented!
   return asset_type::none;
 }
 
 asset* asset::load(const std::string& name)
 {
+  assert(false); // Not implemented!
+  return nullptr;
+}
+
+void asset::save(asset* object)
+{
+  assert(false); // Not implemented!
+}
+
+asset* spawn()
+{
+  assert(false); // Not implemented!
   return nullptr;
 }
 

@@ -10,7 +10,7 @@ void hittable::get_name(std::string& out_name, bool with_params) const
   std::string base_name = hittable_type_names[(int)type];
   
   std::ostringstream oss;
-  oss << "[" << id << "]" << "/" << base_name << "/" << material_ptr.get_name();
+  oss << "[" << id << "]" << "/" << base_name << "/" << material_asset.get_name();
   out_name = oss.str();
 }
 
@@ -90,7 +90,7 @@ void static_mesh::get_name(std::string& out_name, bool with_params) const
   if (with_params)
   {
     std::ostringstream oss;
-    oss << base_name << "/" << file_name;
+    oss << base_name << "/" << material_asset.get_name();
     out_name = oss.str();
   }
   else
@@ -151,18 +151,14 @@ void static_mesh::draw_edit_panel()
   ImGui::DragFloat3("Rotation", rotation.e);
   ImGui::DragFloat3("Scale", scale.e);
   {
-    assert(file_name.size() <= 256);
+    std::string name = mesh_asset.get_name();
+    assert(name.size() <= 256);
     char* buffer = new char[256];
-    strcpy(buffer, file_name.c_str());
+    strcpy(buffer, name.c_str());
     if (ImGui::InputText("Object file", buffer, 256))
     {
-      file_name = buffer;
-      resources_dirty = true;
+      mesh_asset.set_name(buffer);
     }
     delete[] buffer;
-  }
-  if (ImGui::InputInt("Shape index", &shape_index, 1))
-  {
-    resources_dirty = true;
   }
 }

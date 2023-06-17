@@ -1,7 +1,7 @@
 #pragma once
 
 // Warning!
-// Don't include serializable.h outside of "*_json.h" files. "nlohmann\json.hpp" is heady to compile.
+// Don't include serializable.h outside of "*_json.h" files. "nlohmann\json.hpp" is heavy to compile.
 
 #include "nlohmann\json.hpp"
 

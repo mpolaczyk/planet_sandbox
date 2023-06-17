@@ -5,8 +5,12 @@
 #include "app/json/app_json.h"
 #include "app/json/vec3_json.h"
 #include "app/json/frame_renderer_json.h"
-#include "app/json/materials_json.h"
+#include "app/json/assets_json.h"
 #include "app/json/hittables_json.h"
+
+#include "app/asset.h"
+
+#include "math/materials.h"
 
 nlohmann::json window_config_serializer::serialize(const window_config& value)
 {
@@ -35,6 +39,7 @@ nlohmann::json camera_config_serializer::serialize(const camera_config& value)
   j["aspect_ratio_h"] = value.aspect_ratio_h;
   j["aspect_ratio_w"] = value.aspect_ratio_w;
   j["aperture"] = value.aperture;
+  j["dist_to_focus"] = value.dist_to_focus;
   j["type"] = value.type;
   j["look_from"] = vec3_serializer::serialize(value.look_from);
   j["look_dir"] = vec3_serializer::serialize(value.look_dir);
@@ -62,6 +67,8 @@ camera_config camera_config_serializer::deserialize(const nlohmann::json& j)
 
 void app_instance::load_scene_state()
 {
+  logger::info("Loading: scene");
+
   std::ifstream input_stream(io::get_scene_file_path().c_str());
   nlohmann::json j;
   input_stream >> j;
@@ -77,21 +84,32 @@ void app_instance::load_scene_state()
 
 void app_instance::load_rendering_state()
 {
+  logger::info("Loading: rendering state");
+
   std::ifstream input_stream(io::get_rendering_file_path().c_str());
   nlohmann::json j;
   input_stream >> j;
-
   nlohmann::json jrenderer_conf;
   if (TRY_PARSE(nlohmann::json, j, "renderer_config", jrenderer_conf)) { *renderer_conf = renderer_config_serializer::deserialize(jrenderer_conf); }
+  input_stream.close();  
+}
 
-  nlohmann::json jmaterials;
-  if (TRY_PARSE(nlohmann::json, j, "materials", jmaterials)) { material_instances_serializer::deserialize(jmaterials); }
+void app_instance::load_materials()
+{
+  logger::info("Loading: materials");
 
-  input_stream.close();
+  std::vector<std::string> material_names = io::discover_material_files(false);
+  for (const std::string& name : material_names)
+  {
+    material* temp = material::load(name);
+    globals::get_asset_registry()->add<material>(temp, name);
+  }
 }
 
 void app_instance::load_window_state()
 {
+  logger::info("Loading: window state");
+
   std::ifstream input_stream(io::get_window_file_path().c_str());
   nlohmann::json j;
   input_stream >> j;
@@ -108,6 +126,8 @@ void app_instance::load_window_state()
 
 void app_instance::save_scene_state()
 {
+  logger::info("Saving: scene");
+
   nlohmann::json j;
   j["camera_config"] = camera_config_serializer::serialize(*camera_conf);
   j["scene"] = scene_serializer::serialize(scene_root);
@@ -122,9 +142,10 @@ void app_instance::save_scene_state()
 
 void app_instance::save_rendering_state()
 {
+  logger::info("Saving: rendering state");
+
   nlohmann::json j;
   j["renderer_config"] = renderer_config_serializer::serialize(*renderer_conf);
-  j["materials"] = material_instances_serializer::serialize();
   std::ofstream o(io::get_rendering_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
   if (o.is_open())
@@ -134,8 +155,21 @@ void app_instance::save_rendering_state()
   o.close();
 }
 
+void app_instance::save_materials()
+{
+  logger::info("Saving: materials");
+
+  std::vector<material*> materials = globals::get_asset_registry()->get_assets<material>();
+  for (material* m : materials)
+  {
+    material::save(m);
+  }
+}
+
 void app_instance::save_window_state()
 {
+  logger::info("Saving: window state");
+
   nlohmann::json j;
   j["window"] = window_config_serializer::serialize(window_conf);
   j["auto_render"] = ow_model.auto_render;

@@ -1,0 +1,22 @@
+    {
+      "color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "emitted_color": {
+        "x": 0.6399999856948853,
+        "y": 0.05000000074505806,
+        "z": 0.05000000074505806
+      },
+      "gloss_color": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "gloss_probability": 0.0,
+      "refraction_index": 0.0,
+      "refraction_probability": 0.0,
+      "smoothness": 0.0,
+      "type": 2
+    }

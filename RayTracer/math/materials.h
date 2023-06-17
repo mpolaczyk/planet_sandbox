@@ -1,12 +1,15 @@
 #pragma once
 
 #include "app/asset.h"
+#include "app/factories.h"
 
 class material : public asset
 {
 public:
   static asset_type get_static_asset_type();
-  static material* load(const std::string& name);
+  static material* load(const std::string& material_name);
+  static void save(material* object);
+  static material* spawn();
 
   material() {}
   explicit material(material_type type) : type(type) 
@@ -21,6 +24,7 @@ public:
     id = std::move(id);
   }
  
+  // JSON persistent
   material_type type = material_type::none;
   vec3 color;
   vec3 emitted_color;

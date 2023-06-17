@@ -1,9 +1,10 @@
 #include "stdafx.h"
 
-#include "hittables.h"
 #include "aabb.h"
-#include "materials.h"
 #include "onb.h"
+#include "materials.h"
+#include "mesh.h"
+#include "hittables.h"
 
 int hittable::last_id = 0;
 
@@ -29,6 +30,8 @@ void scene::remove(int object_id)
 
 void scene::build_boxes()
 {
+  logger::trace("Scene: build boxes");
+
   assert(objects.size() > 0);
   // World collisions update
   for (hittable* object : objects)
@@ -40,22 +43,26 @@ void scene::build_boxes()
 
 void scene::update_materials()
 {
+  logger::trace("Scene: update materials");
+
   assert(objects.size() > 0);
 
   // Trigger resource loading for materials.
   // Soft ptr name change may invalidate it.
   for (hittable* obj : objects)
   {
-    obj->material_ptr.get();
+    obj->material_asset.get();
   }
 }
 
 void scene::query_lights()
 {
+  logger::trace("Scene: query lights");
+
   lights_num = 0;
   for (hittable* object : objects)
   {
-    const material* mat = object->material_ptr.get();
+    const material* mat = object->material_asset.get();
     if (mat != nullptr && mat->type == material_type::light)
     {
       lights[lights_num] = object;
@@ -108,7 +115,7 @@ bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hi
 
   out_hit.t = root;
   out_hit.p = in_ray.at(out_hit.t);
-  out_hit.material_ptr = material_ptr.get();
+  out_hit.material_ptr = material_asset.get();
 
   // Normal always against the ray
   vec3 outward_normal = (out_hit.p - origin) / radius;
@@ -154,7 +161,7 @@ bool xy_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
   out_hit.v = (y - y0) / (y1 - y0);
   out_hit.t = t;
   out_hit.front_face = math::flip_normal_if_front_face(in_ray.direction, vec3(0.0f, 0.0f, 1.0f), out_hit.normal);
-  out_hit.material_ptr = material_ptr.get();
+  out_hit.material_ptr = material_asset.get();
   out_hit.p = in_ray.at(t);
   return true;
 }
@@ -172,7 +179,7 @@ bool xz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
   out_hit.v = (z - z0) / (z1 - z0);
   out_hit.t = t;
   out_hit.front_face = math::flip_normal_if_front_face(in_ray.direction, vec3(0.0f, 1.0f, 0.0f), out_hit.normal);
-  out_hit.material_ptr = material_ptr.get();
+  out_hit.material_ptr = material_asset.get();
   out_hit.p = in_ray.at(t);
   return true;
 }
@@ -190,13 +197,15 @@ bool yz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
   out_hit.v = (z - z0) / (z1 - z0);
   out_hit.t = t;
   out_hit.front_face = math::flip_normal_if_front_face(in_ray.direction, vec3(1.0f, 0.0f, 0.0f), out_hit.normal);
-  out_hit.material_ptr = material_ptr.get();
+  out_hit.material_ptr = material_asset.get();
   out_hit.p = in_ray.at(t);
   return true;
 }
 
 bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
+  const std::vector<triangle_face>& faces = runtime_asset->faces;
+
   bool result = false;
   hit_record best_hit;
   int hits = 0;
@@ -223,7 +232,7 @@ bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& o
   if (hits > 0)
   {
     out_hit = best_hit;
-    out_hit.material_ptr = material_ptr.get();
+    out_hit.material_ptr = material_asset.get();
     return true;
   }
 
@@ -417,7 +426,7 @@ bool static_mesh::get_bounding_box(aabb& out_box) const
 
 inline uint32_t hittable::get_hash() const
 {
-  return hash::combine(hash::get(material_ptr.get_name()), (int)type);
+  return hash::combine(hash::get(material_asset.get_name()), (int)type);
 }
 
 inline uint32_t sphere::get_hash() const
@@ -459,7 +468,7 @@ inline uint32_t yz_rect::get_hash() const
 inline uint32_t static_mesh::get_hash() const
 {
   uint32_t a = hash::combine(hittable::get_hash(), hash::get(origin), hash::get(extent), hash::get(rotation));
-  uint32_t b = hash::combine(hash::get(scale), hash::get(resources_dirty), shape_index, shape_index);
+  uint32_t b = hash::combine(hash::get(scale), hash::get(material_asset.get_name()));
   return hash::combine(a, b);
 }
 
@@ -469,13 +478,13 @@ scene* scene::clone() const
   scene* ans = new scene();
   *ans = *this;
   ans->objects.clear();
-  // Deep copy
-  for (const hittable* obj : objects)
-  {
-    hittable* new_obj = obj->clone();
-    ans->objects.push_back(new_obj);
-  }
-  return ans;
+// Deep copy
+for (const hittable* obj : objects)
+{
+  hittable* new_obj = obj->clone();
+  ans->objects.push_back(new_obj);
+}
+return ans;
 }
 
 sphere* sphere::clone() const
@@ -513,9 +522,17 @@ static_mesh* static_mesh::clone() const
   return ans;
 }
 
+void hittable::load_resources()
+{
+  // Materials are loaded on editor startup because I need to show all of them in UI
+  // This is here for consistence:
+  material_asset.get();
+}
 
 void scene::load_resources()
 {
+  logger::trace("Scene: load resources");
+
   assert(objects.size() > 0);
   for (hittable* object : objects)
   {
@@ -526,17 +543,14 @@ void scene::load_resources()
 
 void static_mesh::load_resources()
 {
-  if (resources_dirty && file_name.length() > 0)
-  {
-    asset.clear();
-    bool success = obj_helper::load_obj(file_name, shape_index, asset);
-    resources_dirty = !success;
-  }
+  mesh_asset.get();
 }
 
 
 void scene::pre_render()
 {
+  logger::trace("Scene: pre-render");
+
   assert(objects.size() > 0);
   for (hittable* object : objects)
   {
@@ -547,22 +561,33 @@ void scene::pre_render()
 
 void static_mesh::pre_render()
 {
-  faces.clear();
-  faces = asset;  // clone
-
-  float y_rotation = rotation.y / 180.0f * math::pi;
-
-  // Translate asset vertices to the world coordinates
-  for (int f = 0; f < asset.size(); f++)
+  // Create a temporary object and modify it, reuse it next frame
+  std::ostringstream oss;
+  oss << "temp_" << mesh_asset.get_name() << "_hittable_id_" << id;
+  runtime_asset = globals::get_asset_registry()->find_asset<mesh>(oss.str());
+  if (runtime_asset == nullptr)
   {
-    const triangle_face& in = asset[f];
+    runtime_asset = globals::get_asset_registry()->clone_asset<mesh>(mesh_asset.get()->get_runtime_id(), oss.str());
+  }
+  
+  float y_rotation = rotation.y / 180.0f * math::pi;
+  
+  const std::vector<triangle_face>& mesh_faces = mesh_asset.get()->faces;
+  std::vector<triangle_face>& runtime_faces = runtime_asset->faces;
+  runtime_faces.clear();
+  runtime_faces = mesh_faces;
+  
+  // Translate asset vertices to the world coordinates
+  for (int f = 0; f < mesh_faces.size(); f++)
+  {
+    const triangle_face& in = mesh_faces[f];
     
     // calculate world location for each vertex
     for (size_t vi = 0; vi < 3; ++vi)
     {
-      faces[f].vertices[vi].x = (cosf(y_rotation) * in.vertices[vi].x - sinf(y_rotation) * in.vertices[vi].z) * scale.x + origin.x;
-      faces[f].vertices[vi].y = in.vertices[vi].y * scale.x + origin.y;
-      faces[f].vertices[vi].z = (sinf(y_rotation) * in.vertices[vi].x + cosf(y_rotation) * in.vertices[vi].z) * scale.x + origin.z;
+      runtime_faces[f].vertices[vi].x = (cosf(y_rotation) * in.vertices[vi].x - sinf(y_rotation) * in.vertices[vi].z) * scale.x + origin.x;
+      runtime_faces[f].vertices[vi].y = in.vertices[vi].y * scale.x + origin.y;
+      runtime_faces[f].vertices[vi].z = (sinf(y_rotation) * in.vertices[vi].x + cosf(y_rotation) * in.vertices[vi].z) * scale.x + origin.z;
     }
     
     // convert normals too

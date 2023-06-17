@@ -309,18 +309,27 @@ namespace io
   // Directories
   std::string get_working_dir();
   std::string get_workspace_dir();
-  std::string get_objects_dir();
+  std::string get_content_dir();
+  std::string get_materials_dir();
+  std::string get_meshes_dir();
+  std::string get_textures_dir();
   std::string get_images_dir();
 
   // Files
   std::string get_workspace_file_path(const char* file_name);
   std::string get_images_file_path(const char* file_name);
-  std::string get_objects_file_path(const char* file_name);
+  std::string get_material_file_path(const char* file_name);
+  std::string get_mesh_file_path(const char* file_name);
+  std::string get_texture_file_path(const char* file_name);
   std::string get_window_file_path();
   std::string get_scene_file_path();
   std::string get_rendering_file_path();
   std::string get_imgui_file_path();
   std::string get_render_output_file_path();
+
+  // Asset discovery
+  std::vector<std::string> discover_files(const std::string& path, const std::string& extension, bool include_extension = true);
+  std::vector<std::string> discover_material_files(bool include_extension = true);
 } 
 
 namespace obj_helper

@@ -61,6 +61,7 @@ int main(int, char**)
 
   try
   {
+    logger::init();
     logger::info("Working dir: {0}", io::get_working_dir());
     logger::info("Workspace dir: {0}", io::get_workspace_dir());
 
@@ -111,9 +112,10 @@ int main(int, char**)
 
     // Load persistent state
     app_instance state;
-    state.load_scene_state();
-    state.load_rendering_state();
     state.load_window_state();
+    state.load_rendering_state();
+    state.load_materials();
+    state.load_scene_state();
     state.scene_root->load_resources();
     state.renderer = object_factory::spawn_renderer(state.renderer_conf->type);
     state.renderer->set_config(state.renderer_conf, state.scene_root, state.camera_conf);
@@ -121,6 +123,8 @@ int main(int, char**)
 
     // Auto render on startup
     state.rw_model.rp_model.render_pressed = true;
+
+    logger::info("Loading done, starting the main loop");
 
     // Main loop
     while (state.is_running)
@@ -176,7 +180,7 @@ int main(int, char**)
               delete state.renderer;
               state.renderer = object_factory::spawn_renderer(state.renderer_conf->type);
             }
-
+            logger::info("### New frame using: {0}", state.renderer->get_name().c_str());
             state.scene_root->load_resources();
             state.scene_root->pre_render();
             state.scene_root->build_boxes();

@@ -5,6 +5,7 @@
 #include "math/materials.h"
 #include "math/textures.h"
 #include "math/hittables.h"
+#include "math/mesh.h"
 
 #include "processing/async_renderer_base.h"
 
@@ -15,13 +16,6 @@
 #include "renderers/reference_renderer.h"
 #include "renderers/ispc_renderer.h"
 
-
-material* object_factory::spawn_material(material_type type)
-{
-  if (type == material_type::universal) { return new material(material_type::universal); }
-  else if (type == material_type::light) { return new material(material_type::light); }
-  return nullptr;
-}
 
 async_renderer_base* object_factory::spawn_renderer(renderer_type type)
 {
@@ -51,6 +45,16 @@ hittable* object_factory::spawn_hittable(hittable_type type)
     hittable::last_id++;
   }
   return obj;
+}
+
+material* object_factory::spawn_material(material_type type)
+{
+  return new material(type);
+}
+
+mesh* object_factory::spawn_mesh()
+{
+  return new mesh();
 }
 
 texture* object_factory::spawn_texture(texture_type type)

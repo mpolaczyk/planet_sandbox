@@ -1,20 +1,14 @@
 #include "stdafx.h"
 
 #include "app/factories.h"
+#include "app/asset.h"
 
 #include "app/json/vec3_json.h"
-#include "app/json/materials_json.h"
+#include "app/json/assets_json.h"
 
-nlohmann::json material_instances_serializer::serialize()
-{
-  nlohmann::json jarr = nlohmann::json::array();
-  std::vector<material*> assets = globals::get_asset_registry()->get_assets<material>();
-  for (auto asset : assets)
-  {
-    jarr.push_back(material_serializer::serialize(asset));
-  }
-  return jarr;
-}
+#include "math/materials.h"
+#include "math/mesh.h"
+
 
 nlohmann::json material_serializer::serialize(const material* value)
 {
@@ -28,18 +22,7 @@ nlohmann::json material_serializer::serialize(const material* value)
   j["gloss_probability"] = value->gloss_probability;
   j["refraction_probability"] = value->refraction_probability;
   j["refraction_index"] = value->refraction_index;
-  j["name"] = value->get_asset_name();
   return j;
-}
-
-
-void material_instances_serializer::deserialize(const nlohmann::json& j)
-{
-  for (const auto& element : j)
-  {
-    material* obj = object_factory::spawn_material(element["type"]);
-    material_serializer::deserialize(element, obj);
-  }
 }
 
 void material_serializer::deserialize(const nlohmann::json& j, material* out_value)
@@ -69,11 +52,41 @@ void material_serializer::deserialize(const nlohmann::json& j, material* out_val
   TRY_PARSE(float, j, "refraction_probability", out_value->refraction_probability);
   assert(out_value->refraction_probability >= 0.0f && out_value->refraction_probability <= 1.0f);
   TRY_PARSE(float, j, "refraction_index", out_value->refraction_index);
+}
 
-  std::string name;
-  TRY_PARSE(std::string, j, "name", name);
 
-  // Dirty! No resources to load, so we register asset directly in deserialzier
-  // TODO move it away so that deserializer only deserialzies. But at the same time I don't want to keep name on the asset class.
-  globals::get_asset_registry()->add<material>(out_value, name);
+
+nlohmann::json mesh_serializer::serialize(const mesh* value)
+{
+  assert(value != nullptr);
+  nlohmann::json j;
+  j["shape_index"] = value->shape_index;
+  j["obj_file_name"] = value->obj_file_name;
+  return j;
+}
+
+void mesh_serializer::deserialize(const nlohmann::json& j, mesh* out_value)
+{
+  assert(out_value != nullptr);
+
+  TRY_PARSE(int, j, "shape_index", out_value->shape_index);
+
+  TRY_PARSE(std::string, j, "obj_file_name", out_value->obj_file_name);
+}
+
+
+
+nlohmann::json soft_asset_ptr_base_serializer::serialize(const soft_asset_ptr_base* value)
+{
+  assert(value != nullptr);
+  nlohmann::json j;
+  j["name"] = value->name;
+  return j;
+}
+
+void soft_asset_ptr_base_serializer::deserialize(const nlohmann::json& j, soft_asset_ptr_base* out_value)
+{
+  assert(out_value != nullptr);
+
+  TRY_PARSE(std::string, j, "name", out_value->name);
 }
