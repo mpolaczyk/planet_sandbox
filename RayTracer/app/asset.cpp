@@ -27,6 +27,13 @@ asset* spawn()
   return nullptr;
 }
 
+std::string asset::get_display_name() const
+{
+  std::ostringstream oss;
+  oss << "[" << runtime_id << "] " << asset_type_names[static_cast<int>(get_asset_type())] << ": " << get_asset_name();
+  return oss.str();
+}
+
 void asset::set_runtime_id(int id)
 {
   if (runtime_id == -1)

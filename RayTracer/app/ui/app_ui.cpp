@@ -11,7 +11,7 @@
 
 void draw_raytracer_window(raytracer_window_model& model, app_instance& state)
 {
-  ImGui::Begin("RAYTRACER", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+  ImGui::Begin("RAYTRACER", nullptr);
 
   if (ImGui::MenuItem("SAVE STATE"))
   {
@@ -25,6 +25,7 @@ void draw_raytracer_window(raytracer_window_model& model, app_instance& state)
 
   draw_hotkeys_panel(state);
   draw_renderer_panel(model.rp_model, state);
+  draw_asset_registry_panel(state);
   ImGui::End();
 }
 
@@ -286,7 +287,6 @@ void draw_material_selection_combo(material_selection_combo_model& model, app_in
       selected_material = materials[0];
       model.selected_material_id = selected_material->get_runtime_id();
     }
-    ImGui::Separator();
     if (ImGui::BeginCombo("Material", selected_material->get_asset_name().c_str()))
     {
       for (int i = 0; i < materials.size(); ++i)
@@ -344,4 +344,28 @@ void draw_delete_object_panel(delete_object_panel_model& model, app_instance& st
     }
     ImGui::EndPopup();
   }
+}
+
+void draw_asset_registry_panel(app_instance& state)
+{
+  ImGui::Separator();
+  ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "ASSET REGISTRY");
+  ImGui::Separator();
+
+  const std::vector<asset*>& assets = globals::get_asset_registry()->get_all_assets();
+
+  int num_objects = (int)assets.size();
+  if (ImGui::BeginListBox("Assets", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
+  {
+    for (int n = 0; n < num_objects; n++)
+    {
+      if (ImGui::Selectable(assets[n]->get_display_name().c_str()))
+      {
+        
+      }
+    }
+    ImGui::EndListBox();
+  }
+
+  
 }

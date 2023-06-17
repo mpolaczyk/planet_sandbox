@@ -6,7 +6,7 @@
 std::string material::get_display_name() const
 {
   std::ostringstream oss;
-  oss << "/" << material_type_names[(int)type] << "/" << get_asset_name();
+  oss << asset::get_display_name() << " - " << material_type_names[(int)type];
  return oss.str();
 }
 

@@ -11,6 +11,8 @@ public:
   static void save(material* object);
   static material* spawn();
 
+  virtual std::string get_display_name() const override;
+
   material() {}
   explicit material(material_type type) : type(type) 
   {
@@ -36,6 +38,4 @@ public:
   float refraction_index = 1.0f;
 
   void draw_edit_panel();
-
-  std::string get_display_name() const;
 };

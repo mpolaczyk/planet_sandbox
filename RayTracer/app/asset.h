@@ -10,6 +10,13 @@ enum class asset_type : int
   texture,
   static_mesh
 };
+static inline const char* asset_type_names[] =
+{
+  "None",
+  "Material",
+  "Texture",
+  "Static Mesh"
+};
 
 // Persistent objects or those having resources on disk
 // Base class for all assets, use like abstract
@@ -24,6 +31,8 @@ public:
   static asset* load(const std::string& asset_name);
   static void save(asset* object);
   static asset* spawn();
+
+  virtual std::string get_display_name() const;
 
   void set_runtime_id(int id);
   int get_runtime_id() const;
@@ -200,6 +209,11 @@ public:
     return ans;
   }
 
+  std::vector<asset*> get_all_assets()
+  {
+    return assets;
+  }
+
   template<typename T>
   T* clone_asset(int source_runtime_id, const std::string& target_name)
   {
@@ -210,7 +224,7 @@ public:
     }
     if (types[source_runtime_id] != T::get_static_asset_type())
     {
-      logger::error("Unable to clone asset: {0} Type mismatch: {1} and {2}", target_name.c_str(), static_cast<int>(types[source_runtime_id]), static_cast<int>(T::get_static_asset_type()));
+      logger::error("Unable to clone asset: {0} Type mismatch: {1} and {2}", target_name.c_str(), asset_type_names[static_cast<int>(types[source_runtime_id])], asset_type_names[static_cast<int>(T::get_static_asset_type())]);
       return nullptr;
     }
     T* source = static_cast<T*>(assets[source_runtime_id]);  // Risky! no RTTI, no dynamic_cast
