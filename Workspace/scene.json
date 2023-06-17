@@ -18,11 +18,15 @@
     "type": 7.450580596923828e-08
   },
   "scene": {
-    "material_name": "",
+    "material_asset": {
+      "name": ""
+    },
     "name": 0,
     "objects": [
       {
-        "material_asset": { "name": "light" },
+        "material_asset": {
+          "name": "light"
+        },
         "name": 2,
         "origin": {
           "x": 50.0,
@@ -33,8 +37,12 @@
         "type": 1
       },
       {
-        "mesh_asset": { "name": "icosphere3" },
-		"material_asset": { "name": "metal_white" },
+        "material_asset": {
+          "name": "metal_gold"
+        },
+        "mesh_asset": {
+          "name": "icosphere1"
+        },
         "name": 3,
         "origin": {
           "x": 0.0,

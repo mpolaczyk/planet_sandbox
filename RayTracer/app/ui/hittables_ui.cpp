@@ -90,7 +90,7 @@ void static_mesh::get_name(std::string& out_name, bool with_params) const
   if (with_params)
   {
     std::ostringstream oss;
-    oss << base_name << "/" << material_asset.get_name();
+    oss << base_name << "/" << mesh_asset.get_name();
     out_name = oss.str();
   }
   else

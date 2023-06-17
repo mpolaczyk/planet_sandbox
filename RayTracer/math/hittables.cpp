@@ -204,6 +204,10 @@ bool yz_rect::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_h
 
 bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
 {
+  if (runtime_asset == nullptr || runtime_asset->faces.size() == 0)
+  {
+    return false;
+  }
   const std::vector<triangle_face>& faces = runtime_asset->faces;
 
   bool result = false;
@@ -567,7 +571,14 @@ void static_mesh::pre_render()
   runtime_asset = globals::get_asset_registry()->find_asset<mesh>(oss.str());
   if (runtime_asset == nullptr)
   {
-    runtime_asset = globals::get_asset_registry()->clone_asset<mesh>(mesh_asset.get()->get_runtime_id(), oss.str());
+    if (globals::get_asset_registry()->find_asset<mesh>(mesh_asset.get_name()) != nullptr)
+    {
+      runtime_asset = globals::get_asset_registry()->clone_asset<mesh>(mesh_asset.get()->get_runtime_id(), oss.str());
+    }
+    else
+    {
+      return;
+    }
   }
   
   float y_rotation = rotation.y / 180.0f * math::pi;
