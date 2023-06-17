@@ -8,6 +8,7 @@
 
 #include "math/materials.h"
 #include "math/mesh.h"
+#include "math/textures.h"
 
 
 nlohmann::json material_serializer::serialize(const material* value)
@@ -72,6 +73,28 @@ void mesh_serializer::deserialize(const nlohmann::json& j, mesh* out_value)
   TRY_PARSE(int, j, "shape_index", out_value->shape_index);
 
   TRY_PARSE(std::string, j, "obj_file_name", out_value->obj_file_name);
+}
+
+
+
+nlohmann::json texture_serializer::serialize(const texture* value)
+{
+  assert(value != nullptr);
+  nlohmann::json j;
+  j["width"] = value->width;
+  j["height"] = value->height;
+  j["img_file_name"] = value->img_file_name;
+  return j;
+}
+
+void texture_serializer::deserialize(const nlohmann::json& j, texture* out_value)
+{
+  assert(out_value != nullptr);
+
+  TRY_PARSE(int, j, "width", out_value->width);
+  TRY_PARSE(int, j, "height", out_value->height);
+
+  TRY_PARSE(std::string, j, "img_file_name", out_value->img_file_name);
 }
 
 

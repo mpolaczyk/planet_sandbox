@@ -560,7 +560,7 @@ namespace io
     std::vector<std::string> result;
     for (const auto& entry : std::filesystem::directory_iterator(path))
     {
-      if (entry.is_regular_file() && entry.path().extension().compare(extension))
+      if (entry.is_regular_file() && entry.path().extension() == extension)
       {
         std::string file_name = entry.path().filename().string();
         size_t index = file_name.find_last_of(".");
@@ -572,7 +572,7 @@ namespace io
 
   std::vector<std::string> discover_material_files(bool include_extension)
   {
-    return discover_files(get_materials_dir(), "json", include_extension);
+    return discover_files(get_materials_dir(), ".json", include_extension);
   }
 }
 

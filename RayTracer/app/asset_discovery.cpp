@@ -2,6 +2,8 @@
 
 #include <fstream>
 
+#include "gfx/stb_image.h"
+
 #include "app/asset_discovery.h"
 #include "app/factories.h"
 
@@ -9,6 +11,7 @@
 
 #include "math/materials.h"
 #include "math/mesh.h"
+#include "math/textures.h"
 
 material* asset_discovery::load_material(const std::string& material_name)
 {
@@ -70,6 +73,45 @@ mesh* asset_discovery::load_mesh(const std::string& mesh_name)
   if (!obj_helper::load_obj(obj->obj_file_name, obj->shape_index, obj->faces))
   {
     logger::error("Failed to load object file: {0}", obj->obj_file_name.c_str());
+  }
+
+  return obj;
+}
+
+texture* asset_discovery::load_texture(const std::string& texture_name)
+{
+  logger::debug("Loading texture: {0}", texture_name.c_str());
+
+  std::ostringstream oss;
+  oss << texture_name << ".json";
+  std::string file_path = io::get_texture_file_path(oss.str().c_str());
+  std::ifstream input_stream(file_path.c_str());
+  if (input_stream.fail())
+  {
+    logger::error("Unable to open texture asset: {0}", file_path.c_str());
+    return nullptr;
+  }
+
+  texture* obj = object_factory::spawn_texture();
+  if (obj == nullptr)
+  {
+    logger::error("Failed to spawn texture object.");
+  }
+
+  nlohmann::json j;
+  input_stream >> j;
+  texture_serializer::deserialize(j, obj);
+
+  
+  obj->is_hdr = static_cast<bool>(stbi_is_hdr(file_path.c_str()));
+
+  if (obj->is_hdr)
+  {
+    obj->data_hdr = stbi_loadf(file_path.c_str(), &obj->width, &obj->height, nullptr, STBI_rgb);
+  }
+  else
+  {
+    obj->data_ldr = stbi_load(file_path.c_str(), &obj->width, &obj->height, nullptr, STBI_rgb);
   }
 
   return obj;

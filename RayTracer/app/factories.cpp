@@ -57,10 +57,7 @@ mesh* object_factory::spawn_mesh()
   return new mesh();
 }
 
-texture* object_factory::spawn_texture(texture_type type)
+texture* object_factory::spawn_texture()
 {
-  if (type == texture_type::solid) { return new solid_texture(); }
-  else if (type == texture_type::checker) { return new checker_texture(); }
-  else if (type == texture_type::asset) { return new asset_texture(); }
-  return nullptr;
+  return new texture();
 }

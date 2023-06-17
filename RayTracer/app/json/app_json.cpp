@@ -11,6 +11,7 @@
 #include "app/asset.h"
 
 #include "math/materials.h"
+#include "math/textures.h"
 
 nlohmann::json window_config_serializer::serialize(const window_config& value)
 {
@@ -104,6 +105,16 @@ void app_instance::load_materials()
     material* temp = material::load(name);
     globals::get_asset_registry()->add<material>(temp, name);
   }
+
+
+  // TEMP
+  std::vector<std::string> texture_names = io::discover_files(io::get_textures_dir(), ".json", false);
+  for (const std::string& name : texture_names)
+  {
+    texture* temp = texture::load(name);
+    globals::get_asset_registry()->add<texture>(temp, name);
+  }
+
 }
 
 void app_instance::load_window_state()

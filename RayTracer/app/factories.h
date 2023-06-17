@@ -60,21 +60,6 @@ static inline const char* hittable_type_names[] =
   "Static Mesh"
 };
 
-enum class texture_type
-{
-  none = 0,
-  solid,
-  checker,
-  asset
-};
-static inline const char* texture_type_names[] =
-{
-  "None",
-  "Solid",
-  "Checker",
-  "Asset"
-};
-
 
 class object_factory
 {
@@ -94,5 +79,5 @@ public:
 
   static mesh* spawn_mesh();
 
-  static texture* spawn_texture(texture_type type);
+  static texture* spawn_texture();
 };

@@ -20,6 +20,13 @@ public:
   static void deserialize(const nlohmann::json& j, mesh* out_value);
 };
 
+class texture_serializer
+{
+public:
+  static nlohmann::json serialize(const texture* value);
+  static void deserialize(const nlohmann::json& j, texture* out_value);
+};
+
 class soft_asset_ptr_base_serializer
 {
 public:

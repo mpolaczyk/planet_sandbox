@@ -15,7 +15,7 @@ public:
   std::string obj_file_name;
   int shape_index;
 
-  // OBJ file
+  // OBJ resource
   std::vector<triangle_face> faces;
 };
 

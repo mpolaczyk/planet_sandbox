@@ -2,12 +2,25 @@
 
 #include "imgui.h"
 #include "math/materials.h"
+#include "math/textures.h"
 
 std::string material::get_display_name() const
 {
   std::ostringstream oss;
   oss << asset::get_display_name() << " - " << material_type_names[(int)type];
  return oss.str();
+}
+
+std::string texture::get_display_name() const
+{
+  std::ostringstream oss;
+  std::string quality = "LDR";
+  if (is_hdr)
+  {
+    quality = "HDR";
+  }
+  oss << asset::get_display_name() << " " << width << "x" << height << " " << quality;
+  return oss.str();
 }
 
 void material::draw_edit_panel()

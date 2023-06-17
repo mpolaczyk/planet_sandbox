@@ -30,7 +30,7 @@
     <ClCompile Include="app\ui\hittables_ui.cpp">
       <Filter>app\ui</Filter>
     </ClCompile>
-    <ClCompile Include="app\ui\materials_ui.cpp">
+    <ClCompile Include="app\ui\assets_ui.cpp">
       <Filter>app\ui</Filter>
     </ClCompile>
     <ClCompile Include="app\json\app_json.cpp">
@@ -102,13 +102,20 @@
     <ClCompile Include="renderers\preview_faces_renderer.cpp">
       <Filter>renderers</Filter>
     </ClCompile>
-    <ClCompile Include="math\materials.cpp" />
-    <ClCompile Include="math\mesh.cpp" />
     <ClCompile Include="app\asset_discovery.cpp">
       <Filter>app</Filter>
     </ClCompile>
     <ClCompile Include="app\asset.cpp">
       <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="math\materials.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\mesh.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\textures.cpp">
+      <Filter>math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -246,12 +253,14 @@
     <ClInclude Include="renderers\preview_faces_renderer.h">
       <Filter>renderers</Filter>
     </ClInclude>
-    <ClInclude Include="math\mesh.h" />
     <ClInclude Include="app\asset_discovery.h">
       <Filter>app</Filter>
     </ClInclude>
     <ClInclude Include="app\asset.h">
       <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="math\mesh.h">
+      <Filter>math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
