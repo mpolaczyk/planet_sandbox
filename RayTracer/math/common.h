@@ -330,11 +330,18 @@ namespace io
   // Asset discovery
   std::vector<std::string> discover_files(const std::string& path, const std::string& extension, bool include_extension = true);
   std::vector<std::string> discover_material_files(bool include_extension = true);
+  std::vector<std::string> discover_texture_files(bool include_extension = true);
+  std::vector<std::string> discover_mesh_files(bool include_extension = true);
 } 
 
 namespace obj_helper
 {
   bool load_obj(const std::string& file_name, int shape_index, std::vector<triangle_face>& out_faces);
+}
+class texture;
+namespace img_helper
+{
+  bool load_img(const std::string& file_name, int width, int height, texture* out_texture);
 }
 
 #include "spdlog/spdlog.h"

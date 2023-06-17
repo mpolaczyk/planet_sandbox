@@ -64,6 +64,7 @@ mesh* asset_discovery::load_mesh(const std::string& mesh_name)
   if (obj == nullptr)
   {
     logger::error("Failed to spawn mesh object.");
+    return nullptr;
   }
 
   nlohmann::json j;
@@ -73,6 +74,7 @@ mesh* asset_discovery::load_mesh(const std::string& mesh_name)
   if (!obj_helper::load_obj(obj->obj_file_name, obj->shape_index, obj->faces))
   {
     logger::error("Failed to load object file: {0}", obj->obj_file_name.c_str());
+    return nullptr;
   }
 
   return obj;
@@ -96,22 +98,17 @@ texture* asset_discovery::load_texture(const std::string& texture_name)
   if (obj == nullptr)
   {
     logger::error("Failed to spawn texture object.");
+    return nullptr;
   }
 
   nlohmann::json j;
   input_stream >> j;
   texture_serializer::deserialize(j, obj);
 
-  
-  obj->is_hdr = static_cast<bool>(stbi_is_hdr(file_path.c_str()));
-
-  if (obj->is_hdr)
+  if (!img_helper::load_img(obj->img_file_name, obj->width, obj->height, obj))
   {
-    obj->data_hdr = stbi_loadf(file_path.c_str(), &obj->width, &obj->height, nullptr, STBI_rgb);
-  }
-  else
-  {
-    obj->data_ldr = stbi_load(file_path.c_str(), &obj->width, &obj->height, nullptr, STBI_rgb);
+    logger::error("Failed to load texture file: {0}", obj->img_file_name.c_str());
+    return nullptr;
   }
 
   return obj;

@@ -12,6 +12,7 @@
 
 #include "math/materials.h"
 #include "math/textures.h"
+#include "math/mesh.h"
 
 nlohmann::json window_config_serializer::serialize(const window_config& value)
 {
@@ -95,24 +96,39 @@ void app_instance::load_rendering_state()
   input_stream.close();  
 }
 
-void app_instance::load_materials()
+void app_instance::load_assets()
 {
   logger::info("Loading: materials");
-
   std::vector<std::string> material_names = io::discover_material_files(false);
   for (const std::string& name : material_names)
   {
     material* temp = material::load(name);
-    globals::get_asset_registry()->add<material>(temp, name);
+    if (temp != nullptr)
+    {
+      globals::get_asset_registry()->add<material>(temp, name);
+    }
   }
 
-
-  // TEMP
-  std::vector<std::string> texture_names = io::discover_files(io::get_textures_dir(), ".json", false);
+  logger::info("Loading: textures");
+  std::vector<std::string> texture_names = io::discover_texture_files(false);
   for (const std::string& name : texture_names)
   {
     texture* temp = texture::load(name);
-    globals::get_asset_registry()->add<texture>(temp, name);
+    if (temp != nullptr)
+    {
+      globals::get_asset_registry()->add<texture>(temp, name);
+    }
+  }
+
+  logger::info("Loading: static meshes");
+  std::vector<std::string> mesh_names = io::discover_mesh_files(false);
+  for (const std::string& name : mesh_names)
+  {
+    mesh* temp = mesh::load(name);
+    if (temp != nullptr)
+    {
+      globals::get_asset_registry()->add<mesh>(temp, name);
+    }
   }
 
 }

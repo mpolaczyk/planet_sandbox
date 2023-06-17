@@ -9,6 +9,8 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 
 #include "common.h"
+#include "textures.h"
+#include "gfx/stb_image.h"
 
 namespace math
 {
@@ -574,6 +576,16 @@ namespace io
   {
     return discover_files(get_materials_dir(), ".json", include_extension);
   }
+  
+  std::vector<std::string> discover_texture_files(bool include_extension)
+  {
+    return discover_files(get_textures_dir(), ".json", include_extension);
+  }
+
+  std::vector<std::string> discover_mesh_files(bool include_extension)
+  {
+    return discover_files(get_meshes_dir(), ".json", include_extension);
+  }
 }
 
 namespace obj_helper
@@ -654,6 +666,36 @@ namespace obj_helper
       }
     }
     
+    return true;
+  }
+}
+
+namespace img_helper
+{
+  bool load_img(const std::string& file_name, int width, int height, texture* out_texture)
+  {
+    std::string path = io::get_texture_file_path(file_name.c_str());
+
+    out_texture->is_hdr = static_cast<bool>(stbi_is_hdr(path.c_str()));
+
+    if (out_texture->is_hdr)
+    {
+      out_texture->data_hdr = stbi_loadf(path.c_str(), &width, &height, nullptr, STBI_rgb);
+      if (out_texture->data_hdr == nullptr)
+      {
+        logger::error("Texture file: {0} failed to open", path);
+        return false;
+      }
+    }
+    else
+    {
+      out_texture->data_ldr = stbi_load(path.c_str(), &width, &height, nullptr, STBI_rgb);
+      if (out_texture->data_ldr == nullptr)
+      {
+        logger::error("Texture file: {0} failed to open", path);
+        return false;
+      }
+    }
     return true;
   }
 }

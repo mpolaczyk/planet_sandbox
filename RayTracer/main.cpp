@@ -114,7 +114,7 @@ int main(int, char**)
     app_instance state;
     state.load_window_state();
     state.load_rendering_state();
-    state.load_materials();
+    state.load_assets();
     state.load_scene_state();
     state.scene_root->load_resources();
     state.renderer = object_factory::spawn_renderer(state.renderer_conf->type);

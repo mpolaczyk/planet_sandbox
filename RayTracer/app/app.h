@@ -121,7 +121,7 @@ public:
   void save_scene_state();
   void load_rendering_state();
   void save_rendering_state();
-  void load_materials();
+  void load_assets();
   void save_materials();
   void load_window_state();
   void save_window_state();
