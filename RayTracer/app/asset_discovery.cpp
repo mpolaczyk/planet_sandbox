@@ -74,3 +74,21 @@ mesh* asset_discovery::load_mesh(const std::string& mesh_name)
 
   return obj;
 }
+
+void asset_discovery::save_material(const material* object)
+{
+  assert(object != nullptr);
+
+  nlohmann::json j;
+  j = material_serializer::serialize(object);
+
+  std::ostringstream oss;
+  oss << object->get_asset_name() << ".json";
+  std::ofstream o(io::get_material_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
+  std::string str = j.dump(2);
+  if (o.is_open())
+  {
+    o.write(str.data(), str.length());
+  }
+  o.close();
+}
