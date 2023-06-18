@@ -215,12 +215,13 @@ bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& o
   bool result = false;
   hit_record best_hit;
   int hits = 0;
+  bool can_refract = material_asset.get()->refraction_probability > 0.0f;
   // Multiple triangles can intersect, find the closest one.
   for (int i = 0; i < faces.size(); i++)
   {
     const triangle_face* face = &faces[i];
     hit_record h;
-    if (math::ray_triangle(in_ray, t_min, t_max, face, h))
+    if (math::ray_triangle(in_ray, t_min, t_max, face, h, !can_refract))
     {
       if (hits == 0)
       {

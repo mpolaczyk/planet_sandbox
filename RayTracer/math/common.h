@@ -124,7 +124,7 @@ namespace math
   bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outward_normal, vec3& out_normal);
   vec3 lerp_vec3(const vec3& a, const vec3& b, float f);
   vec3 clamp_vec3(float a, float b, const vec3& f);
-  bool ray_triangle(const ray& ray, float t_min, float t_max, const triangle_face* in_triangle, hit_record& out_hit);
+  bool ray_triangle(const ray& ray, float t_min, float t_max, const triangle_face* in_triangle, hit_record& out_hit, bool drop_backface=false);
   inline bool is_near_zero(const vec3& value)
   {
     return (fabs(value[0]) < very_small_number) && (fabs(value[1]) < very_small_number) && (fabs(value[2]) < very_small_number);

@@ -123,7 +123,7 @@ namespace math
     return ans;
   }
 
-  bool ray_triangle(const ray& in_ray, float t_min, float t_max, const triangle_face* in_triangle, hit_record& out_hit)
+  bool ray_triangle(const ray& in_ray, float t_min, float t_max, const triangle_face* in_triangle, hit_record& out_hit, bool drop_backface)
   {
     assert(in_triangle != nullptr);
     stats::inc_ray_triangle_intersection();
@@ -159,12 +159,12 @@ namespace math
     if ((dot(n, w) < 0))
     {
       out_hit.front_face = true;
-     
     }
     else
     {
       out_hit.front_face = false;
       n = n * -1;
+      if (drop_backface) return false;
     }
 
     // ?

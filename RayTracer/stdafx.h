@@ -28,7 +28,7 @@
 #define USE_PIX 0
 #define USE_SIMD 1
 #define USE_FPEXCEPT 0
-#define USE_STAT 1
+#define USE_STAT 0
 #define USE_TLAS 1
 #endif
 
