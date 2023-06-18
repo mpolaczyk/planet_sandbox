@@ -104,6 +104,7 @@ vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
   int bounces = job_state.renderer_conf->ray_bounces;
   for (int i = 0; i < bounces; ++i)
   {
+    stats::inc_ray();
     hit_record hit;
     if (job_state.scene_root->hit(in_ray, 0.01f, math::infinity, hit))
     {

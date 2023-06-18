@@ -17,15 +17,19 @@
 
 // Defines per build configuration
 #if BUILD_DEBUG
-#define USE_BENCHMARK 1
-#define USE_PIX 1
-#define USE_SIMD 1
-#define USE_FPEXCEPT 1 // Use floating point exceptions. Remember to set /fp:except and /EHa in the compiler setting
+#define USE_BENCHMARK 1   // Use time measurement in benchmark namespace
+#define USE_PIX 1         // Use PIX events in benchmark namespace
+#define USE_SIMD 1        // Use hand crafted SIMD code in math functions
+#define USE_FPEXCEPT 1    // Use floating point exceptions. Remember to set /fp:except and /EHa in the compiler setting
+#define USE_STAT 1        // Use atomic counters in stats namespace
+#define USE_TLAS 1        // Use top level acceleration structure for scene objects
 #elif BUILD_RELEASE
 #define USE_BENCHMARK 1
-#define USE_PIX 1
+#define USE_PIX 0
 #define USE_SIMD 1
 #define USE_FPEXCEPT 0
+#define USE_STAT 1
+#define USE_TLAS 1
 #endif
 
 // Third party defines

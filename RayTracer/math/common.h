@@ -45,6 +45,20 @@ namespace colors
   const int num = 12;
 }
 
+namespace stats
+{
+  void reset();
+  void inc_ray();
+  void inc_ray_triangle_intersection();
+  void inc_ray_box_intersection();
+  void inc_ray_object_intersection();
+
+  uint64_t get_ray_count();
+  uint64_t get_ray_triangle_intersection_count();
+  uint64_t get_ray_box_intersection_count();
+  uint64_t get_ray_object_intersection_count();
+}
+
 namespace math
 {
   const float infinity = HUGE_VALF;

@@ -2,8 +2,6 @@
 
 #include <fstream>
 
-#include "gfx/stb_image.h"
-
 #include "app/asset_discovery.h"
 #include "app/factories.h"
 

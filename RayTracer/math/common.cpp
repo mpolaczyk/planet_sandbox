@@ -4,13 +4,71 @@
 #include <random>
 #include <fstream>
 
+#include "gfx/stb_image.h"
 #include "gfx/tiny_obj_loader.h"
+
+#include "textures.h"
+
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
 #include "common.h"
-#include "textures.h"
-#include "gfx/stb_image.h"
+
+namespace stats
+{
+  static std::atomic<uint64_t> rays{};
+  static std::atomic<uint64_t> ray_triangle_intersection{};
+  static std::atomic<uint64_t> ray_box_intersection{};
+  static std::atomic<uint64_t> ray_object_intersection{};
+
+  void reset()
+  {
+    rays = 0;
+    ray_box_intersection = 0;
+    ray_triangle_intersection = 0;
+    ray_object_intersection = 0;
+  }
+  void inc_ray()
+  {
+#if USE_STAT
+    rays++;
+#endif
+  }
+  void inc_ray_triangle_intersection()
+  {
+#if USE_STAT
+    ray_triangle_intersection++;
+#endif
+  }
+  void inc_ray_box_intersection()
+  {
+#if USE_STAT
+    ray_box_intersection++;
+#endif
+  }
+  void inc_ray_object_intersection()
+  {
+#if USE_STAT
+    ray_object_intersection++;
+#endif
+  }
+  uint64_t get_ray_count()
+  {
+    return rays;
+  }
+  uint64_t get_ray_triangle_intersection_count()
+  {
+    return ray_triangle_intersection;
+  }
+  uint64_t get_ray_box_intersection_count()
+  {
+    return ray_box_intersection;
+  }
+  uint64_t get_ray_object_intersection_count()
+  {
+    return ray_object_intersection;
+  }
+}
 
 namespace math
 {
@@ -68,6 +126,7 @@ namespace math
   bool ray_triangle(const ray& in_ray, float t_min, float t_max, const triangle_face* in_triangle, hit_record& out_hit)
   {
     assert(in_triangle != nullptr);
+    stats::inc_ray_triangle_intersection();
     using namespace math;
 
     // https://graphicscodex.courses.nvidia.com/app.html?page=_rn_rayCst "4. Ray-Triangle Intersection"

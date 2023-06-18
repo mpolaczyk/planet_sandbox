@@ -281,5 +281,5 @@ public:
   mesh* runtime_asset;  // Vertices translated to the world coordinates
    
 
-  float extent = 0.0f;
+  mutable float extent = 0.0f;
 };

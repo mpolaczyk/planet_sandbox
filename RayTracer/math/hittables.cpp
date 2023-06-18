@@ -132,11 +132,13 @@ bool scene::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit
 
   for (hittable* object : objects)
   {
-    // TODO: no hierarchical check, only replacement of the object hit function
-    //if (!object->bounding_box.hit(in_ray, t_min, t_max))
-    //{
-    //  continue;
-    //}
+#if USE_TLAS
+    if (!object->bounding_box.hit(in_ray, t_min, t_max))
+    {
+      continue;
+    }
+#endif USE_TLAS
+    stats::inc_ray_object_intersection();
     if (object->hit(in_ray, t_min, closest_so_far, temp_rec))
     {
       hit_anything = true;
@@ -423,6 +425,21 @@ bool yz_rect::get_bounding_box(aabb& out_box) const
 
 bool static_mesh::get_bounding_box(aabb& out_box) const
 {
+  extent = 0.0f;
+
+  if (runtime_asset != nullptr)
+  {
+    float dist_max = 0.0f;
+    for (const triangle_face& f : runtime_asset->faces)
+    {
+      float dist = math::length(origin - f.vertices[0]);
+      if (dist > dist_max)
+      {
+        dist_max = dist;
+      }
+    }
+    extent = dist_max;
+  }
   out_box = aabb(origin - extent, origin + extent);
   return true;
 }

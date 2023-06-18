@@ -82,6 +82,10 @@ public:
 
   uint64_t get_render_time() const { return job_state.benchmark_render_time; }
   uint64_t get_save_time() const { return job_state.benchmark_save_time; }
+  uint64_t get_ray_count() const { return job_state.ray_count; }
+  uint64_t get_ray_triangle_intersection_count() const { return job_state.ray_triangle_intersection_count; }
+  uint64_t get_ray_box_intersection_count() const { return job_state.ray_box_intersection_count; }
+  uint64_t get_ray_object_intersection_count() const { return job_state.ray_object_intersection_count; }
   uint8_t* get_img_bgr() { return job_state.img_bgr->get_buffer(); }
   uint8_t* get_img_rgb() { return job_state.img_rgb->get_buffer(); }
 
@@ -109,6 +113,10 @@ protected:
 
     uint64_t benchmark_render_time = 0;
     uint64_t benchmark_save_time = 0;
+    uint64_t ray_count = 0;
+    uint64_t ray_triangle_intersection_count = 0;
+    uint64_t ray_box_intersection_count = 0;
+    uint64_t ray_object_intersection_count = 0;
   } job_state; 
 
 private:

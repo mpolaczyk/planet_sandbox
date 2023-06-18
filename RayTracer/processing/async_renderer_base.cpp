@@ -126,9 +126,16 @@ void async_renderer_base::async_job()
     worker_semaphore->acquire();
     if(job_state.requested_stop) { break; }
 
+    stats::reset();
     benchmark::instance benchmark_render;
     benchmark_render.start("Render");
+
     render();
+
+    job_state.ray_count = stats::get_ray_count();
+    job_state.ray_triangle_intersection_count = stats::get_ray_triangle_intersection_count();
+    job_state.ray_box_intersection_count = stats::get_ray_box_intersection_count();
+    job_state.ray_object_intersection_count = stats::get_ray_object_intersection_count();
     job_state.benchmark_render_time = benchmark_render.stop();
 
     if (save_output)

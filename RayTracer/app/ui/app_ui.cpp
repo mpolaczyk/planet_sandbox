@@ -8,6 +8,7 @@
 #include "math/camera.h"
 #include "math/materials.h"
 #include "app/factories.h"
+#include "math/fpexcept.h"
 
 void draw_raytracer_window(raytracer_window_model& model, app_instance& state)
 {
@@ -86,6 +87,23 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
     }
     ImGui::Text("Last render time = %lld [ms]", state.renderer->get_render_time() / 1000);
     ImGui::Text("Last save time = %lld [ms]", state.renderer->get_save_time() / 1000);
+#if USE_STAT
+    uint64_t rc = state.renderer->get_ray_count();
+    uint64_t rtc = state.renderer->get_ray_triangle_intersection_count();
+    uint64_t rbc = state.renderer->get_ray_box_intersection_count();
+    uint64_t roc = state.renderer->get_ray_object_intersection_count();
+    float frc = static_cast<float>(rc);
+    float frtc = static_cast<float>(rtc);
+    float frbc = static_cast<float>(rbc);
+    float froc = static_cast<float>(roc);
+    ImGui::Text("Rays: %lld", rc);
+    {
+      fpexcept::disabled_scope fpe;
+      ImGui::Text("Ray-triangle: %lld  percentage: %f", rtc, frtc / frc);
+      ImGui::Text("Ray-box: %lld percentage: %f", rbc, frbc / frc);
+      ImGui::Text("Ray-object: %lld percentage: %f", roc, froc / frc);
+    }
+#endif
   }
   else
   {
