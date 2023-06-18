@@ -216,6 +216,11 @@ bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& o
   hit_record best_hit;
   int hits = 0;
   bool can_refract = material_asset.get()->refraction_probability > 0.0f;
+  // backface triangles can be dropped if the material is not refracting.
+  // 
+  // TODO: check dot product of face normal and ray direction here instead of dropping inside function
+  // This required mesh with normals which does not work right now.
+  
   // Multiple triangles can intersect, find the closest one.
   for (int i = 0; i < faces.size(); i++)
   {
@@ -426,22 +431,22 @@ bool yz_rect::get_bounding_box(aabb& out_box) const
 
 bool static_mesh::get_bounding_box(aabb& out_box) const
 {
-  extent = 0.0f;
-
+  vec3 mi(0.0f);  // minimum corner
+  vec3 ma(0.0f);  // maximum corner
   if (runtime_asset != nullptr)
   {
-    float dist_max = 0.0f;
     for (const triangle_face& f : runtime_asset->faces)
     {
-      float dist = math::length(origin - f.vertices[0]);
-      if (dist > dist_max)
-      {
-        dist_max = dist;
-      }
+      const vec3& fv = f.vertices[0];
+      if (fv.x < mi.x) { mi.x = fv.x; }
+      if (fv.y < mi.y) { mi.y = fv.y; }
+      if (fv.z < mi.z) { mi.z = fv.z; }
+      if (fv.x > ma.x) { ma.x = fv.x; }
+      if (fv.y > ma.y) { ma.y = fv.y; }
+      if (fv.z > ma.z) { ma.z = fv.z; }
     }
-    extent = dist_max;
   }
-  out_box = aabb(origin - extent, origin + extent);
+  out_box = aabb(mi, ma);
   return true;
 }
 
