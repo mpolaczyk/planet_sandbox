@@ -7,6 +7,10 @@
 
 bool aabb::hit(const ray& in_ray, float t_min, float t_max) const
 {
+  if (minimum == vec3(0.0f) && minimum == vec3(0.0f))
+  {
+    return false;
+  }
   stats::inc_ray_box_intersection();
 #if 0 // USE_SIMD // commented out, non vectorized is faster in that case
   __m128 minod = _mm_div_ps(_mm_sub_ps(minimum.R128, in_ray.origin.R128), in_ray.direction.R128);

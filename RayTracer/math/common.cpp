@@ -147,13 +147,6 @@ namespace math
     const vec3& P = in_ray.origin;
     const vec3& w = in_ray.direction;
 
-    // Plane intersection what is q and a?
-    vec3 q = cross(w, E2);
-    float a = dot(E1, q);
-
-    // Ray parallel or close to the limit of precision?
-    if (fabsf(a) <= small_number) return false;
-
     // Detect backface
     // !!!! it works but should be the opposite! are faces left or right oriented?
     if ((dot(n, w) < 0))
@@ -166,6 +159,13 @@ namespace math
       n = n * -1;
       if (drop_backface) return false;
     }
+
+    // Plane intersection what is q and a?
+    vec3 q = cross(w, E2);
+    float a = dot(E1, q);
+
+    // Ray parallel or close to the limit of precision?
+    if (fabsf(a) <= small_number) return false;
 
     // ?
     const vec3& s = (P - V0) / a;
@@ -193,7 +193,9 @@ namespace math
     // ?
     vec3 barycentric(b[2], b[0], b[1]);
     // this does not work, TODO translate normals?
+    // Vertex normals
     //out_hit.normal = normalize(barycentric[0] * in_triangle->normals[0] + barycentric[1] * in_triangle->normals[1] + barycentric[2] * in_triangle->normals[2]);
+    // Face normals
     out_hit.normal = n;
 
     const vec3& uv = barycentric[0] * in_triangle->UVs[0] + barycentric[1] * in_triangle->UVs[1] + barycentric[2] * in_triangle->UVs[2];
@@ -663,7 +665,7 @@ namespace obj_helper
     std::string error;
     if (!tinyobj::LoadObj(&attributes, &shapes, &materials, &error, path.c_str(), dir.c_str(), true))
     {
-      logger::error("Unable to load object file: {0}", path);
+      logger::error("Unable to load object file: {0} {1}", path, error);
       return false;
     }
     if (shape_index >= shapes.size())
@@ -717,7 +719,7 @@ namespace obj_helper
         float nx = attributes.normals[3 * idx.normal_index + 1];
         float ny = attributes.normals[3 * idx.normal_index + 2];
         float nz = attributes.normals[3 * idx.normal_index + 0];
-        face.normals[vi] = vec3(nx, ny, nz);
+        face.normals[vi] = math::normalize(vec3(nx, ny, nz));
         
         float uvx = attributes.texcoords[2 * idx.texcoord_index + 0];
         float uvy = attributes.texcoords[2 * idx.texcoord_index + 1];
