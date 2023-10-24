@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 
+#include "engine.h"
+
 enum class asset_type : int
 {
   none = 0,
@@ -97,7 +99,7 @@ struct soft_asset_ptr : public soft_asset_ptr_base
         }
         else
         {
-          logger::error("Unable to find asset: {0}", name);
+          LOG_ERROR("Unable to find asset: {0}", name);
         }
       }
     }
@@ -149,12 +151,12 @@ public:
     // Assets should not be added twice, if this happens it is most likely a programmer error
     if (std::find(begin(assets), end(assets), object) != end(assets))
     {
-      logger::error("Unable to add asset, it is already registered: {0}", name.c_str());
+      LOG_ERROR("Unable to add asset, it is already registered: {0}", name.c_str());
       return false;
     }
     if (std::find(begin(names), end(names), name) != end(names))
     {
-      logger::error("Unable to add asset, name is already registered. {0}", name.c_str());
+      LOG_ERROR("Unable to add asset, name is already registered. {0}", name.c_str());
       return false;
     }
     object->set_runtime_id(assets.size());
@@ -219,18 +221,18 @@ public:
   {
     if (!is_valid(source_runtime_id))
     {
-      logger::error("Unable to clone asset: {0} Unknown source runtime id: {1}", target_name.c_str(), source_runtime_id);
+      LOG_ERROR("Unable to clone asset: {0} Unknown source runtime id: {1}", target_name.c_str(), source_runtime_id);
       return nullptr;
     }
     if (types[source_runtime_id] != T::get_static_asset_type())
     {
-      logger::error("Unable to clone asset: {0} Type mismatch: {1} and {2}", target_name.c_str(), asset_type_names[static_cast<int>(types[source_runtime_id])], asset_type_names[static_cast<int>(T::get_static_asset_type())]);
+      LOG_ERROR("Unable to clone asset: {0} Type mismatch: {1} and {2}", target_name.c_str(), asset_type_names[static_cast<int>(types[source_runtime_id])], asset_type_names[static_cast<int>(T::get_static_asset_type())]);
       return nullptr;
     }
     T* source = static_cast<T*>(assets[source_runtime_id]);  // Risky! no RTTI, no dynamic_cast
     if (source == nullptr)
     {
-      logger::error("Unable to clone asset: {0} Invalid source object: {1}", target_name.c_str(), source_runtime_id);
+      LOG_ERROR("Unable to clone asset: {0} Invalid source object: {1}", target_name.c_str(), source_runtime_id);
       return nullptr;
     }
     // Shallow copy

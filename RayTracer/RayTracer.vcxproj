@@ -58,9 +58,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;ImTextureID=ImU64;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;ImTextureID=ImU64;_UNICODE;UNICODE;PLATFORM_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)third_party\json-3.10.5\include;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir)third_party\spdlog-1.x\include;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine;$(SolutionDir)engine\third_party\spdlog-1.x\include;$(ProjectDir)third_party\json-3.10.5\include;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -88,7 +88,7 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;ImTextureID=ImU64;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;ImTextureID=ImU64;_UNICODE;UNICODE;PLATFORM_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <Optimization>Full</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -96,7 +96,7 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>$(ProjectDir)third_party\json-3.10.5\include;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir)third_party\spdlog-1.x\include;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine;$(SolutionDir)engine\third_party\spdlog-1.x\include;$(ProjectDir)third_party\json-3.10.5\include;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -213,7 +213,6 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClInclude Include="math\pdf.h" />
     <ClInclude Include="math\ray.h" />
     <ClInclude Include="math\textures.h" />
-    <ClInclude Include="math\vec3.h" />
     <ClInclude Include="processing\async_renderer_base.h" />
     <ClInclude Include="processing\benchmark.h" />
     <ClInclude Include="processing\chunk_generator.h" />
@@ -244,6 +243,11 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <None Include="..\README.md" />
     <None Include="renderers\trace_ray.ispc" />
     <None Include="renderers\trace_ray.isph" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Engine\Engine.vcxproj">
+      <Project>{b8fe1e9f-e890-496c-84a0-fccaeef9ccb2}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

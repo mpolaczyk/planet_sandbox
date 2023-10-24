@@ -35,7 +35,7 @@ void preview_renderer::render_chunk(const chunk& in_chunk)
   hittable* l = job_state.scene_root->lights[0];
   if(l == nullptr)
   {
-    logger::error("Scene needs at least one light source.");
+    LOG_ERROR("Scene needs at least one light source.");
     return;
   }
   vec3 light = l->get_origin();

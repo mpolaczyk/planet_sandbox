@@ -14,62 +14,6 @@
 
 #include "common.h"
 
-namespace stats
-{
-  static std::atomic<uint64_t> rays{};
-  static std::atomic<uint64_t> ray_triangle_intersection{};
-  static std::atomic<uint64_t> ray_box_intersection{};
-  static std::atomic<uint64_t> ray_object_intersection{};
-
-  void reset()
-  {
-    rays = 0;
-    ray_box_intersection = 0;
-    ray_triangle_intersection = 0;
-    ray_object_intersection = 0;
-  }
-  void inc_ray()
-  {
-#if USE_STAT
-    rays++;
-#endif
-  }
-  void inc_ray_triangle_intersection()
-  {
-#if USE_STAT
-    ray_triangle_intersection++;
-#endif
-  }
-  void inc_ray_box_intersection()
-  {
-#if USE_STAT
-    ray_box_intersection++;
-#endif
-  }
-  void inc_ray_object_intersection()
-  {
-#if USE_STAT
-    ray_object_intersection++;
-#endif
-  }
-  uint64_t get_ray_count()
-  {
-    return rays;
-  }
-  uint64_t get_ray_triangle_intersection_count()
-  {
-    return ray_triangle_intersection;
-  }
-  uint64_t get_ray_box_intersection_count()
-  {
-    return ray_box_intersection;
-  }
-  uint64_t get_ray_object_intersection_count()
-  {
-    return ray_object_intersection;
-  }
-}
-
 namespace math
 {
   float reflectance(float cosine, float ref_idx)
@@ -430,224 +374,9 @@ namespace tone_mapping
   }
 }
 
-namespace hash
-{
-  uint32_t combine(uint32_t a, uint32_t b)
-  {
-    uint32_t c = 0x9e3779b9;
-    a += c;
-
-    a -= c; a -= b; a ^= (b >> 13);
-    c -= b; c -= a; c ^= (a << 8);
-    b -= a; b -= c; b ^= (c >> 13);
-    a -= c; a -= b; a ^= (b >> 12);
-    c -= b; c -= a; c ^= (a << 16);
-    b -= a; b -= c; b ^= (c >> 5);
-    a -= c; a -= b; a ^= (b >> 3);
-    c -= b; c -= a; c ^= (a << 10);
-    b -= a; b -= c; b ^= (c >> 15);
-
-    return b;
-  }
-  uint32_t combine(uint32_t a, uint32_t b, uint32_t c, uint32_t d)
-  {
-    return combine(combine(a, b), combine(c, d));
-  }
-  uint32_t get(uint64_t a)
-  {
-    return (uint32_t)a + ((uint32_t)(a >> 32) * 23);
-  }
-  uint32_t get(int64_t a)
-  {
-    return (uint32_t)a + ((uint32_t)(a >> 32) * 23);
-  }
-  uint32_t get(float a)
-  {
-    return reinterpret_cast<uint32_t&>(a);
-  }
-  uint32_t get(double a)
-  {
-    return get(reinterpret_cast<uint64_t&>(a));
-  }
-  uint32_t get(const void* a)
-  {
-    return get(reinterpret_cast<size_t>(a));
-  }
-  uint32_t get(void* a)
-  {
-    return get(reinterpret_cast<size_t>(a));
-  }
-  uint32_t get(bool a)
-  {
-    return (uint32_t)a;
-  }
-  uint32_t get(const vec3& a)
-  {
-    return combine(get(a.x), get(a.y), get(a.z), get(a.padding));
-  }
-  uint32_t get(const std::string& a)
-  {
-    return static_cast<uint32_t>(std::hash<std::string>{}(a));
-  }
-}
-
-namespace io
-{
-  std::string get_working_dir()
-  {
-    std::string current_dir = std::filesystem::current_path().string();
-    std::ostringstream oss;
-    oss << current_dir << "\\";
-    return oss.str();
-  }
-
-  std::string get_workspace_dir()
-  {
-    std::string working_dir = get_working_dir();
-    std::ostringstream oss;
-    oss << working_dir << "..\\..\\Workspace\\";
-    return oss.str();
-  }
-
-  std::string get_content_dir()
-  {
-    std::string workspace_dir = get_workspace_dir();
-    std::ostringstream oss;
-    oss << workspace_dir << "Content\\";
-    return oss.str();
-  }
-
-  std::string get_materials_dir()
-  {
-    std::string content_dir = get_content_dir();
-    std::ostringstream oss;
-    oss << content_dir << "Materials\\";
-    return oss.str();
-  }
-
-  std::string get_meshes_dir()
-  {
-    std::string content_dir = get_content_dir();
-    std::ostringstream oss;
-    oss << content_dir << "Meshes\\";
-    return oss.str();
-  }
-
-  std::string get_textures_dir()
-  {
-    std::string content_dir = get_content_dir();
-    std::ostringstream oss;
-    oss << content_dir << "Textures\\";
-    return oss.str();
-  }
-
-  std::string get_images_dir()
-  {
-    std::string workspace_dir = get_workspace_dir();
-    std::ostringstream oss;
-    oss << workspace_dir << "Images\\";
-    return oss.str();
-  }
 
 
-  std::string get_workspace_file_path(const char* file_name)
-  {
-    std::string workspace_dir = get_workspace_dir();
-    std::ostringstream oss;
-    oss << workspace_dir << file_name;
-    return oss.str();
-  }
 
-  std::string get_images_file_path(const char* file_name)
-  {
-    std::string images_dir = get_images_dir();
-    std::ostringstream oss;
-    oss << images_dir << file_name;
-    return oss.str();
-  }
-
-  std::string get_material_file_path(const char* file_name)
-  {
-    std::string materials_dir = get_materials_dir();
-    std::ostringstream oss;
-    oss << materials_dir << file_name;
-    return oss.str();
-  }
-
-  std::string get_mesh_file_path(const char* file_name)
-  {
-    std::string meshes_dir = get_meshes_dir();
-    std::ostringstream oss;
-    oss << meshes_dir << file_name;
-    return oss.str();
-  }
-
-  std::string get_texture_file_path(const char* file_name)
-  {
-    std::string textures_dir = get_textures_dir();
-    std::ostringstream oss;
-    oss << textures_dir << file_name;
-    return oss.str();
-  }
-
-  std::string get_window_file_path()
-  {
-    return get_workspace_file_path("window.json");
-  }
-
-  std::string get_scene_file_path()
-  {
-    return get_workspace_file_path("scene.json");
-  }
-
-  std::string get_rendering_file_path()
-  {
-    return get_workspace_file_path("rendering.json");
-  }
-
-  std::string get_imgui_file_path()
-  {
-    return get_workspace_file_path("imgui.ini");
-  }
-
-  std::string get_render_output_file_path()
-  {
-    std::time_t t = std::time(nullptr);
-    std::ostringstream oss;
-    oss << "output_" << t << ".bmp";
-    return get_images_file_path(oss.str().c_str());
-  }
-
-  std::vector<std::string> discover_files(const std::string& path, const std::string& extension, bool include_extension)
-  {
-    std::vector<std::string> result;
-    for (const auto& entry : std::filesystem::directory_iterator(path))
-    {
-      if (entry.is_regular_file() && entry.path().extension() == extension)
-      {
-        std::string file_name = entry.path().filename().string();
-        size_t index = file_name.find_last_of(".");
-        result.push_back(file_name.substr(0, index));
-      }
-    }
-    return result;
-  }
-
-  std::vector<std::string> discover_material_files(bool include_extension)
-  {
-    return discover_files(get_materials_dir(), ".json", include_extension);
-  }
-  
-  std::vector<std::string> discover_texture_files(bool include_extension)
-  {
-    return discover_files(get_textures_dir(), ".json", include_extension);
-  }
-
-  std::vector<std::string> discover_mesh_files(bool include_extension)
-  {
-    return discover_files(get_meshes_dir(), ".json", include_extension);
-  }
-}
 
 namespace obj_helper
 {
@@ -659,18 +388,18 @@ namespace obj_helper
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials; // not implemented
 
-    std::string dir = io::get_meshes_dir();
-    std::string path = io::get_mesh_file_path(file_name.c_str());
+    std::string dir = engine::io::get_meshes_dir();
+    std::string path = engine::io::get_mesh_file_path(file_name.c_str());
 
     std::string error;
     if (!tinyobj::LoadObj(&attributes, &shapes, &materials, &error, path.c_str(), dir.c_str(), true))
     {
-      logger::error("Unable to load object file: {0} {1}", path, error);
+      LOG_ERROR("Unable to load object file: {0} {1}", path, error);
       return false;
     }
     if (shape_index >= shapes.size())
     {
-      logger::error("Object file: {0} does not have shape index: {1}", path, shape_index);
+      LOG_ERROR("Object file: {0} does not have shape index: {1}", path, shape_index);
       return false;
     }
 
@@ -678,7 +407,7 @@ namespace obj_helper
     size_t num_faces = shape.mesh.num_face_vertices.size();
     if (num_faces == 0)
     {
-      logger::error("Object file: {0} has no faces", path);
+      LOG_ERROR("Object file: {0} has no faces", path);
       return false;
     }
     out_faces.reserve(num_faces);
@@ -697,17 +426,17 @@ namespace obj_helper
 
         if (idx.vertex_index == -1)
         {
-          logger::error("Object file: {0} faces not found", file_name);
+          LOG_ERROR("Object file: {0} faces not found", file_name);
           return false;
         }
         if (idx.normal_index == -1)
         {
-          logger::error("Object file: {0} normals not found", file_name);
+          LOG_ERROR("Object file: {0} normals not found", file_name);
           return false;
         }
         if (idx.texcoord_index == -1)
         {
-          logger::error("Object file: {0} UVs not found", file_name);
+          LOG_ERROR("Object file: {0} UVs not found", file_name);
           return false;
         }
 
@@ -735,7 +464,7 @@ namespace img_helper
 {
   bool load_img(const std::string& file_name, int width, int height, texture* out_texture)
   {
-    std::string path = io::get_texture_file_path(file_name.c_str());
+    std::string path = engine::io::get_texture_file_path(file_name.c_str());
 
     out_texture->is_hdr = static_cast<bool>(stbi_is_hdr(path.c_str()));
 
@@ -744,7 +473,7 @@ namespace img_helper
       out_texture->data_hdr = stbi_loadf(path.c_str(), &width, &height, nullptr, STBI_rgb);
       if (out_texture->data_hdr == nullptr)
       {
-        logger::error("Texture file: {0} failed to open", path);
+        LOG_ERROR("Texture file: {0} failed to open", path);
         return false;
       }
     }
@@ -753,7 +482,7 @@ namespace img_helper
       out_texture->data_ldr = stbi_load(path.c_str(), &width, &height, nullptr, STBI_rgb);
       if (out_texture->data_ldr == nullptr)
       {
-        logger::error("Texture file: {0} failed to open", path);
+        LOG_ERROR("Texture file: {0} failed to open", path);
         return false;
       }
     }
@@ -761,30 +490,3 @@ namespace img_helper
   }
 }
 
-namespace logger
-{
-  void init()
-  {
-    std::vector<spdlog::sink_ptr> sinks;
-    sinks.push_back(std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>());
-    //sinks.push_back(std::make_shared<spdlog::sinks::?>("logfile", 23, 59)); // TODO log to file
-    auto combined_logger = std::make_shared<spdlog::logger>("console", begin(sinks), end(sinks));
-    spdlog::register_logger(combined_logger);
-
-    spdlog::flush_every(std::chrono::seconds(3));
-#if BUILD_DEBUG
-    spdlog::set_level(spdlog::level::trace);
-#elif BUILD_RELEASE
-    spdlog::set_level(spdlog::level::info);
-#endif
-    spdlog::set_pattern("[%H:%M:%S.%e] [thread %t] [%^%l%$] %v");
-
-    // Test
-    // logger::trace("trace");
-    // logger::debug("debug");
-    // logger::info("info");
-    // logger::warn("warn");
-    // logger::error("error");
-    // logger::critical("critical");
-  }
-}

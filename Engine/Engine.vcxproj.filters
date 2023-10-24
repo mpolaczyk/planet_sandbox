@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="engine.h" />
+    <ClInclude Include="core\application.h" />
+    <ClInclude Include="core\core.h" />
+    <ClInclude Include="core\entry_point.h" />
+    <ClInclude Include="engine\hash.h" />
+    <ClInclude Include="engine\io.h" />
+    <ClInclude Include="engine\log.h" />
+    <ClInclude Include="engine\math.h" />
+    <ClInclude Include="engine\colors.h" />
+    <ClInclude Include="engine\random.h" />
+    <ClInclude Include="engine\stats.h" />
+    <ClInclude Include="engine\vec3.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="core\application.cpp" />
+    <ClCompile Include="engine\io.cpp" />
+    <ClCompile Include="engine\log.cpp" />
+    <ClCompile Include="engine\colors.cpp" />
+    <ClCompile Include="engine\math.cpp" />
+    <ClCompile Include="engine\random.cpp" />
+    <ClCompile Include="engine\stats.cpp" />
+    <ClCompile Include="engine\hash.cpp" />
+  </ItemGroup>
+</Project>

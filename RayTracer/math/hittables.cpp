@@ -30,7 +30,7 @@ void scene::remove(int object_id)
 
 void scene::build_boxes()
 {
-  logger::trace("Scene: build boxes");
+  LOG_TRACE("Scene: build boxes");
 
   assert(objects.size() > 0);
   // World collisions update
@@ -43,7 +43,7 @@ void scene::build_boxes()
 
 void scene::update_materials()
 {
-  logger::trace("Scene: update materials");
+  LOG_TRACE("Scene: update materials");
 
   assert(objects.size() > 0);
 
@@ -57,7 +57,7 @@ void scene::update_materials()
 
 void scene::query_lights()
 {
-  logger::trace("Scene: query lights");
+  LOG_TRACE("Scene: query lights");
 
   lights_num = 0;
   for (hittable* object : objects)
@@ -72,7 +72,7 @@ void scene::query_lights()
   }
   if (lights_num == 0)
   {
-    logger::warn("No lights detected.");
+    LOG_WARN("No lights detected.");
   }
 }
 
@@ -450,7 +450,6 @@ bool static_mesh::get_bounding_box(aabb& out_box) const
   return true;
 }
 
-
 inline uint32_t hittable::get_hash() const
 {
   return hash::combine(hash::get(material_asset.get_name()), (int)type);
@@ -558,7 +557,7 @@ void hittable::load_resources()
 
 void scene::load_resources()
 {
-  logger::trace("Scene: load resources");
+  LOG_TRACE("Scene: load resources");
 
   assert(objects.size() > 0);
   for (hittable* object : objects)
@@ -576,7 +575,7 @@ void static_mesh::load_resources()
 
 void scene::pre_render()
 {
-  logger::trace("Scene: pre-render");
+  LOG_TRACE("Scene: pre-render");
 
   assert(objects.size() > 0);
   for (hittable* object : objects)
@@ -616,7 +615,7 @@ void static_mesh::pre_render()
   {
     const triangle_face& in = mesh_faces[f];
     
-    // calculate world location for each vertex
+    // Calculate world location for each vertex
     for (size_t vi = 0; vi < 3; ++vi)
     {
       runtime_faces[f].vertices[vi].x = (cosf(y_rotation) * in.vertices[vi].x - sinf(y_rotation) * in.vertices[vi].z) * scale.x + origin.x;
@@ -624,12 +623,19 @@ void static_mesh::pre_render()
       runtime_faces[f].vertices[vi].z = (sinf(y_rotation) * in.vertices[vi].x + cosf(y_rotation) * in.vertices[vi].z) * scale.x + origin.z;
     }
     
-    // convert normals too
+    // Vertex normals
+    for (size_t ni = 0; ni < 3; ++ni)
+    {
+      runtime_faces[f].normals[ni].x = in.normals[ni].x;
+      runtime_faces[f].normals[ni].y = in.normals[ni].y;
+      runtime_faces[f].normals[ni].z = in.normals[ni].z;
+    }
+
     //for (size_t ni = 0; ni < 3; ++ni)
     //{
-    //  faces[f].normals[ni].x = (cosf(rotation.y) * in.normals[ni].x - sinf(rotation.y) * in.normals[ni].z);
-    //  faces[f].normals[ni].y = in.normals[ni].y;
-    //  faces[f].normals[ni].z = (sinf(rotation.y) * in.normals[ni].x + cosf(rotation.y) * in.normals[ni].z);
+    //  runtime_faces[f].normals[ni].x = (cosf(y_rotation) * in.normals[ni].x - sinf(y_rotation) * in.normals[ni].z) * scale.x + origin.x;
+    //  runtime_faces[f].normals[ni].y = in.normals[ni].y * scale.x + origin.y;
+    //  runtime_faces[f].normals[ni].z = (sinf(y_rotation) * in.normals[ni].x + cosf(y_rotation) * in.normals[ni].z) * scale.x + origin.z;
     //}
   }
 }

@@ -69,9 +69,9 @@ camera_config camera_config_serializer::deserialize(const nlohmann::json& j)
 
 void app_instance::load_scene_state()
 {
-  logger::info("Loading: scene");
+  LOG_INFO("Loading: scene");
 
-  std::ifstream input_stream(io::get_scene_file_path().c_str());
+  std::ifstream input_stream(engine::io::get_scene_file_path().c_str());
   nlohmann::json j;
   input_stream >> j;
 
@@ -86,9 +86,9 @@ void app_instance::load_scene_state()
 
 void app_instance::load_rendering_state()
 {
-  logger::info("Loading: rendering state");
+  LOG_INFO("Loading: rendering state");
 
-  std::ifstream input_stream(io::get_rendering_file_path().c_str());
+  std::ifstream input_stream(engine::io::get_rendering_file_path().c_str());
   nlohmann::json j;
   input_stream >> j;
   nlohmann::json jrenderer_conf;
@@ -98,8 +98,8 @@ void app_instance::load_rendering_state()
 
 void app_instance::load_assets()
 {
-  logger::info("Loading: materials");
-  std::vector<std::string> material_names = io::discover_material_files(false);
+  LOG_INFO("Loading: materials");
+  std::vector<std::string> material_names = engine::io::discover_material_files(false);
   for (const std::string& name : material_names)
   {
     material* temp = material::load(name);
@@ -109,8 +109,8 @@ void app_instance::load_assets()
     }
   }
 
-  logger::info("Loading: textures");
-  std::vector<std::string> texture_names = io::discover_texture_files(false);
+  LOG_INFO("Loading: textures");
+  std::vector<std::string> texture_names = engine::io::discover_texture_files(false);
   for (const std::string& name : texture_names)
   {
     texture* temp = texture::load(name);
@@ -120,8 +120,8 @@ void app_instance::load_assets()
     }
   }
 
-  logger::info("Loading: static meshes");
-  std::vector<std::string> mesh_names = io::discover_mesh_files(false);
+  LOG_INFO("Loading: static meshes");
+  std::vector<std::string> mesh_names = engine::io::discover_mesh_files(false);
   for (const std::string& name : mesh_names)
   {
     mesh* temp = mesh::load(name);
@@ -135,9 +135,9 @@ void app_instance::load_assets()
 
 void app_instance::load_window_state()
 {
-  logger::info("Loading: window state");
+  LOG_INFO("Loading: window state");
 
-  std::ifstream input_stream(io::get_window_file_path().c_str());
+  std::ifstream input_stream(engine::io::get_window_file_path().c_str());
   nlohmann::json j;
   input_stream >> j;
 
@@ -153,12 +153,12 @@ void app_instance::load_window_state()
 
 void app_instance::save_scene_state()
 {
-  logger::info("Saving: scene");
+  LOG_INFO("Saving: scene");
 
   nlohmann::json j;
   j["camera_config"] = camera_config_serializer::serialize(*camera_conf);
   j["scene"] = scene_serializer::serialize(scene_root);
-  std::ofstream o(io::get_scene_file_path().c_str(), std::ios_base::out | std::ios::binary);
+  std::ofstream o(engine::io::get_scene_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
   if (o.is_open())
   {
@@ -169,11 +169,11 @@ void app_instance::save_scene_state()
 
 void app_instance::save_rendering_state()
 {
-  logger::info("Saving: rendering state");
+  LOG_INFO("Saving: rendering state");
 
   nlohmann::json j;
   j["renderer_config"] = renderer_config_serializer::serialize(*renderer_conf);
-  std::ofstream o(io::get_rendering_file_path().c_str(), std::ios_base::out | std::ios::binary);
+  std::ofstream o(engine::io::get_rendering_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
   if (o.is_open())
   {
@@ -184,7 +184,7 @@ void app_instance::save_rendering_state()
 
 void app_instance::save_materials()
 {
-  logger::info("Saving: materials");
+  LOG_INFO("Saving: materials");
 
   std::vector<material*> materials = globals::get_asset_registry()->get_assets<material>();
   for (material* m : materials)
@@ -195,13 +195,13 @@ void app_instance::save_materials()
 
 void app_instance::save_window_state()
 {
-  logger::info("Saving: window state");
+  LOG_INFO("Saving: window state");
 
   nlohmann::json j;
   j["window"] = window_config_serializer::serialize(window_conf);
   j["auto_render"] = ow_model.auto_render;
   j["zoom"] = ow_model.zoom;
-  std::ofstream o(io::get_window_file_path().c_str(), std::ios_base::out | std::ios::binary);
+  std::ofstream o(engine::io::get_window_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
   if (o.is_open())
   {

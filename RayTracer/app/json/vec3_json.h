@@ -1,7 +1,7 @@
 #pragma once
 
 #include "app/json/serializable.h"
-#include "math/vec3.h"
+#include "engine/vec3.h"
 
 class vec3_serializer : serializable<nlohmann::json>
 {

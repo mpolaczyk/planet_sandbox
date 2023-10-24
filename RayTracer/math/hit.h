@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vec3.h"
+#include "engine/vec3.h"
 
 class material;
 class hittable;

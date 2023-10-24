@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ray.h"
-#include "vec3.h"
+#include "engine/vec3.h"
 
 class aabb 
 {

@@ -13,15 +13,15 @@
 
 material* asset_discovery::load_material(const std::string& material_name)
 {
-  logger::debug("Loading material: {0}", material_name.c_str());
+  LOG_DEBUG("Loading material: {0}", material_name.c_str());
 
   std::ostringstream oss;
   oss << material_name << ".json";
-  std::string file_path = io::get_material_file_path(oss.str().c_str());
+  std::string file_path = engine::io::get_material_file_path(oss.str().c_str());
   std::ifstream input_stream(file_path.c_str());
   if (input_stream.fail())
   {
-    logger::error("Unable to open material asset: {0}", file_path.c_str());
+    LOG_ERROR("Unable to open material asset: {0}", file_path.c_str());
     return nullptr;
   }
 
@@ -36,7 +36,7 @@ material* asset_discovery::load_material(const std::string& material_name)
   material* obj = object_factory::spawn_material(type);
   if (obj == nullptr)
   {
-    logger::error("Invalid material type: {0}", static_cast<int>(type));
+    LOG_ERROR("Invalid material type: {0}", static_cast<int>(type));
   }
 
   material_serializer::deserialize(j, obj);
@@ -46,22 +46,22 @@ material* asset_discovery::load_material(const std::string& material_name)
 
 mesh* asset_discovery::load_mesh(const std::string& mesh_name)
 {
-  logger::debug("Loading mesh: {0}", mesh_name.c_str());
+  LOG_DEBUG("Loading mesh: {0}", mesh_name.c_str());
 
   std::ostringstream oss;
   oss << mesh_name << ".json";
-  std::string file_path = io::get_mesh_file_path(oss.str().c_str());
+  std::string file_path = engine::io::get_mesh_file_path(oss.str().c_str());
   std::ifstream input_stream(file_path.c_str());
   if (input_stream.fail())
   {
-    logger::error("Unable to open mesh asset: {0}", file_path.c_str());
+    LOG_ERROR("Unable to open mesh asset: {0}", file_path.c_str());
     return nullptr;
   }
 
   mesh* obj = object_factory::spawn_mesh();
   if (obj == nullptr)
   {
-    logger::error("Failed to spawn mesh object.");
+    LOG_ERROR("Failed to spawn mesh object.");
     return nullptr;
   }
 
@@ -71,7 +71,7 @@ mesh* asset_discovery::load_mesh(const std::string& mesh_name)
 
   if (!obj_helper::load_obj(obj->obj_file_name, obj->shape_index, obj->faces))
   {
-    logger::error("Failed to load object file: {0}", obj->obj_file_name.c_str());
+    LOG_ERROR("Failed to load object file: {0}", obj->obj_file_name.c_str());
     return nullptr;
   }
 
@@ -80,22 +80,22 @@ mesh* asset_discovery::load_mesh(const std::string& mesh_name)
 
 texture* asset_discovery::load_texture(const std::string& texture_name)
 {
-  logger::debug("Loading texture: {0}", texture_name.c_str());
+  LOG_DEBUG("Loading texture: {0}", texture_name.c_str());
 
   std::ostringstream oss;
   oss << texture_name << ".json";
-  std::string file_path = io::get_texture_file_path(oss.str().c_str());
+  std::string file_path = engine::io::get_texture_file_path(oss.str().c_str());
   std::ifstream input_stream(file_path.c_str());
   if (input_stream.fail())
   {
-    logger::error("Unable to open texture asset: {0}", file_path.c_str());
+    LOG_ERROR("Unable to open texture asset: {0}", file_path.c_str());
     return nullptr;
   }
 
   texture* obj = object_factory::spawn_texture();
   if (obj == nullptr)
   {
-    logger::error("Failed to spawn texture object.");
+    LOG_ERROR("Failed to spawn texture object.");
     return nullptr;
   }
 
@@ -105,7 +105,7 @@ texture* asset_discovery::load_texture(const std::string& texture_name)
 
   if (!img_helper::load_img(obj->img_file_name, obj->width, obj->height, obj))
   {
-    logger::error("Failed to load texture file: {0}", obj->img_file_name.c_str());
+    LOG_ERROR("Failed to load texture file: {0}", obj->img_file_name.c_str());
     return nullptr;
   }
 
@@ -121,7 +121,7 @@ void asset_discovery::save_material(const material* object)
 
   std::ostringstream oss;
   oss << object->get_asset_name() << ".json";
-  std::ofstream o(io::get_material_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
+  std::ofstream o(engine::io::get_material_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
   if (o.is_open())
   {

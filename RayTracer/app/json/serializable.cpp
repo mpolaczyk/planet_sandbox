@@ -12,11 +12,11 @@ bool try_parse(const nlohmann::json& j, const std::string& key, T& out_value, co
   }
   if (function_name != nullptr)
   {
-    logger::warn("json try_parse key missing: {0} in function {1}", key, function_name);
+    LOG_WARN("json try_parse key missing: {0} in function {1}", key, function_name);
   }
   else
   {
-    logger::warn("json try_parse key missing: {0}", key);
+    LOG_WARN("json try_parse key missing: {0}", key);
   }
   return false;
 }

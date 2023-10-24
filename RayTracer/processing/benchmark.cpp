@@ -53,7 +53,7 @@ namespace benchmark
     uint64_t time = end - begin;
     if (verbose)
     {
-      logger::info("{0}: {1}[us] = {2}[ms] = {3}[s]", name, time, time / 1000, time / 1000000);
+      LOG_INFO("{0}: {1}[us] = {2}[ms] = {3}[s]", name, time, time / 1000, time / 1000000);
     }
     return time;
 #else

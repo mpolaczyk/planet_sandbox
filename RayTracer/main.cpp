@@ -17,6 +17,8 @@
 #include "math/fpexcept.h"
 #include "app/factories.h"
 
+#include <engine.h>
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern void seh_exception_handler(unsigned int u, _EXCEPTION_POINTERS* pExp);
 
@@ -48,7 +50,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   return ::DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-int main(int, char**)
+int app_main()
 {
 #if USE_FPEXCEPT
   if (!IsDebuggerPresent())
@@ -61,16 +63,15 @@ int main(int, char**)
 
   try
   {
-    logger::init();
-    logger::info("Working dir: {0}", io::get_working_dir());
-    logger::info("Workspace dir: {0}", io::get_workspace_dir());
+    LOG_INFO("Working dir: {0}", engine::io::get_working_dir());
+    LOG_INFO("Workspace dir: {0}", engine::io::get_workspace_dir());
 
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("RayTracer"), NULL };
     ::RegisterClassEx(&wc);
     HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("RayTracer"), WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
-    
+
     // Initialize Direct3D
     if (!dx11::CreateDeviceD3D(hwnd))
     {
@@ -78,25 +79,25 @@ int main(int, char**)
       ::UnregisterClass(wc.lpszClassName, wc.hInstance);
       return 1;
     }
-    
+
     // Show the window
     ::ShowWindow(hwnd, SW_SHOWDEFAULT);
     ::UpdateWindow(hwnd);
-    
+
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     {
       // overwrite imgui config file name
-      std::string imgui_ini_filename = io::get_imgui_file_path();
+      std::string imgui_ini_filename = engine::io::get_imgui_file_path();
       char* buff = new char[imgui_ini_filename.size() + 1];
       strcpy(buff, imgui_ini_filename.c_str());  // returning char* is fucked up
       io.IniFilename = buff;
     }
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-    
+
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsClassic();
@@ -106,7 +107,7 @@ int main(int, char**)
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(dx11::g_pd3dDevice, dx11::g_pd3dDeviceContext);
-    
+
     // Raytracer init
     random_cache::init();
 
@@ -124,7 +125,7 @@ int main(int, char**)
     // Auto render on startup
     state.rw_model.rp_model.render_pressed = true;
 
-    logger::info("Loading done, starting the main loop");
+    LOG_INFO("Loading done, starting the main loop");
 
     // Main loop
     while (state.is_running)
@@ -137,7 +138,7 @@ int main(int, char**)
       MSG msg;
       while (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
       {
-        if(msg.message == WM_QUIT)
+        if (msg.message == WM_QUIT)
         {
           state.is_running = false;
         }
@@ -145,12 +146,12 @@ int main(int, char**)
         ::DispatchMessage(&msg);
       }
       if (!state.is_running) break;
-    
+
       // Start the Dear ImGui frame
       ImGui_ImplDX11_NewFrame();
       ImGui_ImplWin32_NewFrame();
       ImGui::NewFrame();
-    
+
       handle_input(state);
 
       // Draw UI
@@ -172,7 +173,7 @@ int main(int, char**)
             || state.renderer->is_world_dirty(state.scene_root)
             || state.renderer->is_renderer_setting_dirty(state.renderer_conf)
             || state.renderer->is_camera_setting_dirty(state.camera_conf);
-          
+
           if (do_render)
           {
             if (state.renderer->is_renderer_type_different(state.renderer_conf))
@@ -180,7 +181,7 @@ int main(int, char**)
               delete state.renderer;
               state.renderer = object_factory::spawn_renderer(state.renderer_conf->type);
             }
-            logger::info("### New frame using: {0}", state.renderer->get_name().c_str());
+            LOG_INFO("### New frame using: {0}", state.renderer->get_name().c_str());
             state.scene_root->load_resources();
             state.scene_root->pre_render();
             state.scene_root->build_boxes();
@@ -208,21 +209,21 @@ int main(int, char**)
           dx11::UpdateTextureBuffer(state.renderer->get_img_rgb(), state.output_width, state.output_height, state.output_texture);
         }
       }
-            
+
       // UI rendering
       static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-      static float clear_color_with_alpha[4] = 
-      { 
-        clear_color.x * clear_color.w, 
-        clear_color.y * clear_color.w, 
-        clear_color.z * clear_color.w, 
-        clear_color.w 
+      static float clear_color_with_alpha[4] =
+      {
+        clear_color.x * clear_color.w,
+        clear_color.y * clear_color.w,
+        clear_color.z * clear_color.w,
+        clear_color.w
       };
       ImGui::Render();
       dx11::g_pd3dDeviceContext->OMSetRenderTargets(1, &dx11::g_mainRenderTargetView, NULL);
       dx11::g_pd3dDeviceContext->ClearRenderTargetView(dx11::g_mainRenderTargetView, clear_color_with_alpha);
       ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-    
+
       if (true)
       {
         dx11::g_pSwapChain->Present(1, 0); // Present with vsync
@@ -233,7 +234,7 @@ int main(int, char**)
         std::this_thread::sleep_for(std::chrono::milliseconds(40));
         dx11::g_pSwapChain->Present(0, 0); // Present without vsync
       }
-    
+
       RECT rect;
       ::GetWindowRect(hwnd, &rect);
       state.window_conf.x = rect.left;
@@ -241,24 +242,41 @@ int main(int, char**)
       state.window_conf.w = rect.right - rect.left;
       state.window_conf.h = rect.bottom - rect.top;
     }
-    
+
     state.save_window_state();
-    
+
     // Cleanup
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
-    
+
     dx11::CleanupDeviceD3D();
     ::DestroyWindow(hwnd);
     ::UnregisterClass(wc.lpszClassName, wc.hInstance);
   }
   catch (const std::exception& e)
   {
-    logger::critical("Exception handler:");
-    logger::critical("{0}", e.what());
+    LOG_CRITICAL("Exception handler:");
+    LOG_CRITICAL("{0}", e.what());
     __debugbreak();
     system("pause");
   }
   return 0;
 }
+
+
+class editor_app : public engine::application
+{
+public:
+
+  virtual void run() override
+  {
+    app_main();
+  }
+};
+
+engine::application* engine::create_appliation()
+{
+  return new editor_app();
+}
+

@@ -174,9 +174,6 @@
     <ClInclude Include="math\textures.h">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="math\vec3.h">
-      <Filter>math</Filter>
-    </ClInclude>
     <ClInclude Include="renderers\example_renderer.h">
       <Filter>renderers</Filter>
     </ClInclude>

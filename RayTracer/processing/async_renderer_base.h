@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math/vec3.h"
+#include "engine/vec3.h"
 #include "math/hittables.h"
 #include "math/ray.h"
 #include "chunk_generator.h"
