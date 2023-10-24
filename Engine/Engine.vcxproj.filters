@@ -13,6 +13,7 @@
     <ClInclude Include="engine\random.h" />
     <ClInclude Include="engine\stats.h" />
     <ClInclude Include="engine\vec3.h" />
+    <ClInclude Include="engine\fpexcept.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -23,5 +24,6 @@
     <ClCompile Include="engine\random.cpp" />
     <ClCompile Include="engine\stats.cpp" />
     <ClCompile Include="engine\hash.cpp" />
+    <ClCompile Include="engine\fpexcept.cpp" />
   </ItemGroup>
 </Project>

@@ -156,9 +156,6 @@
     <ClInclude Include="math\common.h">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="math\fpexcept.h">
-      <Filter>math</Filter>
-    </ClInclude>
     <ClInclude Include="math\hittables.h">
       <Filter>math</Filter>
     </ClInclude>

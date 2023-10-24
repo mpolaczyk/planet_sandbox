@@ -67,11 +67,12 @@
       <FloatingPointExceptions>true</FloatingPointExceptions>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;$(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDirFullPath)Engine.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;$(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -102,13 +103,15 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
       <LanguageStandard>stdcpp20</LanguageStandard>
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ExpandAttributedSource>false</ExpandAttributedSource>
+      <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;$(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDirFullPath)Engine.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;$(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
@@ -204,7 +207,6 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClInclude Include="math\aabb.h" />
     <ClInclude Include="math\camera.h" />
     <ClInclude Include="math\common.h" />
-    <ClInclude Include="math\fpexcept.h" />
     <ClInclude Include="math\hit.h" />
     <ClInclude Include="math\hittables.h" />
     <ClInclude Include="math\materials.h" />

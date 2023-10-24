@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vec3.h"
+#include "engine/vec3.h"
 #include "ray.h"
 #include "hit.h"
 
@@ -45,19 +45,7 @@ namespace colors
   const int num = 12;
 }
 
-namespace stats
-{
-  void reset();
-  void inc_ray();
-  void inc_ray_triangle_intersection();
-  void inc_ray_box_intersection();
-  void inc_ray_object_intersection();
 
-  uint64_t get_ray_count();
-  uint64_t get_ray_triangle_intersection_count();
-  uint64_t get_ray_box_intersection_count();
-  uint64_t get_ray_object_intersection_count();
-}
 
 namespace math
 {
@@ -173,7 +161,7 @@ namespace math
     //#if USE_SIMD 
     //    __m128 a = _mm_mul_ps(v.R128, v.R128);
     //    a = _mm_hadd_ps(a, a);
-    //    return _mm_cvtss_f32(_mm_hadd_ps(a,a));
+    //    return _mm_cvtss_f32(_mm_hadd_ps(a,a));vv
     //#else
     return v.x * v.x + v.y * v.y + v.z * v.z;
     //#endif
@@ -303,50 +291,9 @@ namespace tone_mapping
   vec3 reinhard_extended_luminance(const vec3& v, float max_white_l);
 }
 
-namespace hash
-{
-  uint32_t combine(uint32_t a, uint32_t c);
-  uint32_t combine(uint32_t a, uint32_t b, uint32_t c, uint32_t d = 0);
-  uint32_t get(uint64_t a);
-  uint32_t get(int64_t a);
-  uint32_t get(float a);
-  uint32_t get(double a);
-  uint32_t get(bool a);
-  uint32_t get(const void* a);
-  uint32_t get(void* a);
-  uint32_t get(const vec3& a);
-  uint32_t get(const std::string& a);
-}
 
-namespace io
-{
-  // Directories
-  std::string get_working_dir();
-  std::string get_workspace_dir();
-  std::string get_content_dir();
-  std::string get_materials_dir();
-  std::string get_meshes_dir();
-  std::string get_textures_dir();
-  std::string get_images_dir();
 
-  // Files
-  std::string get_workspace_file_path(const char* file_name);
-  std::string get_images_file_path(const char* file_name);
-  std::string get_material_file_path(const char* file_name);
-  std::string get_mesh_file_path(const char* file_name);
-  std::string get_texture_file_path(const char* file_name);
-  std::string get_window_file_path();
-  std::string get_scene_file_path();
-  std::string get_rendering_file_path();
-  std::string get_imgui_file_path();
-  std::string get_render_output_file_path();
 
-  // Asset discovery
-  std::vector<std::string> discover_files(const std::string& path, const std::string& extension, bool include_extension = true);
-  std::vector<std::string> discover_material_files(bool include_extension = true);
-  std::vector<std::string> discover_texture_files(bool include_extension = true);
-  std::vector<std::string> discover_mesh_files(bool include_extension = true);
-} 
 
 namespace obj_helper
 {
@@ -358,45 +305,3 @@ namespace img_helper
   bool load_img(const std::string& file_name, int width, int height, texture* out_texture);
 }
 
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-namespace logger
-{
-  void init();
-
-  template<typename... Args>
-  void trace(std::string_view format, Args &&... args)
-  {
-    spdlog::get("console")->trace(format, std::forward<Args>(args)...);
-  }
-
-  template<typename... Args>
-  void debug(std::string_view format, Args &&... args)
-  {
-    spdlog::get("console")->debug(format, std::forward<Args>(args)...);
-  }
-
-  template<typename... Args>
-  void info(std::string_view format, Args &&... args)
-  {
-    spdlog::get("console")->info(format, std::forward<Args>(args)...);
-  }
-
-  template<typename... Args>
-  void warn(std::string_view format, Args &&... args)
-  {
-    spdlog::get("console")->warn(format, std::forward<Args>(args)...);
-  }
-
-  template<typename... Args>
-  void error(std::string_view format, Args &&... args)
-  {
-    spdlog::get("console")->error(format, std::forward<Args>(args)...);
-  }
-
-  template<typename... Args>
-  void critical(std::string_view format, Args &&... args)
-  {
-    spdlog::get("console")->critical(format, std::forward<Args>(args)...);
-  }
-}

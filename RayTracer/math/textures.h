@@ -1,6 +1,5 @@
 #pragma once
 
-#include "vec3.h"
 #include "app/asset.h"
 
 class texture : public asset
@@ -16,7 +15,7 @@ public:
   vec3 value(float u, float v, const vec3& p) const
   {
     return vec3(0, 0, 0);
-  }
+  } 
 
   // JSON persistent
   std::string img_file_name;

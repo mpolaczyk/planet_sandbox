@@ -38,5 +38,7 @@
 #define ENGINE_API __declspec(dllimport)
 #endif
 
+#define ALIGN(x) __declspec(align(x))
+
 #define SPDLOG_USE_STD_FORMAT
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE

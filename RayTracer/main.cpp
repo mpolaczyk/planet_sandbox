@@ -14,10 +14,8 @@
 #include "gfx/dx11_helper.h"
 #include "math/materials.h"
 #include "processing/async_renderer_base.h"
-#include "math/fpexcept.h"
 #include "app/factories.h"
 
-#include <engine.h>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern void seh_exception_handler(unsigned int u, _EXCEPTION_POINTERS* pExp);
@@ -52,13 +50,14 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 int app_main()
 {
-#if USE_FPEXCEPT
   if (!IsDebuggerPresent())
   {
     // Register SEH exception catching when no debugger is present
     _set_se_translator(seh_exception_handler);
   }
-  fpexcept::enabled_scope fpe;
+
+#if USE_FPEXCEPT
+  fpe_enabled_scope fpe;
 #endif
 
   try

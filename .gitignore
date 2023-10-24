@@ -10,6 +10,10 @@
 *.iobj
 *.ipdb
 *.etl
+*.scor
+*.scor.gbl
+*.scor.incl
+*.scor.t0000
 Archive/*
 Intermediate/*
 Workspace/Images/*.bmp

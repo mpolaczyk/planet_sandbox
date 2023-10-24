@@ -8,7 +8,7 @@
 
 namespace engine
 {
-  __declspec(align(16)) struct vec3
+  ALIGN(16) struct ENGINE_API vec3
   {
   public:
     vec3() = default;
@@ -84,7 +84,7 @@ namespace engine
   inline vec3 operator / (const vec3& u, const vec3& v) { return vec3(u.x / v.x, u.y / v.y, u.z / v.z); }
 #endif
 
-  __declspec(align(64)) struct triangle_face  // todo move somewhere else
+  ALIGN(64) struct ENGINE_API triangle_face  // todo move somewhere else
   {
     vec3 vertices[3];
     vec3 pad1;

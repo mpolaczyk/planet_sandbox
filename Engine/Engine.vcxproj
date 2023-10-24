@@ -50,6 +50,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)\Build\$(Platform)_$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\Intermediate\$(Platform)_$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -59,6 +60,9 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)engine\third_party\spdlog-1.x\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -75,6 +79,10 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)engine\third_party\spdlog-1.x\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -89,6 +97,7 @@
     <ClInclude Include="engine\colors.h" />
     <ClInclude Include="core\core.h" />
     <ClInclude Include="core\entry_point.h" />
+    <ClInclude Include="engine\fpexcept.h" />
     <ClInclude Include="engine\hash.h" />
     <ClInclude Include="engine\io.h" />
     <ClInclude Include="engine\log.h" />
@@ -100,6 +109,7 @@
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
     <ClCompile Include="engine\colors.cpp" />
+    <ClCompile Include="engine\fpexcept.cpp" />
     <ClCompile Include="engine\hash.cpp" />
     <ClCompile Include="engine\io.cpp" />
     <ClCompile Include="engine\log.cpp" />

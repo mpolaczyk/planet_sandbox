@@ -1,13 +1,11 @@
 #include "stdafx.h"
 
-#include "math/fpexcept.h"
-
 #include "aabb.h"
-#include "vec3.h"
+#include "engine/vec3.h"
 
 bool aabb::hit(const ray& in_ray, float t_min, float t_max) const
 {
-  if (minimum == vec3(0.0f) && minimum == vec3(0.0f))
+  if (minimum == vec3(0.0f) && maximum == vec3(0.0f))
   {
     return false;
   }
@@ -33,7 +31,7 @@ bool aabb::hit(const ray& in_ray, float t_min, float t_max) const
     float o = in_ray.origin[i];
     float d_inv = 0.0f;
     {
-      fpexcept::disabled_scope fpe;
+      fpe_disabled_scope fpe;
       d_inv = 1.0f / in_ray.direction[i];  // this is allowed to produce 1/0 = inf
     }
     float t0 = math::min1((minimum[i] - o) * d_inv, (maximum[i] - o) * d_inv);

@@ -2,6 +2,8 @@
 
 #include <float.h>
 
+#include "core/core.h"
+
 /* Based on
  https://randomascii.wordpress.com/2012/04/21/exceptional-floating-point/
 
@@ -15,59 +17,40 @@
  and then enable them in particular areas, such as particle systems.
 */
 
-namespace fpexcept
+namespace engine
 {
-
-  class enabled_scope
+  class ENGINE_API vec4
   {
   public:
+    explicit vec4() = default;
 
-    explicit enabled_scope(unsigned int enable_bits = _EM_OVERFLOW | _EM_ZERODIVIDE | _EM_INVALID)
-    {
-#if USE_FPEXCEPT
-      _controlfp_s(&old_values, _MCW_EM, _MCW_EM);
-      enable_bits &= _MCW_EM;
-      _clearfp();
-      _controlfp_s(0, ~enable_bits, old_values);
-#endif
-    }
-    ~enabled_scope()
-    {
-#if USE_FPEXCEPT
-      _controlfp_s(0, old_values, _MCW_EM);
-#endif
-    }
-
-  private:
-    unsigned int old_values;
-
-    enabled_scope(const enabled_scope&);
-    enabled_scope& operator=(const enabled_scope&);
+    float x, y, z, w;
   };
 
-  class disabled_scope
+  class ENGINE_API fpe_enabled_scope
   {
   public:
-    disabled_scope()
-    {
-#if USE_FPEXCEPT
-      _controlfp_s(&old_values, 0, 0);
-      _controlfp_s(0, _MCW_EM, _MCW_EM);
-#endif
-    }
-    ~disabled_scope()
-    {
-#if USE_FPEXCEPT
-      _clearfp();
-      _controlfp_s(0, old_values, _MCW_EM);
-#endif
-    }
+    fpe_enabled_scope(unsigned int enable_bits = _EM_OVERFLOW | _EM_ZERODIVIDE | _EM_INVALID);
+    ~fpe_enabled_scope();
 
   private:
     unsigned int old_values;
 
-    disabled_scope(const disabled_scope&);
-    disabled_scope& operator=(const disabled_scope&);
+    fpe_enabled_scope(const fpe_enabled_scope&);
+    fpe_enabled_scope& operator=(const fpe_enabled_scope&);
+  };
+
+  class ENGINE_API fpe_disabled_scope
+  {
+  public:
+    fpe_disabled_scope();
+    ~fpe_disabled_scope();
+
+  private:
+    unsigned int old_values;
+
+    fpe_disabled_scope(const fpe_disabled_scope&);
+    fpe_disabled_scope& operator=(const fpe_disabled_scope&);
   };
 }
 

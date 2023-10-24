@@ -8,7 +8,6 @@
 #include "math/camera.h"
 #include "math/materials.h"
 #include "app/factories.h"
-#include "math/fpexcept.h"
 
 void draw_raytracer_window(raytracer_window_model& model, app_instance& state)
 {
@@ -98,7 +97,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
     float froc = static_cast<float>(roc);
     ImGui::Text("Rays: %lld", rc);
     {
-      fpexcept::disabled_scope fpe;
+      fpe_disabled_scope fpe;
       ImGui::Text("Ray-triangle: %lld  percentage: %f", rtc, frtc / frc);
       ImGui::Text("Ray-box: %lld percentage: %f", rbc, frbc / frc);
       ImGui::Text("Ray-object: %lld percentage: %f", roc, froc / frc);
