@@ -8,6 +8,8 @@
 
 #include "reference_renderer.h"
 
+#include "engine/colors.h"
+
 std::string reference_renderer::get_name() const
 {
   return "Reference CPU";

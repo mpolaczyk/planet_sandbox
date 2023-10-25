@@ -19,14 +19,6 @@
 
 namespace engine
 {
-  class ENGINE_API vec4
-  {
-  public:
-    explicit vec4() = default;
-
-    float x, y, z, w;
-  };
-
   class ENGINE_API fpe_enabled_scope
   {
   public:

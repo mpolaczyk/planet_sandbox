@@ -10,6 +10,7 @@
 #include "math/mesh.h"
 #include "math/textures.h"
 
+#include "engine/colors.h"
 
 nlohmann::json material_serializer::serialize(const material* value)
 {

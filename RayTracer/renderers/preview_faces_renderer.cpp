@@ -9,6 +9,8 @@
 
 #include "preview_faces_renderer.h"
 
+#include "engine/colors.h"
+
 std::string preview_faces_renderer::get_name() const
 {
   return "CPU Preview Normals";

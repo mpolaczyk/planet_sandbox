@@ -87,7 +87,7 @@ public:
   virtual sphere* clone() const override;
 
   // Persistent members
-  vec3 origin = { 0,0,0 };
+  vec3 origin = vec3(0,0,0);
   float radius = 0.0f;
 };
 
@@ -271,9 +271,9 @@ public:
   virtual void pre_render() override;
   
   // Persistent state
-  vec3 origin = { 0,0,0 };
-  vec3 scale = { 1,1,1 };
-  vec3 rotation = { 0,0,0 };  // degrees
+  vec3 origin = vec3(0,0,0);
+  vec3 scale = vec3(1,1,1);
+  vec3 rotation = vec3(0,0,0);  // degrees
   soft_asset_ptr<mesh> mesh_asset;
 
   // Runtime state

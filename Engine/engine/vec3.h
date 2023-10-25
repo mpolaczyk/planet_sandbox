@@ -11,8 +11,8 @@ namespace engine
   ALIGN(16) struct ENGINE_API vec3
   {
   public:
-    vec3() = default;
-    vec3(float in_x, float in_y, float in_z) : e{ in_x, in_y, in_z } {}
+    explicit vec3() = default;
+    explicit constexpr vec3(float in_x, float in_y, float in_z) : e{ in_x, in_y, in_z } {}
 #if USE_SIMD
     explicit vec3(float f) { R128 = _mm_set_ps1(f); }
     explicit vec3(const __m128& r128) { R128 = r128; }

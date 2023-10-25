@@ -40,5 +40,7 @@
 
 #define ALIGN(x) __declspec(align(x))
 
+#define RAND_SEED_FUNC(seed) rand_pcg(seed)
+
 #define SPDLOG_USE_STD_FORMAT
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE

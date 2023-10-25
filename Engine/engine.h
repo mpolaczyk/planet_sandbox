@@ -16,5 +16,6 @@
 #include "engine/fpexcept.h"
 #include "engine/ray.h"
 #include "engine/hit.h"
+#include "engine/random.h"
 
 #include "core/entry_point.h"
