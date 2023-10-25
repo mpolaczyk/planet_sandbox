@@ -1,7 +1,7 @@
 #pragma once
 
 #include "app/app.h"
-#include "math/camera.h"
+#include "engine/camera.h"
 
 #include "app/json/serializable.h"
 

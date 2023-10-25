@@ -3,7 +3,7 @@
 #include <ppl.h>
 
 #include "math/materials.h"
-#include "math/camera.h"
+#include "engine/camera.h"
 #include "processing/benchmark.h"
 
 #include "reference_renderer.h"

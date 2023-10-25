@@ -5,7 +5,6 @@
 #include "app.h"
 #include "factories.h"
 #include "math/hittables.h"
-#include "math/camera.h"
 #include "math/materials.h"
 #include "processing/async_renderer_base.h"
 

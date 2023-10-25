@@ -4,7 +4,7 @@
 
 #include "math/materials.h"
 #include "math/hittables.h"
-#include "math/camera.h"
+#include "engine/camera.h"
 #include "processing/benchmark.h"
 
 #include "preview_faces_renderer.h"

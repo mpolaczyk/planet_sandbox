@@ -26,8 +26,6 @@ namespace bmp
   struct bmp_image;
 }
 
-class camera;
-class camera_config;
 class scene;
 
 class renderer_config

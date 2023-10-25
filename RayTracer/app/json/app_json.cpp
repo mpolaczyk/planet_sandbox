@@ -14,6 +14,8 @@
 #include "math/textures.h"
 #include "math/mesh.h"
 
+#include "engine/camera.h"
+
 nlohmann::json window_config_serializer::serialize(const window_config& value)
 {
   nlohmann::json j;

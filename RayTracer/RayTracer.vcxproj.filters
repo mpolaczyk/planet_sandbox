@@ -144,9 +144,6 @@
     <ClInclude Include="app\json\serializable.h">
       <Filter>app\json</Filter>
     </ClInclude>
-    <ClInclude Include="math\camera.h">
-      <Filter>math</Filter>
-    </ClInclude>
     <ClInclude Include="math\common.h">
       <Filter>math</Filter>
     </ClInclude>

@@ -9,7 +9,7 @@
 #include "math/hittables.h"
 #include "math/materials.h"
 #include "engine/pdf.h"
-#include "math/camera.h"
+#include "engine/camera.h"
 #include "processing/benchmark.h"
 
 async_renderer_base::async_renderer_base()

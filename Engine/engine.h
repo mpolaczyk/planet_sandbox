@@ -22,5 +22,7 @@
 #include "engine/onb.h"
 #include "engine/pdf.h"
 #include "engine/triangle_face.h"
+#include "engine/camera.h"
+#include "engine/plane.h"
 
 #include "core/entry_point.h"

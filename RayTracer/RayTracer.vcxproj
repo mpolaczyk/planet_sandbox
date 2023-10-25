@@ -203,7 +203,6 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClInclude Include="gfx\dx11_helper.h" />
     <ClInclude Include="gfx\stb_image.h" />
     <ClInclude Include="gfx\tiny_obj_loader.h" />
-    <ClInclude Include="math\camera.h" />
     <ClInclude Include="math\common.h" />
     <ClInclude Include="math\hittables.h" />
     <ClInclude Include="math\materials.h" />

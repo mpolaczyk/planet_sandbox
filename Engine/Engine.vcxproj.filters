@@ -20,6 +20,8 @@
     <ClInclude Include="engine\onb.h" />
     <ClInclude Include="engine\aabb.h" />
     <ClInclude Include="engine\triangle_face.h" />
+    <ClInclude Include="engine\camera.h" />
+    <ClInclude Include="engine\plane.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -35,5 +37,7 @@
     <ClCompile Include="engine\hit.cpp" />
     <ClCompile Include="engine\aabb.cpp" />
     <ClCompile Include="engine\onb.cpp" />
+    <ClCompile Include="engine\camera.cpp" />
+    <ClCompile Include="engine\plane.cpp" />
   </ItemGroup>
 </Project>
