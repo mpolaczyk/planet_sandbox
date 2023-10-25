@@ -48,9 +48,6 @@
     <ClCompile Include="app\json\vec3_json.cpp">
       <Filter>app\json</Filter>
     </ClCompile>
-    <ClCompile Include="math\aabb.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
     <ClCompile Include="math\common.cpp">
       <Filter>math</Filter>
     </ClCompile>
@@ -147,9 +144,6 @@
     <ClInclude Include="app\json\serializable.h">
       <Filter>app\json</Filter>
     </ClInclude>
-    <ClInclude Include="math\aabb.h">
-      <Filter>math</Filter>
-    </ClInclude>
     <ClInclude Include="math\camera.h">
       <Filter>math</Filter>
     </ClInclude>
@@ -162,9 +156,6 @@
     <ClInclude Include="math\materials.h">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="math\onb.h">
-      <Filter>math</Filter>
-    </ClInclude>
     <ClInclude Include="math\textures.h">
       <Filter>math</Filter>
     </ClInclude>
@@ -173,9 +164,6 @@
     </ClInclude>
     <ClInclude Include="renderers\reference_renderer.h">
       <Filter>renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="math\pdf.h">
-      <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="app\factories.h">
       <Filter>app</Filter>

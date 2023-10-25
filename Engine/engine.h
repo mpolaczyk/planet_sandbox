@@ -17,5 +17,10 @@
 #include "engine/ray.h"
 #include "engine/hit.h"
 #include "engine/random.h"
+#include "engine/aabb.h"
+#include "engine/colors.h"
+#include "engine/onb.h"
+#include "engine/pdf.h"
+#include "engine/triangle_face.h"
 
 #include "core/entry_point.h"

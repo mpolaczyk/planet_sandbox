@@ -141,7 +141,6 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClCompile Include="gfx\bmp.cpp" />
     <ClCompile Include="gfx\dx11_helper.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="math\aabb.cpp" />
     <ClCompile Include="math\common.cpp" />
     <ClCompile Include="math\hittables.cpp" />
     <ClCompile Include="math\materials.cpp" />
@@ -204,14 +203,11 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClInclude Include="gfx\dx11_helper.h" />
     <ClInclude Include="gfx\stb_image.h" />
     <ClInclude Include="gfx\tiny_obj_loader.h" />
-    <ClInclude Include="math\aabb.h" />
     <ClInclude Include="math\camera.h" />
     <ClInclude Include="math\common.h" />
     <ClInclude Include="math\hittables.h" />
     <ClInclude Include="math\materials.h" />
     <ClInclude Include="math\mesh.h" />
-    <ClInclude Include="math\onb.h" />
-    <ClInclude Include="math\pdf.h" />
     <ClInclude Include="math\textures.h" />
     <ClInclude Include="processing\async_renderer_base.h" />
     <ClInclude Include="processing\benchmark.h" />

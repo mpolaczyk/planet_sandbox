@@ -7,6 +7,7 @@
 #include "vec3.h"
 #include "ray.h"
 #include "hit.h"
+#include "triangle_face.h"
 
 namespace engine
 {

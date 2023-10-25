@@ -8,7 +8,7 @@
 #include "gfx/bmp.h"
 #include "math/hittables.h"
 #include "math/materials.h"
-#include "math/pdf.h"
+#include "engine/pdf.h"
 #include "math/camera.h"
 #include "processing/benchmark.h"
 

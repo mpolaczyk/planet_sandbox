@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "aabb.h"
-#include "onb.h"
+#include "engine/aabb.h"
+#include "engine/onb.h"
 #include "materials.h"
 #include "mesh.h"
 #include "hittables.h"

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/core.h"
+#include <stdint.h>
 
 namespace engine
 {
