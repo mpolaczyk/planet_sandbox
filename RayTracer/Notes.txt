@@ -20,6 +20,7 @@
  - blending between two frames (different pixels for each frame)
  - gestalt psychology
  - alculating reflections or shadows in a way that they form a picture/shape
+ - Variable pixel density (more rays in the center, less on the edges), another texture as a pattern, sqares of different sizes
 
  # Optim ideas:
  - Use depth field, trace pixels close to the camera, first.

@@ -2,9 +2,9 @@
 
 #include "core/core.h"
 
-#include "random.h"
-#include "onb.h"
-#include "math.h"
+#include "math/random.h"
+#include "math/onb.h"
+#include "math/math.h"
 
 
 namespace engine

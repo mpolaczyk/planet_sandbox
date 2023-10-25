@@ -2,10 +2,10 @@
 
 #include "core/core.h"
 
-#include "vec3.h"
-#include "plane.h"
-#include "math.h"
-#include "hash.h"
+#include "math/vec3.h"
+#include "math/plane.h"
+#include "math/math.h"
+#include <stdint.h>
 
 namespace engine
 {
@@ -19,7 +19,7 @@ namespace engine
 
     static camera_config lerp(const camera_config& a, const camera_config& b, float f);
 
-    inline uint32_t get_hash() const;
+    uint32_t get_hash() const;
 
     // Camera movement
     void move_up(float speed);

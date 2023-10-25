@@ -3,12 +3,12 @@
 #include <ppl.h>
 
 #include "math/materials.h"
-#include "engine/camera.h"
+#include "math/camera.h"
 #include "processing/benchmark.h"
 
 #include "reference_renderer.h"
 
-#include "engine/colors.h"
+#include "math/colors.h"
 
 std::string reference_renderer::get_name() const
 {

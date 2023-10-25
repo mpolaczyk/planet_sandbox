@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "engine/aabb.h"
-#include "engine/onb.h"
+#include "math/aabb.h"
+#include "math/onb.h"
 #include "materials.h"
 #include "mesh.h"
 #include "hittables.h"
@@ -452,7 +452,7 @@ bool static_mesh::get_bounding_box(aabb& out_box) const
 
 inline uint32_t hittable::get_hash() const
 {
-  return hash::combine(hash::get(material_asset.get_name()), (int)type);
+  return hash::combine(hash::get(material_asset.get_name().c_str()), (int)type);
 }
 
 inline uint32_t sphere::get_hash() const
@@ -494,7 +494,7 @@ inline uint32_t yz_rect::get_hash() const
 inline uint32_t static_mesh::get_hash() const
 {
   uint32_t a = hash::combine(hittable::get_hash(), hash::get(origin), hash::get(extent), hash::get(rotation));
-  uint32_t b = hash::combine(hash::get(scale), hash::get(material_asset.get_name()));
+  uint32_t b = hash::combine(hash::get(scale), hash::get(material_asset.get_name().c_str()));
   return hash::combine(a, b);
 }
 

@@ -1,10 +1,8 @@
 #pragma once
 
-#include <string>
-
 #include "core/core.h"
 
-#include "vec3.h"
+#include "math/vec3.h"
 
 namespace engine
 {
@@ -21,6 +19,6 @@ namespace engine
     static uint32_t get(const void* a);
     static uint32_t get(void* a);
     static uint32_t get(const vec3& a);
-    static uint32_t get(const std::string& a);
+    static uint32_t get(const char* a);
   };
 }

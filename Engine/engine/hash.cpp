@@ -1,7 +1,7 @@
 
-#include <functional>
+#include <string>
 
-#include "hash.h"
+#include "engine/hash.h"
 
 namespace engine
 {
@@ -68,7 +68,7 @@ namespace engine
     return combine(get(a.x), get(a.y), get(a.z), get(a.padding));
   }
 
-  uint32_t hash::get(const std::string& a)
+  uint32_t hash::get(const char* a)
   {
     return static_cast<uint32_t>(std::hash<std::string>{}(a));
   }

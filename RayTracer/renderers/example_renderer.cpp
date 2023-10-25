@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include <ppl.h>
+#include <sstream>
 
 #include "processing/benchmark.h"
 

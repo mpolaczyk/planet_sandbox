@@ -2,10 +2,9 @@
 
 #include "core/core.h"
 
-#include "vec3.h"
+#include "math/vec3.h"
 
 #include <stdint.h>
-#include <vector>
 
 namespace engine
 {

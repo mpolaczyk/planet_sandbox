@@ -1,8 +1,10 @@
 #include "stdafx.h"
 
+#include <sstream>
+
 #include "math/materials.h"
 #include "math/hittables.h"
-#include "engine/camera.h"
+#include "math/camera.h"
 #include "processing/benchmark.h"
 
 #include "preview_renderer.h"

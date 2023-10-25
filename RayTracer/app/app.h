@@ -1,6 +1,6 @@
 #pragma once
 
-#include "engine/camera.h"
+#include "math/camera.h"
 
 struct ID3D11ShaderResourceView;
 struct ID3D11Texture2D;

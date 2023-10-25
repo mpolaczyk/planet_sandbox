@@ -1,7 +1,7 @@
 #include <assert.h>
 
-#include "colors.h"
-#include "math.h" 
+#include "math/colors.h"
+#include "math/math.h" 
 
 namespace engine
 {

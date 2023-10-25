@@ -1,7 +1,7 @@
 #pragma once
 
 #include "app/asset.h"
-#include "engine/vec3.h"
+#include "math/vec3.h"
 
 class mesh : public asset
 {

@@ -1,9 +1,9 @@
 
-#include "aabb.h"
-#include "vec3.h"
-#include "stats.h"
-#include "fpexcept.h"
-#include "math.h"
+#include "math/aabb.h"
+#include "math/vec3.h"
+#include "math/math.h"
+#include "profile/stats.h"
+#include "engine/fpexcept.h"
 
 namespace engine
 {

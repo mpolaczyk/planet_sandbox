@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "math/materials.h"
 #include "math/textures.h"
+#include <sstream>
 
 std::string material::get_display_name() const
 {

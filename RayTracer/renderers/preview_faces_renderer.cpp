@@ -1,15 +1,16 @@
 #include "stdafx.h"
 
 #include <ppl.h>
+#include <sstream>
 
 #include "math/materials.h"
 #include "math/hittables.h"
-#include "engine/camera.h"
+#include "math/camera.h"
 #include "processing/benchmark.h"
 
 #include "preview_faces_renderer.h"
 
-#include "engine/colors.h"
+#include "math/colors.h"
 
 std::string preview_faces_renderer::get_name() const
 {

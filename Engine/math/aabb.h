@@ -2,9 +2,9 @@
 
 #include "core/core.h"
 
-#include "ray.h"
-#include "vec3.h"
-#include "aabb.h"
+#include "math/ray.h"
+#include "math/vec3.h"
+#include "math/aabb.h"
 
 namespace engine
 {

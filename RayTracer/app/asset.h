@@ -4,6 +4,7 @@
 #include <string>
 
 #include "engine.h"
+#include <assert.h>
 
 enum class asset_type : int
 {

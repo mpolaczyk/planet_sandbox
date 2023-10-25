@@ -4,10 +4,10 @@
 
 #include "core/core.h"
 
-#include "vec3.h"
-#include "ray.h"
-#include "hit.h"
-#include "triangle_face.h"
+#include "math/vec3.h"
+#include "math/ray.h"
+#include "math/hit.h"
+#include "math/triangle_face.h"
 
 namespace engine
 {

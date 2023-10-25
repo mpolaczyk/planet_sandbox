@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include <sstream>
+
 #include "imgui.h"
 
 #include "math/hittables.h"

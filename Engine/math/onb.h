@@ -2,8 +2,8 @@
 
 #include "core/core.h"
 
-#include "vec3.h"
-#include "math.h"
+#include "math/vec3.h"
+#include "math/math.h"
 
 namespace engine
 {

@@ -5,7 +5,7 @@
 #include "app/app.h"
 #include "processing/chunk_generator.h"
 #include "processing/async_renderer_base.h"
-#include "engine/camera.h"
+#include "math/camera.h"
 #include "math/materials.h"
 #include "app/factories.h"
 

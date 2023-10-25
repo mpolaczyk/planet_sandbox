@@ -1,7 +1,5 @@
-#pragma once
-
-#include "random.h"
-#include "math.h"
+#include "math/random.h"
+#include "math/math.h"
 
 #include <random>
 #include <intsafe.h>

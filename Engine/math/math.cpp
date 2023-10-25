@@ -4,8 +4,8 @@
 #include <assert.h>
 #include <stdint.h>
 
-#include "math.h"
-#include "stats.h"
+#include "math/math.h"
+#include "profile/stats.h"
 
 namespace engine
 {
@@ -72,7 +72,7 @@ namespace engine
     // Use Schlick's approximation for reflectance.
     float r0 = (1.0f - ref_idx) / (1.0f + ref_idx);
     r0 = r0 * r0;
-    return r0 + (1.0f - r0) * pow((1.0f - cosine), 5.0f);
+    return r0 + (1.0f - r0) * (float)pow((1.0f - cosine), 5.0f);
   }
 
   bool math::flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outward_normal, vec3& out_normal)
@@ -98,9 +98,9 @@ namespace engine
 
   vec3 math::refract(const vec3& v, const vec3& n, float etai_over_etat)
   {
-    float cos_theta = fmin(dot(-v, n), 1.0f);
+    float cos_theta = (float)fmin(dot(-v, n), 1.0f);
     vec3 r_out_perpendicular = etai_over_etat * (v + cos_theta * n);
-    vec3 r_out_parallel = -sqrt(fabs(1.0f - math::length_squared(r_out_perpendicular))) * n;
+    vec3 r_out_parallel = -(float)sqrt(fabs(1.0f - math::length_squared(r_out_perpendicular))) * n;
     return r_out_perpendicular + r_out_parallel;
   }
 
@@ -297,8 +297,8 @@ namespace engine
     //     <0 1 0> yields <0.50 1.00>       < 0 -1  0> yields <0.50 0.00>
     //     <0 0 1> yields <0.25 0.50>       < 0  0 -1> yields <0.75 0.50>
     vec3 pp = normalize(p); // normalize to get sensible values for acos, otherwise floating point exceptions will happen
-    float theta = acos(-pp.y);
-    float phi = atan2(-pp.z, pp.x) + pi;
+    float theta = (float)acos(-pp.y);
+    float phi = (float)atan2(-pp.z, pp.x) + pi;
     out_u = phi / (2.0f * pi);
     out_v = theta / pi;
   }

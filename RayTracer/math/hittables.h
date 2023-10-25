@@ -1,10 +1,11 @@
 #pragma once
 
-#include "engine/vec3.h"
-#include "engine/aabb.h"
+#include "math/vec3.h"
+#include "math/aabb.h"
 
 #include "app/factories.h"
 #include "app/asset.h"
+#include <array>
 
 class material;
 class mesh;

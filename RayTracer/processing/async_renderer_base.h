@@ -1,7 +1,7 @@
 #pragma once
 
-#include "engine/vec3.h"
-#include "engine/ray.h"
+#include "math/vec3.h"
+#include "math/ray.h"
 #include "math/hittables.h"
 #include "chunk_generator.h"
 #include "gfx/bmp.h"

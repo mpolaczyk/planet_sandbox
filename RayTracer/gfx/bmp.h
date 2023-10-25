@@ -1,6 +1,7 @@
 #pragma once
 
 #include "math/common.h"
+#include <assert.h>
 
 namespace bmp
 {

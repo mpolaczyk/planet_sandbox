@@ -1,4 +1,4 @@
-#include "ray.h"
+#include "math/ray.h"
 
 namespace engine
 {

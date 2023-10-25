@@ -2,6 +2,7 @@
 
 #include "app/asset.h"
 #include "app/factories.h"
+#include <sstream>
 
 
 asset_type asset::get_static_asset_type()

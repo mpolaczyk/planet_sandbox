@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <ppl.h>
+#include <sstream>
 
 #include "engine.h"
 using namespace engine;
