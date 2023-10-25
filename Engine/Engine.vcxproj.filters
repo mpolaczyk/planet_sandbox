@@ -14,6 +14,8 @@
     <ClInclude Include="engine\stats.h" />
     <ClInclude Include="engine\vec3.h" />
     <ClInclude Include="engine\fpexcept.h" />
+    <ClInclude Include="engine\ray.h" />
+    <ClInclude Include="engine\hit.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -25,5 +27,7 @@
     <ClCompile Include="engine\stats.cpp" />
     <ClCompile Include="engine\hash.cpp" />
     <ClCompile Include="engine\fpexcept.cpp" />
+    <ClCompile Include="engine\ray.cpp" />
+    <ClCompile Include="engine\hit.cpp" />
   </ItemGroup>
 </Project>

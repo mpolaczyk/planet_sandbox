@@ -1,7 +1,6 @@
 #pragma once
 
 #include "engine/vec3.h"
-#include "ray.h"
 
 struct plane
 {

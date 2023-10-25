@@ -207,13 +207,11 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClInclude Include="math\aabb.h" />
     <ClInclude Include="math\camera.h" />
     <ClInclude Include="math\common.h" />
-    <ClInclude Include="math\hit.h" />
     <ClInclude Include="math\hittables.h" />
     <ClInclude Include="math\materials.h" />
     <ClInclude Include="math\mesh.h" />
     <ClInclude Include="math\onb.h" />
     <ClInclude Include="math\pdf.h" />
-    <ClInclude Include="math\ray.h" />
     <ClInclude Include="math\textures.h" />
     <ClInclude Include="processing\async_renderer_base.h" />
     <ClInclude Include="processing\benchmark.h" />

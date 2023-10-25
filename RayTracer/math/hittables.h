@@ -1,7 +1,6 @@
 #pragma once
 
-#include "ray.h"
-#include "hit.h"
+#include "engine/vec3.h"
 #include "aabb.h"
 
 #include "app/factories.h"

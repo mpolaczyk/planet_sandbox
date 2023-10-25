@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ray.h"
+#include "engine/ray.h"
 #include "engine/vec3.h"
 
 class aabb 

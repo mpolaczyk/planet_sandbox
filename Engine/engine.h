@@ -14,5 +14,7 @@
 #include "engine/colors.h"
 #include "engine/stats.h"
 #include "engine/fpexcept.h"
+#include "engine/ray.h"
+#include "engine/hit.h"
 
 #include "core/entry_point.h"

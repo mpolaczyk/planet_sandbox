@@ -165,9 +165,6 @@
     <ClInclude Include="math\onb.h">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="math\ray.h">
-      <Filter>math</Filter>
-    </ClInclude>
     <ClInclude Include="math\textures.h">
       <Filter>math</Filter>
     </ClInclude>
@@ -237,9 +234,6 @@
     </ClInclude>
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp">
       <Filter>third_party</Filter>
-    </ClInclude>
-    <ClInclude Include="math\hit.h">
-      <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="renderers\preview_normals_renderer.h">
       <Filter>renderers</Filter>

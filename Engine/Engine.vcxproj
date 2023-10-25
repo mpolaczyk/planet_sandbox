@@ -99,10 +99,12 @@
     <ClInclude Include="core\entry_point.h" />
     <ClInclude Include="engine\fpexcept.h" />
     <ClInclude Include="engine\hash.h" />
+    <ClInclude Include="engine\hit.h" />
     <ClInclude Include="engine\io.h" />
     <ClInclude Include="engine\log.h" />
     <ClInclude Include="engine\math.h" />
     <ClInclude Include="engine\random.h" />
+    <ClInclude Include="engine\ray.h" />
     <ClInclude Include="engine\stats.h" />
     <ClInclude Include="engine\vec3.h" />
   </ItemGroup>
@@ -111,10 +113,12 @@
     <ClCompile Include="engine\colors.cpp" />
     <ClCompile Include="engine\fpexcept.cpp" />
     <ClCompile Include="engine\hash.cpp" />
+    <ClCompile Include="engine\hit.cpp" />
     <ClCompile Include="engine\io.cpp" />
     <ClCompile Include="engine\log.cpp" />
     <ClCompile Include="engine\math.cpp" />
     <ClCompile Include="engine\random.cpp" />
+    <ClCompile Include="engine\ray.cpp" />
     <ClCompile Include="engine\stats.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
