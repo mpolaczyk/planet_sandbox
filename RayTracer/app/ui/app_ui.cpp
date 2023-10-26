@@ -6,7 +6,7 @@
 #include "processing/chunk_generator.h"
 #include "processing/async_renderer_base.h"
 #include "math/camera.h"
-#include "math/materials.h"
+
 #include "app/factories.h"
 
 void draw_raytracer_window(raytracer_window_model& model, app_instance& state)
@@ -116,10 +116,10 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
 
   draw_material_selection_combo(model.m_model, state);
 
-  material* mat = globals::get_asset_registry()->get_asset<material>(model.m_model.selected_material_id);
+  engine::material* mat = globals::get_asset_registry()->get_asset<engine::material>(model.m_model.selected_material_id);
   if (mat != nullptr)
   {
-    mat->draw_edit_panel();
+    //mat->draw_edit_panel(); FIX
   }
 }
 
@@ -220,7 +220,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
     material_selection_combo_model m_model;
     if (model.m_model.selected_material_id == -1)
     {
-      const material* mat = selected_obj->material_asset.get();
+      const engine::material* mat = selected_obj->material_asset.get();
       if (mat != nullptr)
       {
         m_model.selected_material_id = mat->get_runtime_id();
@@ -294,8 +294,8 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
 void draw_material_selection_combo(material_selection_combo_model& model, app_instance& state)
 {
-  std::vector<material*> materials = globals::get_asset_registry()->get_assets<material>();
-  material* selected_material = globals::get_asset_registry()->get_asset<material>(model.selected_material_id);
+  std::vector<engine::material*> materials = globals::get_asset_registry()->get_assets<engine::material>();
+  engine::material* selected_material = globals::get_asset_registry()->get_asset<engine::material>(model.selected_material_id);
 
   if (materials.size() > 0)
   {

@@ -22,6 +22,10 @@
     <ClInclude Include="math\triangle_face.h" />
     <ClInclude Include="math\camera.h" />
     <ClInclude Include="math\plane.h" />
+    <ClInclude Include="asset\textures.h" />
+    <ClInclude Include="asset\mesh.h" />
+    <ClInclude Include="asset\materials.h" />
+    <ClInclude Include="asset\asset.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -39,5 +43,9 @@
     <ClCompile Include="math\onb.cpp" />
     <ClCompile Include="math\camera.cpp" />
     <ClCompile Include="math\plane.cpp" />
+    <ClCompile Include="asset\textures.cpp" />
+    <ClCompile Include="asset\mesh.cpp" />
+    <ClCompile Include="asset\materials.cpp" />
+    <ClCompile Include="asset\asset.cpp" />
   </ItemGroup>
 </Project>

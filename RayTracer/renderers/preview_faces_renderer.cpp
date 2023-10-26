@@ -3,7 +3,6 @@
 #include <ppl.h>
 #include <sstream>
 
-#include "math/materials.h"
 #include "math/hittables.h"
 #include "math/camera.h"
 #include "processing/benchmark.h"
@@ -51,7 +50,7 @@ void preview_faces_renderer::render_chunk(const chunk& in_chunk)
 
       if (job_state.scene_root->hit(r, 0.01f, math::infinity, h))
       {
-        int color_index = (h.object->id + h.face_id) % colors::num;
+        int color_index = (static_cast<hittable*>(h.object)->id + h.face_id) % colors::num;
         pixel_color = colors::all[color_index];
       }
       

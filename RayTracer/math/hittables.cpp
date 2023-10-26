@@ -2,8 +2,7 @@
 
 #include "math/aabb.h"
 #include "math/onb.h"
-#include "materials.h"
-#include "mesh.h"
+
 #include "hittables.h"
 
 int hittable::last_id = 0;
@@ -62,7 +61,7 @@ void scene::query_lights()
   lights_num = 0;
   for (hittable* object : objects)
   {
-    const material* mat = object->material_asset.get();
+    const engine::material* mat = object->material_asset.get();
     if (mat != nullptr && mat->type == material_type::light)
     {
       lights[lights_num] = object;
@@ -590,12 +589,12 @@ void static_mesh::pre_render()
   // Create a temporary object and modify it, reuse it next frame
   std::ostringstream oss;
   oss << "temp_" << mesh_asset.get_name() << "_hittable_id_" << id;
-  runtime_asset = globals::get_asset_registry()->find_asset<mesh>(oss.str());
+  runtime_asset = globals::get_asset_registry()->find_asset<engine::mesh>(oss.str());
   if (runtime_asset == nullptr)
   {
-    if (globals::get_asset_registry()->find_asset<mesh>(mesh_asset.get_name()) != nullptr)
+    if (globals::get_asset_registry()->find_asset<engine::mesh>(mesh_asset.get_name()) != nullptr)
     {
-      runtime_asset = globals::get_asset_registry()->clone_asset<mesh>(mesh_asset.get()->get_runtime_id(), oss.str());
+      runtime_asset = globals::get_asset_registry()->clone_asset<engine::mesh>(mesh_asset.get()->get_runtime_id(), oss.str());
     }
     else
     {

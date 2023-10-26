@@ -46,13 +46,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\Build\$(Platform)_$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\Intermediate\$(Platform)_$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Build\$(ProjectName)_$(Platform)_$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Intermediate\$(ProjectName)_$(Platform)_$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\Build\$(Platform)_$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\Intermediate\$(Platform)_$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Build\$(ProjectName)_$(Platform)_$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Intermediate\$(ProjectName)_$(Platform)_$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -72,15 +72,16 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(OutDirFullPath)Engine.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;$(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)Build\Engine_x64_Debug\Engine.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;$(SolutionDir)Intermediate\$(ProjectName)_$(Platform)_$(Configuration)\trace_ray.obj;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)Build\$(Platform)_$(Configuration)\WinPixEventRuntime.dll</Command>
+      <Command>copy $(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)Build\$(ProjectName)_$(Platform)_$(Configuration)\WinPixEventRuntime.dll
+copy $(SolutionDir)Build\Engine_x64_Debug\Engine.dll $(SolutionDir)Build\RayTracer_x64_Debug\Engine.dll</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>mkdir $(SolutionDir)Build\$(Platform)_$(Configuration) 2&gt; NUL
-ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj -h $(ProjectDir)\renderers\trace_ray.h -g -O0 --arch=x86-64 --target=avx2-i32x16</Command>
+      <Command>mkdir $(SolutionDir)Build\$(ProjectName)_$(Platform)_$(Configuration) 2&gt; NUL
+ispc $(ProjectDir)renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(ProjectName)_$(Platform)_$(Configuration)\trace_ray.obj -h $(ProjectDir)renderers\trace_ray.h -g -O0 --arch=x86-64 --target=avx2-i32x16</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -111,16 +112,17 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(OutDirFullPath)Engine.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;$(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)Build\Engine_x64_Release\Engine.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;$(SolutionDir)Intermediate\$(ProjectName)_$(Platform)_$(Configuration)\trace_ray.obj;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)Build\$(Platform)_$(Configuration)\WinPixEventRuntime.dll</Command>
+      <Command>copy $(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)Build\$(ProjectName)_$(Platform)_$(Configuration)\WinPixEventRuntime.dll
+copy $(SolutionDir)Build\Engine_x64_Release\Engine.dll $(SolutionDir)Build\RayTracer_x64_Release\Engine.dll</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>mkdir $(SolutionDir)Build\$(Platform)_$(Configuration) 2&gt; NUL
-ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Platform)_$(Configuration)\trace_ray.obj -h $(ProjectDir)\renderers\trace_ray.h --arch=x86-64 --target=avx2-i32x16</Command>
+      <Command>mkdir $(SolutionDir)Build\$(ProjectName)_$(Platform)_$(Configuration) 2&gt; NUL
+ispc $(ProjectDir)renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(ProjectName)_$(Platform)_$(Configuration)\trace_ray.obj -h $(ProjectDir)renderers\trace_ray.h --arch=x86-64 --target=avx2-i32x16</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -143,9 +145,6 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\common.cpp" />
     <ClCompile Include="math\hittables.cpp" />
-    <ClCompile Include="math\materials.cpp" />
-    <ClCompile Include="math\mesh.cpp" />
-    <ClCompile Include="math\textures.cpp" />
     <ClCompile Include="processing\async_renderer_base.cpp" />
     <ClCompile Include="processing\benchmark.cpp" />
     <ClCompile Include="processing\chunk_generator.cpp" />
@@ -205,9 +204,6 @@ ispc $(ProjectDir)\renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Plat
     <ClInclude Include="gfx\tiny_obj_loader.h" />
     <ClInclude Include="math\common.h" />
     <ClInclude Include="math\hittables.h" />
-    <ClInclude Include="math\materials.h" />
-    <ClInclude Include="math\mesh.h" />
-    <ClInclude Include="math\textures.h" />
     <ClInclude Include="processing\async_renderer_base.h" />
     <ClInclude Include="processing\benchmark.h" />
     <ClInclude Include="processing\chunk_generator.h" />

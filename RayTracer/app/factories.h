@@ -2,25 +2,11 @@
 
 // No RTTI, simple type detection for each object type
 
-class material;
 class async_renderer_base;
 class hittable;
-class texture;
-class asset;
-class mesh;
 
-enum class material_type
-{
-  none = 0,
-  universal,
-  light
-};
-static inline const char* material_type_names[] =
-{
-  "None",
-  "Universal",
-  "Light"
-};
+#include "engine.h"
+
 
 enum class renderer_type
 {
@@ -75,9 +61,9 @@ public:
 
   // Resources 
 
-  static material* spawn_material(material_type type);
+  static engine::material* spawn_material(material_type type);
 
-  static mesh* spawn_mesh();
+  static engine::mesh* spawn_mesh();
 
-  static texture* spawn_texture();
+  static engine::texture* spawn_texture();
 };

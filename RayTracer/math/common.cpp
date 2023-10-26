@@ -7,7 +7,6 @@
 #include "gfx/stb_image.h"
 #include "gfx/tiny_obj_loader.h"
 
-#include "textures.h"
 
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
@@ -103,7 +102,7 @@ namespace obj_helper
 
 namespace img_helper
 {
-  bool load_img(const std::string& file_name, int width, int height, texture* out_texture)
+  bool load_img(const std::string& file_name, int width, int height, engine::texture* out_texture)
   {
     std::string path = engine::io::get_texture_file_path(file_name.c_str());
 

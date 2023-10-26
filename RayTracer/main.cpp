@@ -12,7 +12,7 @@
 
 #include "app/app.h"
 #include "gfx/dx11_helper.h"
-#include "math/materials.h"
+
 #include "processing/async_renderer_base.h"
 #include "app/factories.h"
 

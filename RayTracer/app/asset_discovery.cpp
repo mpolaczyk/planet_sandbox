@@ -7,11 +7,7 @@
 
 #include "json/assets_json.h"
 
-#include "math/materials.h"
-#include "math/mesh.h"
-#include "math/textures.h"
-
-material* asset_discovery::load_material(const std::string& material_name)
+engine::material* asset_discovery::load_material(const std::string& material_name)
 {
   LOG_DEBUG("Loading material: {0}", material_name.c_str());
 
@@ -33,7 +29,7 @@ material* asset_discovery::load_material(const std::string& material_name)
     return nullptr;
   }
 
-  material* obj = object_factory::spawn_material(type);
+  engine::material* obj = object_factory::spawn_material(type);
   if (obj == nullptr)
   {
     LOG_ERROR("Invalid material type: {0}", static_cast<int>(type));
@@ -44,7 +40,7 @@ material* asset_discovery::load_material(const std::string& material_name)
   return obj;
 }
 
-mesh* asset_discovery::load_mesh(const std::string& mesh_name)
+engine::mesh* asset_discovery::load_mesh(const std::string& mesh_name)
 {
   LOG_DEBUG("Loading mesh: {0}", mesh_name.c_str());
 
@@ -58,7 +54,7 @@ mesh* asset_discovery::load_mesh(const std::string& mesh_name)
     return nullptr;
   }
 
-  mesh* obj = object_factory::spawn_mesh();
+  engine::mesh* obj = object_factory::spawn_mesh();
   if (obj == nullptr)
   {
     LOG_ERROR("Failed to spawn mesh object.");
@@ -78,7 +74,7 @@ mesh* asset_discovery::load_mesh(const std::string& mesh_name)
   return obj;
 }
 
-texture* asset_discovery::load_texture(const std::string& texture_name)
+engine::texture* asset_discovery::load_texture(const std::string& texture_name)
 {
   LOG_DEBUG("Loading texture: {0}", texture_name.c_str());
 
@@ -92,7 +88,7 @@ texture* asset_discovery::load_texture(const std::string& texture_name)
     return nullptr;
   }
 
-  texture* obj = object_factory::spawn_texture();
+  engine::texture* obj = object_factory::spawn_texture();
   if (obj == nullptr)
   {
     LOG_ERROR("Failed to spawn texture object.");
@@ -112,7 +108,7 @@ texture* asset_discovery::load_texture(const std::string& texture_name)
   return obj;
 }
 
-void asset_discovery::save_material(const material* object)
+void asset_discovery::save_material(const engine::material* object)
 {
   assert(object != nullptr);
 

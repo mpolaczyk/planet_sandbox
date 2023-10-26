@@ -5,7 +5,7 @@
 #include "app.h"
 #include "factories.h"
 #include "math/hittables.h"
-#include "math/materials.h"
+
 #include "processing/async_renderer_base.h"
 
 app_instance::app_instance()
@@ -59,7 +59,7 @@ void handle_input(app_instance& state)
     hit_record hit;
     if (state.scene_root->hit(r, 0.0f, math::infinity, hit))
     {
-      state.selected_object = hit.object;
+      state.selected_object = static_cast<hittable*>(hit.object); // FIX
     }
 
     state.output_window_lmb_x = -1.0f;

@@ -2,29 +2,29 @@
 
 #include "app/json/serializable.h"
 
-class material;
-class mesh;
+#include "engine.h"
+
 struct soft_asset_ptr_base;
 
 class material_serializer
 {
 public:
-  static nlohmann::json serialize(const material* value);
-  static void deserialize(const nlohmann::json& j, material* out_value);
+  static nlohmann::json serialize(const engine::material* value);
+  static void deserialize(const nlohmann::json& j, engine::material* out_value);
 };
 
 class mesh_serializer
 {
 public:
-  static nlohmann::json serialize(const mesh* value);
-  static void deserialize(const nlohmann::json& j, mesh* out_value);
+  static nlohmann::json serialize(const engine::mesh* value);
+  static void deserialize(const nlohmann::json& j, engine::mesh* out_value);
 };
 
 class texture_serializer
 {
 public:
-  static nlohmann::json serialize(const texture* value);
-  static void deserialize(const nlohmann::json& j, texture* out_value);
+  static nlohmann::json serialize(const engine::texture* value);
+  static void deserialize(const nlohmann::json& j, engine::texture* out_value);
 };
 
 class soft_asset_ptr_base_serializer

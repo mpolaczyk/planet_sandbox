@@ -105,15 +105,6 @@
     <ClCompile Include="app\asset.cpp">
       <Filter>app</Filter>
     </ClCompile>
-    <ClCompile Include="math\materials.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="math\mesh.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="math\textures.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -148,12 +139,6 @@
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="math\hittables.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="math\materials.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="math\textures.h">
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="renderers\example_renderer.h">
@@ -231,9 +216,6 @@
     </ClInclude>
     <ClInclude Include="app\asset.h">
       <Filter>app</Filter>
-    </ClInclude>
-    <ClInclude Include="math\mesh.h">
-      <Filter>math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

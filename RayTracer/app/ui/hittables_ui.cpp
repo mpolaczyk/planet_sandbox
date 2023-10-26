@@ -5,7 +5,6 @@
 #include "imgui.h"
 
 #include "math/hittables.h"
-#include "math/materials.h"
 
 void hittable::get_name(std::string& out_name, bool with_params) const
 {

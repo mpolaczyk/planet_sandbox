@@ -7,7 +7,6 @@
 #include "app/asset.h"
 #include <array>
 
-class material;
 class mesh;
 
 constexpr int32_t MAX_LIGHTS = 50;
@@ -53,7 +52,7 @@ public:
 
   // Persistent members
   hittable_type type = hittable_type::scene;
-  soft_asset_ptr<material> material_asset;
+  soft_asset_ptr<engine::material> material_asset;
 
   // Runtime members
   aabb bounding_box;
@@ -275,10 +274,10 @@ public:
   vec3 origin = vec3(0,0,0);
   vec3 scale = vec3(1,1,1);
   vec3 rotation = vec3(0,0,0);  // degrees
-  soft_asset_ptr<mesh> mesh_asset;
+  soft_asset_ptr<engine::mesh> mesh_asset;
 
   // Runtime state
-  mesh* runtime_asset;  // Vertices translated to the world coordinates
+  engine::mesh* runtime_asset;  // Vertices translated to the world coordinates
    
 
   mutable float extent = 0.0f;

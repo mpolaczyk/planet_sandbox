@@ -3,7 +3,6 @@
 #include <ppl.h>
 #include <sstream>
 
-#include "math/materials.h"
 #include "math/hittables.h"
 #include "math/camera.h"
 #include "processing/benchmark.h"

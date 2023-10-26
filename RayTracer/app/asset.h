@@ -2,53 +2,10 @@
 
 #include <vector>
 #include <string>
-
-#include "engine.h"
 #include <assert.h>
 
-enum class asset_type : int
-{
-  none = 0,
-  material,
-  texture,
-  static_mesh
-};
-static inline const char* asset_type_names[] =
-{
-  "None",
-  "Material",
-  "Texture",
-  "Static Mesh"
-};
+#include "engine.h"
 
-// Persistent objects or those having resources on disk
-// Base class for all assets, use like abstract
-class asset
-{
-  friend asset_registry;
-
-public:
-  // Implement static functions in child classes!
-  // They are not virtual members on purpose, most of the time when they are needed, there is no instance available
-  static asset_type get_static_asset_type();
-  static asset* load(const std::string& asset_name);
-  static void save(asset* object);
-  static asset* spawn();
-
-  virtual std::string get_display_name() const;
-
-  void set_runtime_id(int id);
-  int get_runtime_id() const;
-
-  std::string get_asset_name() const;
-  asset_type get_asset_type() const;
-
-private:
-  
-  // Can be set only once by the registry, index in the vector
-  // Can't change at runtime, can't be cloned
-  int runtime_id = -1;
-};
 
 struct soft_asset_ptr_base
 {
@@ -212,7 +169,7 @@ public:
     return ans;
   }
 
-  std::vector<asset*> get_all_assets()
+  std::vector<engine::asset*> get_all_assets()
   {
     return assets;
   }
@@ -257,5 +214,5 @@ private:
   // None of this can change at runtime after is added
   std::vector<std::string> names;
   std::vector<asset_type> types;
-  std::vector<asset*> assets;
+  std::vector<engine::asset*> assets;
 };

@@ -2,10 +2,7 @@
 
 #include "factories.h"
 
-#include "math/materials.h"
-#include "math/textures.h"
 #include "math/hittables.h"
-#include "math/mesh.h"
 
 #include "processing/async_renderer_base.h"
 
@@ -47,17 +44,17 @@ hittable* object_factory::spawn_hittable(hittable_type type)
   return obj;
 }
 
-material* object_factory::spawn_material(material_type type)
+engine::material* object_factory::spawn_material(material_type type)
 {
-  return new material(type);
+  return new engine::material(type);
 }
 
-mesh* object_factory::spawn_mesh()
+engine::mesh* object_factory::spawn_mesh()
 {
-  return new mesh();
+  return new engine::mesh();
 }
 
-texture* object_factory::spawn_texture()
+engine::texture* object_factory::spawn_texture()
 {
-  return new texture();
+  return new engine::texture();
 }

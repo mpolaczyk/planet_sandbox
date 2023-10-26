@@ -10,9 +10,6 @@
 
 #include "app/asset.h"
 
-#include "math/materials.h"
-#include "math/textures.h"
-#include "math/mesh.h"
 
 #include "math/camera.h"
 
@@ -104,10 +101,10 @@ void app_instance::load_assets()
   std::vector<std::string> material_names = engine::io::discover_material_files(false);
   for (const std::string& name : material_names)
   {
-    material* temp = material::load(name);
+    engine::material* temp = engine::material::load(name);
     if (temp != nullptr)
     {
-      globals::get_asset_registry()->add<material>(temp, name);
+      globals::get_asset_registry()->add<engine::material>(temp, name);
     }
   }
 
@@ -126,10 +123,10 @@ void app_instance::load_assets()
   std::vector<std::string> mesh_names = engine::io::discover_mesh_files(false);
   for (const std::string& name : mesh_names)
   {
-    mesh* temp = mesh::load(name);
+    engine::mesh* temp = engine::mesh::load(name);
     if (temp != nullptr)
     {
-      globals::get_asset_registry()->add<mesh>(temp, name);
+      globals::get_asset_registry()->add<engine::mesh>(temp, name);
     }
   }
 
@@ -188,10 +185,10 @@ void app_instance::save_materials()
 {
   LOG_INFO("Saving: materials");
 
-  std::vector<material*> materials = globals::get_asset_registry()->get_assets<material>();
-  for (material* m : materials)
+  std::vector<engine::material*> materials = globals::get_asset_registry()->get_assets<engine::material>();
+  for (engine::material* m : materials)
   {
-    material::save(m);
+    engine::material::save(m);
   }
 }
 

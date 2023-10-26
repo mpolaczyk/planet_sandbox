@@ -24,6 +24,10 @@
 #include "math/triangle_face.h"
 #include "math/camera.h"
 #include "math/plane.h"
+#include "asset/asset.h"
+#include "asset/materials.h"
+#include "asset/mesh.h"
+#include "asset/textures.h"
 
 #include "profile/stats.h"
 

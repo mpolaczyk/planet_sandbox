@@ -4,11 +4,10 @@
 
 #include "math/vec3.h"
 
-class material;
-class hittable;
-
 namespace engine
 {
+  class material;
+
   struct ENGINE_API hit_record
   {
     vec3 p;         // hit point
@@ -18,7 +17,7 @@ namespace engine
     float v;
     const material* material_ptr = nullptr;
     bool front_face;
-    hittable* object = nullptr;
+    void* object = nullptr; //FIX
     int face_id = 0;
   };
 }

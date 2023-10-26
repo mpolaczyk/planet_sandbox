@@ -44,12 +44,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)\Build\$(Platform)_$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\Intermediate\$(Platform)_$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)\Build\$(ProjectName)_$(Platform)_$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\Intermediate\$(ProjectName)_$(Platform)_$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)\Build\$(Platform)_$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\Intermediate\$(Platform)_$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)\Build\$(ProjectName)_$(Platform)_$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\Intermediate\$(ProjectName)_$(Platform)_$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -92,6 +92,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="asset\asset.h" />
+    <ClInclude Include="asset\materials.h" />
+    <ClInclude Include="asset\mesh.h" />
+    <ClInclude Include="asset\textures.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="core\application.h" />
     <ClInclude Include="math\aabb.h" />
@@ -115,6 +119,10 @@
     <ClInclude Include="math\vec3.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="asset\asset.cpp" />
+    <ClCompile Include="asset\materials.cpp" />
+    <ClCompile Include="asset\mesh.cpp" />
+    <ClCompile Include="asset\textures.cpp" />
     <ClCompile Include="core\application.cpp" />
     <ClCompile Include="math\aabb.cpp" />
     <ClCompile Include="math\camera.cpp" />

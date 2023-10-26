@@ -6,13 +6,10 @@
 #include "app/json/vec3_json.h"
 #include "app/json/assets_json.h"
 
-#include "math/materials.h"
-#include "math/mesh.h"
-#include "math/textures.h"
 
 #include "math/colors.h"
 
-nlohmann::json material_serializer::serialize(const material* value)
+nlohmann::json material_serializer::serialize(const engine::material* value)
 {
   assert(value != nullptr);
   nlohmann::json j;
@@ -27,7 +24,7 @@ nlohmann::json material_serializer::serialize(const material* value)
   return j;
 }
 
-void material_serializer::deserialize(const nlohmann::json& j, material* out_value)
+void material_serializer::deserialize(const nlohmann::json& j, engine::material* out_value)
 {
   assert(out_value != nullptr);
 
@@ -58,7 +55,7 @@ void material_serializer::deserialize(const nlohmann::json& j, material* out_val
 
 
 
-nlohmann::json mesh_serializer::serialize(const mesh* value)
+nlohmann::json mesh_serializer::serialize(const engine::mesh* value)
 {
   assert(value != nullptr);
   nlohmann::json j;
@@ -67,7 +64,7 @@ nlohmann::json mesh_serializer::serialize(const mesh* value)
   return j;
 }
 
-void mesh_serializer::deserialize(const nlohmann::json& j, mesh* out_value)
+void mesh_serializer::deserialize(const nlohmann::json& j, engine::mesh* out_value)
 {
   assert(out_value != nullptr);
 
@@ -78,7 +75,7 @@ void mesh_serializer::deserialize(const nlohmann::json& j, mesh* out_value)
 
 
 
-nlohmann::json texture_serializer::serialize(const texture* value)
+nlohmann::json texture_serializer::serialize(const engine::texture* value)
 {
   assert(value != nullptr);
   nlohmann::json j;
@@ -88,7 +85,7 @@ nlohmann::json texture_serializer::serialize(const texture* value)
   return j;
 }
 
-void texture_serializer::deserialize(const nlohmann::json& j, texture* out_value)
+void texture_serializer::deserialize(const nlohmann::json& j, engine::texture* out_value)
 {
   assert(out_value != nullptr);
 
