@@ -95,6 +95,7 @@
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="asset\materials.h" />
     <ClInclude Include="asset\mesh.h" />
+    <ClInclude Include="asset\soft_asset_ptr.h" />
     <ClInclude Include="asset\textures.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="core\application.h" />
@@ -122,6 +123,8 @@
     <ClCompile Include="asset\asset.cpp" />
     <ClCompile Include="asset\materials.cpp" />
     <ClCompile Include="asset\mesh.cpp" />
+    <ClCompile Include="asset\soft_asset_ptr.cpp" />
+    <ClCompile Include="asset\soft_asset_ptr_inst.cpp" />
     <ClCompile Include="asset\textures.cpp" />
     <ClCompile Include="core\application.cpp" />
     <ClCompile Include="math\aabb.cpp" />

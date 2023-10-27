@@ -30,6 +30,6 @@ public:
 class soft_asset_ptr_base_serializer
 {
 public:
-  static nlohmann::json serialize(const soft_asset_ptr_base* value);
-  static void deserialize(const nlohmann::json& j, soft_asset_ptr_base* out_value);
+  static nlohmann::json serialize(const engine::soft_asset_ptr_base* value);
+  static void deserialize(const nlohmann::json& j, engine::soft_asset_ptr_base* out_value);
 };

@@ -6,7 +6,7 @@
 
 #include "asset/asset.h"
 #include "math/vec3.h"
-
+#include "asset/soft_asset_ptr.h"
 
 namespace engine
 {

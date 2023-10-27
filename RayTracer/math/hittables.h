@@ -1,11 +1,16 @@
 #pragma once
 
+#include <array>
+
 #include "math/vec3.h"
 #include "math/aabb.h"
 
 #include "app/factories.h"
 #include "app/asset.h"
-#include <array>
+
+#include "core/core.h" 
+#include "asset/soft_asset_ptr.h"
+#include "asset/materials.h"
 
 class mesh;
 
@@ -52,7 +57,7 @@ public:
 
   // Persistent members
   hittable_type type = hittable_type::scene;
-  soft_asset_ptr<engine::material> material_asset;
+  engine::soft_asset_ptr<engine::material> material_asset;
 
   // Runtime members
   aabb bounding_box;

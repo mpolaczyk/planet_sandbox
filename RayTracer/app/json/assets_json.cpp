@@ -6,7 +6,6 @@
 #include "app/json/vec3_json.h"
 #include "app/json/assets_json.h"
 
-
 #include "math/colors.h"
 
 nlohmann::json material_serializer::serialize(const engine::material* value)
@@ -97,7 +96,7 @@ void texture_serializer::deserialize(const nlohmann::json& j, engine::texture* o
 
 
 
-nlohmann::json soft_asset_ptr_base_serializer::serialize(const soft_asset_ptr_base* value)
+nlohmann::json soft_asset_ptr_base_serializer::serialize(const engine::soft_asset_ptr_base* value)
 {
   assert(value != nullptr);
   nlohmann::json j;
@@ -105,7 +104,7 @@ nlohmann::json soft_asset_ptr_base_serializer::serialize(const soft_asset_ptr_ba
   return j;
 }
 
-void soft_asset_ptr_base_serializer::deserialize(const nlohmann::json& j, soft_asset_ptr_base* out_value)
+void soft_asset_ptr_base_serializer::deserialize(const nlohmann::json& j, engine::soft_asset_ptr_base* out_value)
 {
   assert(out_value != nullptr);
 

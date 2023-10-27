@@ -7,67 +7,7 @@
 #include "engine.h"
 
 
-struct soft_asset_ptr_base
-{
-  friend class soft_asset_ptr_base_serializer;
 
-protected:
-  // Persistent name, or the one used to discovery on the disk
-  // Can't change at runtime as I have no dependency update mechanism
-  std::string name;
-};
-// Soft asset pointer - persistent weak sync loading pointer to an asset
-// First get() call will trigger sync load and register asset
-// Second get() call will return cached pointer
-// No ref counting, no ownership
-// set_name can be called multiple times with different values, this will invalidate existing pointer and load different asset
-template<typename T>
-struct soft_asset_ptr : public soft_asset_ptr_base
-{
-  void set_name(const std::string& in_name)
-  {
-    if (in_name != name)
-    {
-      name = in_name;
-      object = nullptr;
-    }
-  }
-
-  std::string get_name() const
-  {
-    return name;
-  }
-
-  bool is_loaded() const
-  {
-    return object != nullptr;
-  }
-
-  const T* get() const
-  {
-    if (!is_loaded())
-    {
-      object = globals::get_asset_registry()->find_asset<T>(name);
-      if (object == nullptr)
-      {
-        object = T::load(name);
-        if (object != nullptr)
-        {
-          globals::get_asset_registry()->add<T>(object, name);
-        }
-        else
-        {
-          LOG_ERROR("Unable to find asset: {0}", name);
-        }
-      }
-    }
-    return object;
-  }
-
-private:
-
-  mutable T* object = nullptr;
-};
 
 
 // Collection of assets of any kind.
@@ -78,7 +18,7 @@ private:
 // Assets can't be deleted from memory -> no dependence lookup or reference counting
 class asset_registry
 {
-  // Only one instance allowed
+  // Only one instance allowed TODO singleton
   static bool created;
 
 public:

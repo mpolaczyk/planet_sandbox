@@ -26,6 +26,7 @@
     <ClInclude Include="asset\mesh.h" />
     <ClInclude Include="asset\materials.h" />
     <ClInclude Include="asset\asset.h" />
+    <ClInclude Include="asset\soft_asset_ptr.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -47,5 +48,7 @@
     <ClCompile Include="asset\mesh.cpp" />
     <ClCompile Include="asset\materials.cpp" />
     <ClCompile Include="asset\asset.cpp" />
+    <ClCompile Include="asset\soft_asset_ptr.cpp" />
+    <ClCompile Include="asset\soft_asset_ptr_inst.cpp" />
   </ItemGroup>
 </Project>

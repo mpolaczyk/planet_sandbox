@@ -9,6 +9,10 @@
 
 #include "app/factories.h"
 
+#include "core/core.h"
+#include "engine.h"
+
+
 void draw_raytracer_window(raytracer_window_model& model, app_instance& state)
 {
   ImGui::Begin("RAYTRACER", nullptr);
