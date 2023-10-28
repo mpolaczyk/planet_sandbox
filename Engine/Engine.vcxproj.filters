@@ -28,9 +28,13 @@
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="asset\soft_asset_ptr.h" />
     <ClInclude Include="asset\asset_registry.h" />
-    <ClInclude Include="engine\exceptions.h" />
-    <ClInclude Include="engine\windows_minimal.h" />
+    <ClInclude Include="core\exceptions.h" />
+    <ClInclude Include="core\windows_minimal.h" />
     <ClInclude Include="profile\benchmark.h" />
+    <ClInclude Include="third_party\stb_image.h" />
+    <ClInclude Include="third_party\tiny_obj_loader.h" />
+    <ClInclude Include="engine\bmp.h" />
+    <ClInclude Include="third_party\asset_tools.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -57,7 +61,9 @@
     <ClCompile Include="asset\asset_registry.cpp" />
     <ClCompile Include="asset\asset_registry_temp.cpp" />
     <ClCompile Include="asset\asset_registry_inst.cpp" />
-    <ClCompile Include="engine\exceptions.cpp" />
+    <ClCompile Include="core\exceptions.cpp" />
     <ClCompile Include="profile\benchmark.cpp" />
+    <ClCompile Include="engine\bmp.cpp" />
+    <ClCompile Include="third_party\asset_tools.cpp" />
   </ItemGroup>
 </Project>

@@ -5,7 +5,7 @@
 #include "profile/benchmark.h"
 
 #if USE_PIX
-#include "engine/windows_minimal.h"
+#include "core/windows_minimal.h"
 #include "pix3.h" // https://devblogs.microsoft.com/pix/winpixeventruntime
 #endif
 

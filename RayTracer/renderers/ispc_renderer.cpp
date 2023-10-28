@@ -37,8 +37,8 @@ void ispc_renderer::render()
       index++;
       vec3 pixel_color = vec3(value.v[0], value.v[1], value.v[2]);
 
-      bmp::bmp_pixel p(pixel_color);
-      job_state.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
+      bmp_pixel p(pixel_color);
+      job_state.img_rgb->draw_pixel(x, y, &p, bmp_format::rgba);
       if (save_output)
       {
         job_state.img_bgr->draw_pixel(x, y, &p);

@@ -3,9 +3,6 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="gfx\bmp.cpp">
-      <Filter>gfx</Filter>
-    </ClCompile>
     <ClCompile Include="gfx\dx11_helper.cpp">
       <Filter>gfx</Filter>
     </ClCompile>
@@ -99,13 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="gfx\bmp.h">
-      <Filter>gfx</Filter>
-    </ClInclude>
     <ClInclude Include="gfx\dx11_helper.h">
-      <Filter>gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="gfx\stb_image.h">
       <Filter>gfx</Filter>
     </ClInclude>
     <ClInclude Include="processing\async_renderer_base.h">
@@ -143,9 +134,6 @@
     </ClInclude>
     <ClInclude Include="renderers\trace_ray.h">
       <Filter>renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="gfx\tiny_obj_loader.h">
-      <Filter>gfx</Filter>
     </ClInclude>
     <ClInclude Include="app\json\vec3_json.h">
       <Filter>app\json</Filter>

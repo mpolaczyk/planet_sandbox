@@ -65,7 +65,7 @@ engine::mesh* asset_discovery::load_mesh(const std::string& mesh_name)
   input_stream >> j;
   mesh_serializer::deserialize(j, obj);
 
-  if (!obj_helper::load_obj(obj->obj_file_name, obj->shape_index, obj->faces))
+  if (!engine::load_obj(obj->obj_file_name, obj->shape_index, obj->faces))
   {
     LOG_ERROR("Failed to load object file: {0}", obj->obj_file_name.c_str());
     return nullptr;
@@ -99,7 +99,7 @@ engine::texture* asset_discovery::load_texture(const std::string& texture_name)
   input_stream >> j;
   texture_serializer::deserialize(j, obj);
 
-  if (!img_helper::load_img(obj->img_file_name, obj->width, obj->height, obj))
+  if (!engine::load_img(obj->img_file_name, obj->width, obj->height, obj))
   {
     LOG_ERROR("Failed to load texture file: {0}", obj->img_file_name.c_str());
     return nullptr;

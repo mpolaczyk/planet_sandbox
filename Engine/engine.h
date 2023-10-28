@@ -4,12 +4,12 @@
 
 #include "core/core.h"
 #include "core/application.h"
+#include "core/exceptions.h"
 
 #include "engine/log.h"
 #include "engine/io.h"
 #include "engine/hash.h"
 #include "engine/fpexcept.h"
-#include "engine/exceptions.h"
 
 #include "math/vec3.h"
 #include "math/math.h"
@@ -31,6 +31,7 @@
 #include "asset/materials.h"
 #include "asset/mesh.h"
 #include "asset/textures.h"
+#include "third_party/asset_tools.h"
 
 #include "profile/stats.h"
 

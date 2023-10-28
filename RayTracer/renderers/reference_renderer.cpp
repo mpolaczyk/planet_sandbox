@@ -48,8 +48,8 @@ void reference_renderer::render_chunk(const chunk& in_chunk)
 
       vec3 ldr_color = tone_mapping::reinhard_extended(hdr_color, job_state.renderer_conf->white_point);
       
-      bmp::bmp_pixel p(ldr_color);
-      job_state.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
+      bmp_pixel p(ldr_color);
+      job_state.img_rgb->draw_pixel(x, y, &p, bmp_format::rgba);
       if (save_output)
       {
         job_state.img_bgr->draw_pixel(x, y, &p);      

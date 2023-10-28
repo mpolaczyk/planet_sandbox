@@ -102,8 +102,9 @@
     <ClInclude Include="asset\textures.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="core\application.h" />
-    <ClInclude Include="engine\exceptions.h" />
-    <ClInclude Include="engine\windows_minimal.h" />
+    <ClInclude Include="engine\bmp.h" />
+    <ClInclude Include="core\exceptions.h" />
+    <ClInclude Include="core\windows_minimal.h" />
     <ClInclude Include="math\aabb.h" />
     <ClInclude Include="math\camera.h" />
     <ClInclude Include="math\colors.h" />
@@ -124,6 +125,9 @@
     <ClInclude Include="profile\stats.h" />
     <ClInclude Include="math\triangle_face.h" />
     <ClInclude Include="math\vec3.h" />
+    <ClInclude Include="third_party\asset_tools.h" />
+    <ClInclude Include="third_party\stb_image.h" />
+    <ClInclude Include="third_party\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="asset\asset.cpp" />
@@ -138,7 +142,8 @@
     <ClCompile Include="asset\soft_asset_ptr_inst.cpp" />
     <ClCompile Include="asset\textures.cpp" />
     <ClCompile Include="core\application.cpp" />
-    <ClCompile Include="engine\exceptions.cpp" />
+    <ClCompile Include="engine\bmp.cpp" />
+    <ClCompile Include="core\exceptions.cpp" />
     <ClCompile Include="math\aabb.cpp" />
     <ClCompile Include="math\camera.cpp" />
     <ClCompile Include="math\colors.cpp" />
@@ -154,6 +159,7 @@
     <ClCompile Include="math\ray.cpp" />
     <ClCompile Include="profile\benchmark.cpp" />
     <ClCompile Include="profile\stats.cpp" />
+    <ClCompile Include="third_party\asset_tools.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

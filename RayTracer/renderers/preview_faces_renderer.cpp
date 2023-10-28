@@ -54,8 +54,8 @@ void preview_faces_renderer::render_chunk(const chunk& in_chunk)
         pixel_color = colors::all[color_index];
       }
       
-      bmp::bmp_pixel p(pixel_color);
-      job_state.img_rgb->draw_pixel(x, y, &p, bmp::bmp_format::rgba);
+      bmp_pixel p(pixel_color);
+      job_state.img_rgb->draw_pixel(x, y, &p, bmp_format::rgba);
       if (save_output)
       {
         job_state.img_bgr->draw_pixel(x, y, &p);

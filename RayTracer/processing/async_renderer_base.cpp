@@ -5,7 +5,7 @@
 
 #include "async_renderer_base.h"
 
-#include "gfx/bmp.h"
+#include "engine/bmp.h"
 #include "math/hittables.h"
 
 #include "math/pdf.h"
@@ -72,8 +72,8 @@ void async_renderer_base::set_config(const renderer_config* in_renderer_config, 
   // Create new buffers if they are missing
   if (job_state.img_rgb == nullptr)
   {
-    job_state.img_rgb = new bmp::bmp_image(job_state.image_width, job_state.image_height);
-    job_state.img_bgr = new bmp::bmp_image(job_state.image_width, job_state.image_height);
+    job_state.img_rgb = new bmp_image(job_state.image_width, job_state.image_height);
+    job_state.img_bgr = new bmp_image(job_state.image_width, job_state.image_height);
   }
 }
 

@@ -4,7 +4,7 @@
 #include "math/ray.h"
 #include "math/hittables.h"
 #include "chunk_generator.h"
-#include "gfx/bmp.h"
+#include "engine/bmp.h"
 
 #include "app/factories.h"
 
@@ -106,8 +106,8 @@ protected:
     camera* cam = nullptr;
     scene* scene_root = nullptr;
     
-    bmp::bmp_image* img_bgr = nullptr;
-    bmp::bmp_image* img_rgb = nullptr;
+    bmp_image* img_bgr = nullptr;
+    bmp_image* img_rgb = nullptr;
 
     uint64_t benchmark_render_time = 0;
     uint64_t benchmark_save_time = 0;

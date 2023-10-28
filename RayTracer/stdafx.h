@@ -11,8 +11,7 @@
 #include "engine.h"
 using namespace engine;
 
-// Third party defines
-#define TINYOBJLOADER_IMPLEMENTATION
+
 
 #define IMGUI_DISABLE_DEMO_WINDOWS
 #define IMGUI_DISABLE_METRICS_WINDOW

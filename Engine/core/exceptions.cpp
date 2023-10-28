@@ -3,7 +3,7 @@
 
 #include <sstream>
 
-#include "engine/exceptions.h"
+#include "core/exceptions.h"
 
 namespace engine
 {

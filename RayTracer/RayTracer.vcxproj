@@ -138,7 +138,6 @@ ispc $(ProjectDir)renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Proje
     <ClCompile Include="app\ui\hittables_ui.cpp" />
     <ClCompile Include="app\ui\assets_ui.cpp" />
     <ClCompile Include="app\factories.cpp" />
-    <ClCompile Include="gfx\bmp.cpp" />
     <ClCompile Include="gfx\dx11_helper.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\common.cpp" />
@@ -193,10 +192,7 @@ ispc $(ProjectDir)renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Proje
     <ClInclude Include="app\json\assets_json.h" />
     <ClInclude Include="app\json\serializable.h" />
     <ClInclude Include="app\factories.h" />
-    <ClInclude Include="gfx\bmp.h" />
     <ClInclude Include="gfx\dx11_helper.h" />
-    <ClInclude Include="gfx\stb_image.h" />
-    <ClInclude Include="gfx\tiny_obj_loader.h" />
     <ClInclude Include="math\common.h" />
     <ClInclude Include="math\hittables.h" />
     <ClInclude Include="processing\async_renderer_base.h" />
