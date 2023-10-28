@@ -120,7 +120,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
 
   draw_material_selection_combo(model.m_model, state);
 
-  engine::material* mat = globals::get_asset_registry()->get_asset<engine::material>(model.m_model.selected_material_id);
+  engine::material* mat = engine::get_asset_registry()->get_asset<engine::material>(model.m_model.selected_material_id);
   if (mat != nullptr)
   {
     //mat->draw_edit_panel(); FIX
@@ -233,7 +233,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
     draw_material_selection_combo(m_model, state);
     if (m_model.selected_material_id != -1)
     {
-      std::string selected_name = globals::get_asset_registry()->get_name(m_model.selected_material_id);
+      std::string selected_name = engine::get_asset_registry()->get_name(m_model.selected_material_id);
       selected_obj->material_asset.set_name(selected_name);
     }
 
@@ -276,7 +276,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
     if (ImGui::Button("Add", ImVec2(120, 0)) && model.hittable != nullptr)
     {
-      model.hittable->material_asset.set_name(globals::get_asset_registry()->get_name(model.m_model.selected_material_id));
+      model.hittable->material_asset.set_name(engine::get_asset_registry()->get_name(model.m_model.selected_material_id));
       state.scene_root->add(model.hittable);
       model.hittable = nullptr;
       ImGui::CloseCurrentPopup();
@@ -298,8 +298,8 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
 void draw_material_selection_combo(material_selection_combo_model& model, app_instance& state)
 {
-  std::vector<engine::material*> materials = globals::get_asset_registry()->get_assets<engine::material>();
-  engine::material* selected_material = globals::get_asset_registry()->get_asset<engine::material>(model.selected_material_id);
+  std::vector<engine::material*> materials = engine::get_asset_registry()->get_assets<engine::material>();
+  engine::material* selected_material = engine::get_asset_registry()->get_asset<engine::material>(model.selected_material_id);
 
   if (materials.size() > 0)
   {
@@ -373,7 +373,7 @@ void draw_asset_registry_panel(app_instance& state)
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "ASSET REGISTRY");
   ImGui::Separator();
 
-  const std::vector<asset*>& assets = globals::get_asset_registry()->get_all_assets();
+  const std::vector<asset*>& assets = engine::get_asset_registry()->get_all_assets();
 
   int num_objects = (int)assets.size();
   if (ImGui::BeginListBox("Assets", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "windows_minimal.h"
+#include "engine/windows_minimal.h"
 
 #include <thread>
 
@@ -18,7 +18,6 @@
 
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-extern void seh_exception_handler(unsigned int u, _EXCEPTION_POINTERS* pExp);
 
 
 // Win32 message handler
@@ -53,7 +52,7 @@ int app_main()
   if (!IsDebuggerPresent())
   {
     // Register SEH exception catching when no debugger is present
-    _set_se_translator(seh_exception_handler);
+    _set_se_translator(seh_exception::handler);
   }
 
 #if USE_FPEXCEPT

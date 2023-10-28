@@ -1,12 +1,14 @@
 #pragma once
 
+#include "core/core.h"
+
 namespace std {
   template<typename> class function;
 }
 
-namespace benchmark
+namespace engine
 {
-  struct instance
+  struct ENGINE_API instance
   {
     inline void start(const std::string& name, bool verbose = true);
     inline uint64_t repeat(const std::string& name, uint32_t count, const std::function<void()>& func, bool verbose = true);
@@ -19,7 +21,7 @@ namespace benchmark
     bool verbose = true;
   };
 
-  struct scope_counter
+  struct ENGINE_API scope_counter
   {
     explicit scope_counter(const std::string& name, bool verbose = true);
     ~scope_counter();

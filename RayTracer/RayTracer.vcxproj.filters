@@ -12,16 +12,10 @@
     <ClCompile Include="processing\async_renderer_base.cpp">
       <Filter>processing</Filter>
     </ClCompile>
-    <ClCompile Include="processing\benchmark.cpp">
-      <Filter>processing</Filter>
-    </ClCompile>
     <ClCompile Include="processing\chunk_generator.cpp">
       <Filter>processing</Filter>
     </ClCompile>
     <ClCompile Include="app\app.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
-    <ClCompile Include="app\exceptions.cpp">
       <Filter>app</Filter>
     </ClCompile>
     <ClCompile Include="app\ui\app_ui.cpp">
@@ -102,9 +96,6 @@
     <ClCompile Include="app\asset_discovery.cpp">
       <Filter>app</Filter>
     </ClCompile>
-    <ClCompile Include="app\asset.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -120,16 +111,10 @@
     <ClInclude Include="processing\async_renderer_base.h">
       <Filter>processing</Filter>
     </ClInclude>
-    <ClInclude Include="processing\benchmark.h">
-      <Filter>processing</Filter>
-    </ClInclude>
     <ClInclude Include="processing\chunk_generator.h">
       <Filter>processing</Filter>
     </ClInclude>
     <ClInclude Include="app\app.h">
-      <Filter>app</Filter>
-    </ClInclude>
-    <ClInclude Include="app\exceptions.h">
       <Filter>app</Filter>
     </ClInclude>
     <ClInclude Include="app\json\serializable.h">
@@ -165,7 +150,6 @@
     <ClInclude Include="app\json\vec3_json.h">
       <Filter>app\json</Filter>
     </ClInclude>
-    <ClInclude Include="windows_minimal.h" />
     <ClInclude Include="app\json\frame_renderer_json.h">
       <Filter>app\json</Filter>
     </ClInclude>
@@ -212,9 +196,6 @@
       <Filter>renderers</Filter>
     </ClInclude>
     <ClInclude Include="app\asset_discovery.h">
-      <Filter>app</Filter>
-    </ClInclude>
-    <ClInclude Include="app\asset.h">
       <Filter>app</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,7 +10,7 @@
 
 #include "math/pdf.h"
 #include "math/camera.h"
-#include "processing/benchmark.h"
+#include "profile/benchmark.h"
 
 async_renderer_base::async_renderer_base()
 {
@@ -127,7 +127,7 @@ void async_renderer_base::async_job()
     if(job_state.requested_stop) { break; }
 
     stats::reset();
-    benchmark::instance benchmark_render;
+    engine::instance benchmark_render;
     benchmark_render.start("Render");
 
     render();
@@ -143,7 +143,7 @@ void async_renderer_base::async_job()
       char image_file_name[300];  // Run-Time Check Failure #2 - Stack around the variable 'image_file_name' was corrupted.
       std::sprintf(image_file_name, engine::io::get_render_output_file_path().c_str());
 
-      benchmark::instance benchmark_save;
+      engine::instance benchmark_save;
       benchmark_save.start("Save");
       save(image_file_name);
       job_state.benchmark_save_time = benchmark_save.stop();

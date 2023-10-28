@@ -6,7 +6,6 @@
 #include "math/aabb.h"
 
 #include "app/factories.h"
-#include "app/asset.h"
 
 #include "core/core.h" 
 #include "asset/soft_asset_ptr.h"

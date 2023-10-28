@@ -128,14 +128,12 @@ ispc $(ProjectDir)renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Proje
   <ItemGroup>
     <ClCompile Include="app\app.cpp" />
     <ClCompile Include="app\asset_discovery.cpp" />
-    <ClCompile Include="app\exceptions.cpp" />
     <ClCompile Include="app\json\app_json.cpp" />
     <ClCompile Include="app\json\frame_renderer_json.cpp" />
     <ClCompile Include="app\json\hittables_json.cpp" />
     <ClCompile Include="app\json\assets_json.cpp" />
     <ClCompile Include="app\json\serializable.cpp" />
     <ClCompile Include="app\json\vec3_json.cpp" />
-    <ClCompile Include="app\asset.cpp" />
     <ClCompile Include="app\ui\app_ui.cpp" />
     <ClCompile Include="app\ui\hittables_ui.cpp" />
     <ClCompile Include="app\ui\assets_ui.cpp" />
@@ -146,7 +144,6 @@ ispc $(ProjectDir)renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Proje
     <ClCompile Include="math\common.cpp" />
     <ClCompile Include="math\hittables.cpp" />
     <ClCompile Include="processing\async_renderer_base.cpp" />
-    <ClCompile Include="processing\benchmark.cpp" />
     <ClCompile Include="processing\chunk_generator.cpp" />
     <ClCompile Include="renderers\example_renderer.cpp" />
     <ClCompile Include="renderers\ispc_renderer.cpp" />
@@ -189,9 +186,7 @@ ispc $(ProjectDir)renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Proje
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app\app.h" />
-    <ClInclude Include="app\asset.h" />
     <ClInclude Include="app\asset_discovery.h" />
-    <ClInclude Include="app\exceptions.h" />
     <ClInclude Include="app\json\app_json.h" />
     <ClInclude Include="app\json\frame_renderer_json.h" />
     <ClInclude Include="app\json\hittables_json.h" />
@@ -205,7 +200,6 @@ ispc $(ProjectDir)renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Proje
     <ClInclude Include="math\common.h" />
     <ClInclude Include="math\hittables.h" />
     <ClInclude Include="processing\async_renderer_base.h" />
-    <ClInclude Include="processing\benchmark.h" />
     <ClInclude Include="processing\chunk_generator.h" />
     <ClInclude Include="renderers\example_renderer.h" />
     <ClInclude Include="renderers\ispc_renderer.h" />
@@ -225,7 +219,6 @@ ispc $(ProjectDir)renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Proje
     <ClInclude Include="third_party\imgui_v1.87\imstb_textedit.h" />
     <ClInclude Include="third_party\imgui_v1.87\imstb_truetype.h" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp" />
-    <ClInclude Include="windows_minimal.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Notes.txt" />

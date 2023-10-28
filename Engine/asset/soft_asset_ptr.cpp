@@ -1,5 +1,6 @@
 
 #include "asset/soft_asset_ptr.h"
+#include "asset/asset_registry.h"
 #include "engine/log.h"
 
 namespace engine
@@ -31,13 +32,13 @@ namespace engine
   {
     if (!is_loaded())
     {
-      //object = globals::get_asset_registry()->find_asset<T>(name); FIX
+      object = get_asset_registry()->find_asset<T>(name);
       if (object == nullptr)
       {
         object = T::load(name);
         if (object != nullptr)
         {
-          //globals::get_asset_registry()->add<T>(object, name); FIX
+          get_asset_registry()->add<T>(object, name);
         }
         else
         {

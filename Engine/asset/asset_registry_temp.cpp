@@ -1,40 +1,16 @@
-#pragma once
 
-#include <vector>
-#include <string>
 #include <assert.h>
 
-#include "engine.h"
+#include "asset/asset_registry.h"
+#include "engine/log.h"
 
+// Those definitions are moved away from asset_registry.cpp to avoid LNK2005 error, when compiling asset_registry_inst.cpp
+// https://stackoverflow.com/questions/77377405/lnk2005-for-non-templated-function-when-explicitly-instantiating-templated-funct
 
-
-
-
-// Collection of assets of any kind.
-// Registry has ownership on assets.
-// Registry gives runtime ids.
-// The fact that asset is in the registry should mean it has resources loaded.
-// For now I assume there is no way to remove asset -> no defragmentation
-// Assets can't be deleted from memory -> no dependence lookup or reference counting
-class asset_registry
+namespace engine
 {
-  // Only one instance allowed TODO singleton
-  static bool created;
-
-public:
-  // No copy, no move
-  asset_registry();
-  ~asset_registry();
-  asset_registry(const asset_registry&) = delete;
-  asset_registry& operator=(const asset_registry&) = delete;
-
-  bool is_valid(int id) const
-  {
-    return ((id >= 0 && id < assets.size()) && (assets[id] != nullptr));
-  }
-
   template<typename T>
-  bool add(T* object, const std::string& name)
+  bool asset_registry::add(T* object, const std::string& name)
   {
     if (object->get_static_asset_type() == asset_type::none)
     {
@@ -65,7 +41,7 @@ public:
   }
 
   template<typename T>
-  T* get_asset(int id) const
+  T* asset_registry::get_asset(int id) const
   {
     if (is_valid(id))
     {
@@ -77,11 +53,8 @@ public:
     return nullptr;
   }
 
-  std::string get_name(int id) const;
-  asset_type get_type(int id) const;
-
   template<typename T>
-  T* find_asset(const std::string& name)
+  T* asset_registry::find_asset(const std::string& name)
   {
     for (int i = 0; i < types.size(); i++)
     {
@@ -95,7 +68,7 @@ public:
   }
 
   template<typename T>
-  std::vector<T*> get_assets()
+  std::vector<T*> asset_registry::get_assets()
   {
     std::vector<T*> ans;
     for (int i = 0; i < types.size(); i++)
@@ -109,13 +82,8 @@ public:
     return ans;
   }
 
-  std::vector<engine::asset*> get_all_assets()
-  {
-    return assets;
-  }
-
   template<typename T>
-  T* clone_asset(int source_runtime_id, const std::string& target_name)
+  T* asset_registry::clone_asset(int source_runtime_id, const std::string& target_name)
   {
     if (!is_valid(source_runtime_id))
     {
@@ -137,7 +105,7 @@ public:
     T* obj = T::spawn();
     *obj = *source;
     obj->runtime_id = -1;
-    
+
     // Register new one
     if (add<T>(obj, target_name))
     {
@@ -146,13 +114,5 @@ public:
     return nullptr;
   }
 
-  std::vector<int> get_ids(asset_type type) const;
-  std::vector<std::string> get_names(asset_type type) const;
 
-private:
-  // Runtime id is an index
-  // None of this can change at runtime after is added
-  std::vector<std::string> names;
-  std::vector<asset_type> types;
-  std::vector<engine::asset*> assets;
-};
+}

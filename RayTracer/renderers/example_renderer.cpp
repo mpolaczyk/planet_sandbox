@@ -3,7 +3,7 @@
 #include <ppl.h>
 #include <sstream>
 
-#include "processing/benchmark.h"
+#include "profile/benchmark.h"
 
 #include "example_renderer.h"
 
@@ -26,7 +26,7 @@ void example_renderer::render_chunk(const chunk& in_chunk)
 
   std::ostringstream oss;
   oss << "Thread=" << thread_id << " Chunk=" << in_chunk.id;
-  benchmark::scope_counter benchmark_render_chunk(oss.str(), false);
+  engine::scope_counter benchmark_render_chunk(oss.str(), false);
 
   for (int y = in_chunk.y; y < in_chunk.y + in_chunk.size_y; ++y)
   {

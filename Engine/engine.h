@@ -9,6 +9,7 @@
 #include "engine/io.h"
 #include "engine/hash.h"
 #include "engine/fpexcept.h"
+#include "engine/exceptions.h"
 
 #include "math/vec3.h"
 #include "math/math.h"
@@ -25,6 +26,8 @@
 #include "math/camera.h"
 #include "math/plane.h"
 #include "asset/asset.h"
+#include "asset/soft_asset_ptr.h"
+#include "asset/asset_registry.h"
 #include "asset/materials.h"
 #include "asset/mesh.h"
 #include "asset/textures.h"

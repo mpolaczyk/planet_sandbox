@@ -3,6 +3,7 @@
 // Common library headers
 #include <string>
 #include <vector>
+#include <assert.h>
 
 #include <ppl.h>
 #include <sstream>
@@ -31,10 +32,3 @@ using namespace engine;
 
 // Common project headers
 #include "math/common.h"
-
-// Declare all globals here
-class asset_registry;
-namespace globals
-{
-  asset_registry* get_asset_registry();
-}

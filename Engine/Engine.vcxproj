@@ -93,12 +93,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="asset\asset.h" />
+    <ClInclude Include="asset\asset_registry.h" />
     <ClInclude Include="asset\materials.h" />
     <ClInclude Include="asset\mesh.h" />
     <ClInclude Include="asset\soft_asset_ptr.h" />
     <ClInclude Include="asset\textures.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="core\application.h" />
+    <ClInclude Include="engine\exceptions.h" />
+    <ClInclude Include="engine\windows_minimal.h" />
     <ClInclude Include="math\aabb.h" />
     <ClInclude Include="math\camera.h" />
     <ClInclude Include="math\colors.h" />
@@ -115,18 +118,25 @@
     <ClInclude Include="math\plane.h" />
     <ClInclude Include="math\random.h" />
     <ClInclude Include="math\ray.h" />
+    <ClInclude Include="profile\benchmark.h" />
     <ClInclude Include="profile\stats.h" />
     <ClInclude Include="math\triangle_face.h" />
     <ClInclude Include="math\vec3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="asset\asset.cpp" />
+    <ClCompile Include="asset\asset_registry.cpp" />
+    <ClCompile Include="asset\asset_registry_temp.cpp" />
+    <ClCompile Include="asset\asset_registry_inst.cpp">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClCompile Include="asset\materials.cpp" />
     <ClCompile Include="asset\mesh.cpp" />
     <ClCompile Include="asset\soft_asset_ptr.cpp" />
     <ClCompile Include="asset\soft_asset_ptr_inst.cpp" />
     <ClCompile Include="asset\textures.cpp" />
     <ClCompile Include="core\application.cpp" />
+    <ClCompile Include="engine\exceptions.cpp" />
     <ClCompile Include="math\aabb.cpp" />
     <ClCompile Include="math\camera.cpp" />
     <ClCompile Include="math\colors.cpp" />
@@ -140,6 +150,7 @@
     <ClCompile Include="math\plane.cpp" />
     <ClCompile Include="math\random.cpp" />
     <ClCompile Include="math\ray.cpp" />
+    <ClCompile Include="profile\benchmark.cpp" />
     <ClCompile Include="profile\stats.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

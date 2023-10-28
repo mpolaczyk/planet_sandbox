@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "app/factories.h"
-#include "app/asset.h"
 
 #include "app/json/vec3_json.h"
 #include "app/json/assets_json.h"

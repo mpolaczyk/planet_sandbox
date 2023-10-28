@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <sstream>  
 
-#include "asset/asset.h"
+#include "asset/asset_registry.h"
 
 namespace engine
 {
@@ -51,13 +51,13 @@ namespace engine
 
   std::string asset::get_asset_name() const
   {
-    //return globals::get_asset_registry()->get_name(runtime_id);  // FIX
+    return get_asset_registry()->get_name(runtime_id);  // FIX
     return "";
   }
 
   asset_type asset::get_asset_type() const
   {
-    //return globals::get_asset_registry()->get_type(runtime_id); // FIX
+    return get_asset_registry()->get_type(runtime_id); // FIX
     return asset_type::none;
   }
 }

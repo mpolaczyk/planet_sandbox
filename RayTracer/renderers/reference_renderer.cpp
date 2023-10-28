@@ -3,7 +3,7 @@
 #include <ppl.h>
 
 #include "math/camera.h"
-#include "processing/benchmark.h"
+#include "profile/benchmark.h"
 
 #include "reference_renderer.h"
 
@@ -32,7 +32,7 @@ void reference_renderer::render_chunk(const chunk& in_chunk)
 
   std::ostringstream oss;
   oss << "Thread=" << thread_id << " Chunk=" << in_chunk.id;
-  benchmark::scope_counter benchmark_render_chunk(oss.str(), false);
+  engine::scope_counter benchmark_render_chunk(oss.str(), false);
 
   vec3 resolution((float)job_state.image_width, (float)job_state.image_height, 0.0f);
 

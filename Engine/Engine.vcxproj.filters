@@ -27,6 +27,10 @@
     <ClInclude Include="asset\materials.h" />
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="asset\soft_asset_ptr.h" />
+    <ClInclude Include="asset\asset_registry.h" />
+    <ClInclude Include="engine\exceptions.h" />
+    <ClInclude Include="engine\windows_minimal.h" />
+    <ClInclude Include="profile\benchmark.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -50,5 +54,10 @@
     <ClCompile Include="asset\asset.cpp" />
     <ClCompile Include="asset\soft_asset_ptr.cpp" />
     <ClCompile Include="asset\soft_asset_ptr_inst.cpp" />
+    <ClCompile Include="asset\asset_registry.cpp" />
+    <ClCompile Include="asset\asset_registry_temp.cpp" />
+    <ClCompile Include="asset\asset_registry_inst.cpp" />
+    <ClCompile Include="engine\exceptions.cpp" />
+    <ClCompile Include="profile\benchmark.cpp" />
   </ItemGroup>
 </Project>

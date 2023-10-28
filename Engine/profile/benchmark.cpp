@@ -1,16 +1,16 @@
-#include "stdafx.h"
 
 #include <functional>
 #include <chrono>
 
-#include "benchmark.h"
-
 #if USE_PIX
-#include "windows_minimal.h"
+#include "engine/windows_minimal.h"
 #include "pix3.h" // https://devblogs.microsoft.com/pix/winpixeventruntime
 #endif
 
-namespace benchmark
+#include "profile/benchmark.h"
+#include "engine/log.h"
+
+namespace engine
 {
   void instance::start(const std::string& in_name, bool in_verbose)
   {
