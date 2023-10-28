@@ -7,10 +7,6 @@
 #include "gfx/stb_image.h"
 #include "gfx/tiny_obj_loader.h"
 
-
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-
 #include "common.h"
 
 

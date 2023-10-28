@@ -2,12 +2,13 @@
 #include <functional>
 #include <chrono>
 
+#include "profile/benchmark.h"
+
 #if USE_PIX
 #include "engine/windows_minimal.h"
 #include "pix3.h" // https://devblogs.microsoft.com/pix/winpixeventruntime
 #endif
 
-#include "profile/benchmark.h"
 #include "engine/log.h"
 
 namespace engine
