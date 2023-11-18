@@ -1,6 +1,9 @@
 
 #include "asset/mesh.h"
 
+#include "asset/asset_discovery.h"
+#include "asset/factories.h"
+
 namespace engine
 {
   asset_type mesh::get_static_asset_type()
@@ -10,8 +13,7 @@ namespace engine
 
   mesh* mesh::load(const std::string& mesh_name)
   {
-    //return asset_discovery::load_mesh(mesh_name); FIX
-    return nullptr;
+    return asset_discovery::load_mesh(mesh_name);
   }
 
   void mesh::save(mesh* object)
@@ -20,7 +22,6 @@ namespace engine
 
   mesh* mesh::spawn()
   {
-    //return object_factory::spawn_mesh(); FIX
-    return nullptr;
+    return object_factory::spawn_mesh();
   }
 }

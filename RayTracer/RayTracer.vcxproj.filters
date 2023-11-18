@@ -33,15 +33,6 @@
     <ClCompile Include="app\json\hittables_json.cpp">
       <Filter>app\json</Filter>
     </ClCompile>
-    <ClCompile Include="app\json\assets_json.cpp">
-      <Filter>app\json</Filter>
-    </ClCompile>
-    <ClCompile Include="app\json\vec3_json.cpp">
-      <Filter>app\json</Filter>
-    </ClCompile>
-    <ClCompile Include="math\common.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
     <ClCompile Include="math\hittables.cpp">
       <Filter>math</Filter>
     </ClCompile>
@@ -81,17 +72,11 @@
     <ClCompile Include="third_party\imgui_v1.87\imgui_widgets.cpp">
       <Filter>third_party\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="app\json\serializable.cpp">
-      <Filter>app\json</Filter>
-    </ClCompile>
     <ClCompile Include="renderers\preview_normals_renderer.cpp">
       <Filter>renderers</Filter>
     </ClCompile>
     <ClCompile Include="renderers\preview_faces_renderer.cpp">
       <Filter>renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="app\asset_discovery.cpp">
-      <Filter>app</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -107,12 +92,6 @@
     </ClInclude>
     <ClInclude Include="app\app.h">
       <Filter>app</Filter>
-    </ClInclude>
-    <ClInclude Include="app\json\serializable.h">
-      <Filter>app\json</Filter>
-    </ClInclude>
-    <ClInclude Include="math\common.h">
-      <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="math\hittables.h">
       <Filter>math</Filter>
@@ -135,16 +114,10 @@
     <ClInclude Include="renderers\trace_ray.h">
       <Filter>renderers</Filter>
     </ClInclude>
-    <ClInclude Include="app\json\vec3_json.h">
-      <Filter>app\json</Filter>
-    </ClInclude>
     <ClInclude Include="app\json\frame_renderer_json.h">
       <Filter>app\json</Filter>
     </ClInclude>
     <ClInclude Include="app\json\app_json.h">
-      <Filter>app\json</Filter>
-    </ClInclude>
-    <ClInclude Include="app\json\assets_json.h">
       <Filter>app\json</Filter>
     </ClInclude>
     <ClInclude Include="app\json\hittables_json.h">
@@ -174,17 +147,11 @@
     <ClInclude Include="third_party\imgui_v1.87\imstb_truetype.h">
       <Filter>third_party\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp">
-      <Filter>third_party</Filter>
-    </ClInclude>
     <ClInclude Include="renderers\preview_normals_renderer.h">
       <Filter>renderers</Filter>
     </ClInclude>
     <ClInclude Include="renderers\preview_faces_renderer.h">
       <Filter>renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="app\asset_discovery.h">
-      <Filter>app</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

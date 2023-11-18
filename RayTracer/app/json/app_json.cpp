@@ -3,9 +3,9 @@
 #include <fstream>
 
 #include "app/json/app_json.h"
-#include "app/json/vec3_json.h"
+#include "persistence/vec3_json.h"
 #include "app/json/frame_renderer_json.h"
-#include "app/json/assets_json.h"
+#include "persistence/assets_json.h"
 #include "app/json/hittables_json.h"
 
 #include "math/camera.h"

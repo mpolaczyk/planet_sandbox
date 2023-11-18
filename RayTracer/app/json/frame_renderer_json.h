@@ -2,7 +2,7 @@
 
 #include "processing/async_renderer_base.h"
 
-#include "app/json/serializable.h"
+#include "persistence/serializable.h"
 
 class renderer_config_serializer
 {

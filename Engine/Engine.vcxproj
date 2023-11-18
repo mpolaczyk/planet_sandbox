@@ -59,7 +59,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;BUILD_DLL;PLATFORM_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\spdlog-1.x\include;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\spdlog-1.x\include;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)third_party\json-3.10.5\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointExceptions>true</FloatingPointExceptions>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -79,7 +79,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;BUILD_DLL;PLATFORM_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)third_party\spdlog-1.x\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)third_party\spdlog-1.x\include;$(ProjectDir)third_party\json-3.10.5\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <FloatingPointModel>Fast</FloatingPointModel>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -95,7 +95,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="asset\asset.h" />
+    <ClInclude Include="asset\asset_discovery.h" />
     <ClInclude Include="asset\asset_registry.h" />
+    <ClInclude Include="asset\factories.h" />
     <ClInclude Include="asset\materials.h" />
     <ClInclude Include="asset\mesh.h" />
     <ClInclude Include="asset\soft_asset_ptr.h" />
@@ -121,21 +123,27 @@
     <ClInclude Include="math\plane.h" />
     <ClInclude Include="math\random.h" />
     <ClInclude Include="math\ray.h" />
+    <ClInclude Include="persistence\assets_json.h" />
+    <ClInclude Include="persistence\serializable.h" />
+    <ClInclude Include="persistence\vec3_json.h" />
     <ClInclude Include="profile\benchmark.h" />
     <ClInclude Include="profile\stats.h" />
     <ClInclude Include="math\triangle_face.h" />
     <ClInclude Include="math\vec3.h" />
-    <ClInclude Include="third_party\asset_tools.h" />
+    <ClInclude Include="asset\asset_tools.h" />
+    <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp" />
     <ClInclude Include="third_party\stb_image.h" />
     <ClInclude Include="third_party\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="asset\asset.cpp" />
+    <ClCompile Include="asset\asset_discovery.cpp" />
     <ClCompile Include="asset\asset_registry.cpp" />
     <ClCompile Include="asset\asset_registry_temp.cpp" />
     <ClCompile Include="asset\asset_registry_inst.cpp">
       <FileType>Document</FileType>
     </ClCompile>
+    <ClCompile Include="asset\factories.cpp" />
     <ClCompile Include="asset\materials.cpp" />
     <ClCompile Include="asset\mesh.cpp" />
     <ClCompile Include="asset\soft_asset_ptr.cpp" />
@@ -157,9 +165,13 @@
     <ClCompile Include="math\plane.cpp" />
     <ClCompile Include="math\random.cpp" />
     <ClCompile Include="math\ray.cpp" />
+    <ClCompile Include="persistence\assets_json.cpp" />
+    <ClCompile Include="persistence\serializable.cpp" />
+    <ClCompile Include="persistence\serializable_inst.cpp" />
+    <ClCompile Include="persistence\vec3_json.cpp" />
     <ClCompile Include="profile\benchmark.cpp" />
     <ClCompile Include="profile\stats.cpp" />
-    <ClCompile Include="third_party\asset_tools.cpp" />
+    <ClCompile Include="asset\asset_tools.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

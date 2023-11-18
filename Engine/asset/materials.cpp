@@ -3,6 +3,9 @@
 
 #include "asset/materials.h"
 
+#include "asset/asset_discovery.h"
+#include "asset/factories.h"
+
 namespace engine
 {
   asset_type material::get_static_asset_type()
@@ -12,19 +15,17 @@ namespace engine
 
   material* material::load(const std::string& material_name)
   {
-    //return asset_discovery::load_material(material_name); // FIX
-    return nullptr;
+    return asset_discovery::load_material(material_name);
   }
 
   void material::save(material* object)
   {
-    //asset_discovery::save_material(object);// FIX
+    asset_discovery::save_material(object);
   }
 
   material* material::spawn()
   {
-    //return object_factory::spawn_material(material_type::none); // FIX
-    return nullptr;
+    return object_factory::spawn_material(material_type::none);
   }
 
   std::string material::get_display_name() const

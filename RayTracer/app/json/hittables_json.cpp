@@ -2,9 +2,9 @@
 
 #include "math/hittables.h"
 
-#include "app/json/vec3_json.h"
+#include "persistence/vec3_json.h"
 #include "app/json/hittables_json.h"
-#include "app/json/assets_json.h"
+#include "persistence/assets_json.h"
 
 
 nlohmann::json hittable_serializer::serialize(const hittable* value)
@@ -146,7 +146,7 @@ void scene_serializer::deserialize(const nlohmann::json& j, scene* out_value)
       hittable_type type;
       if (TRY_PARSE(hittable_type, jobj, "type", type))
       {
-        hittable* obj = object_factory::spawn_hittable(type);
+        hittable* obj = game_object_factory::spawn_hittable(type);
         switch (obj->type)
         {
         case hittable_type::scene:

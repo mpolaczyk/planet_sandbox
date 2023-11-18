@@ -3,6 +3,9 @@
 
 #include "asset/textures.h"
 
+#include "asset/asset_discovery.h"
+#include "asset/factories.h"
+
 namespace engine
 {
   asset_type texture::get_static_asset_type()
@@ -12,8 +15,7 @@ namespace engine
 
   texture* texture::load(const std::string& texture_name)
   {
-    return nullptr;
-    //return asset_discovery::load_texture(texture_name); FIX
+    return asset_discovery::load_texture(texture_name);
   }
 
   void texture::save(texture* object)
@@ -22,8 +24,7 @@ namespace engine
 
   texture* texture::spawn()
   {
-    //return object_factory::spawn_texture();  FIX
-    return nullptr;
+    return object_factory::spawn_texture();
   }
 
   std::string texture::get_display_name() const

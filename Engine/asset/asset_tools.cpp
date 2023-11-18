@@ -4,7 +4,7 @@
 #include <fstream>
 #include <assert.h>
 
-#include "third_party/asset_tools.h"
+#include "asset/asset_tools.h"
 
 #include "third_party/stb_image.h"
 #include "third_party/tiny_obj_loader.h"

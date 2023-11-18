@@ -1,6 +1,6 @@
 #pragma once
 
-#include "app/json/serializable.h"
+#include "persistence/serializable.h"
 
 class hittable;
 class sphere;

@@ -26,8 +26,3 @@ using namespace engine;
 #define IMGUI_DISABLE_FILE_FUNCTIONS
 #define IMGUI_DISABLE_DEFAULT_FILE_FUNCTIONS
 #define IMGUI_DISABLE_DEFAULT_ALLOCATORS
-
-
-
-// Common project headers
-#include "math/common.h"

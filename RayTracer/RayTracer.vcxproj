@@ -60,7 +60,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;ImTextureID=ImU64;_UNICODE;UNICODE;PLATFORM_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Engine;$(ProjectDir)third_party\json-3.10.5\include;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir);$(SolutionDir)Engine\third_party\json-3.10.5\include</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -98,7 +98,7 @@ ispc $(ProjectDir)renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Proje
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>$(SolutionDir)Engine;$(ProjectDir)third_party\json-3.10.5\include;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir);$(SolutionDir)Engine\third_party\json-3.10.5\include</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -127,20 +127,15 @@ ispc $(ProjectDir)renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Proje
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="app\app.cpp" />
-    <ClCompile Include="app\asset_discovery.cpp" />
     <ClCompile Include="app\json\app_json.cpp" />
     <ClCompile Include="app\json\frame_renderer_json.cpp" />
     <ClCompile Include="app\json\hittables_json.cpp" />
-    <ClCompile Include="app\json\assets_json.cpp" />
-    <ClCompile Include="app\json\serializable.cpp" />
-    <ClCompile Include="app\json\vec3_json.cpp" />
     <ClCompile Include="app\ui\app_ui.cpp" />
     <ClCompile Include="app\ui\hittables_ui.cpp" />
     <ClCompile Include="app\ui\assets_ui.cpp" />
     <ClCompile Include="app\factories.cpp" />
     <ClCompile Include="gfx\dx11_helper.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="math\common.cpp" />
     <ClCompile Include="math\hittables.cpp" />
     <ClCompile Include="processing\async_renderer_base.cpp" />
     <ClCompile Include="processing\chunk_generator.cpp" />
@@ -185,15 +180,11 @@ ispc $(ProjectDir)renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Proje
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app\app.h" />
-    <ClInclude Include="app\asset_discovery.h" />
     <ClInclude Include="app\json\app_json.h" />
     <ClInclude Include="app\json\frame_renderer_json.h" />
     <ClInclude Include="app\json\hittables_json.h" />
-    <ClInclude Include="app\json\assets_json.h" />
-    <ClInclude Include="app\json\serializable.h" />
     <ClInclude Include="app\factories.h" />
     <ClInclude Include="gfx\dx11_helper.h" />
-    <ClInclude Include="math\common.h" />
     <ClInclude Include="math\hittables.h" />
     <ClInclude Include="processing\async_renderer_base.h" />
     <ClInclude Include="processing\chunk_generator.h" />
@@ -205,7 +196,6 @@ ispc $(ProjectDir)renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Proje
     <ClInclude Include="renderers\reference_renderer.h" />
     <ClInclude Include="renderers\trace_ray.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="app\json\vec3_json.h" />
     <ClInclude Include="third_party\imgui_v1.87\backends\imgui_impl_dx11.h" />
     <ClInclude Include="third_party\imgui_v1.87\backends\imgui_impl_win32.h" />
     <ClInclude Include="third_party\imgui_v1.87\imconfig.h" />
@@ -214,7 +204,6 @@ ispc $(ProjectDir)renderers\trace_ray.ispc -o $(SolutionDir)Intermediate\$(Proje
     <ClInclude Include="third_party\imgui_v1.87\imstb_rectpack.h" />
     <ClInclude Include="third_party\imgui_v1.87\imstb_textedit.h" />
     <ClInclude Include="third_party\imgui_v1.87\imstb_truetype.h" />
-    <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Notes.txt" />

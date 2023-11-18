@@ -3,7 +3,7 @@
 #include "app/app.h"
 #include "math/camera.h"
 
-#include "app/json/serializable.h"
+#include "persistence/serializable.h"
 
 class window_config_serializer
 {

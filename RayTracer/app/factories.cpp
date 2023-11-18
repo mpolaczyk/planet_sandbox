@@ -14,7 +14,7 @@
 #include "renderers/ispc_renderer.h"
 
 
-async_renderer_base* object_factory::spawn_renderer(renderer_type type)
+async_renderer_base* game_object_factory::spawn_renderer(renderer_type type)
 {
   if (type == renderer_type::example) { return new example_renderer(); }
   else if (type == renderer_type::preview) { return new preview_renderer(); }
@@ -25,7 +25,7 @@ async_renderer_base* object_factory::spawn_renderer(renderer_type type)
   return nullptr;
 }
 
-hittable* object_factory::spawn_hittable(hittable_type type)
+hittable* game_object_factory::spawn_hittable(hittable_type type)
 {
   hittable* obj = nullptr;
   if (type == hittable_type::scene) { obj = new scene(); }
@@ -42,19 +42,4 @@ hittable* object_factory::spawn_hittable(hittable_type type)
     hittable::last_id++;
   }
   return obj;
-}
-
-engine::material* object_factory::spawn_material(material_type type)
-{
-  return new engine::material(type);
-}
-
-engine::mesh* object_factory::spawn_mesh()
-{
-  return new engine::mesh();
-}
-
-engine::texture* object_factory::spawn_texture()
-{
-  return new engine::texture();
 }
