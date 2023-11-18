@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <cmath>
 
-#include "engine/bmp.h"
+#include "resources/bmp.h"
 
 
 namespace engine

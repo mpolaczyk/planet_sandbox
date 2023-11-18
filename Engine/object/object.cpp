@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <sstream>  
 
-#include "asset/asset_registry.h"
+#include "object/object_registry.h"
 
 namespace engine
 {

@@ -4,7 +4,7 @@
 
 #include "core/core.h"
 
-#include "asset/asset.h"
+#include "object/object.h"
 #include "math/vec3.h"
 #include "asset/soft_asset_ptr.h"
 

@@ -1,17 +1,17 @@
 #include <fstream>
 
-#include "asset/asset_discovery.h"
+#include "asset/asset_io.h"
 
 #include "engine/log.h"
 #include "engine/io.h"
-#include "asset/asset_tools.h"
+#include "resources/resources_io.h"
 
 #include "persistence/assets_json.h"
 
 
 namespace engine
 {
-  material* asset_discovery::load_material(const std::string& material_name)
+  material* asset_io::load_material(const std::string& material_name)
   {
     LOG_DEBUG("Loading material: {0}", material_name.c_str());
 
@@ -45,7 +45,7 @@ namespace engine
     return obj;
   }
 
-  mesh* asset_discovery::load_mesh(const std::string& mesh_name)
+  mesh* asset_io::load_mesh(const std::string& mesh_name)
   {
     LOG_DEBUG("Loading mesh: {0}", mesh_name.c_str());
 
@@ -79,7 +79,7 @@ namespace engine
     return obj;
   }
 
-  texture* asset_discovery::load_texture(const std::string& texture_name)
+  texture* asset_io::load_texture(const std::string& texture_name)
   {
     LOG_DEBUG("Loading texture: {0}", texture_name.c_str());
 
@@ -113,7 +113,7 @@ namespace engine
     return obj;
   }
 
-  void asset_discovery::save_material(const material* object)
+  void asset_io::save_material(const material* object)
   {
     assert(object != nullptr);
 

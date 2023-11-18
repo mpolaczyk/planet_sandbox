@@ -5,7 +5,7 @@
 
 #include "core/core.h"
 
-#include "asset/asset.h"
+#include "object/object.h"
 #include "math/vec3.h"
 #include "math/triangle_face.h"
 

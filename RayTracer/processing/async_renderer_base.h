@@ -4,7 +4,7 @@
 #include "math/ray.h"
 #include "math/hittables.h"
 #include "chunk_generator.h"
-#include "engine/bmp.h"
+#include "resources/bmp.h"
 
 #include "app/factories.h"
 

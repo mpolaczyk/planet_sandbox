@@ -1,6 +1,6 @@
 
 #include "asset/soft_asset_ptr.h"
-#include "asset/asset_registry.h"
+#include "object/object_registry.h"
 #include "engine/log.h"
 
 namespace engine

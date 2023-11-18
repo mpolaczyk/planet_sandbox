@@ -6,7 +6,7 @@
 #include <string>
 
 #include "math/triangle_face.h"
-#include "asset/textures.h"
+#include "assets/texture.h"
 
 namespace engine
 {

@@ -1,7 +1,7 @@
 
-#include "asset/mesh.h"
+#include "assets/mesh.h"
 
-#include "asset/asset_discovery.h"
+#include "asset/asset_io.h"
 
 namespace engine
 {

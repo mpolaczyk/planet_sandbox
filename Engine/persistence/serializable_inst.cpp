@@ -1,6 +1,6 @@
 
 #include "persistence/serializable.cpp"
-#include "asset/materials.h"
+#include "assets/material.h"
 
 namespace engine
 {

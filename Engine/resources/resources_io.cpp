@@ -4,7 +4,7 @@
 #include <fstream>
 #include <assert.h>
 
-#include "asset/asset_tools.h"
+#include "resources/resources_io.h"
 
 #include "third_party/stb_image.h"
 #include "third_party/tiny_obj_loader.h"
@@ -96,7 +96,7 @@ namespace engine
     return true;
   }
 
-  bool load_img(const std::string& file_name, int width, int height, engine::texture* out_texture)
+  bool load_img(const std::string& file_name, int width, int height, texture* out_texture)
   {
     std::string path = io::get_texture_file_path(file_name.c_str());
 

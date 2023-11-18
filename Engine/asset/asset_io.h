@@ -10,7 +10,7 @@ namespace engine
   class mesh;
   class texture;
 
-  class ENGINE_API asset_discovery
+  class ENGINE_API asset_io
   {
   public:
     static material* load_material(const std::string& material_name);

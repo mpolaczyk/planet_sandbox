@@ -1,7 +1,7 @@
 
 #include <assert.h>
 
-#include "asset/asset_registry.h"
+#include "object/object_registry.h"
 #include "engine/log.h"
 
 namespace engine

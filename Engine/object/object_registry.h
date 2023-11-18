@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "core/core.h"
-#include "asset/asset.h"
+#include "object/object.h"
 
 namespace engine
 {

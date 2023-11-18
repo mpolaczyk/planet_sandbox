@@ -5,7 +5,7 @@
 
 #include "async_renderer_base.h"
 
-#include "engine/bmp.h"
+#include "resources/bmp.h"
 #include "math/hittables.h"
 
 #include "math/pdf.h"

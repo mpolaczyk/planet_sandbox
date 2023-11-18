@@ -9,7 +9,7 @@
 
 #include "core/core.h" 
 #include "asset/soft_asset_ptr.h"
-#include "asset/materials.h"
+#include "assets/material.h"
 
 class mesh;
 

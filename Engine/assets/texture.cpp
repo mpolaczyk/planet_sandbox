@@ -1,9 +1,9 @@
 
 #include <sstream>
 
-#include "asset/textures.h"
+#include "assets/texture.h"
 
-#include "asset/asset_discovery.h"
+#include "asset/asset_io.h"
 
 namespace engine
 {

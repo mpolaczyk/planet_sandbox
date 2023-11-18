@@ -1,7 +1,7 @@
 
 #include <assert.h>
 
-#include "asset/asset_registry.h"
+#include "object/object_registry.h"
 #include "engine/log.h"
 
 // Those definitions are moved away from object_registry.cpp to avoid LNK2005 error, when compiling object_registry_inst.cpp

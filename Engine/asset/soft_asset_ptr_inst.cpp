@@ -1,9 +1,9 @@
 
 #include "asset/soft_asset_ptr.cpp"
 
-#include "asset/mesh.h"
-#include "asset/materials.h"
-#include "asset/textures.h"
+#include "assets/mesh.h"
+#include "assets/material.h"
+#include "assets/texture.h"
 
 // Explicit instantiations for the DLL client
 // https://isocpp.org/wiki/faq/templates#separate-template-fn-defn-from-decl

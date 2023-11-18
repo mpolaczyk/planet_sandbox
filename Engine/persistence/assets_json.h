@@ -4,9 +4,9 @@
 
 #include "persistence/serializable.h"
 
-#include "asset/materials.h"
-#include "asset/mesh.h"
-#include "asset/textures.h"
+#include "assets/material.h"
+#include "assets/mesh.h"
+#include "assets/texture.h"
 #include "asset/soft_asset_ptr.h"
 
 namespace engine
