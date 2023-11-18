@@ -39,8 +39,8 @@
     <ClInclude Include="persistence\serializable.h" />
     <ClInclude Include="persistence\vec3_json.h" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp" />
-    <ClInclude Include="asset\factories.h" />
     <ClInclude Include="asset\asset_discovery.h" />
+    <ClInclude Include="asset\object_types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -75,7 +75,6 @@
     <ClCompile Include="persistence\serializable.cpp" />
     <ClCompile Include="persistence\vec3_json.cpp" />
     <ClCompile Include="persistence\serializable_inst.cpp" />
-    <ClCompile Include="asset\factories.cpp" />
     <ClCompile Include="asset\asset_discovery.cpp" />
   </ItemGroup>
 </Project>

@@ -7,10 +7,10 @@
 
 namespace engine
 {
-  class ENGINE_API texture : public asset
+  class ENGINE_API texture : public object
   {
   public:
-    static asset_type get_static_asset_type();
+    static object_type get_static_type();
     static texture* load(const std::string& texture_name);
     static void save(texture* object);
     static texture* spawn();

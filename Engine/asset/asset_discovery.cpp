@@ -4,7 +4,6 @@
 
 #include "engine/log.h"
 #include "engine/io.h"
-#include "asset/factories.h"
 #include "asset/asset_tools.h"
 
 #include "persistence/assets_json.h"
@@ -34,7 +33,8 @@ namespace engine
       return nullptr;
     }
 
-    material* obj = object_factory::spawn_material(type);
+    material* obj = material::spawn();
+    obj->type = type;
     if (obj == nullptr)
     {
       LOG_ERROR("Invalid material type: {0}", static_cast<int>(type));
@@ -59,7 +59,7 @@ namespace engine
       return nullptr;
     }
 
-    mesh* obj = object_factory::spawn_mesh();
+    mesh* obj = mesh::spawn();
     if (obj == nullptr)
     {
       LOG_ERROR("Failed to spawn mesh object.");
@@ -93,7 +93,7 @@ namespace engine
       return nullptr;
     }
 
-    texture* obj = object_factory::spawn_texture();
+    texture* obj = texture::spawn();
     if (obj == nullptr)
     {
       LOG_ERROR("Failed to spawn texture object.");
@@ -121,7 +121,7 @@ namespace engine
     j = material_serializer::serialize(object);
 
     std::ostringstream oss;
-    oss << object->get_asset_name() << ".json";
+    oss << object->get_name() << ".json";
     std::ofstream o(io::get_material_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
     if (o.is_open())

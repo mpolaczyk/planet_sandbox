@@ -29,7 +29,7 @@ void draw_raytracer_window(raytracer_window_model& model, app_instance& state)
 
   draw_hotkeys_panel(state);
   draw_renderer_panel(model.rp_model, state);
-  draw_asset_registry_panel(state);
+  draw_managed_objects_panel(state);
   ImGui::End();
 }
 
@@ -120,7 +120,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
 
   draw_material_selection_combo(model.m_model, state);
 
-  engine::material* mat = engine::get_asset_registry()->get_asset<engine::material>(model.m_model.selected_material_id);
+  engine::material* mat = engine::get_object_registry()->get<engine::material>(model.m_model.selected_material_id);
   if (mat != nullptr)
   {
     //mat->draw_edit_panel(); FIX
@@ -233,7 +233,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
     draw_material_selection_combo(m_model, state);
     if (m_model.selected_material_id != -1)
     {
-      std::string selected_name = engine::get_asset_registry()->get_name(m_model.selected_material_id);
+      std::string selected_name = engine::get_object_registry()->get_name(m_model.selected_material_id);
       selected_obj->material_asset.set_name(selected_name);
     }
 
@@ -276,7 +276,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
     if (ImGui::Button("Add", ImVec2(120, 0)) && model.hittable != nullptr)
     {
-      model.hittable->material_asset.set_name(engine::get_asset_registry()->get_name(model.m_model.selected_material_id));
+      model.hittable->material_asset.set_name(engine::get_object_registry()->get_name(model.m_model.selected_material_id));
       state.scene_root->add(model.hittable);
       model.hittable = nullptr;
       ImGui::CloseCurrentPopup();
@@ -298,8 +298,8 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
 void draw_material_selection_combo(material_selection_combo_model& model, app_instance& state)
 {
-  std::vector<engine::material*> materials = engine::get_asset_registry()->get_assets<engine::material>();
-  engine::material* selected_material = engine::get_asset_registry()->get_asset<engine::material>(model.selected_material_id);
+  std::vector<engine::material*> materials = engine::get_object_registry()->get_by_type<engine::material>();
+  engine::material* selected_material = engine::get_object_registry()->get<engine::material>(model.selected_material_id);
 
   if (materials.size() > 0)
   {
@@ -308,12 +308,12 @@ void draw_material_selection_combo(material_selection_combo_model& model, app_in
       selected_material = materials[0];
       model.selected_material_id = selected_material->get_runtime_id();
     }
-    if (ImGui::BeginCombo("Material", selected_material->get_asset_name().c_str()))
+    if (ImGui::BeginCombo("Material", selected_material->get_name().c_str()))
     {
       for (int i = 0; i < materials.size(); ++i)
       {
         int iterated_id = materials[i]->get_runtime_id();
-        std::string iterated_name = materials[i]->get_asset_name();
+        std::string iterated_name = materials[i]->get_name();
 
         const bool isSelected = (model.selected_material_id == iterated_id);
         if (ImGui::Selectable(iterated_name.c_str(), isSelected))
@@ -367,20 +367,20 @@ void draw_delete_object_panel(delete_object_panel_model& model, app_instance& st
   }
 }
 
-void draw_asset_registry_panel(app_instance& state)
+void draw_managed_objects_panel(app_instance& state)
 {
   ImGui::Separator();
-  ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "ASSET REGISTRY");
+  ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MANAGED OBJECTS");
   ImGui::Separator();
 
-  const std::vector<asset*>& assets = engine::get_asset_registry()->get_all_assets();
+  const std::vector<object*>& objects = engine::get_object_registry()->get_all();
 
-  int num_objects = (int)assets.size();
+  int num_objects = (int)objects.size();
   if (ImGui::BeginListBox("Assets", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
   {
     for (int n = 0; n < num_objects; n++)
     {
-      if (ImGui::Selectable(assets[n]->get_display_name().c_str()))
+      if (ImGui::Selectable(objects[n]->get_display_name().c_str()))
       {
         
       }

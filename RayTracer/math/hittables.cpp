@@ -590,12 +590,12 @@ void static_mesh::pre_render()
   // Create a temporary object and modify it, reuse it next frame
   std::ostringstream oss;
   oss << "temp_" << mesh_asset.get_name() << "_hittable_id_" << id;
-  runtime_asset = engine::get_asset_registry()->find_asset<engine::mesh>(oss.str());
+  runtime_asset = engine::get_object_registry()->find<engine::mesh>(oss.str());
   if (runtime_asset == nullptr)
   {
-    if (engine::get_asset_registry()->find_asset<engine::mesh>(mesh_asset.get_name()) != nullptr)
+    if (engine::get_object_registry()->find<engine::mesh>(mesh_asset.get_name()) != nullptr)
     {
-      runtime_asset = engine::get_asset_registry()->clone_asset<engine::mesh>(mesh_asset.get()->get_runtime_id(), oss.str());
+      runtime_asset = engine::get_object_registry()->clone<engine::mesh>(mesh_asset.get()->get_runtime_id(), oss.str());
     }
     else
     {

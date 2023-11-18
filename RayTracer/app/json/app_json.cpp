@@ -101,7 +101,7 @@ void app_instance::load_assets()
     engine::material* temp = engine::material::load(name);
     if (temp != nullptr)
     {
-      engine::get_asset_registry()->add<engine::material>(temp, name);
+      engine::get_object_registry()->add<engine::material>(temp, name);
     }
   }
 
@@ -112,7 +112,7 @@ void app_instance::load_assets()
     texture* temp = texture::load(name);
     if (temp != nullptr)
     {
-      engine::get_asset_registry()->add<texture>(temp, name);
+      engine::get_object_registry()->add<texture>(temp, name);
     }
   }
 
@@ -123,7 +123,7 @@ void app_instance::load_assets()
     engine::mesh* temp = engine::mesh::load(name);
     if (temp != nullptr)
     {
-      engine::get_asset_registry()->add<engine::mesh>(temp, name);
+      engine::get_object_registry()->add<engine::mesh>(temp, name);
     }
   }
 
@@ -182,7 +182,7 @@ void app_instance::save_materials()
 {
   LOG_INFO("Saving: materials");
 
-  std::vector<engine::material*> materials = engine::get_asset_registry()->get_assets<engine::material>();
+  std::vector<engine::material*> materials = engine::get_object_registry()->get_by_type<engine::material>();
   for (engine::material* m : materials)
   {
     engine::material::save(m);

@@ -97,7 +97,7 @@
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="asset\asset_discovery.h" />
     <ClInclude Include="asset\asset_registry.h" />
-    <ClInclude Include="asset\factories.h" />
+    <ClInclude Include="asset\object_types.h" />
     <ClInclude Include="asset\materials.h" />
     <ClInclude Include="asset\mesh.h" />
     <ClInclude Include="asset\soft_asset_ptr.h" />
@@ -143,7 +143,6 @@
     <ClCompile Include="asset\asset_registry_inst.cpp">
       <FileType>Document</FileType>
     </ClCompile>
-    <ClCompile Include="asset\factories.cpp" />
     <ClCompile Include="asset\materials.cpp" />
     <ClCompile Include="asset\mesh.cpp" />
     <ClCompile Include="asset\soft_asset_ptr.cpp" />

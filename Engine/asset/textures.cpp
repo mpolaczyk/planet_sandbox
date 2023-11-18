@@ -4,13 +4,12 @@
 #include "asset/textures.h"
 
 #include "asset/asset_discovery.h"
-#include "asset/factories.h"
 
 namespace engine
 {
-  asset_type texture::get_static_asset_type()
+  object_type texture::get_static_type()
   {
-    return asset_type::texture;
+    return object_type::texture;
   }
 
   texture* texture::load(const std::string& texture_name)
@@ -24,7 +23,7 @@ namespace engine
 
   texture* texture::spawn()
   {
-    return object_factory::spawn_texture();
+    return new texture();
   }
 
   std::string texture::get_display_name() const
@@ -35,7 +34,7 @@ namespace engine
     {
       quality = "HDR";
     }
-    oss << asset::get_display_name() << " " << width << "x" << height << " " << quality;
+    oss << object::get_display_name() << " " << width << "x" << height << " " << quality;
     return oss.str();
   }
 }

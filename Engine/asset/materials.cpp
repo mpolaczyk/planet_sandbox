@@ -4,13 +4,12 @@
 #include "asset/materials.h"
 
 #include "asset/asset_discovery.h"
-#include "asset/factories.h"
 
 namespace engine
 {
-  asset_type material::get_static_asset_type()
+  object_type material::get_static_type()
   {
-    return asset_type::material;
+    return object_type::material;
   }
 
   material* material::load(const std::string& material_name)
@@ -25,13 +24,13 @@ namespace engine
 
   material* material::spawn()
   {
-    return object_factory::spawn_material(material_type::none);
+    return new material(material_type::none);
   }
 
   std::string material::get_display_name() const
   {
     std::ostringstream oss;
-    oss << asset::get_display_name() << " - " << material_type_names[(int)type];
+    oss << object::get_display_name() << " - " << material_type_names[(int)type];
     return oss.str();
   }
 }

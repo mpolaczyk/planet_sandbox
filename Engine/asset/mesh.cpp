@@ -2,13 +2,12 @@
 #include "asset/mesh.h"
 
 #include "asset/asset_discovery.h"
-#include "asset/factories.h"
 
 namespace engine
 {
-  asset_type mesh::get_static_asset_type()
+  object_type mesh::get_static_type()
   {
-    return asset_type::static_mesh;
+    return object_type::static_mesh;
   }
 
   mesh* mesh::load(const std::string& mesh_name)
@@ -22,6 +21,6 @@ namespace engine
 
   mesh* mesh::spawn()
   {
-    return object_factory::spawn_mesh();
+    return new mesh();
   }
 }

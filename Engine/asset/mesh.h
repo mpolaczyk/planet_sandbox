@@ -11,10 +11,10 @@
 
 namespace engine
 {
-  class ENGINE_API mesh : public asset
+  class ENGINE_API mesh : public object
   {
   public:
-    static asset_type get_static_asset_type();
+    static object_type get_static_type();
     static mesh* load(const std::string& mesh_name);
     static void save(mesh* object);
     static mesh* spawn();

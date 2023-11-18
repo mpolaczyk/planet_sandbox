@@ -32,13 +32,13 @@ namespace engine
   {
     if (!is_loaded())
     {
-      object = get_asset_registry()->find_asset<T>(name);
+      object = get_object_registry()->find<T>(name);
       if (object == nullptr)
       {
         object = T::load(name);
         if (object != nullptr)
         {
-          get_asset_registry()->add<T>(object, name);
+          get_object_registry()->add<T>(object, name);
         }
         else
         {

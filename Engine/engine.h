@@ -32,7 +32,6 @@
 #include "asset/mesh.h"
 #include "asset/textures.h"
 #include "asset/asset_tools.h"
-#include "asset/factories.h"
 #include "persistence/serializable.h"
 
 #include "profile/stats.h"

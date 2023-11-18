@@ -10,60 +10,10 @@
 
 namespace engine
 {
-  enum class material_type
-  {
-    none = 0,
-    universal,
-    light
-  };
-  static inline const char* material_type_names[] =
-  {
-    "None",
-    "Universal",
-    "Light"
-  };
-  enum class renderer_type
-  {
-    example = 0,
-    preview,
-    preview_normals,
-    preview_faces,
-    reference,
-    ispc
-  };
-  static inline const char* renderer_type_names[] =
-  {
-    "CPU Example",
-    "CPU Preview",
-    "CPU Preview Normals",
-    "CPU Preview Faces",
-    "CPU Reference",
-    "CPU ISPC (Example only)"
-  };
-
-  enum class hittable_type
-  {
-    scene = 0,
-    sphere,
-    xy_rect,
-    xz_rect,
-    yz_rect,
-    static_mesh
-  };
-  static inline const char* hittable_type_names[] =
-  {
-    "Scene",
-    "Sphere",
-    "XY Rectangle",
-    "XZ Rectangle",
-    "YZ Rectangle",
-    "Static Mesh"
-  };
-
-  class ENGINE_API material : public asset
+  class ENGINE_API material : public object
   {
   public:
-    static asset_type get_static_asset_type();
+    static object_type get_static_type();
     static material* load(const std::string& material_name);
     static void save(material* object);
     static material* spawn();

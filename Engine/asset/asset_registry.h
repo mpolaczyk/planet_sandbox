@@ -8,35 +8,35 @@
 
 namespace engine
 {
-  // Collection of assets of any kind.
-  // Registry has ownership on assets.
+  // Collection of objects of any kind.
+  // Registry has ownership on objects.
   // Registry gives runtime ids.
-  // The fact that asset is in the registry should mean it has resources loaded.
-  // For now I assume there is no way to remove asset -> no defragmentation
-  // Assets can't be deleted from memory -> no dependence lookup or reference counting
-  // T can be only of type "asset" or derived from it
-  class ENGINE_API asset_registry
+  // The fact that object is in the registry should mean it has resources loaded.
+  // For now I assume there is no way to remove an object -> no defragmentation
+  // Objects can't be deleted from memory -> no dependence lookup or reference counting
+  // T can be only of type "object" or derived from it
+  class ENGINE_API object_registry
   {
   public:
     // No copy, no move
-    asset_registry() = default;
-    ~asset_registry();
-    asset_registry(const asset_registry&) = delete;
-    asset_registry& operator=(const asset_registry&) = delete;
+    object_registry() = default;
+    ~object_registry();
+    object_registry(const object_registry&) = delete;
+    object_registry& operator=(const object_registry&) = delete;
 
     bool is_valid(int id) const;
     std::string get_name(int id) const;
-    asset_type get_type(int id) const;
-    std::vector<asset*> get_all_assets();
-    std::vector<int> get_ids(asset_type type) const;
-    std::vector<std::string> get_names(asset_type type) const;
+    object_type get_type(int id) const;
+    std::vector<object*> get_all();
+    std::vector<int> get_all_ids(object_type type) const;
+    std::vector<std::string> get_all_names(object_type type) const;
 
   protected:
     // Runtime id is an index
     // None of this can change at runtime after is added
     std::vector<std::string> names;
-    std::vector<asset_type> types;
-    std::vector<asset*> assets;
+    std::vector<object_type> types;
+    std::vector<object*> objects;
 
   public:
 
@@ -44,19 +44,19 @@ namespace engine
     bool add(T* object, const std::string& name);
 
     template<typename T>
-    T* get_asset(int id) const;
+    T* get(int id) const;
 
     template<typename T>
-    T* find_asset(const std::string& name);
+    T* find(const std::string& name);
 
     template<typename T>
-    std::vector<T*> get_assets();
+    std::vector<T*> get_by_type();
 
     template<typename T>
-    T* clone_asset(int source_runtime_id, const std::string& target_name);
+    T* clone(int source_runtime_id, const std::string& target_name);
   };
 
 
   // Singleton
-  ENGINE_API asset_registry* get_asset_registry();
+  ENGINE_API object_registry* get_object_registry();
 }

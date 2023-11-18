@@ -4,15 +4,15 @@
 #include "asset/asset_registry.h"
 #include "engine/log.h"
 
-// Those definitions are moved away from asset_registry.cpp to avoid LNK2005 error, when compiling asset_registry_inst.cpp
+// Those definitions are moved away from object_registry.cpp to avoid LNK2005 error, when compiling object_registry_inst.cpp
 // https://stackoverflow.com/questions/77377405/lnk2005-for-non-templated-function-when-explicitly-instantiating-templated-funct
 
 namespace engine
 {
   template<typename T>
-  bool asset_registry::add(T* object, const std::string& name)
+  bool object_registry::add(T* object, const std::string& name)
   {
-    if (object->get_static_asset_type() == asset_type::none)
+    if (object->get_static_type() == object_type::none)
     {
       assert(false); // "Unable to add none object."
       return false;
@@ -23,7 +23,7 @@ namespace engine
       return false;
     }
     // Assets should not be added twice, if this happens it is most likely a programmer error
-    if (std::find(begin(assets), end(assets), object) != end(assets))
+    if (std::find(begin(objects), end(objects), object) != end(objects))
     {
       LOG_ERROR("Unable to add asset, it is already registered: {0}", name.c_str());
       return false;
@@ -33,69 +33,69 @@ namespace engine
       LOG_ERROR("Unable to add asset, name is already registered. {0}", name.c_str());
       return false;
     }
-    object->set_runtime_id(assets.size());
-    assets.push_back(object);
+    object->set_runtime_id(objects.size());
+    objects.push_back(object);
     names.push_back(name);
-    types.push_back(T::get_static_asset_type());
+    types.push_back(T::get_static_type());
     return true;
   }
 
   template<typename T>
-  T* asset_registry::get_asset(int id) const
+  T* object_registry::get(int id) const
   {
     if (is_valid(id))
     {
-      if (get_type(id) == T::get_static_asset_type())
+      if (get_type(id) == T::get_static_type())
       {
-        return static_cast<T*>(assets[id]); // Risky! no RTTI, no dynamic_cast
+        return static_cast<T*>(objects[id]); // Risky! no RTTI, no dynamic_cast
       }
     }
     return nullptr;
   }
 
   template<typename T>
-  T* asset_registry::find_asset(const std::string& name)
+  T* object_registry::find(const std::string& name)
   {
     for (int i = 0; i < types.size(); i++)
     {
-      if (types[i] == T::get_static_asset_type() && names[i] == name)
+      if (types[i] == T::get_static_type() && names[i] == name)
       {
-        assert(assets[i] != nullptr);
-        return static_cast<T*>(assets[i]); // Risky! no RTTI, no dynamic_cast
+        assert(objects[i] != nullptr);
+        return static_cast<T*>(objects[i]); // Risky! no RTTI, no dynamic_cast
       }
     }
     return nullptr;
   }
 
   template<typename T>
-  std::vector<T*> asset_registry::get_assets()
+  std::vector<T*> object_registry::get_by_type()
   {
     std::vector<T*> ans;
     for (int i = 0; i < types.size(); i++)
     {
-      if (types[i] == T::get_static_asset_type())
+      if (types[i] == T::get_static_type())
       {
-        assert(assets[i] != nullptr);
-        ans.push_back(static_cast<T*>(assets[i])); // Risky! no RTTI, no dynamic_cast
+        assert(objects[i] != nullptr);
+        ans.push_back(static_cast<T*>(objects[i])); // Risky! no RTTI, no dynamic_cast
       }
     }
     return ans;
   }
 
   template<typename T>
-  T* asset_registry::clone_asset(int source_runtime_id, const std::string& target_name)
+  T* object_registry::clone(int source_runtime_id, const std::string& target_name)
   {
     if (!is_valid(source_runtime_id))
     {
       LOG_ERROR("Unable to clone asset: {0} Unknown source runtime id: {1}", target_name.c_str(), source_runtime_id);
       return nullptr;
     }
-    if (types[source_runtime_id] != T::get_static_asset_type())
+    if (types[source_runtime_id] != T::get_static_type())
     {
-      LOG_ERROR("Unable to clone asset: {0} Type mismatch: {1} and {2}", target_name.c_str(), asset_type_names[static_cast<int>(types[source_runtime_id])], asset_type_names[static_cast<int>(T::get_static_asset_type())]);
+      LOG_ERROR("Unable to clone asset: {0} Type mismatch: {1} and {2}", target_name.c_str(), object_type_names[static_cast<int>(types[source_runtime_id])], object_type_names[static_cast<int>(T::get_static_type())]);
       return nullptr;
     }
-    T* source = static_cast<T*>(assets[source_runtime_id]);  // Risky! no RTTI, no dynamic_cast
+    T* source = static_cast<T*>(objects[source_runtime_id]);  // Risky! no RTTI, no dynamic_cast
     if (source == nullptr)
     {
       LOG_ERROR("Unable to clone asset: {0} Invalid source object: {1}", target_name.c_str(), source_runtime_id);
