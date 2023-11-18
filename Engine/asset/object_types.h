@@ -4,10 +4,10 @@ namespace engine
 {
   enum class object_type : int
   {
-    none = 0,
+    object = 0,
     material,
     texture,
-    static_mesh
+    mesh
   };
   static inline const char* object_type_names[] =
   {

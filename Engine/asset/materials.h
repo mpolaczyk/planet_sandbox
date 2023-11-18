@@ -13,10 +13,7 @@ namespace engine
   class ENGINE_API material : public object
   {
   public:
-    static object_type get_static_type();
-    static material* load(const std::string& material_name);
-    static void save(material* object);
-    static material* spawn();
+    OBJECT_DECLARE(material)
 
     virtual std::string get_display_name() const override;
 

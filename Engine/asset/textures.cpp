@@ -7,24 +7,9 @@
 
 namespace engine
 {
-  object_type texture::get_static_type()
-  {
-    return object_type::texture;
-  }
-
-  texture* texture::load(const std::string& texture_name)
-  {
-    return asset_discovery::load_texture(texture_name);
-  }
-
-  void texture::save(texture* object)
-  {
-  }
-
-  texture* texture::spawn()
-  {
-    return new texture();
-  }
+  OBJECT_DEFINE_BASE(texture)
+  OBJECT_DEFINE_NOSAVE(texture)
+  OBJECT_DEFINE_LOAD(texture)
 
   std::string texture::get_display_name() const
   {

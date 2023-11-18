@@ -10,10 +10,7 @@ namespace engine
   class ENGINE_API texture : public object
   {
   public:
-    static object_type get_static_type();
-    static texture* load(const std::string& texture_name);
-    static void save(texture* object);
-    static texture* spawn();
+    OBJECT_DECLARE(texture)
 
     virtual std::string get_display_name() const override;
 

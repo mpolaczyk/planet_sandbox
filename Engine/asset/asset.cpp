@@ -6,28 +6,9 @@
 
 namespace engine
 {
-  object_type object::get_static_type()
-  {
-    assert(false); // Not implemented!
-    return object_type::none;
-  }
-
-  object* object::load(const std::string& name)
-  {
-    assert(false); // Not implemented!
-    return nullptr;
-  }
-
-  void object::save(object* object)
-  {
-    assert(false); // Not implemented!
-  }
-
-  object* spawn()
-  {
-    assert(false); // Not implemented!
-    return nullptr;
-  }
+  OBJECT_DEFINE_BASE(object)
+  OBJECT_DEFINE_NOSAVE(object)
+  OBJECT_DEFINE_NOLOAD(object)
 
   std::string object::get_display_name() const
   {

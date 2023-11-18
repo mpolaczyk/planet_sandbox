@@ -12,7 +12,7 @@ namespace engine
   template<typename T>
   bool object_registry::add(T* object, const std::string& name)
   {
-    if (object->get_static_type() == object_type::none)
+    if (object->get_static_type() == object_type::object)
     {
       assert(false); // "Unable to add none object."
       return false;
