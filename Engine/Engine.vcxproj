@@ -97,7 +97,6 @@
     <ClInclude Include="hittables\hittables.h" />
     <ClInclude Include="object\factories.h" />
     <ClInclude Include="object\object.h" />
-    <ClInclude Include="asset\asset_io.h" />
     <ClInclude Include="object\object_defines.h" />
     <ClInclude Include="object\object_registry.h" />
     <ClInclude Include="object\object_types.h" />
@@ -153,7 +152,6 @@
     <ClCompile Include="hittables\hittables.cpp" />
     <ClCompile Include="object\factories.cpp" />
     <ClCompile Include="object\object.cpp" />
-    <ClCompile Include="asset\asset_io.cpp" />
     <ClCompile Include="object\object_registry.cpp" />
     <ClCompile Include="object\object_registry_temp.cpp" />
     <ClCompile Include="object\object_registry_inst.cpp">
