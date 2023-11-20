@@ -31,7 +31,11 @@ namespace engine
       return nullptr;
     }
 
-    static_mesh_asset* obj = static_mesh_asset::spawn();
+    static_mesh_asset* obj = static_mesh_asset::spawn(name);
+    if (obj == nullptr)
+    {
+      return nullptr;
+    }
 
     nlohmann::json j;
     input_stream >> j;
@@ -42,8 +46,6 @@ namespace engine
       LOG_ERROR("Failed to load object file: {0}", obj->obj_file_name.c_str());
       return nullptr;
     }
-
-    get_object_registry()->add<static_mesh_asset>(obj, name); // FIX
 
     return obj;
   }

@@ -17,7 +17,7 @@ namespace engine
     virtual std::string get_display_name() const override;
 
     material_asset() = default;
-    explicit material_asset(material_type type) : type(type)
+    explicit material_asset(material_type type) : type(type)  // FIX
     {
       if (type == material_type::light)
       {

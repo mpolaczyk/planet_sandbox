@@ -33,7 +33,11 @@ namespace engine
       return nullptr;
     }
 
-    texture_asset* obj = texture_asset::spawn();
+    texture_asset* obj = texture_asset::spawn(name);
+    if (obj == nullptr)
+    {
+      return nullptr;
+    }
 
     nlohmann::json j;
     input_stream >> j;
@@ -44,8 +48,6 @@ namespace engine
       LOG_ERROR("Failed to load texture file: {0}", obj->img_file_name.c_str());
       return nullptr;
     }
-
-    get_object_registry()->add<texture_asset>(obj, name); // FIX
 
     return obj;
   }

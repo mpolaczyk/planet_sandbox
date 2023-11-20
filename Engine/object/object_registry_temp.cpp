@@ -12,14 +12,19 @@ namespace engine
   template<derives_from<object> T>
   bool object_registry::add(T* instance, const std::string& name)
   {
-    if (instance->get_type() == object_type::object)
-    {
-      assert(false); // "Unable to add none object."
-      return false;
-    }
     if (instance == nullptr)
     {
-      assert(false); // "Unable to add nullptr object."
+      LOG_ERROR("Unable to add nullptr object.");
+      return false;
+    }
+    if (instance->get_type() == object_type::object)
+    {
+      LOG_ERROR("Unable to add object of type object.");
+      return false;
+    }
+    if (instance->runtime_id != -1)
+    {
+      LOG_ERROR("Unable to add already added object.");
       return false;
     }
     // Assets should not be added twice, if this happens it is most likely a programmer error
@@ -102,16 +107,15 @@ namespace engine
       return nullptr;
     }
     // Shallow copy
-    T* obj = T::spawn();
-    *obj = *source;
-    obj->runtime_id = -1;
-
-    // Register new one
-    if (add<T>(obj, target_name))
+    T* obj = T::spawn(target_name);
+    if (obj == nullptr)
     {
-      return obj;
+      return nullptr;
     }
-    return nullptr;
+    int32_t new_id = obj->runtime_id;
+    *obj = *source;
+    obj->runtime_id = new_id;
+    return obj;
   }
 
 

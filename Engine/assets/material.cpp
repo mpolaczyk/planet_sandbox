@@ -29,14 +29,16 @@ namespace engine
       return nullptr;
     }
 
-    material_asset* obj = material_asset::spawn();
+    material_asset* obj = material_asset::spawn(name);
+    if (obj == nullptr)
+    {
+      return nullptr;
+    }
 
     nlohmann::json j;
     input_stream >> j;
     material_serializer::deserialize(j, obj);
-
-    get_object_registry()->add<material_asset>(obj, name);    // FIX
-
+    
     return obj;
   }
 

@@ -2,11 +2,13 @@
 #include <assert.h>
 #include <sstream>  
 
+#include "object.h"
 #include "object/object_registry.h"
 
 namespace engine
 {
   OBJECT_DEFINE(object, object)
+  OBJECT_DEFINE_NOSPAWN(object)
   OBJECT_DEFINE_NOSAVE(object)
   OBJECT_DEFINE_NOLOAD(object)
 

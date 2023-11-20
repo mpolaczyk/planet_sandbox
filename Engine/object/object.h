@@ -22,15 +22,12 @@ namespace engine
 
     virtual std::string get_display_name() const;
 
-    void set_runtime_id(int id);
     int get_runtime_id() const;
-
     std::string get_name() const;
 
   private:
-
-    // Can be set only once by the registry, index in the vector
-    // Can't change at runtime, can't be cloned
+    // Runtime id Can be set only once by the registry. Can't change at runtime.
+    void set_runtime_id(int id);
     int runtime_id = -1;
   };
 }
