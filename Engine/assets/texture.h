@@ -11,7 +11,7 @@ namespace engine
   class ENGINE_API texture_asset : public asset_base
   {
   public:
-    OBJECT_DECLARE(texture_asset)
+    OBJECT_DECLARE(texture_asset, asset_base)
 
     virtual std::string get_display_name() const override;
 

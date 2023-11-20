@@ -440,7 +440,7 @@ void draw_managed_objects_panel(app_instance& state)
     {
       if (ImGui::Selectable(objects[n]->get_display_name().c_str()))
       {
-        
+
       }
     }
     ImGui::EndListBox();

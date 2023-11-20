@@ -12,7 +12,8 @@
 
 namespace engine
 {
-  OBJECT_DEFINE_BASE(material_asset)
+  OBJECT_DEFINE(material_asset, asset_base)
+  OBJECT_DEFINE_SPAWN(material_asset)
 
   material_asset* material_asset::load(const std::string& name)
   {

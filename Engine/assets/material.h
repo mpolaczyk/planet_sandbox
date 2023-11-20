@@ -12,7 +12,7 @@ namespace engine
   class ENGINE_API material_asset : public asset_base
   {
   public:
-    OBJECT_DECLARE(material_asset)
+    OBJECT_DECLARE(material_asset, asset_base)
 
     virtual std::string get_display_name() const override;
 

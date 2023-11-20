@@ -14,7 +14,8 @@
 
 namespace engine
 {
-  OBJECT_DEFINE_BASE(texture_asset)
+  OBJECT_DEFINE(texture_asset, asset_base)
+  OBJECT_DEFINE_SPAWN(texture_asset)
   OBJECT_DEFINE_NOSAVE(texture_asset)
  
 

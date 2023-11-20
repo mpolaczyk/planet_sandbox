@@ -12,7 +12,7 @@ namespace engine
   template<derives_from<object> T>
   bool object_registry::add(T* instance, const std::string& name)
   {
-    if (instance->get_static_type() == object_type::object)
+    if (instance->get_type() == object_type::object)
     {
       assert(false); // "Unable to add none object."
       return false;
@@ -36,7 +36,7 @@ namespace engine
     instance->set_runtime_id(objects.size());
     objects.push_back(instance);
     names.push_back(name);
-    types.push_back(T::get_static_type());
+    types.push_back(T::get_type_static());
     return true;
   }
 
@@ -45,7 +45,7 @@ namespace engine
   {
     if (is_valid(id))
     {
-      if (get_type(id) == T::get_static_type())
+      if (get_type(id) == T::get_type_static())
       {
         return static_cast<T*>(objects[id]); // Risky! no RTTI, no dynamic_cast
       }
@@ -58,7 +58,7 @@ namespace engine
   {
     for (int i = 0; i < types.size(); i++)
     {
-      if (types[i] == T::get_static_type() && names[i] == name)
+      if (types[i] == T::get_type_static() && names[i] == name)
       {
         assert(objects[i] != nullptr);
         return static_cast<T*>(objects[i]); // Risky! no RTTI, no dynamic_cast
@@ -73,7 +73,7 @@ namespace engine
     std::vector<T*> ans;
     for (int i = 0; i < types.size(); i++)
     {
-      if (types[i] == T::get_static_type())
+      if (types[i] == T::get_type_static())
       {
         assert(objects[i] != nullptr);
         ans.push_back(static_cast<T*>(objects[i])); // Risky! no RTTI, no dynamic_cast
@@ -90,9 +90,9 @@ namespace engine
       LOG_ERROR("Unable to clone asset: {0} Unknown source runtime id: {1}", target_name.c_str(), source_runtime_id);
       return nullptr;
     }
-    if (types[source_runtime_id] != T::get_static_type())
+    if (types[source_runtime_id] != T::get_type_static())
     {
-      LOG_ERROR("Unable to clone asset: {0} Type mismatch: {1} and {2}", target_name.c_str(), object_type_names[static_cast<int>(types[source_runtime_id])], object_type_names[static_cast<int>(T::get_static_type())]);
+      LOG_ERROR("Unable to clone asset: {0} Type mismatch: {1} and {2}", target_name.c_str(), object_type_names[static_cast<int>(types[source_runtime_id])], object_type_names[static_cast<int>(T::get_type_static())]);
       return nullptr;
     }
     T* source = static_cast<T*>(objects[source_runtime_id]);  // Risky! no RTTI, no dynamic_cast

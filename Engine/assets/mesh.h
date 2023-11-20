@@ -14,7 +14,7 @@ namespace engine
   class ENGINE_API static_mesh_asset : public asset_base
   {
   public:
-    OBJECT_DECLARE(static_mesh_asset)
+    OBJECT_DECLARE(static_mesh_asset, asset_base)
 
     // JSON persistent
     std::string obj_file_name;

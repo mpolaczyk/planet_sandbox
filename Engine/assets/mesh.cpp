@@ -13,7 +13,8 @@
 
 namespace engine
 {
-  OBJECT_DEFINE_BASE(static_mesh_asset)
+  OBJECT_DEFINE(static_mesh_asset, asset_base)
+  OBJECT_DEFINE_SPAWN(static_mesh_asset)
   OBJECT_DEFINE_NOSAVE(static_mesh_asset)
 
   static_mesh_asset* static_mesh_asset::load(const std::string& name)

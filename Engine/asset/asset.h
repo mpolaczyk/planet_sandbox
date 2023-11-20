@@ -10,6 +10,6 @@ namespace engine
   class ENGINE_API asset_base : public object
   {
   public:
-    OBJECT_DECLARE(asset_base)
+    OBJECT_DECLARE(asset_base, object)
   };
 }

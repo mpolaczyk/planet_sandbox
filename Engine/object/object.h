@@ -18,7 +18,7 @@ namespace engine
     friend object_registry;
 
   public:
-    OBJECT_DECLARE(object)
+    OBJECT_DECLARE(object, object)
 
     virtual std::string get_display_name() const;
 
@@ -26,7 +26,6 @@ namespace engine
     int get_runtime_id() const;
 
     std::string get_name() const;
-    object_type get_type() const;
 
   private:
 

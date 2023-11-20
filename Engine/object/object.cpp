@@ -6,7 +6,7 @@
 
 namespace engine
 {
-  OBJECT_DEFINE_BASE(object)
+  OBJECT_DEFINE(object, object)
   OBJECT_DEFINE_NOSAVE(object)
   OBJECT_DEFINE_NOLOAD(object)
 
@@ -33,10 +33,5 @@ namespace engine
   std::string object::get_name() const
   {
     return get_object_registry()->get_name(runtime_id);
-  }
-
-  object_type object::get_type() const
-  {
-    return get_object_registry()->get_type(runtime_id);
   }
 }

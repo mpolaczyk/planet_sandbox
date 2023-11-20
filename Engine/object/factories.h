@@ -1,12 +1,8 @@
 #pragma once
 
-// No RTTI, simple type detection for each object type
-
-
 #include "renderer/async_renderer_base.h"
 #include "hittables/hittables.h"
 #include "core/core.h"
-
 
 namespace engine
 {
