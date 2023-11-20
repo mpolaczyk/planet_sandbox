@@ -6,7 +6,7 @@
 #include "assets/texture.h"
 
 #define OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(CLASS_NAME) \
-  template ENGINE_API bool object_registry::add<CLASS_NAME>(CLASS_NAME* object, const std::string& name); \
+  template ENGINE_API bool object_registry::add<CLASS_NAME>(CLASS_NAME* instance, const std::string& name); \
   template ENGINE_API CLASS_NAME* object_registry::get<CLASS_NAME>(int id) const; \
   template ENGINE_API CLASS_NAME * object_registry::find<CLASS_NAME>(const std::string& name); \
   template ENGINE_API std::vector<CLASS_NAME*> object_registry::get_by_type<CLASS_NAME>(); \

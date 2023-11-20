@@ -54,6 +54,8 @@
     <ClInclude Include="renderers\reference_renderer.h" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json_fwd.hpp" />
     <ClInclude Include="persistence\camera_config_json.h" />
+    <ClInclude Include="asset\asset.h" />
+    <ClInclude Include="core\concepts.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -100,5 +102,6 @@
     <ClCompile Include="renderers\preview_renderer.cpp" />
     <ClCompile Include="renderers\reference_renderer.cpp" />
     <ClCompile Include="persistence\camera_config_json.cpp" />
+    <ClCompile Include="asset\asset.cpp" />
   </ItemGroup>
 </Project>

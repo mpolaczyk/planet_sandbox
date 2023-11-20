@@ -2,22 +2,27 @@
 
 namespace engine
 {
+  // Managed object types
   // Don't change the order as values can be persistent
   enum class object_type : int
   {
     object = 0,
     material_asset,
     texture_asset,
-    static_mesh_asset
+    static_mesh_asset,
+    asset_base
   };
   static inline const char* object_type_names[] =
   {
     "None",
     "Material asset",
     "Texture asset",
-    "Static mesh asset"
+    "Static mesh asset",
+    "Asset base"
   };
 
+
+  // FIX Move objects below to the managed object types
   // Don't change the order as values can be persistent
   enum class material_type
   {

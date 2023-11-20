@@ -4,10 +4,11 @@
 
 #include "object/object.h"
 #include "math/vec3.h"
+#include "asset/asset.h"
 
 namespace engine
 {
-  class ENGINE_API texture_asset : public object
+  class ENGINE_API texture_asset : public asset_base
   {
   public:
     OBJECT_DECLARE(texture_asset)

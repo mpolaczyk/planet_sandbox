@@ -9,21 +9,21 @@
 
 namespace engine
 {
-  template<typename T>
-  bool object_registry::add(T* object, const std::string& name)
+  template<derives_from<object> T>
+  bool object_registry::add(T* instance, const std::string& name)
   {
-    if (object->get_static_type() == object_type::object)
+    if (instance->get_static_type() == object_type::object)
     {
       assert(false); // "Unable to add none object."
       return false;
     }
-    if (object == nullptr)
+    if (instance == nullptr)
     {
       assert(false); // "Unable to add nullptr object."
       return false;
     }
     // Assets should not be added twice, if this happens it is most likely a programmer error
-    if (std::find(begin(objects), end(objects), object) != end(objects))
+    if (std::find(begin(objects), end(objects), instance) != end(objects))
     {
       LOG_ERROR("Unable to add asset, it is already registered: {0}", name.c_str());
       return false;
@@ -33,14 +33,14 @@ namespace engine
       LOG_ERROR("Unable to add asset, name is already registered. {0}", name.c_str());
       return false;
     }
-    object->set_runtime_id(objects.size());
-    objects.push_back(object);
+    instance->set_runtime_id(objects.size());
+    objects.push_back(instance);
     names.push_back(name);
     types.push_back(T::get_static_type());
     return true;
   }
 
-  template<typename T>
+  template<derives_from<object> T>
   T* object_registry::get(int id) const
   {
     if (is_valid(id))
@@ -53,7 +53,7 @@ namespace engine
     return nullptr;
   }
 
-  template<typename T>
+  template<derives_from<object> T>
   T* object_registry::find(const std::string& name)
   {
     for (int i = 0; i < types.size(); i++)
@@ -67,7 +67,7 @@ namespace engine
     return nullptr;
   }
 
-  template<typename T>
+  template<derives_from<object> T>
   std::vector<T*> object_registry::get_by_type()
   {
     std::vector<T*> ans;
@@ -82,7 +82,7 @@ namespace engine
     return ans;
   }
 
-  template<typename T>
+  template<derives_from<object> T>
   T* object_registry::clone(int source_runtime_id, const std::string& target_name)
   {
     if (!is_valid(source_runtime_id))

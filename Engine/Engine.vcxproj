@@ -63,6 +63,7 @@
       <FloatingPointExceptions>true</FloatingPointExceptions>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -84,6 +85,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -94,6 +96,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="asset\asset.h" />
+    <ClInclude Include="core\concepts.h" />
     <ClInclude Include="hittables\hittables.h" />
     <ClInclude Include="object\factories.h" />
     <ClInclude Include="object\object.h" />
@@ -149,6 +153,7 @@
     <ClInclude Include="third_party\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="asset\asset.cpp" />
     <ClCompile Include="hittables\hittables.cpp" />
     <ClCompile Include="object\factories.cpp" />
     <ClCompile Include="object\object.cpp" />

@@ -1,16 +1,15 @@
 #pragma once
 
-#include <string>
-
 #include "core/core.h"
 
 #include "object/object.h"
 #include "math/vec3.h"
 #include "asset/soft_asset_ptr.h"
+#include "asset/asset.h"
 
 namespace engine
 {
-  class ENGINE_API material_asset : public object
+  class ENGINE_API material_asset : public asset_base
   {
   public:
     OBJECT_DECLARE(material_asset)

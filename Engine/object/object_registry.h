@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "core/core.h"
+#include "core/concepts.h"
 #include "object/object.h"
 
 namespace engine
@@ -11,9 +12,8 @@ namespace engine
   // Collection of objects of any kind.
   // Registry has ownership on objects.
   // Registry gives runtime ids.
-  // The fact that object is in the registry should mean it has resources loaded.
   // For now I assume there is no way to remove an object -> no defragmentation
-  // Objects can't be deleted from memory -> no dependence lookup or reference counting
+  // Objects can't be deleted from memory -> no dependence lookup nor reference counting
   // T can be only of type "object" or derived from it
   class ENGINE_API object_registry
   {
@@ -40,19 +40,19 @@ namespace engine
 
   public:
 
-    template<typename T>
-    bool add(T* object, const std::string& name);
+    template<derives_from<object> T >
+    bool add(T* instance, const std::string& name);
 
-    template<typename T>
+    template<derives_from<object> T>
     T* get(int id) const;
 
-    template<typename T>
+    template<derives_from<object> T>
     T* find(const std::string& name);
 
-    template<typename T>
+    template<derives_from<object> T>
     std::vector<T*> get_by_type();
 
-    template<typename T>
+    template<derives_from<object> T>
     T* clone(int source_runtime_id, const std::string& target_name);
   };
 
