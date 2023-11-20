@@ -181,7 +181,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
   engine::material_asset* mat = engine::get_object_registry()->get<engine::material_asset>(model.m_model.selected_material_id);
   if (mat != nullptr)
   {
-    //mat->draw_edit_panel(); FIX
+    material_asset_draw_edit_panel(mat);
   }
 }
 

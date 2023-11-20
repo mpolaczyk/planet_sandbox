@@ -15,7 +15,6 @@ namespace engine
   {
     assert(value != nullptr);
     nlohmann::json j;
-    j["name"] = value->id;  // FIX do we need this? also name is misleading
     j["type"] = value->type;
     j["material_asset"] = soft_asset_ptr_base_serializer::serialize(&value->material_asset_ptr);
     return j;
@@ -69,7 +68,6 @@ namespace engine
   void hittable_serializer::deserialize(const nlohmann::json& j, hittable* out_value)
   {
     assert(out_value != nullptr);
-    TRY_PARSE(int, j, "name", out_value->id);
     TRY_PARSE(hittable_type, j, "type", out_value->type);
 
     nlohmann::json jmaterial;

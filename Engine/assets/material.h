@@ -40,7 +40,5 @@ namespace engine
     float gloss_probability = 0.0f;
     float refraction_probability = 0.0f;
     float refraction_index = 1.0f;
-
-    //void draw_edit_panel(); FIX
   };
 }

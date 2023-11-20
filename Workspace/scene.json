@@ -21,13 +21,11 @@
     "material_asset": {
       "name": ""
     },
-    "name": 0,
     "objects": [
       {
         "material_asset": {
           "name": "light"
         },
-        "name": 3,
         "origin": {
           "x": 50.0,
           "y": 50.0,
@@ -43,7 +41,6 @@
         "mesh_asset": {
           "name": "icosphere2"
         },
-        "name": 3,
         "origin": {
           "x": 0.0,
           "y": 0.0,

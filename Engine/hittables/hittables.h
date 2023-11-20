@@ -54,7 +54,6 @@ namespace engine
     virtual vec3 get_random_point() const { assert(false); return vec3(0, 0, 0); };
     // Deprecated end
 
-    //virtual void draw_edit_panel(); FIX
     virtual uint32_t get_hash() const;
     virtual hittable* clone() const = 0;
     virtual void load_resources();
@@ -85,7 +84,6 @@ namespace engine
     virtual void set_origin(const vec3& value) override { };
     virtual void set_extent(float value) override { assert(false); };
 
-    //virtual void draw_edit_panel() override; FIX
     virtual uint32_t get_hash() const override;
     virtual scene* clone() const override;
     virtual void load_resources() override;
@@ -121,7 +119,6 @@ namespace engine
     virtual void set_origin(const vec3& value) override { origin = value; };
     virtual void set_extent(float value) override { extent = value; };
 
-    //virtual void draw_edit_panel() override; FIX
     virtual uint32_t get_hash() const override;
     virtual static_mesh* clone() const override;
     virtual void load_resources() override;
@@ -154,7 +151,6 @@ namespace engine
     virtual void set_origin(const vec3& value) override { origin = value; };
     virtual void set_extent(float value) override { radius = value; };
 
-    //virtual void draw_edit_panel() override; FIX
     virtual uint32_t get_hash() const override;
     virtual sphere* clone() const override;
 

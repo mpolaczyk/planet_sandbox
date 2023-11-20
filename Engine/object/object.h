@@ -9,11 +9,13 @@
 
 namespace engine
 {
+  class object_registry;
+
   // Managed object class
   // Base class for all objects, use like abstract
   class ENGINE_API object
   {
-    //friend object_registry; // FIX
+    friend object_registry;
 
   public:
     OBJECT_DECLARE(object)
@@ -26,7 +28,7 @@ namespace engine
     std::string get_name() const;
     object_type get_type() const;
 
-  //private:  // FIX
+  private:
 
     // Can be set only once by the registry, index in the vector
     // Can't change at runtime, can't be cloned

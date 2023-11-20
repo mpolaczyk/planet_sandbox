@@ -41,6 +41,7 @@ namespace engine
     else
     {
       LOG_ERROR("Unable to spawn a hittable of type: {0}", static_cast<int32_t>(type));
+      return nullptr;
     }
     
     // Unique id for hittables

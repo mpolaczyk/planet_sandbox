@@ -2,6 +2,7 @@
 
 namespace engine
 {
+  // Don't change the order as values can be persistent
   enum class object_type : int
   {
     object = 0,
@@ -17,6 +18,7 @@ namespace engine
     "Static mesh asset"
   };
 
+  // Don't change the order as values can be persistent
   enum class material_type
   {
     none = 0,
@@ -30,6 +32,7 @@ namespace engine
     "Light"
   };
 
+  // Don't change the order as values can be persistent
   enum class renderer_type
   {
     example = 0,
@@ -48,6 +51,7 @@ namespace engine
     "CPU Reference"
   };
 
+  // Don't change the order as values can be persistent
   enum class hittable_type
   {
     scene = 0,
