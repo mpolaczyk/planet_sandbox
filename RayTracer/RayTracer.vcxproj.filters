@@ -6,50 +6,14 @@
     <ClCompile Include="gfx\dx11_helper.cpp">
       <Filter>gfx</Filter>
     </ClCompile>
-    <ClCompile Include="processing\async_renderer_base.cpp">
-      <Filter>processing</Filter>
-    </ClCompile>
-    <ClCompile Include="processing\chunk_generator.cpp">
-      <Filter>processing</Filter>
-    </ClCompile>
     <ClCompile Include="app\app.cpp">
       <Filter>app</Filter>
     </ClCompile>
     <ClCompile Include="app\ui\app_ui.cpp">
       <Filter>app\ui</Filter>
     </ClCompile>
-    <ClCompile Include="app\ui\hittables_ui.cpp">
-      <Filter>app\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="app\ui\assets_ui.cpp">
-      <Filter>app\ui</Filter>
-    </ClCompile>
     <ClCompile Include="app\json\app_json.cpp">
       <Filter>app\json</Filter>
-    </ClCompile>
-    <ClCompile Include="app\json\frame_renderer_json.cpp">
-      <Filter>app\json</Filter>
-    </ClCompile>
-    <ClCompile Include="app\json\hittables_json.cpp">
-      <Filter>app\json</Filter>
-    </ClCompile>
-    <ClCompile Include="math\hittables.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="renderers\example_renderer.cpp">
-      <Filter>renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="renderers\reference_renderer.cpp">
-      <Filter>renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="app\factories.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
-    <ClCompile Include="renderers\preview_renderer.cpp">
-      <Filter>renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="renderers\ispc_renderer.cpp">
-      <Filter>renderers</Filter>
     </ClCompile>
     <ClCompile Include="third_party\imgui_v1.87\imgui.cpp">
       <Filter>third_party\imgui</Filter>
@@ -72,55 +36,16 @@
     <ClCompile Include="third_party\imgui_v1.87\imgui_widgets.cpp">
       <Filter>third_party\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="renderers\preview_normals_renderer.cpp">
-      <Filter>renderers</Filter>
-    </ClCompile>
-    <ClCompile Include="renderers\preview_faces_renderer.cpp">
-      <Filter>renderers</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="gfx\dx11_helper.h">
       <Filter>gfx</Filter>
     </ClInclude>
-    <ClInclude Include="processing\async_renderer_base.h">
-      <Filter>processing</Filter>
-    </ClInclude>
-    <ClInclude Include="processing\chunk_generator.h">
-      <Filter>processing</Filter>
-    </ClInclude>
     <ClInclude Include="app\app.h">
       <Filter>app</Filter>
     </ClInclude>
-    <ClInclude Include="math\hittables.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="renderers\example_renderer.h">
-      <Filter>renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="renderers\reference_renderer.h">
-      <Filter>renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="app\factories.h">
-      <Filter>app</Filter>
-    </ClInclude>
-    <ClInclude Include="renderers\preview_renderer.h">
-      <Filter>renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="renderers\ispc_renderer.h">
-      <Filter>renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="renderers\trace_ray.h">
-      <Filter>renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="app\json\frame_renderer_json.h">
-      <Filter>app\json</Filter>
-    </ClInclude>
     <ClInclude Include="app\json\app_json.h">
-      <Filter>app\json</Filter>
-    </ClInclude>
-    <ClInclude Include="app\json\hittables_json.h">
       <Filter>app\json</Filter>
     </ClInclude>
     <ClInclude Include="third_party\imgui_v1.87\imconfig.h">
@@ -146,12 +71,6 @@
     </ClInclude>
     <ClInclude Include="third_party\imgui_v1.87\imstb_truetype.h">
       <Filter>third_party\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="renderers\preview_normals_renderer.h">
-      <Filter>renderers</Filter>
-    </ClInclude>
-    <ClInclude Include="renderers\preview_faces_renderer.h">
-      <Filter>renderers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -188,11 +107,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
-    <None Include="renderers\trace_ray.ispc">
-      <Filter>renderers</Filter>
-    </None>
-    <None Include="renderers\trace_ray.isph">
-      <Filter>renderers</Filter>
-    </None>
   </ItemGroup>
 </Project>

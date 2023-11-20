@@ -13,8 +13,8 @@
 #include "app/app.h"
 #include "gfx/dx11_helper.h"
 
-#include "processing/async_renderer_base.h"
-#include "app/factories.h"
+#include "renderer/async_renderer_base.h"
+#include "object/factories.h"
 
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -108,7 +108,7 @@ int app_main()
   state.load_assets();
   state.load_scene_state();
   state.scene_root->load_resources();
-  state.renderer = game_object_factory::spawn_renderer(state.renderer_conf->type);
+  state.renderer = engine::object_factory::spawn_renderer(state.renderer_conf->type);
   state.renderer->set_config(state.renderer_conf, state.scene_root, state.camera_conf);
   ::SetWindowPos(hwnd, NULL, state.window_conf.x, state.window_conf.y, state.window_conf.w, state.window_conf.h, NULL);
 
@@ -169,7 +169,7 @@ int app_main()
           if (state.renderer->is_renderer_type_different(state.renderer_conf))
           {
             delete state.renderer;
-            state.renderer = game_object_factory::spawn_renderer(state.renderer_conf->type);
+            state.renderer = engine::object_factory::spawn_renderer(state.renderer_conf->type);
           }
           LOG_INFO("### New frame using: {0}", state.renderer->get_name().c_str());
           state.scene_root->load_resources();

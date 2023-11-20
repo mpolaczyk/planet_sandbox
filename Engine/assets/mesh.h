@@ -11,10 +11,10 @@
 
 namespace engine
 {
-  class ENGINE_API mesh : public object
+  class ENGINE_API static_mesh_asset : public object
   {
   public:
-    OBJECT_DECLARE(mesh)
+    OBJECT_DECLARE(static_mesh_asset)
 
     // JSON persistent
     std::string obj_file_name;

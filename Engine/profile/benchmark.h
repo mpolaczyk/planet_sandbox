@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include "core/core.h"
 
 namespace std {

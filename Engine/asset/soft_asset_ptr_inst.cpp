@@ -11,7 +11,7 @@
 
 namespace engine
 {
-  template struct soft_asset_ptr<mesh>;
-  template struct soft_asset_ptr<material>;
-  template struct soft_asset_ptr<texture>;
+  template struct soft_asset_ptr<static_mesh_asset>;
+  template struct soft_asset_ptr<material_asset>;
+  template struct soft_asset_ptr<texture_asset>;
 }

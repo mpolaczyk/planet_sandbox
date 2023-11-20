@@ -6,7 +6,7 @@
 
 namespace engine
 {
-  class material;
+  class material_asset;
 
   struct ENGINE_API hit_record
   {
@@ -15,7 +15,7 @@ namespace engine
     float t;        // distance to hit point
     float u;
     float v;
-    const material* material_ptr = nullptr;
+    const material_asset* material_ptr = nullptr;
     bool front_face;
     void* object = nullptr; //FIX
     int face_id = 0;

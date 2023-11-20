@@ -5,11 +5,14 @@
 struct ID3D11ShaderResourceView;
 struct ID3D11Texture2D;
 
-class async_renderer_base;
-class material;
-class hittable;
-class renderer_config;
-class scene;
+namespace engine
+{
+  class async_renderer_base;
+  class material_asset;
+  class hittable;
+  class renderer_config;
+  class scene;
+}
 
 class window_config
 {

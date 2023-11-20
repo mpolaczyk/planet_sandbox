@@ -96,7 +96,7 @@ namespace engine
     return true;
   }
 
-  bool load_img(const std::string& file_name, int width, int height, texture* out_texture)
+  bool load_img(const std::string& file_name, int width, int height, texture_asset* out_texture)
   {
     std::string path = io::get_texture_file_path(file_name.c_str());
 

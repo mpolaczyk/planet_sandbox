@@ -4,11 +4,12 @@
 #include "persistence/serializable.h"
 #include "math/colors.h"
 
+#include "nlohmann/json.hpp"
 #include <assert.h>
 
 namespace engine
 {
-  nlohmann::json material_serializer::serialize(const material* value)
+  nlohmann::json material_serializer::serialize(const material_asset* value)
   {
     assert(value != nullptr);
     nlohmann::json j;
@@ -23,7 +24,7 @@ namespace engine
     return j;
   }
 
-  void material_serializer::deserialize(const nlohmann::json& j, material* out_value)
+  void material_serializer::deserialize(const nlohmann::json& j, material_asset* out_value)
   {
     assert(out_value != nullptr);
 
@@ -54,7 +55,7 @@ namespace engine
 
 
 
-  nlohmann::json mesh_serializer::serialize(const mesh* value)
+  nlohmann::json mesh_serializer::serialize(const static_mesh_asset* value)
   {
     assert(value != nullptr);
     nlohmann::json j;
@@ -63,7 +64,7 @@ namespace engine
     return j;
   }
 
-  void mesh_serializer::deserialize(const nlohmann::json& j, mesh* out_value)
+  void mesh_serializer::deserialize(const nlohmann::json& j, static_mesh_asset* out_value)
   {
     assert(out_value != nullptr);
 
@@ -74,7 +75,7 @@ namespace engine
 
 
 
-  nlohmann::json texture_serializer::serialize(const texture* value)
+  nlohmann::json texture_serializer::serialize(const texture_asset* value)
   {
     assert(value != nullptr);
     nlohmann::json j;
@@ -84,7 +85,7 @@ namespace engine
     return j;
   }
 
-  void texture_serializer::deserialize(const nlohmann::json& j, texture* out_value)
+  void texture_serializer::deserialize(const nlohmann::json& j, texture_asset* out_value)
   {
     assert(out_value != nullptr);
 

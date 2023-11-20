@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include "nlohmann/json.hpp"
+
 namespace engine
 {
   template<typename T>  

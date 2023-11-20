@@ -20,27 +20,27 @@ namespace engine
 #endif
   }
 
-  void logger::trace(const char* fmt...)
+  void logger::trace(const char* fmt)
   {
     s_console_logger->trace(fmt);
   }
-  void logger::debug(const char* fmt...)
+  void logger::debug(const char* fmt)
   {
     s_console_logger->debug(fmt);
   }
-  void logger::info(const char* fmt...)
+  void logger::info(const char* fmt)
   {
     s_console_logger->info(fmt);
   }
-  void logger::warn(const char* fmt...)
+  void logger::warn(const char* fmt)
   {
     s_console_logger->warn(fmt);
   }
-  void logger::error(const char* fmt...)
+  void logger::error(const char* fmt)
   {
     s_console_logger->error(fmt);
   }
-  void logger::critical(const char* fmt...)
+  void logger::critical(const char* fmt)
   {
     s_console_logger->critical(fmt);
   }

@@ -48,3 +48,10 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 
 #define STB_IMAGE_IMPLEMENTATION
+
+// warning C4251 : ? needs to have dll - interface to be used by clients of struct ? (compiling source file ?)
+// for standard library types!
+#pragma warning( disable : 4251)
+
+// warning C4275: non dll-interface class ? used as base for dll-interface class ? (compiling source file ?)
+#pragma warning( disable : 4275)

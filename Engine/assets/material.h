@@ -10,22 +10,22 @@
 
 namespace engine
 {
-  class ENGINE_API material : public object
+  class ENGINE_API material_asset : public object
   {
   public:
-    OBJECT_DECLARE(material)
+    OBJECT_DECLARE(material_asset)
 
     virtual std::string get_display_name() const override;
 
-    material() = default;
-    explicit material(material_type type) : type(type)
+    material_asset() = default;
+    explicit material_asset(material_type type) : type(type)
     {
       if (type == material_type::light)
       {
         emitted_color = vec3(1.0f, 1.0f, 1.0f);
       }
     }
-    material(std::string&& id, material_type type) : material(type)
+    material_asset(std::string&& id, material_type type) : material_asset(type)
     {
       id = std::move(id);
     }

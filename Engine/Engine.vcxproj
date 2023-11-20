@@ -56,7 +56,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;BUILD_DLL;PLATFORM_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;BUILD_DLL;PLATFORM_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\spdlog-1.x\include;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)third_party\json-3.10.5\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -76,7 +76,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;BUILD_DLL;PLATFORM_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;BUILD_DLL;PLATFORM_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)third_party\spdlog-1.x\include;$(ProjectDir)third_party\json-3.10.5\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -94,6 +94,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="hittables\hittables.h" />
+    <ClInclude Include="object\factories.h" />
     <ClInclude Include="object\object.h" />
     <ClInclude Include="asset\asset_io.h" />
     <ClInclude Include="object\object_defines.h" />
@@ -105,6 +107,16 @@
     <ClInclude Include="assets\texture.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="core\application.h" />
+    <ClInclude Include="persistence\camera_config_json.h" />
+    <ClInclude Include="persistence\frame_renderer_json.h" />
+    <ClInclude Include="persistence\hittables_json.h" />
+    <ClInclude Include="renderers\example_renderer.h" />
+    <ClInclude Include="renderers\preview_faces_renderer.h" />
+    <ClInclude Include="renderers\preview_normals_renderer.h" />
+    <ClInclude Include="renderers\preview_renderer.h" />
+    <ClInclude Include="renderers\reference_renderer.h" />
+    <ClInclude Include="renderer\async_renderer_base.h" />
+    <ClInclude Include="math\chunk_generator.h" />
     <ClInclude Include="resources\bmp.h" />
     <ClInclude Include="core\exceptions.h" />
     <ClInclude Include="core\windows_minimal.h" />
@@ -133,10 +145,13 @@
     <ClInclude Include="math\vec3.h" />
     <ClInclude Include="resources\resources_io.h" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp" />
+    <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json_fwd.hpp" />
     <ClInclude Include="third_party\stb_image.h" />
     <ClInclude Include="third_party\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="hittables\hittables.cpp" />
+    <ClCompile Include="object\factories.cpp" />
     <ClCompile Include="object\object.cpp" />
     <ClCompile Include="asset\asset_io.cpp" />
     <ClCompile Include="object\object_registry.cpp" />
@@ -150,6 +165,16 @@
     <ClCompile Include="asset\soft_asset_ptr_inst.cpp" />
     <ClCompile Include="assets\texture.cpp" />
     <ClCompile Include="core\application.cpp" />
+    <ClCompile Include="persistence\camera_config_json.cpp" />
+    <ClCompile Include="persistence\frame_renderer_json.cpp" />
+    <ClCompile Include="persistence\hittables_json.cpp" />
+    <ClCompile Include="renderers\example_renderer.cpp" />
+    <ClCompile Include="renderers\preview_faces_renderer.cpp" />
+    <ClCompile Include="renderers\preview_normals_renderer.cpp" />
+    <ClCompile Include="renderers\preview_renderer.cpp" />
+    <ClCompile Include="renderers\reference_renderer.cpp" />
+    <ClCompile Include="renderer\async_renderer_base.cpp" />
+    <ClCompile Include="math\chunk_generator.cpp" />
     <ClCompile Include="resources\bmp.cpp" />
     <ClCompile Include="core\exceptions.cpp" />
     <ClCompile Include="math\aabb.cpp" />

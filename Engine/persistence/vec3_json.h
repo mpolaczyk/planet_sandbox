@@ -5,7 +5,7 @@
 
 namespace engine
 {
-  class ENGINE_API vec3_serializer : serializable<nlohmann::json>
+  class ENGINE_API vec3_serializer
   {
   public:
     static nlohmann::json serialize(const vec3& value);

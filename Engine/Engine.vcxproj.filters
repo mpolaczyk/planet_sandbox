@@ -42,6 +42,19 @@
     <ClInclude Include="asset\asset_io.h" />
     <ClInclude Include="object\object_types.h" />
     <ClInclude Include="object\object_defines.h" />
+    <ClInclude Include="math\chunk_generator.h" />
+    <ClInclude Include="renderer\async_renderer_base.h" />
+    <ClInclude Include="hittables\hittables.h" />
+    <ClInclude Include="object\factories.h" />
+    <ClInclude Include="persistence\hittables_json.h" />
+    <ClInclude Include="persistence\frame_renderer_json.h" />
+    <ClInclude Include="renderers\example_renderer.h" />
+    <ClInclude Include="renderers\preview_faces_renderer.h" />
+    <ClInclude Include="renderers\preview_normals_renderer.h" />
+    <ClInclude Include="renderers\preview_renderer.h" />
+    <ClInclude Include="renderers\reference_renderer.h" />
+    <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json_fwd.hpp" />
+    <ClInclude Include="persistence\camera_config_json.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -77,5 +90,17 @@
     <ClCompile Include="persistence\vec3_json.cpp" />
     <ClCompile Include="persistence\serializable_inst.cpp" />
     <ClCompile Include="asset\asset_io.cpp" />
+    <ClCompile Include="renderer\async_renderer_base.cpp" />
+    <ClCompile Include="math\chunk_generator.cpp" />
+    <ClCompile Include="hittables\hittables.cpp" />
+    <ClCompile Include="object\factories.cpp" />
+    <ClCompile Include="persistence\hittables_json.cpp" />
+    <ClCompile Include="persistence\frame_renderer_json.cpp" />
+    <ClCompile Include="renderers\example_renderer.cpp" />
+    <ClCompile Include="renderers\preview_faces_renderer.cpp" />
+    <ClCompile Include="renderers\preview_normals_renderer.cpp" />
+    <ClCompile Include="renderers\preview_renderer.cpp" />
+    <ClCompile Include="renderers\reference_renderer.cpp" />
+    <ClCompile Include="persistence\camera_config_json.cpp" />
   </ItemGroup>
 </Project>

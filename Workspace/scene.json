@@ -13,7 +13,7 @@
     "look_from": {
       "x": 0.0,
       "y": 0.0,
-      "z": -3.5
+      "z": -4.0
     },
     "type": 7.450580596923828e-08
   },
@@ -27,21 +27,21 @@
         "material_asset": {
           "name": "light"
         },
-        "name": 2,
+        "name": 3,
         "origin": {
           "x": 50.0,
           "y": 50.0,
           "z": -25.000999450683594
         },
-        "radius": 60.0,
-        "type": 1
+        "type": 2,
+        "radius": 60.0
       },
       {
         "material_asset": {
-          "name": "metal_gold"
+          "name": "glass_red"
         },
         "mesh_asset": {
-          "name": "icosphere1"
+          "name": "icosphere2"
         },
         "name": 3,
         "origin": {
@@ -59,7 +59,7 @@
           "y": 1.0,
           "z": 1.0
         },
-        "type": 5
+        "type": 1
       }
     ],
     "type": 0

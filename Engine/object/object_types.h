@@ -5,16 +5,16 @@ namespace engine
   enum class object_type : int
   {
     object = 0,
-    material,
-    texture,
-    mesh
+    material_asset,
+    texture_asset,
+    static_mesh_asset
   };
   static inline const char* object_type_names[] =
   {
     "None",
-    "Material",
-    "Texture",
-    "Static Mesh"
+    "Material asset",
+    "Texture asset",
+    "Static mesh asset"
   };
 
   enum class material_type
@@ -37,7 +37,7 @@ namespace engine
     preview_normals,
     preview_faces,
     reference,
-    ispc
+    num
   };
   static inline const char* renderer_type_names[] =
   {
@@ -45,26 +45,20 @@ namespace engine
     "CPU Preview",
     "CPU Preview Normals",
     "CPU Preview Faces",
-    "CPU Reference",
-    "CPU ISPC (Example only)"
+    "CPU Reference"
   };
 
   enum class hittable_type
   {
     scene = 0,
+    static_mesh,
     sphere,
-    xy_rect,
-    xz_rect,
-    yz_rect,
-    static_mesh
+    num
   };
   static inline const char* hittable_type_names[] =
   {
     "Scene",
-    "Sphere",
-    "XY Rectangle",
-    "XZ Rectangle",
-    "YZ Rectangle",
-    "Static Mesh"
+    "Static Mesh",
+    "Sphere"
   };
 }

@@ -3,14 +3,72 @@
 #include "imgui.h"
 
 #include "app/app.h"
-#include "processing/chunk_generator.h"
-#include "processing/async_renderer_base.h"
+#include "math/chunk_generator.h"
+#include "renderer/async_renderer_base.h"
 #include "math/camera.h"
-
-#include "app/factories.h"
 
 #include "core/core.h"
 #include "engine.h"
+#include "hittables/hittables.h"
+#include "object/factories.h"
+
+
+void material_asset_draw_edit_panel(material_asset* obj)
+{
+  ImGui::Text("Material: ");
+  ImGui::SameLine();
+  ImGui::Text(obj->get_display_name().c_str());
+
+  int type_int = (int)obj->type;
+  ImGui::DragInt("Type", &type_int, 1, 1, 2);
+  obj->type = (material_type)type_int;
+
+  ImGui::ColorEdit3("Color", obj->color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
+  ImGui::ColorEdit3("Emitted color", obj->emitted_color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
+
+  ImGui::DragFloat("Smoothness", &obj->smoothness, 0.01f, 0.0f, 1.0f);
+
+  ImGui::DragFloat("Gloss probability", &obj->gloss_probability, 0.01f, 0.0f, 1.0f);
+  ImGui::ColorEdit3("Gloss color", obj->gloss_color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
+
+  ImGui::DragFloat("Refraction probability", &obj->refraction_probability, 0.01f, 0.0f, 1.0f);
+  ImGui::DragFloat("Refraction index", &obj->refraction_index, 0.01f);
+}
+
+
+
+void hittable_draw_edit_panel(hittable* obj)
+{
+  std::string hittable_name;
+  obj->get_name(hittable_name, false);
+  ImGui::Text("Object: ");
+  ImGui::SameLine();
+  ImGui::Text(hittable_name.c_str());
+}
+
+void scene_draw_edit_panel(scene* obj)
+{
+  hittable_draw_edit_panel(obj);
+}
+
+void static_mesh_draw_edit_panel(static_mesh* obj)
+{
+  hittable_draw_edit_panel(obj);
+  ImGui::DragFloat3("Origin", obj->origin.e);
+  ImGui::DragFloat3("Rotation", obj->rotation.e);
+  ImGui::DragFloat3("Scale", obj->scale.e);
+  {
+    std::string name = obj->mesh_asset_ptr.get_name();
+    assert(name.size() <= 256);
+    char* buffer = new char[256];
+    strcpy(buffer, name.c_str());
+    if (ImGui::InputText("Object file", buffer, 256))
+    {
+      obj->mesh_asset_ptr.set_name(buffer);
+    }
+    delete[] buffer;
+  }
+}
 
 
 void draw_raytracer_window(raytracer_window_model& model, app_instance& state)
@@ -120,7 +178,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
 
   draw_material_selection_combo(model.m_model, state);
 
-  engine::material* mat = engine::get_object_registry()->get<engine::material>(model.m_model.selected_material_id);
+  engine::material_asset* mat = engine::get_object_registry()->get<engine::material_asset>(model.m_model.selected_material_id);
   if (mat != nullptr)
   {
     //mat->draw_edit_panel(); FIX
@@ -219,12 +277,12 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
 
     hittable* selected_obj = state.scene_root->objects[model.selected_id];
     state.selected_object = selected_obj;
-    selected_obj->draw_edit_panel();
+    hittable_draw_edit_panel(selected_obj);
 
     material_selection_combo_model m_model;
     if (model.m_model.selected_material_id == -1)
     {
-      const engine::material* mat = selected_obj->material_asset.get();
+      const engine::material_asset* mat = selected_obj->material_asset_ptr.get();
       if (mat != nullptr)
       {
         m_model.selected_material_id = mat->get_runtime_id();
@@ -234,7 +292,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
     if (m_model.selected_material_id != -1)
     {
       std::string selected_name = engine::get_object_registry()->get_name(m_model.selected_material_id);
-      selected_obj->material_asset.set_name(selected_name);
+      selected_obj->material_asset_ptr.set_name(selected_name);
     }
 
     ImGui::Separator();
@@ -263,20 +321,20 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
     if (model.hittable == nullptr)
     {
       // New object
-      model.hittable = game_object_factory::spawn_hittable((hittable_type)model.selected_type);
+      model.hittable = engine::object_factory::spawn_hittable((hittable_type)model.selected_type);
       model.hittable->set_origin(state.center_of_scene);
     }
 
     if (model.hittable != nullptr)
     {
-      model.hittable->draw_edit_panel();
+      hittable_draw_edit_panel(model.hittable);
 
       draw_material_selection_combo(model.m_model, state);
     }
 
     if (ImGui::Button("Add", ImVec2(120, 0)) && model.hittable != nullptr)
     {
-      model.hittable->material_asset.set_name(engine::get_object_registry()->get_name(model.m_model.selected_material_id));
+      model.hittable->material_asset_ptr.set_name(engine::get_object_registry()->get_name(model.m_model.selected_material_id));
       state.scene_root->add(model.hittable);
       model.hittable = nullptr;
       ImGui::CloseCurrentPopup();
@@ -298,8 +356,8 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
 void draw_material_selection_combo(material_selection_combo_model& model, app_instance& state)
 {
-  std::vector<engine::material*> materials = engine::get_object_registry()->get_by_type<engine::material>();
-  engine::material* selected_material = engine::get_object_registry()->get<engine::material>(model.selected_material_id);
+  std::vector<engine::material_asset*> materials = engine::get_object_registry()->get_by_type<engine::material_asset>();
+  engine::material_asset* selected_material = engine::get_object_registry()->get<engine::material_asset>(model.selected_material_id);
 
   if (materials.size() > 0)
   {
@@ -348,7 +406,7 @@ void draw_delete_object_panel(delete_object_panel_model& model, app_instance& st
     if (selected_obj != nullptr)
     {
       ImGui::BeginDisabled(true);
-      selected_obj->draw_edit_panel();
+      hittable_draw_edit_panel(selected_obj);
       ImGui::EndDisabled();
 
       if (ImGui::Button("Delete", ImVec2(120, 0)))

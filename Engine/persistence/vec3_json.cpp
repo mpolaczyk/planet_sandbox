@@ -1,6 +1,8 @@
 
 #include "persistence/vec3_json.h"
 
+#include "nlohmann/json.hpp"
+
 namespace engine
 {
   nlohmann::json vec3_serializer::serialize(const vec3& value)

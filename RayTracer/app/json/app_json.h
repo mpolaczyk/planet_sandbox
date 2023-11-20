@@ -5,6 +5,8 @@
 
 #include "persistence/serializable.h"
 
+#include "nlohmann/json_fwd.hpp"
+
 class window_config_serializer
 {
 public:
@@ -12,9 +14,3 @@ public:
   static window_config deserialize(const nlohmann::json& j);
 };
 
-class camera_config_serializer
-{
-public:
-  static nlohmann::json serialize(const camera_config& value);
-  static camera_config deserialize(const nlohmann::json& j);
-};

@@ -5,7 +5,7 @@
 
 namespace engine
 {
-  OBJECT_DEFINE_BASE(mesh)
-  OBJECT_DEFINE_NOSAVE(mesh)
-  OBJECT_DEFINE_LOAD(mesh)
+  OBJECT_DEFINE_BASE(static_mesh_asset)
+  OBJECT_DEFINE_NOSAVE(static_mesh_asset)
+  OBJECT_DEFINE_LOAD(static_mesh_asset)
 }

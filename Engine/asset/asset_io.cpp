@@ -1,4 +1,5 @@
 #include <fstream>
+#include <sstream>
 
 #include "asset/asset_io.h"
 
@@ -7,11 +8,13 @@
 #include "resources/resources_io.h"
 
 #include "persistence/assets_json.h"
+#include "nlohmann/json.hpp"
+#include "object/object_registry.h"
 
 
 namespace engine
 {
-  material* asset_io::load_material(const std::string& material_name)
+  material_asset* asset_io::load_material_asset(const std::string& material_name)
   {
     LOG_DEBUG("Loading material: {0}", material_name.c_str());
 
@@ -25,27 +28,31 @@ namespace engine
       return nullptr;
     }
 
-    nlohmann::json j;
+    /*nlohmann::json j;
     input_stream >> j;
     material_type type = material_type::none;
     if (!TRY_PARSE(material_type, j, "type", type))
     {
       return nullptr;
-    }
+    }*/
 
-    material* obj = material::spawn();
-    obj->type = type;
-    if (obj == nullptr)
-    {
-      LOG_ERROR("Invalid material type: {0}", static_cast<int>(type));
-    }
+    material_asset* obj = material_asset::spawn();
+    //obj->type = type;
+    //if (obj == nullptr)
+    //{
+    //  LOG_ERROR("Invalid material type: {0}", static_cast<int>(type));
+    //}
 
+    nlohmann::json j;
+    input_stream >> j;
     material_serializer::deserialize(j, obj);
+
+    get_object_registry()->add<material_asset>(obj, material_name);
 
     return obj;
   }
 
-  mesh* asset_io::load_mesh(const std::string& mesh_name)
+  static_mesh_asset* asset_io::load_static_mesh_asset(const std::string& mesh_name)
   {
     LOG_DEBUG("Loading mesh: {0}", mesh_name.c_str());
 
@@ -59,13 +66,13 @@ namespace engine
       return nullptr;
     }
 
-    mesh* obj = mesh::spawn();
-    if (obj == nullptr)
+    static_mesh_asset* obj = static_mesh_asset::spawn(); 
+    /*if (obj == nullptr)
     {
       LOG_ERROR("Failed to spawn mesh object.");
       return nullptr;
-    }
-
+    }*/
+    
     nlohmann::json j;
     input_stream >> j;
     mesh_serializer::deserialize(j, obj);
@@ -76,10 +83,12 @@ namespace engine
       return nullptr;
     }
 
+    get_object_registry()->add<static_mesh_asset>(obj, mesh_name);
+
     return obj;
   }
 
-  texture* asset_io::load_texture(const std::string& texture_name)
+  texture_asset* asset_io::load_texture_asset(const std::string& texture_name)
   {
     LOG_DEBUG("Loading texture: {0}", texture_name.c_str());
 
@@ -93,12 +102,12 @@ namespace engine
       return nullptr;
     }
 
-    texture* obj = texture::spawn();
-    if (obj == nullptr)
-    {
-      LOG_ERROR("Failed to spawn texture object.");
-      return nullptr;
-    }
+    texture_asset* obj = texture_asset::spawn();
+    //if (obj == nullptr)
+    //{
+    //  LOG_ERROR("Failed to spawn texture object.");
+    //  return nullptr;
+    //}
 
     nlohmann::json j;
     input_stream >> j;
@@ -110,10 +119,12 @@ namespace engine
       return nullptr;
     }
 
+    get_object_registry()->add<texture_asset>(obj, texture_name);
+
     return obj;
   }
 
-  void asset_io::save_material(const material* object)
+  void asset_io::save_material_asset(const material_asset* object)
   {
     assert(object != nullptr);
 

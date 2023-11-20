@@ -3,16 +3,15 @@
 #include "imgui.h"
 
 #include "app.h"
-#include "factories.h"
-#include "math/hittables.h"
+#include "hittables/hittables.h"
 
-#include "processing/async_renderer_base.h"
+#include "renderer/async_renderer_base.h"
 
 app_instance::app_instance()
 {
   camera_conf = new camera_config();
-  scene_root = new scene();
-  renderer_conf = new renderer_config();
+  scene_root = new engine::scene();
+  renderer_conf = new engine::renderer_config();
 }
 
 app_instance::~app_instance()
@@ -59,7 +58,7 @@ void handle_input(app_instance& state)
     hit_record hit;
     if (state.scene_root->hit(r, 0.0f, math::infinity, hit))
     {
-      state.selected_object = static_cast<hittable*>(hit.object); // FIX
+      state.selected_object = static_cast<engine::hittable*>(hit.object); // FIX
     }
 
     state.output_window_lmb_x = -1.0f;

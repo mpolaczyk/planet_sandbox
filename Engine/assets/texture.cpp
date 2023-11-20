@@ -7,11 +7,11 @@
 
 namespace engine
 {
-  OBJECT_DEFINE_BASE(texture)
-  OBJECT_DEFINE_NOSAVE(texture)
-  OBJECT_DEFINE_LOAD(texture)
+  OBJECT_DEFINE_BASE(texture_asset)
+  OBJECT_DEFINE_NOSAVE(texture_asset)
+  OBJECT_DEFINE_LOAD(texture_asset)
 
-  std::string texture::get_display_name() const
+  std::string texture_asset::get_display_name() const
   {
     std::ostringstream oss;
     std::string quality = "LDR";
