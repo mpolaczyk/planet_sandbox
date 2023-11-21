@@ -5,7 +5,7 @@
 #include "app.h"
 #include "hittables/hittables.h"
 
-#include "renderer/async_renderer_base.h"
+#include "renderer/cpu_renderer_base.h"
 
 app_instance::app_instance()
 {

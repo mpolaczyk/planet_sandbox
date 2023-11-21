@@ -13,7 +13,7 @@
 #include "app/app.h"
 #include "gfx/dx11_helper.h"
 
-#include "renderer/async_renderer_base.h"
+#include "renderer/cpu_renderer_base.h"
 #include "object/factories.h"
 
 
@@ -168,7 +168,7 @@ int app_main()
         {
           if (state.renderer->is_renderer_type_different(state.renderer_conf))
           {
-            delete state.renderer;
+            get_object_registry()->destroy(state.renderer->get_runtime_id());
             state.renderer = engine::object_factory::spawn_renderer(state.renderer_conf->type);
           }
           LOG_INFO("### New frame using: {0}", state.renderer->get_name().c_str());

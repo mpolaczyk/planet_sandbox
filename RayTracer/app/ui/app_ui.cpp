@@ -4,7 +4,7 @@
 
 #include "app/app.h"
 #include "math/chunk_generator.h"
-#include "renderer/async_renderer_base.h"
+#include "renderer/cpu_renderer_base.h"
 #include "math/camera.h"
 
 #include "core/core.h"
@@ -354,7 +354,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
 void draw_material_selection_combo(material_selection_combo_model& model, app_instance& state)
 {
-  std::vector<engine::material_asset*> materials = engine::get_object_registry()->get_by_type<engine::material_asset>();
+  std::vector<engine::material_asset*> materials = engine::get_object_registry()->get_all_by_type<engine::material_asset>();
   engine::material_asset* selected_material = engine::get_object_registry()->get<engine::material_asset>(model.selected_material_id);
 
   if (materials.size() > 0)

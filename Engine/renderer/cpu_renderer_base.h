@@ -11,8 +11,9 @@
 
 #include "math/camera.h"
 #include "hittables/hittables.h"
+#include "object/object.h"
 
-//// Forward declaration for std::binary_semaphore
+//// Forward declaration for std::binary_semaphore    FIX
 //#pragma warning(disable:4091)
 //// warning C4091: 'typedef ': ignored on left of '__int64' when no variable is declared
 //namespace std
@@ -68,7 +69,7 @@ namespace engine
 
     renderer_config* renderer_conf = nullptr;
     camera* cam = nullptr;
-    engine::scene* scene_root = nullptr;
+    scene* scene_root = nullptr;
 
     bmp_image* img_bgr = nullptr;
     bmp_image* img_rgb = nullptr;
@@ -81,15 +82,17 @@ namespace engine
     uint64_t ray_object_intersection_count = 0;
   };
 
-  class ENGINE_API async_renderer_base
+  class ENGINE_API cpu_renderer_base : public object
   {
   public:
-    async_renderer_base();
-    ~async_renderer_base();
+    OBJECT_DECLARE(cpu_renderer_base, object)
+
+      cpu_renderer_base();
+    ~cpu_renderer_base();
 
     // Renderer instance interface
-    virtual std::string get_name() const = 0;
-    virtual void render() = 0;
+    virtual std::string get_name() const { return ""; };
+    virtual void render() {};
 
     // Renderer public interface. Usage:
     // 1. Set scene, camera and settings first

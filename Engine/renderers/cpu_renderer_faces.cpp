@@ -6,19 +6,25 @@
 #include "math/camera.h"
 #include "profile/benchmark.h"
 
-#include "renderers/preview_faces_renderer.h"
+#include "renderers/cpu_renderer_faces.h"
 
 #include "math/colors.h"
 #include "resources/bmp.h"
+#include "object/object_registry.h"
 
 namespace engine
 {
-  std::string preview_faces_renderer::get_name() const
+  OBJECT_DEFINE(cpu_renderer_faces, cpu_renderer_base)
+  OBJECT_DEFINE_SPAWN(cpu_renderer_faces)
+  OBJECT_DEFINE_NOSAVE(cpu_renderer_faces)
+  OBJECT_DEFINE_NOLOAD(cpu_renderer_faces)
+
+  std::string cpu_renderer_faces::get_name() const
   {
     return "CPU Preview Normals";
   }
 
-  void preview_faces_renderer::render()
+  void cpu_renderer_faces::render()
   {
     save_output = false;
 
@@ -28,7 +34,7 @@ namespace engine
     concurrency::parallel_for_each(begin(chunks), end(chunks), [&](const chunk& ch) { render_chunk(ch); });
   }
 
-  void preview_faces_renderer::render_chunk(const chunk& in_chunk)
+  void cpu_renderer_faces::render_chunk(const chunk& in_chunk)
   {
     assert(state.scene_root != nullptr);
     assert(state.cam != nullptr);

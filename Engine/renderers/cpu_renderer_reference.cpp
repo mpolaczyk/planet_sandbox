@@ -6,22 +6,28 @@
 #include "math/camera.h"
 #include "profile/benchmark.h"
 
-#include "renderers/reference_renderer.h"
+#include "renderers/cpu_renderer_reference.h"
 
 #include "math/colors.h"
 #include "math/random.h"
 #include "math/math.h"
 #include "profile/stats.h"
 #include "resources/bmp.h"
+#include "object/object_registry.h"
 
 namespace engine
 {
-  std::string reference_renderer::get_name() const
+  OBJECT_DEFINE(cpu_renderer_reference, cpu_renderer_base)
+  OBJECT_DEFINE_SPAWN(cpu_renderer_reference)
+  OBJECT_DEFINE_NOSAVE(cpu_renderer_reference)
+  OBJECT_DEFINE_NOLOAD(cpu_renderer_reference)
+
+  std::string cpu_renderer_reference::get_name() const
   {
     return "Reference CPU";
   }
 
-  void reference_renderer::render()
+  void cpu_renderer_reference::render()
   {
     save_output = true;
 
@@ -33,7 +39,7 @@ namespace engine
   }
 
 
-  void reference_renderer::render_chunk(const chunk& in_chunk)
+  void cpu_renderer_reference::render_chunk(const chunk& in_chunk)
   {
     std::thread::id thread_id = std::this_thread::get_id();
 
@@ -65,7 +71,7 @@ namespace engine
     }
   }
 
-  vec3 reference_renderer::fragment(float x, float y, const vec3& resolution)
+  vec3 cpu_renderer_reference::fragment(float x, float y, const vec3& resolution)
   {
     assert(state.cam != nullptr);
     uint32_t seed = uint32_t(y * resolution.x + x);  // Each pixel has a unique seed, gradient from white to black
@@ -88,7 +94,7 @@ namespace engine
     return hdr_color;
   }
 
-  vec3 reference_renderer::enviroment_light(const ray& in_ray)
+  vec3 cpu_renderer_reference::enviroment_light(const ray& in_ray)
   {
     static const vec3 sky_color_zenith = colors::white_blue;
     static const vec3 sky_color_horizon = colors::white;
@@ -99,7 +105,7 @@ namespace engine
     return math::clamp_vec3(0.0f, 1.0f, light) * sky_brightness;
   }
 
-  vec3 reference_renderer::trace_ray(ray in_ray, uint32_t seed)
+  vec3 cpu_renderer_reference::trace_ray(ray in_ray, uint32_t seed)
   {
     assert(state.scene_root != nullptr);
     // Defined by material color of all bounces, mixing colors (multiply to aggregate) [0.0f, 1.0f]

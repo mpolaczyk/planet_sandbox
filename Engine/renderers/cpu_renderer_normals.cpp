@@ -7,17 +7,23 @@
 #include "math/camera.h"
 #include "profile/benchmark.h"
 
-#include "renderers/preview_normals_renderer.h"
+#include "renderers/cpu_renderer_normals.h"
 #include "resources/bmp.h"
+#include "object/object_registry.h"
 
 namespace engine
 {
-  std::string preview_normals_renderer::get_name() const
+  OBJECT_DEFINE(cpu_renderer_normals, cpu_renderer_base)
+  OBJECT_DEFINE_SPAWN(cpu_renderer_normals)
+  OBJECT_DEFINE_NOSAVE(cpu_renderer_normals)
+  OBJECT_DEFINE_NOLOAD(cpu_renderer_normals)
+
+  std::string cpu_renderer_normals::get_name() const
   {
     return "CPU Preview Normals";
   }
 
-  void preview_normals_renderer::render()
+  void cpu_renderer_normals::render()
   {
     save_output = false;
 
@@ -27,7 +33,7 @@ namespace engine
     concurrency::parallel_for_each(begin(chunks), end(chunks), [&](const chunk& ch) { render_chunk(ch); });
   }
 
-  void preview_normals_renderer::render_chunk(const chunk& in_chunk)
+  void cpu_renderer_normals::render_chunk(const chunk& in_chunk)
   {
     assert(state.scene_root != nullptr);
     assert(state.cam != nullptr);

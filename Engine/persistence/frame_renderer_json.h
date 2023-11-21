@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderer/async_renderer_base.h"
+#include "renderer/cpu_renderer_base.h"
 
 #include "persistence/serializable.h"
 #include "core/core.h"

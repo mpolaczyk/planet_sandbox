@@ -10,15 +10,25 @@ namespace engine
     material_asset,
     texture_asset,
     static_mesh_asset,
-    asset_base
+    asset_base,
+    cpu_renderer_base,
+    cpu_renderer_preview,
+    cpu_renderer_normals,
+    cpu_renderer_faces,
+    cpu_renderer_reference
   };
   static inline const char* object_type_names[] =
   {
-    "None",
+    "Object",
     "Material asset",
     "Texture asset",
     "Static mesh asset",
-    "Asset base"
+    "Asset base",
+    "CPU renderer base",
+    "CPU renderer: preview",
+    "CPU renderer: normals",
+    "CPU renderer: faces",
+    "CPU renderer: reference"
   };
 
 

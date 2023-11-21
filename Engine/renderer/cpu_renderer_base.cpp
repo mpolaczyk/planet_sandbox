@@ -2,7 +2,7 @@
 #include <thread>
 #include <semaphore>
 
-#include "async_renderer_base.h"
+#include "cpu_renderer_base.h"
 
 #include "resources/bmp.h"
 
@@ -12,16 +12,21 @@
 #include "profile/stats.h"
 #include "engine/io.h"
 #include "hittables/hittables.h"
-
+#include "object/object_registry.h"
 
 namespace engine
 {
-  async_renderer_base::async_renderer_base()
+  OBJECT_DEFINE(cpu_renderer_base, object)
+  OBJECT_DEFINE_NOSPAWN(cpu_renderer_base)
+  OBJECT_DEFINE_NOSAVE(cpu_renderer_base)
+  OBJECT_DEFINE_NOLOAD(cpu_renderer_base)
+
+  cpu_renderer_base::cpu_renderer_base()
   {
-    worker_thread = new std::thread(&async_renderer_base::async_job, this);
+    worker_thread = new std::thread(&cpu_renderer_base::async_job, this);
     worker_semaphore = new std::binary_semaphore(0);
   }
-  async_renderer_base::~async_renderer_base()
+  cpu_renderer_base::~cpu_renderer_base()
   {
     state.requested_stop = true;
     worker_semaphore->release();
@@ -34,7 +39,7 @@ namespace engine
     if (state.img_bgr != nullptr) delete state.img_bgr;
   }
 
-  void async_renderer_base::set_config(const renderer_config* in_renderer_config, const scene* in_scene, const camera_config* in_camera_config)
+  void cpu_renderer_base::set_config(const renderer_config* in_renderer_config, const scene* in_scene, const camera_config* in_camera_config)
   {
     assert(in_scene != nullptr);
     assert(in_camera_config != nullptr);
@@ -81,7 +86,7 @@ namespace engine
     }
   }
 
-  void async_renderer_base::render_single_async()
+  void cpu_renderer_base::render_single_async()
   {
     if (state.is_working) return;
 
@@ -89,14 +94,14 @@ namespace engine
     worker_semaphore->release();
   }
 
-  bool async_renderer_base::is_world_dirty(const scene* in_scene)
+  bool cpu_renderer_base::is_world_dirty(const scene* in_scene)
   {
     assert(in_scene != nullptr);
     assert(state.scene_root != nullptr);
     return state.scene_root->get_hash() != in_scene->get_hash();
   }
 
-  bool async_renderer_base::is_renderer_setting_dirty(const renderer_config* in_renderer_config)
+  bool cpu_renderer_base::is_renderer_setting_dirty(const renderer_config* in_renderer_config)
   {
     assert(in_renderer_config != nullptr);
     if (state.renderer_conf == nullptr)
@@ -106,7 +111,7 @@ namespace engine
     return state.renderer_conf->get_hash() != in_renderer_config->get_hash();
   }
 
-  bool async_renderer_base::is_renderer_type_different(const renderer_config* in_renderer_config)
+  bool cpu_renderer_base::is_renderer_type_different(const renderer_config* in_renderer_config)
   {
     assert(in_renderer_config != nullptr);
     if (state.renderer_conf == nullptr)
@@ -116,14 +121,14 @@ namespace engine
     return state.renderer_conf->type != in_renderer_config->type;
   }
 
-  bool async_renderer_base::is_camera_setting_dirty(const camera_config* in_camera_config)
+  bool cpu_renderer_base::is_camera_setting_dirty(const camera_config* in_camera_config)
   {
     assert(in_camera_config != nullptr);
     assert(state.cam != nullptr);
     return state.cam->get_hash() != in_camera_config->get_hash();
   }
 
-  void async_renderer_base::async_job()
+  void cpu_renderer_base::async_job()
   {
     while (true)
     {
@@ -157,7 +162,7 @@ namespace engine
     }
   }
 
-  void async_renderer_base::save(const char* file_name)
+  void cpu_renderer_base::save(const char* file_name)
   {
     state.img_bgr->save_to_file(file_name);
   }

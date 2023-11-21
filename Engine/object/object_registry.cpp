@@ -23,6 +23,7 @@ namespace engine
       delete objects[i];
       objects[i] = nullptr;
     }
+    // FIX empty vectors
   }
 
   bool object_registry::is_valid(int id) const
@@ -42,17 +43,40 @@ namespace engine
     return types[id];
   }
 
-  std::vector<object*> object_registry::get_all()
+  void object_registry::destroy(int id)
   {
-    return objects;
+    assert(is_valid(id));
+    delete objects[id];
+    objects[id] = nullptr;
+    names[id] = "";
+    types[id] = object_type::object;
   }
 
-  std::vector<int> object_registry::get_all_ids(object_type type) const
+  std::vector<object*> object_registry::get_all(bool no_nullptr)
+  {
+    // Warning, null objects may be filtered, indexes in the return vector will not match the runtime id
+    std::vector<object*> ans;
+    for (int i = 0; i < objects.size(); i++)
+    {
+      if (no_nullptr && !is_valid(i))
+      {
+        continue;
+      }
+      ans.push_back(objects[i]);
+    }
+    return ans;
+  }
+
+  std::vector<int> object_registry::get_all_ids(object_type type, bool no_nullptr) const
   {
     std::vector<int> ans;
     for (int i = 0; i < types.size(); i++)
     {
-      if (types[i] == type)
+      if (no_nullptr && !is_valid(i))
+      {
+        continue;
+      }
+      if (types[i] == type)  // FIX is a child of
       {
         ans.push_back(i);
       }
@@ -60,12 +84,17 @@ namespace engine
     return ans;
   }
 
-  std::vector<std::string> object_registry::get_all_names(object_type type) const
+  std::vector<std::string> object_registry::get_all_names(object_type type, bool no_nullptr) const
   {
+    // Warning, null objects may be filtered, indexes in the return vector will not match the runtime id
     std::vector<std::string> ans;
     for (int i = 0; i < types.size(); i++)
     {
-      if (types[i] == type)
+      if (no_nullptr && !is_valid(i))
+      {
+        continue;
+      }
+      if (types[i] == type)   // FIX is a child of
       {
         ans.push_back(names[i]);
       }

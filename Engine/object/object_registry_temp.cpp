@@ -3,6 +3,7 @@
 
 #include "object/object_registry.h"
 #include "engine/log.h"
+#include <string>
 
 // Those definitions are moved away from object_registry.cpp to avoid LNK2005 error, when compiling object_registry_inst.cpp
 // https://stackoverflow.com/questions/77377405/lnk2005-for-non-templated-function-when-explicitly-instantiating-templated-funct
@@ -33,12 +34,15 @@ namespace engine
       LOG_ERROR("Unable to add asset, it is already registered: {0}", name.c_str());
       return false;
     }
-    if (std::find(begin(names), end(names), name) != end(names))
-    {
-      LOG_ERROR("Unable to add asset, name is already registered. {0}", name.c_str());
-      return false;
-    }
     instance->set_runtime_id(objects.size());
+    // Unique name requirement
+    std::string final_name = name;
+    if (std::find(begin(names), end(names), final_name) != end(names))
+    {
+      final_name.append(std::to_string(instance->runtime_id));
+      /*LOG_ERROR("Unable to add asset, name is already registered. {0}", name.c_str());
+      return false;*/
+    }
     objects.push_back(instance);
     names.push_back(name);
     types.push_back(T::get_type_static());
@@ -50,7 +54,7 @@ namespace engine
   {
     if (is_valid(id))
     {
-      if (get_type(id) == T::get_type_static())
+      if (get_type(id) == T::get_type_static()) // FIX filter out nullptrs
       {
         return static_cast<T*>(objects[id]); // Risky! no RTTI, no dynamic_cast
       }
@@ -63,7 +67,7 @@ namespace engine
   {
     for (int i = 0; i < types.size(); i++)
     {
-      if (types[i] == T::get_type_static() && names[i] == name)
+      if (types[i] == T::get_type_static() && names[i] == name) // FIX filter out nullptrs
       {
         assert(objects[i] != nullptr);
         return static_cast<T*>(objects[i]); // Risky! no RTTI, no dynamic_cast
@@ -73,12 +77,12 @@ namespace engine
   }
 
   template<derives_from<object> T>
-  std::vector<T*> object_registry::get_by_type()
+  std::vector<T*> object_registry::get_all_by_type()
   {
     std::vector<T*> ans;
     for (int i = 0; i < types.size(); i++)
     {
-      if (types[i] == T::get_type_static())
+      if (types[i] == T::get_type_static()) // FIX use is child of, filter out nullptrs
       {
         assert(objects[i] != nullptr);
         ans.push_back(static_cast<T*>(objects[i])); // Risky! no RTTI, no dynamic_cast

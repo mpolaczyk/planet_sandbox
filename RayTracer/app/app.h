@@ -7,7 +7,7 @@ struct ID3D11Texture2D;
 
 namespace engine
 {
-  class async_renderer_base;
+  class cpu_renderer_base;
   class material_asset;
   class hittable;
   class renderer_config;
@@ -112,7 +112,7 @@ public:
   int output_height = 0;
   ID3D11ShaderResourceView* output_srv = nullptr;
   ID3D11Texture2D* output_texture = nullptr;
-  async_renderer_base* renderer = nullptr;
+  cpu_renderer_base* renderer = nullptr;
   vec3 center_of_scene;
   float distance_to_center_of_scene = 0.0f;
 

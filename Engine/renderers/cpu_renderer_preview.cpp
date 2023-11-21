@@ -6,19 +6,25 @@
 #include "math/camera.h"
 #include "profile/benchmark.h"
 
-#include "renderers/preview_renderer.h"
+#include "renderers/cpu_renderer_preview.h"
 #include "resources/bmp.h"
 #include "engine/log.h"
 #include "math/math.h"
+#include "object/object_registry.h"
 
 namespace engine
 {
-  std::string preview_renderer::get_name() const
+  OBJECT_DEFINE(cpu_renderer_preview, cpu_renderer_base)
+  OBJECT_DEFINE_SPAWN(cpu_renderer_preview)
+  OBJECT_DEFINE_NOSAVE(cpu_renderer_preview)
+  OBJECT_DEFINE_NOLOAD(cpu_renderer_preview)
+
+  std::string cpu_renderer_preview::get_name() const
   {
     return "CPU Preview";
   }
 
-  void preview_renderer::render()
+  void cpu_renderer_preview::render()
   {
     save_output = false;
 
@@ -28,7 +34,7 @@ namespace engine
     concurrency::parallel_for_each(begin(chunks), end(chunks), [&](const chunk& ch) { render_chunk(ch); });
   }
 
-  void preview_renderer::render_chunk(const chunk& in_chunk)
+  void cpu_renderer_preview::render_chunk(const chunk& in_chunk)
   {
     assert(state.scene_root != nullptr);
     assert(state.cam != nullptr);

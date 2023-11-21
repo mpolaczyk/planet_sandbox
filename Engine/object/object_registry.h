@@ -12,8 +12,9 @@ namespace engine
   // Collection of objects of any kind.
   // Registry has ownership on objects.
   // Registry gives runtime ids.
-  // For now I assume there is no way to remove an object -> no defragmentation
-  // Objects can't be deleted from memory -> no dependence lookup nor reference counting
+  // Runtime id can't change at runtime.
+  // Object destruction is allowed, but no defragmentation will happen
+  // No dependence lookup nor reference counting
   // T can be only of type "object" or derived from it
   class ENGINE_API object_registry
   {
@@ -27,13 +28,13 @@ namespace engine
     bool is_valid(int id) const;
     std::string get_name(int id) const;
     object_type get_type(int id) const;
-    std::vector<object*> get_all();
-    std::vector<int> get_all_ids(object_type type) const;
-    std::vector<std::string> get_all_names(object_type type) const;
+    void destroy(int id);
+    std::vector<object*> get_all(bool no_nullptr = true);
+    std::vector<int> get_all_ids(object_type type, bool no_nullptr = true) const;
+    std::vector<std::string> get_all_names(object_type type, bool no_nullptr = true) const;
 
   protected:
     // Runtime id is an index
-    // None of this can change at runtime after is added
     std::vector<std::string> names;
     std::vector<object_type> types;
     std::vector<object*> objects;
@@ -50,7 +51,7 @@ namespace engine
     T* find(const std::string& name);
 
     template<derives_from<object> T>
-    std::vector<T*> get_by_type();
+    std::vector<T*> get_all_by_type();  // FIX does not have to be templated, object_type is enough
 
     template<derives_from<object> T>
     T* clone(int source_runtime_id, const std::string& target_name);

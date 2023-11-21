@@ -18,9 +18,13 @@
   static void save(CLASS_NAME* instance);
 
 // Put this in the cpp file. Mandatory for every type.
+// Requires:
+// #include "object/object.h"
 #define OBJECT_DEFINE(CLASS_NAME, PARENT_CLASS_NAME) 
   
 // Put this in the cpp file. Default implementations.
+// Requires:
+// #include "object/object_registry.h"
 #define OBJECT_DEFINE_SPAWN(CLASS_NAME) CLASS_NAME* CLASS_NAME::spawn(const std::string& name) \
   { \
     CLASS_NAME* obj = new CLASS_NAME(); \
