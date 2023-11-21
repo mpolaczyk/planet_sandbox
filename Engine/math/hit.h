@@ -7,6 +7,7 @@
 namespace engine
 {
   class material_asset;
+  class hittable;
 
   struct ENGINE_API hit_record
   {
@@ -17,7 +18,7 @@ namespace engine
     float v;
     const material_asset* material_ptr = nullptr;
     bool front_face;
-    void* object = nullptr; //FIX
+    hittable* object;
     int face_id = 0;
   };
 }

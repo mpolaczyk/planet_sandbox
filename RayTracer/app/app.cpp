@@ -58,7 +58,7 @@ void handle_input(app_instance& state)
     hit_record hit;
     if (state.scene_root->hit(r, 0.0f, math::infinity, hit))
     {
-      state.selected_object = static_cast<engine::hittable*>(hit.object); // FIX
+      state.selected_object = hit.object;
     }
 
     state.output_window_lmb_x = -1.0f;
