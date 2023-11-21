@@ -68,7 +68,7 @@ namespace engine
           if (state.scene_root->hit(r, 0.01f, math::infinity, sh))
           {
             assert(sh.material_ptr != nullptr);
-            in_shadow = sh.material_ptr->type != material_type::light;
+            in_shadow = !sh.material_ptr->is_light;
           }
 
           assert(h.material_ptr != nullptr);

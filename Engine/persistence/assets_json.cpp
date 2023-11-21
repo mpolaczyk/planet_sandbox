@@ -16,7 +16,7 @@ namespace engine
     j["color"] = vec3_serializer::serialize(value->color);
     j["emitted_color"] = vec3_serializer::serialize(value->emitted_color);
     j["gloss_color"] = vec3_serializer::serialize(value->gloss_color);
-    j["type"] = value->type;
+    j["is_light"] = value->is_light;
     j["smoothness"] = value->smoothness;
     j["gloss_probability"] = value->gloss_probability;
     j["refraction_probability"] = value->refraction_probability;
@@ -28,11 +28,11 @@ namespace engine
   {
     assert(out_value != nullptr);
 
-    TRY_PARSE(material_type, j, "type", out_value->type);
-
     nlohmann::json jcolor;
     if (TRY_PARSE(nlohmann::json, j, "color", jcolor)) { out_value->color = vec3_serializer::deserialize(jcolor); }
     assert(colors::is_valid(out_value->color));
+
+    TRY_PARSE(bool, j, "is_light", out_value->is_light);
 
     nlohmann::json jemitted_color;
     if (TRY_PARSE(nlohmann::json, j, "emitted_color", jemitted_color)) { out_value->emitted_color = vec3_serializer::deserialize(jemitted_color); }
@@ -41,12 +41,12 @@ namespace engine
     TRY_PARSE(float, j, "smoothness", out_value->smoothness);
     assert(out_value->smoothness >= 0.0f && out_value->smoothness <= 1.0f);
 
-    TRY_PARSE(float, j, "gloss_probability", out_value->gloss_probability);
-    assert(out_value->gloss_probability >= 0.0f && out_value->gloss_probability <= 1.0f);
-
     nlohmann::json jgloss_color;
     if (TRY_PARSE(nlohmann::json, j, "gloss_color", jgloss_color)) { out_value->gloss_color = vec3_serializer::deserialize(jgloss_color); }
     assert(colors::is_valid(out_value->gloss_color));
+
+    TRY_PARSE(float, j, "gloss_probability", out_value->gloss_probability);
+    assert(out_value->gloss_probability >= 0.0f && out_value->gloss_probability <= 1.0f);
 
     TRY_PARSE(float, j, "refraction_probability", out_value->refraction_probability);
     assert(out_value->refraction_probability >= 0.0f && out_value->refraction_probability <= 1.0f);

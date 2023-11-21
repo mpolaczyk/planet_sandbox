@@ -69,7 +69,7 @@ namespace engine
     for (hittable* object : objects)
     {
       const material_asset* mat = object->material_asset_ptr.get();
-      if (mat != nullptr && mat->type == material_type::light)
+      if (mat != nullptr && mat->is_light)
       {
         lights[lights_num] = object;
         lights_num++;

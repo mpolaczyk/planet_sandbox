@@ -38,7 +38,7 @@ namespace engine
     nlohmann::json j;
     input_stream >> j;
     material_serializer::deserialize(j, obj);
-    
+
     return obj;
   }
 
@@ -60,10 +60,4 @@ namespace engine
     o.close();
   }
 
-  std::string material_asset::get_display_name() const
-  {
-    std::ostringstream oss;
-    oss << object::get_display_name() << " - " << material_type_names[(int)type];
-    return oss.str();
-  }
 }

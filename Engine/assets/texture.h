@@ -15,11 +15,6 @@ namespace engine
 
     virtual std::string get_display_name() const override;
 
-    vec3 value(float u, float v, const vec3& p) const
-    {
-      return vec3(0, 0, 0);
-    }
-
     // JSON persistent
     std::string img_file_name;
     int width;

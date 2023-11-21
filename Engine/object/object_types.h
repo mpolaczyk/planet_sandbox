@@ -24,20 +24,6 @@ namespace engine
 
   // FIX Move objects below to the managed object types
   // Don't change the order as values can be persistent
-  enum class material_type
-  {
-    none = 0,
-    universal,
-    light
-  };
-  static inline const char* material_type_names[] =
-  {
-    "None",
-    "Universal",
-    "Light"
-  };
-
-  // Don't change the order as values can be persistent
   enum class renderer_type
   {
     example = 0,

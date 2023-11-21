@@ -11,7 +11,6 @@ namespace engine
 
   template bool ENGINE_API try_parse<renderer_type>(const nlohmann::json& j, const std::string& key, renderer_type& out_value, const char* function_name);
   template bool ENGINE_API try_parse<hittable_type>(const nlohmann::json& j, const std::string& key, hittable_type& out_value, const char* function_name);
-  template bool ENGINE_API try_parse<material_type>(const nlohmann::json& j, const std::string& key, material_type& out_value, const char* function_name);
 
   template bool ENGINE_API try_parse<std::string>(const nlohmann::json& j, const std::string& key, std::string& out_value, const char* function_name);
   template bool ENGINE_API try_parse<nlohmann::json>(const nlohmann::json& j, const std::string& key, nlohmann::json& out_value, const char* function_name);

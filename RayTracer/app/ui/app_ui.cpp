@@ -19,9 +19,7 @@ void material_asset_draw_edit_panel(material_asset* obj)
   ImGui::SameLine();
   ImGui::Text(obj->get_display_name().c_str());
 
-  int type_int = (int)obj->type;
-  ImGui::DragInt("Type", &type_int, 1, 1, 2);
-  obj->type = (material_type)type_int;
+  ImGui::Checkbox("Is light", &obj->is_light);
 
   ImGui::ColorEdit3("Color", obj->color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
   ImGui::ColorEdit3("Emitted color", obj->emitted_color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);

@@ -125,7 +125,7 @@ namespace engine
         // Read material
         material_asset mat = *hit.material_ptr;
 
-        if (mat.type == material_type::light)
+        if (mat.is_light)
         {
           // Don't bounce of lights
           incoming_light += mat.emitted_color * ray_color;

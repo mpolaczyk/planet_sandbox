@@ -18,5 +18,5 @@
   "refraction_index": 0.0,
   "refraction_probability": 0.0,
   "smoothness": 0.0,
-  "type": 2
+  "is_light": true
 }
