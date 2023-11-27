@@ -13,9 +13,8 @@
   inline static object_type get_type_static()         { return object_type::CLASS_NAME; } \
   inline static object_type get_parent_type_static()  { return object_type::PARENT_CLASS_NAME; } \
   inline static bool is_type_static(object_type type) { return object_type::CLASS_NAME == object_type::PARENT_CLASS_NAME ? false : (type == object_type::CLASS_NAME || type == object_type::PARENT_CLASS_NAME || PARENT_CLASS_NAME::is_type_static(type)); } \
-  static CLASS_NAME* spawn(const std::string& name); \
-  static CLASS_NAME* load(const std::string& name); \
-  static void save(CLASS_NAME* instance);
+  static CLASS_NAME* spawn(const std::string& name);
+// FIX only object registry can spawn or delete, no move no copy operators and ctors
 
 // Put this in the cpp file. Mandatory for every type.
 // Requires:
@@ -34,5 +33,3 @@
 
 // Put this in the cpp file. Dummy plugs, use if object does not need the functionality.
 #define OBJECT_DEFINE_NOSPAWN(CLASS_NAME) CLASS_NAME* CLASS_NAME::spawn(const std::string& name) { return nullptr; }
-#define OBJECT_DEFINE_NOLOAD(CLASS_NAME) CLASS_NAME* CLASS_NAME::load(const std::string& name) { return nullptr; }
-#define OBJECT_DEFINE_NOSAVE(CLASS_NAME) void CLASS_NAME::save(CLASS_NAME* object) { }

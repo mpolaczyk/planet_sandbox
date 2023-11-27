@@ -35,13 +35,11 @@ namespace engine
       return false;
     }
     instance->set_runtime_id(objects.size());
-    // Unique name requirement
+    // Make name unique if exists
     std::string final_name = name;
     if (std::find(begin(names), end(names), final_name) != end(names))
     {
       final_name.append(std::to_string(instance->runtime_id));
-      /*LOG_ERROR("Unable to add asset, name is already registered. {0}", name.c_str());
-      return false;*/
     }
     objects.push_back(instance);
     names.push_back(name);
@@ -92,8 +90,21 @@ namespace engine
   }
 
   template<derives_from<object> T>
-  T* object_registry::clone(int source_runtime_id, const std::string& target_name)
+  T* object_registry::copy_shallow(const T* source)
   {
+    assert(source != nullptr);
+
+    return copy_shallow<T>(source, source->get_name());
+  }
+
+  template<derives_from<object> T>
+  T* object_registry::copy_shallow(const T* source, const std::string& name)
+  {
+    assert(source != nullptr);
+
+    int source_runtime_id = source->get_runtime_id();
+    std::string target_name = name;
+      
     if (!is_valid(source_runtime_id))
     {
       LOG_ERROR("Unable to clone asset: {0} Unknown source runtime id: {1}", target_name.c_str(), source_runtime_id);
@@ -102,12 +113,6 @@ namespace engine
     if (types[source_runtime_id] != T::get_type_static())
     {
       LOG_ERROR("Unable to clone asset: {0} Type mismatch: {1} and {2}", target_name.c_str(), object_type_names[static_cast<int>(types[source_runtime_id])], object_type_names[static_cast<int>(T::get_type_static())]);
-      return nullptr;
-    }
-    T* source = static_cast<T*>(objects[source_runtime_id]);  // Risky! no RTTI, no dynamic_cast
-    if (source == nullptr)
-    {
-      LOG_ERROR("Unable to clone asset: {0} Invalid source object: {1}", target_name.c_str(), source_runtime_id);
       return nullptr;
     }
     // Shallow copy

@@ -55,6 +55,9 @@
     <ClInclude Include="persistence\camera_config_json.h" />
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="core\concepts.h" />
+    <ClInclude Include="hittables\scene.h" />
+    <ClInclude Include="hittables\static_mesh.h" />
+    <ClInclude Include="hittables\sphere.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -101,5 +104,8 @@
     <ClCompile Include="renderers\cpu_renderer_reference.cpp" />
     <ClCompile Include="persistence\camera_config_json.cpp" />
     <ClCompile Include="asset\asset.cpp" />
+    <ClCompile Include="hittables\scene.cpp" />
+    <ClCompile Include="hittables\static_mesh.cpp" />
+    <ClCompile Include="hittables\sphere.cpp" />
   </ItemGroup>
 </Project>

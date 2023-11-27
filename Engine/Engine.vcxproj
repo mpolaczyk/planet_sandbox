@@ -99,6 +99,9 @@
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="core\concepts.h" />
     <ClInclude Include="hittables\hittables.h" />
+    <ClInclude Include="hittables\scene.h" />
+    <ClInclude Include="hittables\sphere.h" />
+    <ClInclude Include="hittables\static_mesh.h" />
     <ClInclude Include="object\factories.h" />
     <ClInclude Include="object\object.h" />
     <ClInclude Include="object\object_defines.h" />
@@ -154,6 +157,9 @@
   <ItemGroup>
     <ClCompile Include="asset\asset.cpp" />
     <ClCompile Include="hittables\hittables.cpp" />
+    <ClCompile Include="hittables\scene.cpp" />
+    <ClCompile Include="hittables\sphere.cpp" />
+    <ClCompile Include="hittables\static_mesh.cpp" />
     <ClCompile Include="object\factories.cpp" />
     <ClCompile Include="object\object.cpp" />
     <ClCompile Include="object\object_registry.cpp" />

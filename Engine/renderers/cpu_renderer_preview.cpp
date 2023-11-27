@@ -16,8 +16,6 @@ namespace engine
 {
   OBJECT_DEFINE(cpu_renderer_preview, cpu_renderer_base)
   OBJECT_DEFINE_SPAWN(cpu_renderer_preview)
-  OBJECT_DEFINE_NOSAVE(cpu_renderer_preview)
-  OBJECT_DEFINE_NOLOAD(cpu_renderer_preview)
 
   std::string cpu_renderer_preview::get_name() const
   {

@@ -42,7 +42,7 @@ namespace engine
   public:
 
     template<derives_from<object> T >
-    bool add(T* instance, const std::string& name);
+    bool add(T* instance, const std::string& name);   // FIX private?
 
     template<derives_from<object> T>
     T* get(int id) const;
@@ -51,10 +51,13 @@ namespace engine
     T* find(const std::string& name);
 
     template<derives_from<object> T>
-    std::vector<T*> get_all_by_type();  // FIX does not have to be templated, object_type is enough
+    std::vector<T*> get_all_by_type();
 
     template<derives_from<object> T>
-    T* clone(int source_runtime_id, const std::string& target_name);
+    T* copy_shallow(const T* source);
+
+    template<derives_from<object> T>
+    T* copy_shallow(const T* source, const std::string& name);
   };
 
 

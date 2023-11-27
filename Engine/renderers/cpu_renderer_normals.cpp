@@ -6,17 +6,15 @@
 #include "hittables/hittables.h"
 #include "math/camera.h"
 #include "profile/benchmark.h"
-
-#include "renderers/cpu_renderer_normals.h"
 #include "resources/bmp.h"
 #include "object/object_registry.h"
+
+#include "renderers/cpu_renderer_normals.h"
 
 namespace engine
 {
   OBJECT_DEFINE(cpu_renderer_normals, cpu_renderer_base)
   OBJECT_DEFINE_SPAWN(cpu_renderer_normals)
-  OBJECT_DEFINE_NOSAVE(cpu_renderer_normals)
-  OBJECT_DEFINE_NOLOAD(cpu_renderer_normals)
 
   std::string cpu_renderer_normals::get_name() const
   {

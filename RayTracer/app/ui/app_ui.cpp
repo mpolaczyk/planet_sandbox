@@ -9,8 +9,10 @@
 
 #include "core/core.h"
 #include "engine.h"
-#include "hittables/hittables.h"
 #include "object/factories.h"
+#include "hittables/hittables.h"
+#include "hittables/static_mesh.h"
+#include "hittables/scene.h"
 
 
 void material_asset_draw_edit_panel(material_asset* obj)
@@ -37,8 +39,7 @@ void material_asset_draw_edit_panel(material_asset* obj)
 
 void hittable_draw_edit_panel(hittable* obj)
 {
-  std::string hittable_name;
-  obj->get_name(hittable_name, false);
+  std::string hittable_name = obj->get_name();
   ImGui::Text("Object: ");
   ImGui::SameLine();
   ImGui::Text(hittable_name.c_str());
@@ -121,8 +122,8 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
 
   ImGui::Separator();
   int renderer = (int)state.renderer_conf->type;
-  ImGui::Combo("Renderer", &renderer, renderer_type_names, IM_ARRAYSIZE(renderer_type_names));
-  state.renderer_conf->type = (renderer_type)renderer;
+  ImGui::Combo("Renderer", &renderer, object_type_names, IM_ARRAYSIZE(object_type_names));
+  state.renderer_conf->type = static_cast<object_type>(renderer);
   ImGui::InputInt("Rays per pixel", &state.renderer_conf->rays_per_pixel, 1, 10);
   ImGui::InputInt("Ray bounces", &state.renderer_conf->ray_bounces, 1);
   
@@ -252,8 +253,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
         model.selected_id = n;
         model.d_model.selected_id = n;
       }
-      std::string obj_name;
-      obj->get_name(obj_name, true);
+      std::string obj_name = obj->get_name();
       std::ostringstream oss;
       oss << obj_name;
       if (ImGui::Selectable(oss.str().c_str(), model.selected_id == n))
@@ -308,7 +308,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
   if (ImGui::BeginPopupModal("New object?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
   {
-    ImGui::Combo("Object type", &model.selected_type, hittable_type_names, IM_ARRAYSIZE(hittable_type_names));
+    ImGui::Combo("Object type", &model.selected_type, object_type_names, IM_ARRAYSIZE(object_type_names));
     ImGui::Separator();
 
     if (model.hittable != nullptr && (int)model.hittable->type != model.selected_type)
@@ -319,7 +319,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
     if (model.hittable == nullptr)
     {
       // New object
-      model.hittable = engine::object_factory::spawn_hittable((hittable_type)model.selected_type);
+      model.hittable = engine::object_factory::spawn_hittable(static_cast<object_type>(model.selected_type));
       model.hittable->set_origin(state.center_of_scene);
     }
 

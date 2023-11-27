@@ -1,5 +1,8 @@
 
 #include "hittables/hittables.h"
+#include "hittables/static_mesh.h"
+#include "hittables/sphere.h"
+#include "hittables/scene.h"
 
 #include "persistence/vec3_json.h"
 #include "persistence/hittables_json.h"
@@ -30,10 +33,10 @@ namespace engine
     {
       switch (object->type)
       {
-      case hittable_type::scene:
+      case object_type::scene:
         jarr.push_back(scene_serializer::serialize(static_cast<const scene*>(object)));
         break;
-      case hittable_type::static_mesh:
+      case object_type::static_mesh:
         jarr.push_back(static_mesh_serializer::serialize(static_cast<const static_mesh*>(object)));
         break;
       }
@@ -68,7 +71,7 @@ namespace engine
   void hittable_serializer::deserialize(const nlohmann::json& j, hittable* out_value)
   {
     assert(out_value != nullptr);
-    TRY_PARSE(hittable_type, j, "type", out_value->type);
+    TRY_PARSE(object_type, j, "type", out_value->type);
 
     nlohmann::json jmaterial;
     if (TRY_PARSE(nlohmann::json, j, "material_asset", jmaterial)) { soft_asset_ptr_base_serializer::deserialize(jmaterial, &out_value->material_asset_ptr); }
@@ -83,21 +86,21 @@ namespace engine
     {
       for (const auto& jobj : jobjects)
       {
-        hittable_type type;
-        if (TRY_PARSE(hittable_type, jobj, "type", type))
+        object_type type;
+        if (TRY_PARSE(object_type, jobj, "type", type))
         {
           hittable* obj = object_factory::spawn_hittable(type);
           if (obj != nullptr)
           {
-            switch (obj->type)
+            switch (type)
             {
-            case hittable_type::scene:
+            case object_type::scene:
               scene_serializer::deserialize(jobj, static_cast<scene*>(obj));
               break;
-            case hittable_type::static_mesh:
+            case object_type::static_mesh:
               static_mesh_serializer::deserialize(jobj, static_cast<static_mesh*>(obj));
               break;
-            case hittable_type::sphere:
+            case object_type::sphere:
               sphere_serializer::deserialize(jobj, static_cast<sphere*>(obj));
               break;
             default:

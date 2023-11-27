@@ -6,18 +6,19 @@
 #include "hittables/hittables.h"
 
 #include "renderer/cpu_renderer_base.h"
+#include "object/factories.h"
 
 app_instance::app_instance()
 {
   camera_conf = new camera_config();
-  scene_root = new engine::scene();
-  renderer_conf = new engine::renderer_config();
+  renderer_conf = new renderer_config();
+  scene_root = static_cast<scene*>(object_factory::spawn_hittable(object_type::scene));
 }
 
 app_instance::~app_instance()
 {
-  delete renderer;
-  delete scene_root;
+  renderer->destroy();
+  scene_root->destroy();
   delete camera_conf;
   delete renderer_conf;
 }
@@ -74,24 +75,24 @@ void handle_input(app_instance& state)
   }
   if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F1)))
   {
-    if (state.renderer_conf->type == renderer_type::preview)
+    if (state.renderer_conf->type == object_type::cpu_renderer_preview)
     {
       state.rw_model.rp_model.render_pressed = true;
     }
     else
     {
-      state.renderer_conf->type = renderer_type::preview;
+      state.renderer_conf->type = object_type::cpu_renderer_preview;
     }
   }
   if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F2)))
   {
-    if (state.renderer_conf->type == renderer_type::reference)
+    if (state.renderer_conf->type == object_type::cpu_renderer_reference)
     {
       state.rw_model.rp_model.render_pressed = true;
     }
     else
     {
-      state.renderer_conf->type = renderer_type::reference;
+      state.renderer_conf->type = object_type::cpu_renderer_reference;
     }
   }
   if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F5)))

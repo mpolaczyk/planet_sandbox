@@ -16,8 +16,6 @@ namespace engine
 {
   OBJECT_DEFINE(cpu_renderer_faces, cpu_renderer_base)
   OBJECT_DEFINE_SPAWN(cpu_renderer_faces)
-  OBJECT_DEFINE_NOSAVE(cpu_renderer_faces)
-  OBJECT_DEFINE_NOLOAD(cpu_renderer_faces)
 
   std::string cpu_renderer_faces::get_name() const
   {
@@ -58,7 +56,7 @@ namespace engine
 
         if (state.scene_root->hit(r, 0.01f, math::infinity, h))
         {
-          int color_index = (static_cast<hittable*>(h.object)->id + h.face_id) % colors::num;
+          int color_index = (static_cast<hittable*>(h.object)->get_runtime_id() + h.face_id) % colors::num;
           pixel_color = colors::all[color_index];
         }
 

@@ -19,8 +19,6 @@ namespace engine
 {
   OBJECT_DEFINE(cpu_renderer_reference, cpu_renderer_base)
   OBJECT_DEFINE_SPAWN(cpu_renderer_reference)
-  OBJECT_DEFINE_NOSAVE(cpu_renderer_reference)
-  OBJECT_DEFINE_NOLOAD(cpu_renderer_reference)
 
   std::string cpu_renderer_reference::get_name() const
   {

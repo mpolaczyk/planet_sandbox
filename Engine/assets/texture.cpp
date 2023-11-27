@@ -16,7 +16,6 @@ namespace engine
 {
   OBJECT_DEFINE(texture_asset, asset_base)
   OBJECT_DEFINE_SPAWN(texture_asset)
-  OBJECT_DEFINE_NOSAVE(texture_asset)
  
 
   texture_asset* texture_asset::load(const std::string& name)

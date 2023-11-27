@@ -15,6 +15,8 @@ namespace engine
   {
   public:
     OBJECT_DECLARE(static_mesh_asset, asset_base)
+    OBJECT_DECLARE_LOAD(static_mesh_asset)
+    OBJECT_DECLARE_SAVE(static_mesh_asset)
 
     // JSON persistent
     std::string obj_file_name;

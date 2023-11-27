@@ -13,13 +13,12 @@
 #include "engine/io.h"
 #include "hittables/hittables.h"
 #include "object/object_registry.h"
+#include "hittables/scene.h"
 
 namespace engine
 {
   OBJECT_DEFINE(cpu_renderer_base, object)
   OBJECT_DEFINE_NOSPAWN(cpu_renderer_base)
-  OBJECT_DEFINE_NOSAVE(cpu_renderer_base)
-  OBJECT_DEFINE_NOLOAD(cpu_renderer_base)
 
   cpu_renderer_base::cpu_renderer_base()
   {
@@ -39,7 +38,7 @@ namespace engine
     if (state.img_bgr != nullptr) delete state.img_bgr;
   }
 
-  void cpu_renderer_base::set_config(const renderer_config* in_renderer_config, const scene* in_scene, const camera_config* in_camera_config)
+  void cpu_renderer_base::set_config(const renderer_config* in_renderer_config, scene* in_scene, const camera_config* in_camera_config)
   {
     assert(in_scene != nullptr);
     assert(in_camera_config != nullptr);
@@ -59,7 +58,8 @@ namespace engine
       state.renderer_conf = new renderer_config();
     }
     *state.renderer_conf = *in_renderer_config;
-    state.scene_root = in_scene->clone();
+    state.scene_root = in_scene;
+    state.scene_root_hash = in_scene->get_hash();
     if (state.cam == nullptr)
     {
       state.cam = new camera();
@@ -97,8 +97,7 @@ namespace engine
   bool cpu_renderer_base::is_world_dirty(const scene* in_scene)
   {
     assert(in_scene != nullptr);
-    assert(state.scene_root != nullptr);
-    return state.scene_root->get_hash() != in_scene->get_hash();
+    return state.scene_root_hash != in_scene->get_hash();
   }
 
   bool cpu_renderer_base::is_renderer_setting_dirty(const renderer_config* in_renderer_config)

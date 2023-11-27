@@ -12,6 +12,8 @@ namespace engine
   {
   public:
     OBJECT_DECLARE(texture_asset, asset_base)
+    OBJECT_DECLARE_LOAD(texture_asset)
+    OBJECT_DECLARE_SAVE(texture_asset)
 
     virtual std::string get_display_name() const override;
 

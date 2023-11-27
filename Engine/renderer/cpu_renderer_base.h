@@ -11,6 +11,7 @@
 
 #include "math/camera.h"
 #include "hittables/hittables.h"
+#include "hittables/scene.h"
 #include "object/object.h"
 
 //// Forward declaration for std::binary_semaphore    FIX
@@ -38,7 +39,7 @@ namespace engine
     int ray_bounces = 7;
 
     // How work is processed
-    renderer_type type = renderer_type::reference;
+    object_type type = object_type::cpu_renderer_reference;
 
     // Draw in the same memory - real time update
     bool reuse_buffer = true;
@@ -70,6 +71,7 @@ namespace engine
     renderer_config* renderer_conf = nullptr;
     camera* cam = nullptr;
     scene* scene_root = nullptr;
+    uint32_t scene_root_hash = 0;
 
     bmp_image* img_bgr = nullptr;
     bmp_image* img_rgb = nullptr;
@@ -96,7 +98,7 @@ namespace engine
 
     // Renderer public interface. Usage:
     // 1. Set scene, camera and settings first
-    void set_config(const renderer_config* in_renderer_config, const scene* in_scene, const camera_config* in_camera_config);
+    void set_config(const renderer_config* in_renderer_config, scene* in_scene, const camera_config* in_camera_config);
     // 2. Request work
     void render_single_async();
 

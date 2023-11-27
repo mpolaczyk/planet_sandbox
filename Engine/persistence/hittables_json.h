@@ -1,14 +1,13 @@
 #pragma once
 
 #include "persistence/serializable.h"
+#include "hittables/sphere.h"
+#include "hittables/static_mesh.h"
+#include "hittables/scene.h"
+#include "hittables/hittables.h"
 
 namespace engine
 {
-  class hittable;
-  class scene;
-  class static_mesh;
-  class scene;
-
   class ENGINE_API hittable_serializer
   {
   public:

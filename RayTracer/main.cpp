@@ -102,23 +102,23 @@ int app_main()
   random_cache::init();
 
   // Load persistent state
-  app_instance state;
-  state.load_window_state();
-  state.load_rendering_state();
-  state.load_assets();
-  state.load_scene_state();
-  state.scene_root->load_resources();
-  state.renderer = engine::object_factory::spawn_renderer(state.renderer_conf->type);
-  state.renderer->set_config(state.renderer_conf, state.scene_root, state.camera_conf);
-  ::SetWindowPos(hwnd, NULL, state.window_conf.x, state.window_conf.y, state.window_conf.w, state.window_conf.h, NULL);
+  app_instance app_state;
+  app_state.load_window_state();
+  app_state.load_rendering_state();
+  app_state.load_assets();
+  app_state.load_scene_state();
+  app_state.scene_root->load_resources();
+  app_state.renderer = engine::object_factory::spawn_renderer(app_state.renderer_conf->type);
+  app_state.renderer->set_config(app_state.renderer_conf, app_state.scene_root, app_state.camera_conf);
+  ::SetWindowPos(hwnd, NULL, app_state.window_conf.x, app_state.window_conf.y, app_state.window_conf.w, app_state.window_conf.h, NULL);
 
   // Auto render on startup
-  state.rw_model.rp_model.render_pressed = true;
+  app_state.rw_model.rp_model.render_pressed = true;
 
   LOG_INFO("Loading done, starting the main loop");
 
   // Main loop
-  while (state.is_running)
+  while (app_state.is_running)
   {
     // Poll and handle messages (inputs, window resize, etc.)
     // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -130,73 +130,73 @@ int app_main()
     {
       if (msg.message == WM_QUIT)
       {
-        state.is_running = false;
+        app_state.is_running = false;
       }
       ::TranslateMessage(&msg);
       ::DispatchMessage(&msg);
     }
-    if (!state.is_running) break;
+    if (!app_state.is_running) break;
 
     // Start the Dear ImGui frame
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    handle_input(state);
+    handle_input(app_state);
 
     // Draw UI
 #ifndef IMGUI_DISABLE_DEMO_WINDOWS
       // Debug UI only in debug mode
       if (0) { ImGui::ShowDemoWindow(); }
 #endif
-    draw_raytracer_window(state.rw_model, state);
-    draw_output_window(state.ow_model, state);
-    draw_scene_editor_window(state.sew_model, state);
+    draw_raytracer_window(app_state.rw_model, app_state);
+    draw_output_window(app_state.ow_model, app_state);
+    draw_scene_editor_window(app_state.sew_model, app_state);
 
     // Check if rendering is needed and do it 
-    if (state.renderer != nullptr)
+    if (app_state.renderer != nullptr)
     {
-      bool is_working = state.renderer->is_working();
-      if (!is_working && (state.rw_model.rp_model.render_pressed || state.ow_model.auto_render))
+      bool is_working = app_state.renderer->is_working();
+      if (!is_working && (app_state.rw_model.rp_model.render_pressed || app_state.ow_model.auto_render))
       {
-        bool do_render = state.rw_model.rp_model.render_pressed
-          || state.renderer->is_world_dirty(state.scene_root)
-          || state.renderer->is_renderer_setting_dirty(state.renderer_conf)
-          || state.renderer->is_camera_setting_dirty(state.camera_conf);
+        bool do_render = app_state.rw_model.rp_model.render_pressed
+          || app_state.renderer->is_world_dirty(app_state.scene_root)
+          || app_state.renderer->is_renderer_setting_dirty(app_state.renderer_conf)
+          || app_state.renderer->is_camera_setting_dirty(app_state.camera_conf);
 
         if (do_render)
         {
-          if (state.renderer->is_renderer_type_different(state.renderer_conf))
+          if (app_state.renderer->is_renderer_type_different(app_state.renderer_conf))
           {
-            get_object_registry()->destroy(state.renderer->get_runtime_id());
-            state.renderer = engine::object_factory::spawn_renderer(state.renderer_conf->type);
+            app_state.renderer->destroy();
+            app_state.renderer = engine::object_factory::spawn_renderer(app_state.renderer_conf->type);
           }
-          LOG_INFO("### New frame using: {0}", state.renderer->get_name().c_str());
-          state.scene_root->load_resources();
-          state.scene_root->pre_render();
-          state.scene_root->build_boxes();
-          state.scene_root->update_materials();
-          state.scene_root->query_lights();
+          LOG_INFO("### New frame using: {0}", app_state.renderer->get_name().c_str());
+          app_state.scene_root->load_resources();
+          app_state.scene_root->pre_render();
+          app_state.scene_root->build_boxes();
+          app_state.scene_root->update_materials();
+          app_state.scene_root->query_lights();
 
-          update_default_spawn_position(state);
+          update_default_spawn_position(app_state);
 
-          state.output_width = state.renderer_conf->resolution_horizontal;
-          state.output_height = state.renderer_conf->resolution_vertical;
+          app_state.output_width = app_state.renderer_conf->resolution_horizontal;
+          app_state.output_height = app_state.renderer_conf->resolution_vertical;
 
-          state.renderer->set_config(state.renderer_conf, state.scene_root, state.camera_conf);
-          state.renderer->render_single_async();
+          app_state.renderer->set_config(app_state.renderer_conf, app_state.scene_root, app_state.camera_conf);
+          app_state.renderer->render_single_async();
 
-          bool ret = dx11::LoadTextureFromBuffer(state.renderer->get_img_rgb(), state.output_width, state.output_height, &state.output_srv, &state.output_texture);
+          bool ret = dx11::LoadTextureFromBuffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, &app_state.output_srv, &app_state.output_texture);
           IM_ASSERT(ret);
 
-          state.rw_model.rp_model.render_pressed = false;
+          app_state.rw_model.rp_model.render_pressed = false;
         }
       }
 
       // Update the output panel
-      if (state.output_texture)
+      if (app_state.output_texture)
       {
-        dx11::UpdateTextureBuffer(state.renderer->get_img_rgb(), state.output_width, state.output_height, state.output_texture);
+        dx11::UpdateTextureBuffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, app_state.output_texture);
       }
     }
 
@@ -227,13 +227,13 @@ int app_main()
 
     RECT rect;
     ::GetWindowRect(hwnd, &rect);
-    state.window_conf.x = rect.left;
-    state.window_conf.y = rect.top;
-    state.window_conf.w = rect.right - rect.left;
-    state.window_conf.h = rect.bottom - rect.top;
+    app_state.window_conf.x = rect.left;
+    app_state.window_conf.y = rect.top;
+    app_state.window_conf.w = rect.right - rect.left;
+    app_state.window_conf.h = rect.bottom - rect.top;
   }
 
-  state.save_window_state();
+  app_state.save_window_state();
 
   // Cleanup
   ImGui_ImplDX11_Shutdown();

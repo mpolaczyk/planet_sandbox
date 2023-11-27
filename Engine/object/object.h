@@ -2,8 +2,8 @@
 
 #include "core/core.h"
 
-#include "object/object_defines.h"
 #include "object/object_types.h"
+#include "object/object_defines.h"
 
 #include <string>
 
@@ -21,9 +21,11 @@ namespace engine
     OBJECT_DECLARE(object, object)
 
     virtual std::string get_display_name() const;
+    virtual std::string get_name() const;
 
     int get_runtime_id() const;
-    std::string get_name() const;
+
+    void destroy();
 
   private:
     // Runtime id Can be set only once by the registry. Can't change at runtime.
