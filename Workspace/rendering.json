@@ -4,8 +4,8 @@
     "rays_per_pixel": 10,
     "resolution_horizontal": 200,
     "resolution_vertical": 200,
-    "reuse_buffer": true,
-    "type": 4,
+    "reuse_buffer": false,
+    "type": 9,
     "white_point": 1.0
   }
 }
