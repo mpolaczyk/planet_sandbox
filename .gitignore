@@ -15,7 +15,9 @@
 *.scor.incl
 *.scor.t0000
 Archive/*
-Intermediate/*
 Workspace/Images/*.bmp
-Build/x64_Debug/*
 rt-cppcheck-build-dir/*
+Engine/x64
+RayTracer/x64
+x64/Debug
+x64/Release

@@ -46,13 +46,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)Build\$(ProjectName)_$(Platform)_$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)Intermediate\$(ProjectName)_$(Platform)_$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)Build\$(ProjectName)_$(Platform)_$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)Intermediate\$(ProjectName)_$(Platform)_$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -72,12 +72,12 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)Build\Engine_x64_Debug\Engine.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)Build\$(ProjectName)_$(Platform)_$(Configuration)\WinPixEventRuntime.dll
-copy $(SolutionDir)Build\Engine_x64_Debug\Engine.dll $(SolutionDir)Build\RayTracer_x64_Debug\Engine.dll</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
@@ -112,13 +112,13 @@ copy $(SolutionDir)Build\Engine_x64_Debug\Engine.dll $(SolutionDir)Build\RayTrac
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)Build\Engine_x64_Release\Engine.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)Build\$(ProjectName)_$(Platform)_$(Configuration)\WinPixEventRuntime.dll
-copy $(SolutionDir)Build\Engine_x64_Release\Engine.dll $(SolutionDir)Build\RayTracer_x64_Release\Engine.dll</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
