@@ -6,14 +6,15 @@
 
 namespace engine
 {
+  object_registry* g_object_registy = nullptr;
+
   object_registry* get_object_registry()
   {
-    static object_registry* objects;
-    if (objects == nullptr)
+    if (g_object_registy == nullptr)
     {
-      objects = new object_registry();
+      g_object_registy = new object_registry();
     }
-    return objects;
+    return g_object_registy;
   }
 
   object_registry::~object_registry()
@@ -23,7 +24,6 @@ namespace engine
       delete objects[i];
       objects[i] = nullptr;
     }
-    // FIX empty vectors
   }
 
   bool object_registry::is_valid(int id) const
@@ -101,5 +101,4 @@ namespace engine
     }
     return ans;
   }
-
 }

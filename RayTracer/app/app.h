@@ -38,13 +38,19 @@ struct camera_panel_model
 
 struct material_selection_combo_model
 {
-  int selected_material_id = 0;
+  int selected_id = 0;
+};
+
+struct renderer_selection_combo_model
+{
+  int selected_id = 0;
 };
 
 struct renderer_panel_model
 {
   bool render_pressed = false;
   material_selection_combo_model m_model;
+  renderer_selection_combo_model r_model;
 };
 
 struct raytracer_window_model
@@ -141,6 +147,7 @@ void draw_output_window(output_window_model& model, app_instance& state);
 void draw_scene_editor_window(scene_editor_window_model& model, app_instance& state);
 void draw_new_object_panel(new_object_panel_model& model, app_instance& state);
 void draw_material_selection_combo(material_selection_combo_model& model, app_instance& state);
+void draw_renderer_selection_combo(renderer_selection_combo_model& model, app_instance& state);
 void draw_delete_object_panel(delete_object_panel_model& model, app_instance& state);
 
 void update_default_spawn_position(app_instance& state);

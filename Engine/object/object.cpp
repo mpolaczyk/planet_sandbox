@@ -7,8 +7,11 @@
 
 namespace engine
 {
+  OBJECT_DEFINE(class_object, object)
+  OBJECT_DEFINE_SPAWN(class_object)
+
   OBJECT_DEFINE(object, object)
-    OBJECT_DEFINE_NOSPAWN(object)
+  OBJECT_DEFINE_NOSPAWN(object)
 
     std::string object::get_display_name() const
   {

@@ -52,7 +52,7 @@ namespace engine
   {
     if (is_valid(id))
     {
-      if (get_type(id) == T::get_type_static()) // FIX filter out nullptrs
+      if (objects[id] != nullptr && get_type(id) == T::get_type_static())
       {
         return static_cast<T*>(objects[id]); // Risky! no RTTI, no dynamic_cast
       }
@@ -63,9 +63,9 @@ namespace engine
   template<derives_from<object> T>
   T* object_registry::find(const std::string& name)
   {
-    for (int i = 0; i < types.size(); i++)
+    for (int i = 0; i < objects.size(); i++)
     {
-      if (types[i] == T::get_type_static() && names[i] == name) // FIX filter out nullptrs
+      if (objects[i] != nullptr && objects[i]->is_type(T::get_type_static()) && names[i] == name) // FIX: Linear search, at some point better structure will be needed
       {
         assert(objects[i] != nullptr);
         return static_cast<T*>(objects[i]); // Risky! no RTTI, no dynamic_cast
@@ -78,9 +78,9 @@ namespace engine
   std::vector<T*> object_registry::get_all_by_type()
   {
     std::vector<T*> ans;
-    for (int i = 0; i < types.size(); i++)
+    for (int i = 0; i < objects.size(); i++)  // FIX: Linear search, at some point better structure will be needed
     {
-      if (types[i] == T::get_type_static()) // FIX use is child of, filter out nullptrs
+      if (objects[i] != nullptr && objects[i]->is_type(T::get_type_static()))
       {
         assert(objects[i] != nullptr);
         ans.push_back(static_cast<T*>(objects[i])); // Risky! no RTTI, no dynamic_cast

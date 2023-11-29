@@ -17,8 +17,14 @@ app_instance::app_instance()
 
 app_instance::~app_instance()
 {
-  renderer->destroy();
-  scene_root->destroy();
+  if (renderer)
+  {
+    renderer->destroy();
+  }
+  if (scene_root)
+  {
+    scene_root->destroy();
+  }
   delete camera_conf;
   delete renderer_conf;
 }

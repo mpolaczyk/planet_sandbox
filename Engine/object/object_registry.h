@@ -33,10 +33,12 @@ namespace engine
     std::vector<int> get_all_ids(object_type type, bool no_nullptr = true) const;
     std::vector<std::string> get_all_names(object_type type, bool no_nullptr = true) const;
 
+    void create_class_objects();
+
   protected:
     // Runtime id is an index
     std::vector<std::string> names;
-    std::vector<object_type> types;
+    std::vector<object_type> types;   // FIX with class objects this becomes a pointer
     std::vector<object*> objects;
 
   public:
@@ -61,6 +63,7 @@ namespace engine
   };
 
 
-  // Singleton
+  // Global singleton
+  extern object_registry* g_object_registy;
   ENGINE_API object_registry* get_object_registry();
 }

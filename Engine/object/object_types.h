@@ -21,7 +21,8 @@ namespace engine
     hittable = 10,
     scene,
     static_mesh,
-    sphere
+    sphere,
+    class_object = 14
   };
   static inline const char* object_type_names[] =
   {
@@ -38,6 +39,7 @@ namespace engine
     "Hittable",
     "Scene",
     "Static Mesh",
-    "Sphere"
+    "Sphere",
+    "Class object"
   };
 }
