@@ -10,7 +10,7 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(scene, object)
+  OBJECT_DEFINE(scene, hittable)
   OBJECT_DEFINE_SPAWN(scene)
 
   void scene::add(hittable* object)

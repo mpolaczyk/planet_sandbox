@@ -17,7 +17,7 @@ namespace engine
   class ENGINE_API scene : public hittable
   {
   public:
-    OBJECT_DECLARE(scene, object)
+    OBJECT_DECLARE(scene, hittable)
 
     virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
     virtual bool get_bounding_box(aabb& out_box) const override;

@@ -254,6 +254,7 @@ public:
 
   virtual void run() override
   {
+    application::run();
     app_main();
   }
 };

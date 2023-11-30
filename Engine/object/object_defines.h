@@ -5,6 +5,8 @@
 // Type is stored in enum object_type.
 // Root object should use itself as a parent class.
 
+#define MAX_INHERITANCE_DEPTH 5
+
 // Put this in the header file. Mandatory for every type.
 #define OBJECT_DECLARE(CLASS_NAME, PARENT_CLASS_NAME) \
   virtual object_type get_type() const                { return object_type::CLASS_NAME; } \
@@ -12,7 +14,12 @@
   inline static object_type get_type_static()         { return object_type::CLASS_NAME; } \
   inline static object_type get_parent_type_static()  { return object_type::PARENT_CLASS_NAME; } \
   virtual bool is_type(object_type type) const        { return CLASS_NAME::is_type_static(type); } \
-  inline static bool is_type_static(object_type type) { return object_type::CLASS_NAME == object_type::PARENT_CLASS_NAME ? false : (type == object_type::CLASS_NAME || type == object_type::PARENT_CLASS_NAME || PARENT_CLASS_NAME::is_type_static(type)); } \
+  inline static bool is_type_static(object_type type, int depth = MAX_INHERITANCE_DEPTH) \
+  { \
+    if (depth <= 0) { return false; } \
+    if (type == object_type::object) { return true; } \
+    return type == object_type::CLASS_NAME || type == object_type::PARENT_CLASS_NAME || PARENT_CLASS_NAME::is_type_static(type, --depth); \
+  } \
   static CLASS_NAME* spawn(const std::string& name); \
   static const class_object* get_class_static(); \
   static const class_object* get_parent_class_static(); \
@@ -22,6 +29,7 @@
   static bool is_class_static(const class_object* type);
 
 // FIX only object registry can spawn or delete, no move no copy operators and ctors
+// FIX rename is_type to is_child_of
 
 // Put this in the cpp file. Mandatory for every type.
 // Requires:

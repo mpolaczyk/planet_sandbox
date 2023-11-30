@@ -7,9 +7,7 @@ namespace engine
   class ENGINE_API application
   {
   public:
-    application();
-    virtual ~application();
-    
+   
     virtual void run();
   };
 

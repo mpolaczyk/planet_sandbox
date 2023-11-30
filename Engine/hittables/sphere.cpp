@@ -11,7 +11,7 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(sphere, object)
+  OBJECT_DEFINE(sphere, hittable)
   OBJECT_DEFINE_SPAWN(sphere)
 
   bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const

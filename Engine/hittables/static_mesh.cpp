@@ -13,7 +13,7 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(static_mesh, object)
+  OBJECT_DEFINE(static_mesh, hittable)
   OBJECT_DEFINE_SPAWN(static_mesh)
 
   bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
