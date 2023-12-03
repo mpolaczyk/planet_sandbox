@@ -13,10 +13,11 @@ namespace engine
   OBJECT_DEFINE(object, object)
   OBJECT_DEFINE_NOSPAWN(object)
 
-    std::string object::get_display_name() const
+  std::string object::get_display_name() const
   {
     std::ostringstream oss;
-    oss << "[" << runtime_id << "] " << object_type_names[static_cast<int>(get_type())] << ": " << get_name();
+    //oss << "[" << runtime_id << "] " << object_type_names[static_cast<int>(get_class())] << ": " << get_name(); // FIX
+    oss << "[" << runtime_id << "] " << get_class()->get_name() << ":" << get_name();
     return oss.str();
   }
 

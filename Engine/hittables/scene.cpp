@@ -114,7 +114,8 @@ namespace engine
 
   std::string scene::get_name() const
   {
-    return object_type_names[(int)object_type::scene];  // FIX
+    //return object_type_names[(int)object_type::scene];  // FIX
+    return "???";
   }
 
 
@@ -152,21 +153,21 @@ namespace engine
     for (hittable* obj : objects)
     {
       hittable* new_obj = nullptr;
-      if (obj->type == object_type::scene)  // FIX UGLY this with a dynamic type system
+      if (obj->type == class_object::get_class_static())  // FIX UGLY this with a dynamic type system
       {
         new_obj = get_object_registry()->copy_shallow<scene>(static_cast<scene*>(obj));
       }
-      else if (obj->type == object_type::static_mesh)
+      else if (obj->type == static_mesh::get_class_static())
       {
         new_obj = get_object_registry()->copy_shallow<static_mesh>(static_cast<static_mesh*>(obj));
       }
-      else if (obj->type == object_type::sphere)
+      else if (obj->type == sphere::get_class_static())
       {
         new_obj = get_object_registry()->copy_shallow<sphere>(static_cast<sphere*>(obj));
       }
       else
       {
-        LOG_ERROR("Unable to clone a hittable of type: {0}", static_cast<int32_t>(obj->type));
+        LOG_ERROR("Unable to clone a hittable of type: {0}", obj->get_class()->get_name().c_str());  // FIX
         return nullptr;
       }
       

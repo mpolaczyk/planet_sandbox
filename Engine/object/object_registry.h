@@ -27,19 +27,22 @@ namespace engine
 
     bool is_valid(int id) const;
     std::string get_name(int id) const;
-    object_type get_type(int id) const;
+    const class_object* get_class(int id) const;
     void destroy(int id);
     std::vector<object*> get_all(bool no_nullptr = true);
-    std::vector<int> get_all_ids(object_type type, bool no_nullptr = true) const;
-    std::vector<std::string> get_all_names(object_type type, bool no_nullptr = true) const;
+    std::vector<int> get_all_ids(const class_object* type, bool no_nullptr = true) const;
+    std::vector<std::string> get_all_names(const class_object* type, bool no_nullptr = true) const;
 
+    const class_object* find_class(const std::string& name);
+    void register_class(class_object* instance);
     void create_class_objects();
 
   protected:
     // Runtime id is an index
-    std::vector<std::string> names;
-    std::vector<object_type> types;   // FIX with class objects this becomes a pointer
+    std::vector < const class_object*> class_objects;
     std::vector<object*> objects;
+    std::vector<const class_object*> types; // Does not store class objects but points to an instance owned by the objects vector (that happens to be the class_object)
+    std::vector<std::string> names;         // FIX Do we need this? can we use methods on the type?
 
   public:
 
@@ -51,6 +54,10 @@ namespace engine
 
     template<derives_from<object> T>
     T* find(const std::string& name);
+
+    template<derives_from<object> T>
+    const T* find_const(const std::string& name);
+
 
     template<derives_from<object> T>
     std::vector<T*> get_all_by_type();

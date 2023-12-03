@@ -323,7 +323,8 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
     if (model.hittable == nullptr)
     {
       // New object
-      model.hittable = engine::object_factory::spawn_hittable(static_cast<object_type>(model.selected_type));
+      //model.hittable = engine::object_factory::spawn_hittable(static_cast<object_type>(model.selected_type)); //FIX
+      assert(false);
       model.hittable->set_origin(state.center_of_scene);
     }
 

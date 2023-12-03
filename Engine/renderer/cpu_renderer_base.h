@@ -39,7 +39,7 @@ namespace engine
     int ray_bounces = 7;
 
     // How work is processed
-    object_type type = object_type::cpu_renderer_reference;
+    const class_object* type = nullptr;   //FIX
 
     // Draw in the same memory - real time update
     bool reuse_buffer = true;
@@ -52,7 +52,7 @@ namespace engine
 
     inline uint32_t get_hash() const
     {
-      return hash::combine(rays_per_pixel, ray_bounces, (int)type, hash::get(white_point));
+      return hash::combine(rays_per_pixel, ray_bounces, hash::get(reinterpret_cast<const void*>(&type)), hash::get(white_point));
     }
   };
 

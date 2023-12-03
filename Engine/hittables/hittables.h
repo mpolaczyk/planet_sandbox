@@ -46,7 +46,7 @@ namespace engine
     virtual void pre_render() {};
 
     // Persistent members
-    object_type type = object_type::hittable;           // FIX this is problematic? How to spawn dynamically?
+    const class_object* type = hittable::get_class_static();           // FIX this is problematic? How to spawn dynamically?
     soft_asset_ptr<material_asset> material_asset_ptr;
 
     // Runtime members

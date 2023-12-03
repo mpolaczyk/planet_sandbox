@@ -18,20 +18,20 @@ namespace engine
       LOG_ERROR("Unable to add nullptr object.");
       return false;
     }
-    if (instance->get_type() == object_type::object)
+    /*if (instance->get_class() == object::get_class_static())
     {
       LOG_ERROR("Unable to add object of type object.");
       return false;
-    }
+    }*/
     if (instance->runtime_id != -1)
     {
       LOG_ERROR("Unable to add already added object.");
       return false;
     }
-    // Assets should not be added twice, if this happens it is most likely a programmer error
+    // Objects should not be added twice, if this happens it is most likely a programmer error
     if (std::find(begin(objects), end(objects), instance) != end(objects))
     {
-      LOG_ERROR("Unable to add asset, it is already registered: {0}", name.c_str());
+      LOG_ERROR("Unable to add object, it is already registered: {0}", name.c_str());
       return false;
     }
     instance->set_runtime_id(objects.size());
@@ -43,7 +43,7 @@ namespace engine
     }
     objects.push_back(instance);
     names.push_back(name);
-    types.push_back(T::get_type_static());
+    types.push_back(T::get_class_static());
     return true;
   }
 
@@ -52,7 +52,7 @@ namespace engine
   {
     if (is_valid(id))
     {
-      if (objects[id] != nullptr && get_type(id) == T::get_type_static())
+      if (objects[id] != nullptr && get_class(id) == T::get_class_static())
       {
         return static_cast<T*>(objects[id]); // Risky! no RTTI, no dynamic_cast
       }
@@ -63,9 +63,15 @@ namespace engine
   template<derives_from<object> T>
   T* object_registry::find(const std::string& name)
   {
+    return const_cast<T*>(find_const<T>(name));
+  }
+
+  template<derives_from<object> T>
+  const T* object_registry::find_const(const std::string& name)
+  {
     for (int i = 0; i < objects.size(); i++)
     {
-      if (objects[i] != nullptr && objects[i]->is_type(T::get_type_static()) && names[i] == name) // FIX: Linear search, at some point better structure will be needed
+      if (objects[i] != nullptr && objects[i]->is_class(T::get_class_static()) && names[i] == name) // FIX: Linear search, at some point better structure will be needed
       {
         assert(objects[i] != nullptr);
         return static_cast<T*>(objects[i]); // Risky! no RTTI, no dynamic_cast
@@ -80,7 +86,7 @@ namespace engine
     std::vector<T*> ans;
     for (int i = 0; i < objects.size(); i++)  // FIX: Linear search, at some point better structure will be needed
     {
-      if (objects[i] != nullptr && objects[i]->is_type(T::get_type_static()))
+      if (objects[i] != nullptr && objects[i]->is_class(T::get_class_static()))
       {
         assert(objects[i] != nullptr);
         ans.push_back(static_cast<T*>(objects[i])); // Risky! no RTTI, no dynamic_cast
@@ -110,9 +116,9 @@ namespace engine
       LOG_ERROR("Unable to clone asset: {0} Unknown source runtime id: {1}", target_name.c_str(), source_runtime_id);
       return nullptr;
     }
-    if (types[source_runtime_id] != T::get_type_static())
+    if (types[source_runtime_id] != T::get_class_static())
     {
-      LOG_ERROR("Unable to clone asset: {0} Type mismatch: {1} and {2}", target_name.c_str(), object_type_names[static_cast<int>(types[source_runtime_id])], object_type_names[static_cast<int>(T::get_type_static())]);
+      LOG_ERROR("Unable to clone asset: {0} Type mismatch: {1} and {2}", target_name.c_str(), types[source_runtime_id]->get_name(), T::get_class_static()->get_name());
       return nullptr;
     }
     // Shallow copy
@@ -127,5 +133,10 @@ namespace engine
     return obj;
   }
 
+  template<derives_from<object> T>
+  T* class_object::spawn_instance(const std::string& name) const
+  { 
+    return static_cast<T*>(spawn_instance_func(name));
+  }
 
 }

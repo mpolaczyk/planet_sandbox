@@ -48,12 +48,12 @@ namespace engine
     return get(reinterpret_cast<uint64_t&>(a));
   }
 
-  uint32_t hash::get(const void* a)
+  uint32_t hash::get(void* a)
   {
     return get(reinterpret_cast<size_t>(a));
   }
 
-  uint32_t hash::get(void* a)
+  uint32_t hash::get(const void* a)
   {
     return get(reinterpret_cast<size_t>(a));
   }

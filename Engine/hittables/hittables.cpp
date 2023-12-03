@@ -17,7 +17,7 @@ namespace engine
 
   std::string hittable::get_name() const
   {
-    std::string base_name = object_type_names[(int)type];
+    std::string base_name = "hittable";// FIX object_type_names[(int)type];
 
     std::ostringstream oss;
     oss << "[" << get_runtime_id() << "]" << "/" << base_name << "/" << material_asset_ptr.get_name();
@@ -26,7 +26,7 @@ namespace engine
 
   inline uint32_t hittable::get_hash() const
   {
-    return hash::combine(hash::get(material_asset_ptr.get_name().c_str()), (int)type);
+    return hash::combine(hash::get(material_asset_ptr.get_name().c_str()), hash::get(type));
   }
 
   void hittable::load_resources()
