@@ -29,13 +29,15 @@ namespace engine
 
     bool is_valid(int id) const;
     std::string get_custom_display_name(int id) const;
+    void set_custom_display_name(int id, const std::string& name);
     const class_object* get_class(int id) const;
-    void destroy(int id);
-    std::vector<object*> get_all(bool no_nullptr = true);
+    void destroy(int id); 
+    std::vector<object*> get_all(bool no_nullptr = true);   // FIX those getters are stupid, add iterators to objects, names and class objects
     std::vector<int> get_all_ids(const class_object* type, bool no_nullptr = true) const;
     std::vector<std::string> get_all_names(const class_object* type, bool no_nullptr = true) const;
 
-    const class_object* find_class(const std::string& name);
+    const class_object* find_class(const std::string& name) const;
+    std::vector<const class_object*> get_classes() const;
     const class_object* register_class(const std::string& class_name, const std::string& parent_class_name, spawn_instance_func_type spawn_func);
     void create_class_objects();
 

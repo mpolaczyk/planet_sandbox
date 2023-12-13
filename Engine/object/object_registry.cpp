@@ -37,6 +37,12 @@ namespace engine
     return custom_display_names[id];
   }
 
+  void object_registry::set_custom_display_name(int id, const std::string& name)
+  {
+    assert(is_valid(id));
+    custom_display_names[id] = name;
+  }
+
   const class_object* object_registry::get_class(int id) const
   {
     assert(is_valid(id));
@@ -87,7 +93,7 @@ namespace engine
     return ans;
   }
 
-  const class_object* object_registry::find_class(const std::string& name)
+  const class_object* object_registry::find_class(const std::string& name) const
   {
     for (int i = 0; i < class_objects.size(); i++)
     {
@@ -97,6 +103,11 @@ namespace engine
       }
     }
     return nullptr;
+  }
+
+  std::vector<const class_object*> object_registry::get_classes() const
+  {
+    return class_objects;
   }
 
   const class_object* object_registry::register_class(const std::string& class_name, const std::string& parent_class_name, spawn_instance_func_type spawn_func)
@@ -117,8 +128,8 @@ namespace engine
     new_class->set_runtime_id(objects.size());
     objects.push_back(new_class);
     class_objects.push_back(new_class);
-    types.push_back(new_class);   // FIX ??
-    custom_display_names.push_back("");
+    types.push_back(new_class);
+    custom_display_names.push_back(class_name);
     return new_class;
   }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "math/camera.h"
+#include <functional>
 
 struct ID3D11ShaderResourceView;
 struct ID3D11Texture2D;
@@ -36,6 +37,21 @@ struct camera_panel_model
   
 };
 
+template<typename T>
+struct selection_combo_model
+{
+  // In
+  std::vector<const T*> objects;
+  // Out, selected by the widget
+  int selected_id = 0;
+  const T* selected_object = nullptr;
+};
+
+struct hittable_selection_combo_model
+{
+  int selected_id = 0;
+};
+
 struct material_selection_combo_model
 {
   int selected_id = 0;
@@ -66,9 +82,7 @@ struct output_window_model
 
 struct new_object_panel_model
 {
-  int selected_type = 0;
-  hittable* hittable = nullptr;
-  material_selection_combo_model m_model;
+  selection_combo_model<class_object> c_model;
 };
 
 struct delete_object_panel_model
@@ -146,8 +160,13 @@ void draw_raytracer_window(raytracer_window_model& model, app_instance& state);
 void draw_output_window(output_window_model& model, app_instance& state);
 void draw_scene_editor_window(scene_editor_window_model& model, app_instance& state);
 void draw_new_object_panel(new_object_panel_model& model, app_instance& state);
-void draw_material_selection_combo(material_selection_combo_model& model, app_instance& state);
+
+template<typename T>
+void draw_selection_combo(selection_combo_model<T>& model, app_instance& state, std::function<bool(const T*)> predicate);
+void draw_hittable_selection_combo(hittable_selection_combo_model& model, app_instance& state);
+void draw_material_selection_combo(material_selection_combo_model& model, app_instance& state);   // FIX all 3 can be handled by draw_selection_combo
 void draw_renderer_selection_combo(renderer_selection_combo_model& model, app_instance& state);
+
 void draw_delete_object_panel(delete_object_panel_model& model, app_instance& state);
 
 void update_default_spawn_position(app_instance& state);

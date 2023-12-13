@@ -16,10 +16,6 @@
 
 void material_asset_draw_edit_panel(material_asset* obj)
 {
-  ImGui::Text("Material: ");
-  ImGui::SameLine();
-  ImGui::Text(obj->get_display_name().c_str());
-
   ImGui::Checkbox("Is light", &obj->is_light);
 
   ImGui::ColorEdit3("Color", obj->color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
@@ -35,7 +31,7 @@ void material_asset_draw_edit_panel(material_asset* obj)
 }
 
 
-
+// FIX implement the visitor panel for hittables, use RTTI to call proper function, sphere is missing
 void hittable_draw_edit_panel(hittable* obj)
 {
   std::string hittable_name = obj->get_display_name();
@@ -292,7 +288,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
     draw_material_selection_combo(m_model, state);
     if (m_model.selected_id != -1)
     {
-      std::string selected_name = engine::get_object_registry()->get<engine::material_asset>(m_model.selected_id)->get_class()->class_name;
+      std::string selected_name = engine::get_object_registry()->get<engine::material_asset>(m_model.selected_id)->file_name;
       selected_obj->material_asset_ptr.set_name(selected_name);
     }
 
@@ -311,48 +307,103 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
   if (ImGui::BeginPopupModal("New object?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
   {
-    //ImGui::Combo("Object type", &model.selected_type, object_type_names, IM_ARRAYSIZE(object_type_names));
-    ImGui::Separator();
+    model.c_model.objects = get_object_registry()->get_classes();
+    std::string hittable_class_name = hittable::get_class_static()->class_name;
 
-    if (model.hittable != nullptr && (int)model.hittable->get_class() != model.selected_type)
-    {
-      delete model.hittable; // Object type changed, destroy the old one
-      model.hittable = nullptr;
-    }
-    if (model.hittable == nullptr)
-    {
-      // New object
-      //model.hittable = model.selected_type->spawn_instance<hittable>();
-      assert(false);
-      model.hittable->set_origin(state.center_of_scene);
-    }
+    draw_selection_combo<class_object>(model.c_model, state, [=](const class_object* obj) -> bool { return obj->parent_class_name == hittable_class_name; });
 
-    if (model.hittable != nullptr)
+    if (ImGui::Button("Add", ImVec2(120, 0)) && model.c_model.selected_object != nullptr)
     {
-      hittable_draw_edit_panel(model.hittable);
-
-      draw_material_selection_combo(model.m_model, state);
-    }
-
-    if (ImGui::Button("Add", ImVec2(120, 0)) && model.hittable != nullptr)
-    {
-      model.hittable->material_asset_ptr.set_name(engine::get_object_registry()->get<engine::material_asset>(model.m_model.selected_id)->get_class()->class_name);
-      state.scene_root->add(model.hittable);
-      model.hittable = nullptr;
+      state.scene_root->add(model.c_model.selected_object->spawn_instance<hittable>());
       ImGui::CloseCurrentPopup();
     }
     ImGui::SetItemDefaultFocus();
     ImGui::SameLine();
     if (ImGui::Button("Cancel", ImVec2(120, 0)))
     {
-      if (model.hittable)
-      {
-        delete model.hittable;
-        model.hittable = nullptr;
-      }
       ImGui::CloseCurrentPopup();
     }
     ImGui::EndPopup();
+  }
+}
+
+template<typename T>
+void draw_selection_combo(selection_combo_model<T>& model, app_instance& state, std::function<bool(const T*)> predicate)
+{
+  if (model.objects.size() > 0)
+  {
+    if (model.selected_object == nullptr)
+    {
+      model.selected_object = model.objects[0];
+      model.selected_id = 0;
+    }
+    if (ImGui::BeginCombo("Class", model.selected_object->get_display_name().c_str()))
+    {
+      for (int i = 0; i < model.objects.size(); ++i)
+      {
+        if (!predicate(model.objects[i]))
+        {
+          continue;
+        }
+
+        const bool is_selected = (model.selected_id == i);
+        std::string iterated_name = model.objects[i]->get_display_name();
+
+        if (ImGui::Selectable(iterated_name.c_str(), is_selected))
+        {
+          model.selected_id = i;
+          model.selected_object = model.objects[i];
+        }
+        if (is_selected)
+        {
+          ImGui::SetItemDefaultFocus();
+        }
+      }
+      ImGui::EndCombo();
+    }
+  }
+  else
+  {
+    ImGui::Text("No materials to choose from");
+  }
+}
+
+void draw_hittable_selection_combo(hittable_selection_combo_model& model, app_instance& state)
+{
+  using namespace engine;
+  std::vector<hittable*> hittables = get_object_registry()->get_all_by_type<hittable>();
+  hittable* selected_hittable = get_object_registry()->get<hittable>(model.selected_id);
+
+  if (hittables.size() > 0)
+  {
+    if (selected_hittable == nullptr)
+    {
+      selected_hittable = hittables[0];
+      model.selected_id = selected_hittable->get_runtime_id();
+    }
+    if (ImGui::BeginCombo("Material", selected_hittable->get_display_name().c_str()))
+    {
+      for (int i = 0; i < hittables.size(); ++i)
+      {
+        int iterated_id = hittables[i]->get_runtime_id();
+        std::string iterated_name = hittables[i]->get_display_name();
+
+        const bool isSelected = (model.selected_id == iterated_id);
+        if (ImGui::Selectable(iterated_name.c_str(), isSelected))
+        {
+          model.selected_id = iterated_id;
+        }
+        if (isSelected)
+        {
+          ImGui::SetItemDefaultFocus();
+        }
+      }
+      ImGui::EndCombo();
+    }
+  }
+  else
+  {
+    ImGui::Text("No materials to choose from");
   }
 }
 
@@ -478,7 +529,9 @@ void draw_managed_objects_panel(app_instance& state)
   {
     for (int n = 0; n < num_objects; n++)
     {
-      if (ImGui::Selectable(objects[n]->get_display_name().c_str()))
+      std::ostringstream oss;
+      oss << "[" << objects[n]->get_runtime_id() << "] " << objects[n]->get_display_name() << " (" << objects[n]->get_class()->class_name << ")";
+      if (ImGui::Selectable(oss.str().c_str()))
       {
 
       }

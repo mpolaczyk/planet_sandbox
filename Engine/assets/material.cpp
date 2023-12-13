@@ -35,6 +35,9 @@ namespace engine
     nlohmann::json j;
     input_stream >> j;
     material_serializer::deserialize(j, instance);
+
+    get_object_registry()->set_custom_display_name(instance->get_runtime_id(), name);
+
     return true;
   }
 

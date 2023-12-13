@@ -54,9 +54,9 @@ namespace EngineTests
     {
       // Spawn object instance from class object that defines the type
       const class_object* hco = static_mesh::get_class_static();
-      static_mesh* m1 = hco->spawn_instance<static_mesh>();
+      hittable* m1 = hco->spawn_instance<hittable>();
 
-      Assert::IsTrue(hco == m1->get_class_static());
+      Assert::IsTrue(hco == m1->get_class());
     }
 
     TEST_METHOD(object_types)
