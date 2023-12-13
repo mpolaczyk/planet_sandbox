@@ -17,13 +17,11 @@ namespace engine
 
   inline uint32_t hittable::get_hash() const
   {
-    return hash::combine(hash::get(material_asset_ptr.get_name().c_str()), hash::get(type));
+    return hash::combine(hash::get(material_asset_ptr.get_name().c_str()), 0);
   }
 
   void hittable::load_resources()
   {
-    // Materials are loaded on editor startup because I need to show all of them in UI
-    // This is here for consistence:
     material_asset_ptr.get();
   }
 

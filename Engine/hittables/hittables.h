@@ -45,8 +45,7 @@ namespace engine
     virtual void pre_render() {};
 
     // Persistent members
-    const class_object* type = hittable::get_class_static();           // FIX this is problematic? How to spawn dynamically?
-    soft_asset_ptr<material_asset> material_asset_ptr;
+    soft_asset_ptr<material_asset> material_asset_ptr;    // FIX This does not have to be here, move to mesh and sphere?
 
     // Runtime members
     aabb bounding_box;

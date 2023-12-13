@@ -40,19 +40,15 @@ namespace engine
       if (asset_ptr_temp == nullptr)
       {
         asset_ptr_temp = T::spawn();
+
+        if (!T::load(asset_ptr_temp, name))
+        {
+          asset_ptr_temp->destroy();
+          LOG_ERROR("Unable to find asset: {0}", name);
+          return nullptr;
+        }
       }
       assert(asset_ptr_temp);
-
-      if (!T::load(asset_ptr_temp, name))
-      {
-        asset_ptr_temp->destroy();
-        return nullptr;
-      }
-      else
-      {
-        LOG_ERROR("Unable to find asset: {0}", name);
-      }
-      
       asset_ptr = asset_ptr_temp;
     }
     return asset_ptr;

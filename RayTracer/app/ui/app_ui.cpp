@@ -314,7 +314,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
     //ImGui::Combo("Object type", &model.selected_type, object_type_names, IM_ARRAYSIZE(object_type_names));
     ImGui::Separator();
 
-    if (model.hittable != nullptr && (int)model.hittable->type != model.selected_type)
+    if (model.hittable != nullptr && (int)model.hittable->get_class() != model.selected_type)
     {
       delete model.hittable; // Object type changed, destroy the old one
       model.hittable = nullptr;

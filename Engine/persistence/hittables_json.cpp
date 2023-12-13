@@ -18,7 +18,6 @@ namespace engine
   {
     assert(value != nullptr);
     nlohmann::json j;
-    j["type"] = value->type->class_name;
     j["material_asset"] = soft_asset_ptr_base_serializer::serialize(&value->material_asset_ptr);
     return j;
   }
@@ -31,18 +30,26 @@ namespace engine
     nlohmann::json jarr = nlohmann::json::array();
     for (const hittable* object : value->objects)
     {
-      if (object->type == scene::get_class_static())
+      const class_object* class_o = object->get_class();
+      std::string class_name = class_o->class_name;
+
+      if (class_o == scene::get_class_static())
       {
         jarr.push_back(scene_serializer::serialize(static_cast<const scene*>(object)));
       }
-      else if (object->type == static_mesh::get_class_static())
+      else if (class_o == sphere::get_class_static())
+      {
+        jarr.push_back(sphere_serializer::serialize(static_cast<const sphere*>(object)));
+      }
+      else if (class_o == static_mesh::get_class_static())
       {
         jarr.push_back(static_mesh_serializer::serialize(static_cast<const static_mesh*>(object)));
       }
       else
       {
-        LOG_ERROR("Undefined hittable to serialize: {0}", object->type->class_name);
+        LOG_ERROR("Undefined hittable to serialize: {0}", class_name);
       }
+      j["class_name"] = class_name;
     }
     j["objects"] = jarr;
     return j;
@@ -73,10 +80,7 @@ namespace engine
   
   void hittable_serializer::deserialize(const nlohmann::json& j, hittable* out_value)
   {
-    assert(out_value != nullptr);
-    std::string type_name;
-    TRY_PARSE(std::string, j, "type", type_name);
-    out_value->type = get_object_registry()->find_class(type_name);
+    assert(out_value != nullptr); 
 
     nlohmann::json jmaterial;
     if (TRY_PARSE(nlohmann::json, j, "material_asset", jmaterial)) { soft_asset_ptr_base_serializer::deserialize(jmaterial, &out_value->material_asset_ptr); }
@@ -91,28 +95,28 @@ namespace engine
     {
       for (const auto& jobj : jobjects)
       {
-        std::string type_name;
-        if (TRY_PARSE(std::string, jobj, "type", type_name))
+        std::string class_name;
+        if (TRY_PARSE(std::string, jobj, "class_name", class_name))
         {
-          const class_object* type = out_value->type = get_object_registry()->find_class(type_name);
-          hittable* obj = type->spawn_instance<hittable>();
+          const class_object* class_o = get_object_registry()->find_class(class_name);
+          hittable* obj = class_o->spawn_instance<hittable>();
           if (obj != nullptr)
           {
-            if (type == scene::get_class_static())
+            if (class_o == scene::get_class_static())
             {
               scene_serializer::deserialize(jobj, static_cast<scene*>(obj));
             }
-            else if (type == static_mesh::get_class_static())
-            {
-              static_mesh_serializer::deserialize(jobj, static_cast<static_mesh*>(obj));
-            }
-            else if (type == sphere::get_class_static())
+            else if (class_o == sphere::get_class_static())
             {
               sphere_serializer::deserialize(jobj, static_cast<sphere*>(obj));
             }
+            else if (class_o == static_mesh::get_class_static())
+            {
+              static_mesh_serializer::deserialize(jobj, static_cast<static_mesh*>(obj));
+            }
             else
             {
-              LOG_ERROR("Unable to deserialize hittable of type: {0}", type->class_name);
+              LOG_ERROR("Unable to deserialize hittable of type: {0}", class_o->class_name);
             }
             out_value->objects.push_back(obj);
           }

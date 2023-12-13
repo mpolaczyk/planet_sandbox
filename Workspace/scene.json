@@ -31,7 +31,7 @@
           "y": 50.0,
           "z": -25.000999450683594
         },
-        "type": "sphere",
+        "class_name": "sphere",
         "radius": 60.0
       },
       {
@@ -56,9 +56,9 @@
           "y": 1.0,
           "z": 1.0
         },
-        "type": "static_mesh"
+        "class_name": "static_mesh"
       }
     ],
-    "type": "scene"
+    "class_name": "scene"
   }
 }

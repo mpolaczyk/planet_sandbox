@@ -145,18 +145,19 @@ namespace engine
     // Deep copy
     for (hittable* obj : objects)
     {
+      const class_object* class_o = obj->get_class();
       hittable* new_obj = nullptr;
-      if (obj->type == class_object::get_class_static())  // FIX UGLY this with a dynamic type system
+      if (class_o == class_object::get_class_static())
       {
         new_obj = get_object_registry()->copy_shallow<scene>(static_cast<scene*>(obj));
       }
-      else if (obj->type == static_mesh::get_class_static())
-      {
-        new_obj = get_object_registry()->copy_shallow<static_mesh>(static_cast<static_mesh*>(obj));
-      }
-      else if (obj->type == sphere::get_class_static())
+      else if (class_o == sphere::get_class_static())
       {
         new_obj = get_object_registry()->copy_shallow<sphere>(static_cast<sphere*>(obj));
+      }
+      else if (class_o == static_mesh::get_class_static())
+      {
+        new_obj = get_object_registry()->copy_shallow<static_mesh>(static_cast<static_mesh*>(obj));
       }
       else
       {
