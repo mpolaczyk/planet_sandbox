@@ -13,11 +13,14 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(static_mesh_asset, asset_base)
+  OBJECT_DEFINE(static_mesh_asset, asset_base, Static mesh asset)
   OBJECT_DEFINE_SPAWN(static_mesh_asset)
 
-  static_mesh_asset* static_mesh_asset::load(const std::string& name)
+  bool static_mesh_asset::load(static_mesh_asset* instance, const std::string& name)
   {
+    asset_base::load(instance, name);
+
+    assert(instance);
     LOG_DEBUG("Loading mesh: {0}", name.c_str());
 
     std::ostringstream oss;
@@ -27,25 +30,18 @@ namespace engine
     if (input_stream.fail())
     {
       LOG_ERROR("Unable to open mesh asset: {0}", file_path.c_str());
-      return nullptr;
-    }
-
-    static_mesh_asset* obj = static_mesh_asset::spawn(name);
-    if (obj == nullptr)
-    {
-      return nullptr;
+      return false;
     }
 
     nlohmann::json j;
     input_stream >> j;
-    mesh_serializer::deserialize(j, obj);
+    mesh_serializer::deserialize(j, instance);
 
-    if (!load_obj(obj->obj_file_name, obj->shape_index, obj->faces))
+    if (!load_obj(instance->obj_file_name, instance->shape_index, instance->faces))
     {
-      LOG_ERROR("Failed to load object file: {0}", obj->obj_file_name.c_str());
-      return nullptr;
+      LOG_ERROR("Failed to load object file: {0}", instance->obj_file_name.c_str());
+      return false;
     }
-
-    return obj;
+    return true;
   }
 }

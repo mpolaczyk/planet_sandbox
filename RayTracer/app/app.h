@@ -102,7 +102,7 @@ public:
   camera_config* camera_conf = nullptr;
 
   // Rendering state
-  renderer_config* renderer_conf = nullptr;
+  renderer_config*renderer_conf = nullptr;
   
   // OS window state
   window_config window_conf;

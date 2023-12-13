@@ -14,7 +14,7 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(cpu_renderer_faces, cpu_renderer_base)
+  OBJECT_DEFINE(cpu_renderer_faces, cpu_renderer_base, CPU renderer faces)
   OBJECT_DEFINE_SPAWN(cpu_renderer_faces)
 
   std::string cpu_renderer_faces::get_name() const

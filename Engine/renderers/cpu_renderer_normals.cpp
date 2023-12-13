@@ -13,7 +13,7 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(cpu_renderer_normals, cpu_renderer_base)
+  OBJECT_DEFINE(cpu_renderer_normals, cpu_renderer_base, CPU renderer normals)
   OBJECT_DEFINE_SPAWN(cpu_renderer_normals)
 
   std::string cpu_renderer_normals::get_name() const

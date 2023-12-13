@@ -106,11 +106,9 @@
     <ClInclude Include="hittables\scene.h" />
     <ClInclude Include="hittables\sphere.h" />
     <ClInclude Include="hittables\static_mesh.h" />
-    <ClInclude Include="object\factories.h" />
     <ClInclude Include="object\object.h" />
     <ClInclude Include="object\object_defines.h" />
     <ClInclude Include="object\object_registry.h" />
-    <ClInclude Include="object\object_types.h" />
     <ClInclude Include="assets\material.h" />
     <ClInclude Include="assets\mesh.h" />
     <ClInclude Include="asset\soft_asset_ptr.h" />
@@ -164,7 +162,6 @@
     <ClCompile Include="hittables\scene.cpp" />
     <ClCompile Include="hittables\sphere.cpp" />
     <ClCompile Include="hittables\static_mesh.cpp" />
-    <ClCompile Include="object\factories.cpp" />
     <ClCompile Include="object\object.cpp" />
     <ClCompile Include="object\object_registry.cpp" />
     <ClCompile Include="object\object_registry_temp.cpp" />

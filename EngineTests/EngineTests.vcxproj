@@ -108,11 +108,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="test_base.cpp" />
     <ClCompile Include="object.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="test_base.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">

@@ -13,7 +13,7 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(static_mesh, hittable)
+  OBJECT_DEFINE(static_mesh, hittable, Static mesh)
   OBJECT_DEFINE_SPAWN(static_mesh)
 
   bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
@@ -63,15 +63,6 @@ namespace engine
     return false;
   }
 
-  std::string static_mesh::get_name() const
-  {
-    std::string base_name = hittable::get_name();
-    
-    std::ostringstream oss;
-    oss << base_name << "/" << mesh_asset_ptr.get_name();
-    return oss.str();
-  }
-
   bool static_mesh::get_bounding_box(aabb& out_box) const
   {
     vec3 mi(0.0f);  // minimum corner
@@ -117,17 +108,10 @@ namespace engine
     // Create a temporary object and modify it, reuse it next frame
     std::ostringstream oss;
     oss << "temp_" << mesh_asset_ptr.get_name().c_str() << "_hittable_id_" << get_runtime_id();
-    runtime_asset_ptr = get_object_registry()->find<static_mesh_asset>(oss.str());
+
     if (runtime_asset_ptr == nullptr)
     {
-      if (get_object_registry()->find<static_mesh_asset>(mesh_asset_ptr.get_name()) != nullptr)
-      {
-        runtime_asset_ptr = get_object_registry()->copy_shallow<static_mesh_asset>(mesh_asset_ptr.get(), oss.str());
-      }
-      else
-      {
-        return;
-      }
+      runtime_asset_ptr = get_object_registry()->copy_shallow<static_mesh_asset>(mesh_asset_ptr.get());
     }
 
     float y_rotation = rotation.y / 180.0f * math::pi;

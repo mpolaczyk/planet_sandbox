@@ -7,19 +7,11 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(class_object, object)
+  OBJECT_DEFINE(class_object, object, Class object)
   OBJECT_DEFINE_SPAWN(class_object)
 
-  OBJECT_DEFINE(object, object)
+  OBJECT_DEFINE(object, object, Object)
   OBJECT_DEFINE_NOSPAWN(object)
-
-  std::string object::get_display_name() const
-  {
-    std::ostringstream oss;
-    //oss << "[" << runtime_id << "] " << object_type_names[static_cast<int>(get_class())] << ": " << get_name(); // FIX
-    oss << "[" << runtime_id << "] " << get_class()->get_name() << ":" << get_name();
-    return oss.str();
-  }
 
   void object::set_runtime_id(int id)
   {
@@ -39,8 +31,4 @@ namespace engine
     get_object_registry()->destroy(runtime_id);
   }
 
-  std::string object::get_name() const
-  {
-    return get_object_registry()->get_name(runtime_id);
-  }
 }

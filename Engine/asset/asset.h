@@ -5,7 +5,7 @@
 #include "object/object.h"
 
 // Put this in the h file, implement persistent load/save together with assets.
-#define OBJECT_DECLARE_LOAD(CLASS_NAME) static CLASS_NAME* load(const std::string& name);
+#define OBJECT_DECLARE_LOAD(CLASS_NAME) static bool load(CLASS_NAME* instance, const std::string& name);
 #define OBJECT_DECLARE_SAVE(CLASS_NAME) static void save(CLASS_NAME* instance);
 
 namespace engine
@@ -15,5 +15,9 @@ namespace engine
   {
   public:
     OBJECT_DECLARE(asset_base, object)
+    OBJECT_DECLARE_LOAD(asset_base)
+
+    // File system name
+    std::string file_name;
   };
 }

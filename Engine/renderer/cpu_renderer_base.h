@@ -4,7 +4,7 @@
 #include <thread>
 #include <semaphore>
 
-#include "object/object_types.h"
+
 #include "math/vec3.h"
 #include "resources/bmp.h"
 #include "engine/hash.h"

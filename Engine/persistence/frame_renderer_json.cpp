@@ -2,7 +2,7 @@
 #include "nlohmann/json.hpp"
 #include "renderer/cpu_renderer_base.h"
 
-#include "object/object_types.h"
+
 #include "object/object_registry.h"
 
 namespace engine
@@ -12,7 +12,7 @@ namespace engine
     nlohmann::json j;
     j["rays_per_pixel"] = value.rays_per_pixel;
     j["ray_bounces"] = value.ray_bounces;
-    j["type"] = value.type->get_name();
+    j["type"] = value.type->class_name;
     j["reuse_buffer"] = value.reuse_buffer;
     j["resolution_vertical"] = value.resolution_vertical;
     j["resolution_horizontal"] = value.resolution_horizontal;

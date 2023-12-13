@@ -6,7 +6,6 @@
 #include "hittables/hittables.h"
 
 #include "renderer/cpu_renderer_base.h"
-#include "object/factories.h"
 #include "renderers/cpu_renderer_preview.h"
 #include "renderers/cpu_renderer_reference.h"
 
@@ -14,7 +13,7 @@ app_instance::app_instance()
 {
   camera_conf = new camera_config();
   renderer_conf = new renderer_config();
-  scene_root = static_cast<scene*>(object_factory::spawn_hittable(scene::get_class_static()));
+  scene_root = scene::get_class_static()->spawn_instance<scene>();
 }
 
 app_instance::~app_instance()

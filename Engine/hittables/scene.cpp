@@ -10,7 +10,7 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(scene, hittable)
+  OBJECT_DEFINE(scene, hittable, Scene)
   OBJECT_DEFINE_SPAWN(scene)
 
   void scene::add(hittable* object)
@@ -112,13 +112,6 @@ namespace engine
     return hit_anything;
   }
 
-  std::string scene::get_name() const
-  {
-    //return object_type_names[(int)object_type::scene];  // FIX
-    return "???";
-  }
-
-
   bool scene::get_bounding_box(aabb& out_box) const
   {
     if (objects.empty()) return false;
@@ -167,7 +160,7 @@ namespace engine
       }
       else
       {
-        LOG_ERROR("Unable to clone a hittable of type: {0}", obj->get_class()->get_name().c_str());  // FIX
+        LOG_ERROR("Unable to clone a hittable of type: {0}", obj->get_class()->class_name.c_str());  // FIX
         return nullptr;
       }
       

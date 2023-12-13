@@ -28,7 +28,6 @@ namespace engine
 
     virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const = 0;
     virtual bool get_bounding_box(aabb& out_box) const = 0;
-    virtual std::string get_name() const override;
     virtual vec3 get_origin() const = 0;
     virtual vec3 get_extent() const = 0;
     virtual void set_origin(const vec3& value) = 0;

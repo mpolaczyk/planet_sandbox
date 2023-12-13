@@ -15,8 +15,6 @@ namespace engine
     OBJECT_DECLARE_LOAD(texture_asset)
     OBJECT_DECLARE_SAVE(texture_asset)
 
-    virtual std::string get_display_name() const override;
-
     // JSON persistent
     std::string img_file_name;
     int width;

@@ -11,7 +11,7 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(sphere, hittable)
+  OBJECT_DEFINE(sphere, hittable, Sphere)
   OBJECT_DEFINE_SPAWN(sphere)
 
   bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
@@ -48,14 +48,6 @@ namespace engine
     out_hit.front_face = math::flip_normal_if_front_face(in_ray.direction, outward_normal, out_hit.normal);
     math::get_sphere_uv(outward_normal, out_hit.u, out_hit.v);
     return true;
-  }
-
-  std::string sphere::get_name() const
-  {
-    std::string base_name = hittable::get_name();
-    std::ostringstream oss;
-    oss << base_name << "/" << radius;
-    return oss.str();
   }
 
   bool sphere::get_bounding_box(aabb& out_box) const

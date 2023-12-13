@@ -9,7 +9,6 @@
 
 #include "core/core.h"
 #include "engine.h"
-#include "object/factories.h"
 #include "hittables/hittables.h"
 #include "hittables/static_mesh.h"
 #include "hittables/scene.h"
@@ -39,7 +38,7 @@ void material_asset_draw_edit_panel(material_asset* obj)
 
 void hittable_draw_edit_panel(hittable* obj)
 {
-  std::string hittable_name = obj->get_name();
+  std::string hittable_name = obj->get_display_name();
   ImGui::Text("Object: ");
   ImGui::SameLine();
   ImGui::Text(hittable_name.c_str());
@@ -257,7 +256,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
         model.selected_id = n;
         model.d_model.selected_id = n;
       }
-      std::string obj_name = obj->get_name();
+      std::string obj_name = obj->get_display_name();
       std::ostringstream oss;
       oss << obj_name;
       if (ImGui::Selectable(oss.str().c_str(), model.selected_id == n))
@@ -293,7 +292,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
     draw_material_selection_combo(m_model, state);
     if (m_model.selected_id != -1)
     {
-      std::string selected_name = engine::get_object_registry()->get_name(m_model.selected_id);
+      std::string selected_name = engine::get_object_registry()->get<engine::material_asset>(m_model.selected_id)->get_class()->class_name;
       selected_obj->material_asset_ptr.set_name(selected_name);
     }
 
@@ -312,7 +311,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
   if (ImGui::BeginPopupModal("New object?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
   {
-    ImGui::Combo("Object type", &model.selected_type, object_type_names, IM_ARRAYSIZE(object_type_names));
+    //ImGui::Combo("Object type", &model.selected_type, object_type_names, IM_ARRAYSIZE(object_type_names));
     ImGui::Separator();
 
     if (model.hittable != nullptr && (int)model.hittable->type != model.selected_type)
@@ -323,7 +322,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
     if (model.hittable == nullptr)
     {
       // New object
-      //model.hittable = engine::object_factory::spawn_hittable(static_cast<object_type>(model.selected_type)); //FIX
+      //model.hittable = model.selected_type->spawn_instance<hittable>();
       assert(false);
       model.hittable->set_origin(state.center_of_scene);
     }
@@ -337,7 +336,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
     if (ImGui::Button("Add", ImVec2(120, 0)) && model.hittable != nullptr)
     {
-      model.hittable->material_asset_ptr.set_name(engine::get_object_registry()->get_name(model.m_model.selected_id));
+      model.hittable->material_asset_ptr.set_name(engine::get_object_registry()->get<engine::material_asset>(model.m_model.selected_id)->get_class()->class_name);
       state.scene_root->add(model.hittable);
       model.hittable = nullptr;
       ImGui::CloseCurrentPopup();
@@ -369,12 +368,12 @@ void draw_material_selection_combo(material_selection_combo_model& model, app_in
       selected_material = materials[0];
       model.selected_id = selected_material->get_runtime_id();
     }
-    if (ImGui::BeginCombo("Material", selected_material->get_name().c_str()))
+    if (ImGui::BeginCombo("Material", selected_material->get_display_name().c_str()))
     {
       for (int i = 0; i < materials.size(); ++i)
       {
         int iterated_id = materials[i]->get_runtime_id();
-        std::string iterated_name = materials[i]->get_name();
+        std::string iterated_name = materials[i]->get_display_name();
 
         const bool isSelected = (model.selected_id == iterated_id);
         if (ImGui::Selectable(iterated_name.c_str(), isSelected))

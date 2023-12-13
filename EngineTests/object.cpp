@@ -3,9 +3,6 @@
 
 #include "core/application.h"
 
-#include "object/factories.h"
-#include "object/object_types.h"
-
 #include "renderers/cpu_renderer_preview.h"
 #include "renderers/cpu_renderer_normals.h"
 #include "renderers/cpu_renderer_faces.h"
@@ -57,7 +54,7 @@ namespace EngineTests
     {
       // Spawn object instance from class object that defines the type
       const class_object* hco = static_mesh::get_class_static();
-      static_mesh* m1 = hco->spawn_instance<static_mesh>("");
+      static_mesh* m1 = hco->spawn_instance<static_mesh>();
 
       Assert::IsTrue(hco == m1->get_class_static());
     }
@@ -65,9 +62,9 @@ namespace EngineTests
     TEST_METHOD(object_types)
     {
       // A few checks for comparing class types and their hierachy
-      cpu_renderer_base* b = object_factory::spawn_renderer(cpu_renderer_base::get_class_static());
-      cpu_renderer_base* r = object_factory::spawn_renderer(cpu_renderer_reference::get_class_static());
-      cpu_renderer_base* n = object_factory::spawn_renderer(cpu_renderer_normals::get_class_static());
+      cpu_renderer_base* b = cpu_renderer_base::get_class_static()->spawn_instance<cpu_renderer_base>();
+      cpu_renderer_base* r = cpu_renderer_reference::get_class_static()->spawn_instance<cpu_renderer_base>();
+      cpu_renderer_base* n = cpu_renderer_normals::get_class_static()->spawn_instance<cpu_renderer_base>();
 
       // Spawn and no spawn
       Assert::IsNull(b, L"a");

@@ -1,7 +1,10 @@
 
 #include "asset/soft_asset_ptr.h"
+#include "asset/asset.h"
 #include "object/object_registry.h"
 #include "engine/log.h"
+#include <assert.h>
+
 
 namespace engine
 {
@@ -32,19 +35,25 @@ namespace engine
   {
     if (!is_loaded())
     {
-      asset_ptr = get_object_registry()->find<T>(name);
-      if (asset_ptr == nullptr)
+      T* asset_ptr_temp = get_object_registry()->find<T>([=](const T* obj) -> bool { return obj->file_name == name; });
+      
+      if (asset_ptr_temp == nullptr)
       {
-        asset_ptr = T::load(name);
-        if (asset_ptr != nullptr)
-        {
-          get_object_registry()->add<T>(asset_ptr, name);
-        }
-        else
-        {
-          LOG_ERROR("Unable to find asset: {0}", name);
-        }
+        asset_ptr_temp = T::spawn();
       }
+      assert(asset_ptr_temp);
+
+      if (!T::load(asset_ptr_temp, name))
+      {
+        asset_ptr_temp->destroy();
+        return nullptr;
+      }
+      else
+      {
+        LOG_ERROR("Unable to find asset: {0}", name);
+      }
+      
+      asset_ptr = asset_ptr_temp;
     }
     return asset_ptr;
   }

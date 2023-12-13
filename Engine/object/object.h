@@ -3,7 +3,7 @@
 #include "core/core.h"
 #include "core/concepts.h"
 
-#include "object/object_types.h"
+
 #include "object/object_defines.h"
 
 #include <string>
@@ -22,9 +22,6 @@ namespace engine
   public:
     OBJECT_DECLARE(object, object)
 
-    virtual std::string get_display_name() const;
-    virtual std::string get_name() const;
-
     int get_runtime_id() const;
 
     void destroy();
@@ -35,8 +32,8 @@ namespace engine
     int runtime_id = -1;
   };
 
-  typedef object*(*spawn_instance_func_type)(const std::string&);
-
+  typedef object*(*spawn_instance_func_type)();
+  
   // Base class for all class types. Each registered object has object class instance in the registry.
   class ENGINE_API class_object : public object
   {
@@ -44,7 +41,7 @@ namespace engine
     OBJECT_DECLARE(class_object, object)
 
     template<derives_from<object> T>
-    T* spawn_instance(const std::string& name) const;
+    T* spawn_instance() const;      // FIX move it somewhere else, also it is not comfortable in use
 
     // FIX make privare, add getters, friend what is needed
     spawn_instance_func_type spawn_instance_func;

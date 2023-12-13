@@ -39,12 +39,10 @@
     <ClInclude Include="persistence\serializable.h" />
     <ClInclude Include="persistence\vec3_json.h" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp" />
-    <ClInclude Include="object\object_types.h" />
     <ClInclude Include="object\object_defines.h" />
     <ClInclude Include="math\chunk_generator.h" />
     <ClInclude Include="renderer\cpu_renderer_base.h" />
     <ClInclude Include="hittables\hittables.h" />
-    <ClInclude Include="object\factories.h" />
     <ClInclude Include="persistence\hittables_json.h" />
     <ClInclude Include="persistence\frame_renderer_json.h" />
     <ClInclude Include="renderers\cpu_renderer_faces.h" />
@@ -95,7 +93,6 @@
     <ClCompile Include="renderer\cpu_renderer_base.cpp" />
     <ClCompile Include="math\chunk_generator.cpp" />
     <ClCompile Include="hittables\hittables.cpp" />
-    <ClCompile Include="object\factories.cpp" />
     <ClCompile Include="persistence\hittables_json.cpp" />
     <ClCompile Include="persistence\frame_renderer_json.cpp" />
     <ClCompile Include="renderers\cpu_renderer_faces.cpp" />

@@ -17,7 +17,7 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(cpu_renderer_base, object)
+  OBJECT_DEFINE(cpu_renderer_base, object, CPU renderer base)
   OBJECT_DEFINE_NOSPAWN(cpu_renderer_base)
 
   cpu_renderer_base::cpu_renderer_base()

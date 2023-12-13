@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <functional>
 
 #include "core/core.h"
 #include "core/concepts.h"
@@ -9,6 +10,7 @@
 
 namespace engine
 {
+
   // Collection of objects of any kind.
   // Registry has ownership on objects.
   // Registry gives runtime ids.
@@ -26,7 +28,7 @@ namespace engine
     object_registry& operator=(const object_registry&) = delete;
 
     bool is_valid(int id) const;
-    std::string get_name(int id) const;
+    std::string get_custom_display_name(int id) const;
     const class_object* get_class(int id) const;
     void destroy(int id);
     std::vector<object*> get_all(bool no_nullptr = true);
@@ -34,30 +36,25 @@ namespace engine
     std::vector<std::string> get_all_names(const class_object* type, bool no_nullptr = true) const;
 
     const class_object* find_class(const std::string& name);
-    void register_class(class_object* instance);
+    const class_object* register_class(const std::string& class_name, const std::string& parent_class_name, spawn_instance_func_type spawn_func);
     void create_class_objects();
 
   protected:
-    // Runtime id is an index
-    std::vector < const class_object*> class_objects;
-    std::vector<object*> objects;
-    std::vector<const class_object*> types; // Does not store class objects but points to an instance owned by the objects vector (that happens to be the class_object)
-    std::vector<std::string> names;         // FIX Do we need this? can we use methods on the type?
+    // Index is runtime id.
+    std::vector<object*> objects;                       // Main object registry. Holds the ownership.
+    std::vector<const class_object*> types;             // Does not store class objects but points to an instance owned by the objects vector (that happens to be the class_object)
+    std::vector<std::string> custom_display_names;      // Don't store this on instances, don't break the alignment, cache them here.
+
+    // Index is not related to the objects vector
+    std::vector<const class_object*> class_objects;     // A subset of objects of the class_object type. No ownership. FIX Classes can't be deleted.    
 
   public:
 
     template<derives_from<object> T >
-    bool add(T* instance, const std::string& name);   // FIX private?
+    bool add(T* instance);   // FIX private?
 
     template<derives_from<object> T>
     T* get(int id) const;
-
-    template<derives_from<object> T>
-    T* find(const std::string& name);
-
-    template<derives_from<object> T>
-    const T* find_const(const std::string& name);
-
 
     template<derives_from<object> T>
     std::vector<T*> get_all_by_type();
@@ -66,7 +63,7 @@ namespace engine
     T* copy_shallow(const T* source);
 
     template<derives_from<object> T>
-    T* copy_shallow(const T* source, const std::string& name);
+    T* find(std::function<bool(const T*)> predicate); // FIX const
   };
 
 

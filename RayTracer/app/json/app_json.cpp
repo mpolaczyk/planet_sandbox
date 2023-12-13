@@ -65,27 +65,30 @@ void app_instance::load_rendering_state()
 
 void app_instance::load_assets()
 {
+  using namespace engine;
   LOG_INFO("Loading: materials");
-  std::vector<std::string> material_names = engine::io::discover_material_files(false);
+  std::vector<std::string> material_names = io::discover_material_files(false);
   for (const std::string& name : material_names)
   {
-    engine::material_asset* temp = engine::material_asset::load(name);
+    material_asset* temp = material_asset::spawn();
+    material_asset::load(temp, name);
   }
 
   LOG_INFO("Loading: textures");
-  std::vector<std::string> texture_names = engine::io::discover_texture_files(false);
+  std::vector<std::string> texture_names = io::discover_texture_files(false);
   for (const std::string& name : texture_names)
   {
-    texture_asset* temp = texture_asset::load(name);
+    texture_asset* temp = texture_asset::spawn();
+    texture_asset::load(temp, name);
   }
 
   LOG_INFO("Loading: static meshes");
   std::vector<std::string> mesh_names = engine::io::discover_mesh_files(false);
   for (const std::string& name : mesh_names)
   {
-    engine::static_mesh_asset* temp = engine::static_mesh_asset::load(name);
+    static_mesh_asset* temp = static_mesh_asset::spawn();
+    static_mesh_asset::load(temp, name);
   }
-
 }
 
 void app_instance::load_window_state()

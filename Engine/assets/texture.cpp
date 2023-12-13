@@ -14,12 +14,15 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(texture_asset, asset_base)
+  OBJECT_DEFINE(texture_asset, asset_base, Texture asset)
   OBJECT_DEFINE_SPAWN(texture_asset)
  
 
-  texture_asset* texture_asset::load(const std::string& name)
+  bool texture_asset::load(texture_asset* instance, const std::string& name)
   {
+    asset_base::load(instance, name);
+
+    assert(instance);
     LOG_DEBUG("Loading texture: {0}", name.c_str());
 
     std::ostringstream oss;
@@ -29,37 +32,18 @@ namespace engine
     if (input_stream.fail())
     {
       LOG_ERROR("Unable to open texture asset: {0}", file_path.c_str());
-      return nullptr;
-    }
-
-    texture_asset* obj = texture_asset::spawn(name);
-    if (obj == nullptr)
-    {
-      return nullptr;
+      return false;
     }
 
     nlohmann::json j;
     input_stream >> j;
-    texture_serializer::deserialize(j, obj);
+    texture_serializer::deserialize(j, instance);
 
-    if (!load_img(obj->img_file_name, obj->width, obj->height, obj))
+    if (!load_img(instance->img_file_name, instance->width, instance->height, instance))
     {
-      LOG_ERROR("Failed to load texture file: {0}", obj->img_file_name.c_str());
-      return nullptr;
+      LOG_ERROR("Failed to load texture file: {0}", instance->img_file_name.c_str());
+      return false;
     }
-
-    return obj;
-  }
-
-  std::string texture_asset::get_display_name() const
-  {
-    std::ostringstream oss;
-    std::string quality = "LDR";
-    if (is_hdr)
-    {
-      quality = "HDR";
-    }
-    oss << object::get_display_name() << " " << width << "x" << height << " " << quality;
-    return oss.str();
+    return true;
   }
 }

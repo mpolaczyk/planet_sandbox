@@ -12,17 +12,8 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(hittable, object)
+  OBJECT_DEFINE(hittable, object, Hittable)
   OBJECT_DEFINE_NOSPAWN(hittable)
-
-  std::string hittable::get_name() const
-  {
-    std::string base_name = "hittable";// FIX object_type_names[(int)type];
-
-    std::ostringstream oss;
-    oss << "[" << get_runtime_id() << "]" << "/" << base_name << "/" << material_asset_ptr.get_name();
-    return oss.str();
-  }
 
   inline uint32_t hittable::get_hash() const
   {

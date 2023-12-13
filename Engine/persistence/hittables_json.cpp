@@ -7,7 +7,6 @@
 #include "persistence/vec3_json.h"
 #include "persistence/hittables_json.h"
 #include "persistence/assets_json.h"
-#include "object/factories.h"
 
 #include "nlohmann/json.hpp"
 #include "engine/log.h"
@@ -19,7 +18,7 @@ namespace engine
   {
     assert(value != nullptr);
     nlohmann::json j;
-    j["type"] = value->type->get_name();
+    j["type"] = value->type->class_name;
     j["material_asset"] = soft_asset_ptr_base_serializer::serialize(&value->material_asset_ptr);
     return j;
   }
@@ -42,7 +41,7 @@ namespace engine
       }
       else
       {
-        LOG_ERROR("Undefined hittable to serialize: {0}", object->type->get_name());
+        LOG_ERROR("Undefined hittable to serialize: {0}", object->type->class_name);
       }
     }
     j["objects"] = jarr;
@@ -96,7 +95,7 @@ namespace engine
         if (TRY_PARSE(std::string, jobj, "type", type_name))
         {
           const class_object* type = out_value->type = get_object_registry()->find_class(type_name);
-          hittable* obj = object_factory::spawn_hittable(type);
+          hittable* obj = type->spawn_instance<hittable>();
           if (obj != nullptr)
           {
             if (type == scene::get_class_static())
@@ -113,7 +112,7 @@ namespace engine
             }
             else
             {
-              LOG_ERROR("Unable to deserialize hittable of type: {0}", type->get_name());
+              LOG_ERROR("Unable to deserialize hittable of type: {0}", type->class_name);
             }
             out_value->objects.push_back(obj);
           }

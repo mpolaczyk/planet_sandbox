@@ -12,11 +12,14 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(material_asset, asset_base)
+  OBJECT_DEFINE(material_asset, asset_base, Material asset)
   OBJECT_DEFINE_SPAWN(material_asset)
 
-  material_asset* material_asset::load(const std::string& name)
+  bool material_asset::load(material_asset* instance, const std::string& name)
   {
+    asset_base::load(instance, name);
+
+    assert(instance);
     LOG_DEBUG("Loading material: {0}", name.c_str());
 
     std::ostringstream oss;
@@ -26,20 +29,13 @@ namespace engine
     if (input_stream.fail())
     {
       LOG_ERROR("Unable to open material asset: {0}", file_path.c_str());
-      return nullptr;
-    }
-
-    material_asset* obj = material_asset::spawn(name);
-    if (obj == nullptr)
-    {
-      return nullptr;
+      return false;
     }
 
     nlohmann::json j;
     input_stream >> j;
-    material_serializer::deserialize(j, obj);
-
-    return obj;
+    material_serializer::deserialize(j, instance);
+    return true;
   }
 
   void material_asset::save(material_asset* object)
@@ -50,7 +46,7 @@ namespace engine
     j = material_serializer::serialize(object);
 
     std::ostringstream oss;
-    oss << object->get_name() << ".json";
+    oss << object->get_class()->class_name << ".json";
     std::ofstream o(io::get_material_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
     if (o.is_open())

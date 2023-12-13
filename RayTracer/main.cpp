@@ -14,7 +14,6 @@
 #include "gfx/dx11_helper.h"
 
 #include "renderer/cpu_renderer_base.h"
-#include "object/factories.h"
 
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -108,7 +107,7 @@ int app_main()
   app_state.load_assets();
   app_state.load_scene_state();
   app_state.scene_root->load_resources();
-  app_state.renderer = engine::object_factory::spawn_renderer(app_state.renderer_conf->type);
+  app_state.renderer = app_state.renderer_conf->type->spawn_instance<engine::cpu_renderer_base>();
   app_state.renderer->set_config(app_state.renderer_conf, app_state.scene_root, app_state.camera_conf);
   ::SetWindowPos(hwnd, NULL, app_state.window_conf.x, app_state.window_conf.y, app_state.window_conf.w, app_state.window_conf.h, NULL);
 
@@ -169,7 +168,7 @@ int app_main()
           if (app_state.renderer->is_renderer_type_different(app_state.renderer_conf))
           {
             app_state.renderer->destroy();
-            app_state.renderer = engine::object_factory::spawn_renderer(app_state.renderer_conf->type);
+            app_state.renderer = app_state.renderer_conf->type->spawn_instance<engine::cpu_renderer_base>();
           }
           LOG_INFO("### New frame using: {0}", app_state.renderer->get_name().c_str());
           app_state.scene_root->load_resources();
