@@ -63,7 +63,8 @@ namespace engine
     T* copy_shallow(const T* source);
 
     template<derives_from<object> T>
-    T* find(std::function<bool(const T*)> predicate); // FIX const
+    T* find(std::function<bool(const T*)> predicate) const;
+
   };
 
 

@@ -62,9 +62,9 @@ namespace EngineTests
     TEST_METHOD(object_types)
     {
       // A few checks for comparing class types and their hierachy
-      cpu_renderer_base* b = cpu_renderer_base::get_class_static()->spawn_instance<cpu_renderer_base>();
-      cpu_renderer_base* r = cpu_renderer_reference::get_class_static()->spawn_instance<cpu_renderer_base>();
-      cpu_renderer_base* n = cpu_renderer_normals::get_class_static()->spawn_instance<cpu_renderer_base>();
+      cpu_renderer_base* b = cpu_renderer_base::spawn();
+      cpu_renderer_base* r = cpu_renderer_reference::spawn();
+      cpu_renderer_base* n = cpu_renderer_normals::spawn();
 
       // Spawn and no spawn
       Assert::IsNull(b, L"a");

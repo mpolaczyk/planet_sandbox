@@ -108,7 +108,7 @@ namespace engine
   }
 
   template<derives_from<object> T>
-  T* object_registry::find(std::function<bool(const T*)> predicate)
+  T* object_registry::find(std::function<bool(const T*)> predicate) const
   {
     const class_object* T_class = T::get_class_static();
     for (int i = 0; i < objects.size(); i++)  // FIX: Linear search, at some point better structure will be needed

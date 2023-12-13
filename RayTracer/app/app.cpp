@@ -13,7 +13,7 @@ app_instance::app_instance()
 {
   camera_conf = new camera_config();
   renderer_conf = new renderer_config();
-  scene_root = scene::get_class_static()->spawn_instance<scene>();
+  scene_root = scene::spawn();
 }
 
 app_instance::~app_instance()
