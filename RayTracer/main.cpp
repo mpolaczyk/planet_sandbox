@@ -54,6 +54,10 @@ int app_main()
 
   LOG_INFO("Working dir: {0}", engine::io::get_working_dir());
   LOG_INFO("Workspace dir: {0}", engine::io::get_workspace_dir());
+  if (!engine::io::validate_workspace_dir())
+  {
+      LOG_CRITICAL("Invalid workspace directory!");
+  }
 
   // Create application window
   //ImGui_ImplWin32_EnableDpiAwareness();

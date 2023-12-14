@@ -19,6 +19,9 @@ namespace engine
     static std::string get_textures_dir();
     static std::string get_images_dir();
 
+    // Validation
+    static bool validate_workspace_dir();
+
     // Files
     static std::string get_workspace_file_path(const char* file_name);
     static std::string get_images_file_path(const char* file_name);

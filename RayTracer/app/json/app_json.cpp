@@ -39,6 +39,11 @@ void app_instance::load_scene_state()
 
   std::string path = engine::io::get_scene_file_path();
   std::ifstream input_stream(path.c_str());
+  if (input_stream.fail())
+  {
+	  LOG_ERROR("Unable to open file: {0}", path);
+      return;
+  }
   nlohmann::json j;
   input_stream >> j;
 
@@ -55,7 +60,13 @@ void app_instance::load_rendering_state()
 {
   LOG_INFO("Loading: rendering state");
 
-  std::ifstream input_stream(engine::io::get_rendering_file_path().c_str());
+  std::string rendering_file = engine::io::get_rendering_file_path();
+  std::ifstream input_stream(rendering_file.c_str());
+  if (input_stream.fail())
+  {
+	  LOG_ERROR("Unable to open file: {0}", rendering_file);
+      return;
+  }
   nlohmann::json j;
   input_stream >> j;
   nlohmann::json jrenderer_conf;
@@ -95,7 +106,13 @@ void app_instance::load_window_state()
 {
   LOG_INFO("Loading: window state");
 
-  std::ifstream input_stream(engine::io::get_window_file_path().c_str());
+  std::string work_file = engine::io::get_window_file_path();
+  std::ifstream input_stream(work_file.c_str());
+  if (input_stream.fail())
+  {
+      LOG_ERROR("Unable to open file: {0}", work_file);
+      return;
+  }
   nlohmann::json j;
   input_stream >> j;
 

@@ -1,5 +1,7 @@
 #include <filesystem>
 #include <fstream>
+#include <iostream>
+#include <sys/stat.h>
 
 #include "engine/io.h"
 
@@ -17,7 +19,7 @@ namespace engine
   {
     std::string working_dir = get_working_dir();
     std::ostringstream oss;
-    oss << working_dir << "..\\..\\Workspace\\";
+    oss << working_dir << "..\\Workspace\\";
     return oss.str();
   }
 
@@ -61,6 +63,16 @@ namespace engine
     return oss.str();
   }
 
+  bool io::validate_workspace_dir()
+  {
+      using namespace std;
+      struct stat sb;
+      if (stat(get_workspace_dir().c_str(), &sb) == 0)
+      {
+          return true;
+      }
+      return false;
+  }
 
   std::string io::get_workspace_file_path(const char* file_name)
   {
