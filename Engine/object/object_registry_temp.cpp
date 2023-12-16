@@ -1,5 +1,5 @@
 
-#include <assert.h>
+#include <cassert>
 #include <algorithm>
 
 #include "object/object_registry.h"
@@ -35,7 +35,7 @@ namespace engine
       LOG_ERROR("Unable to add object, it is already registered: {0}", instance->runtime_id);
       return false;
     }
-    instance->set_runtime_id(objects.size());
+    instance->set_runtime_id(static_cast<int>(objects.size()));
     objects.push_back(instance);
     types.push_back(T::get_class_static());
     custom_display_names.push_back("");

@@ -39,7 +39,7 @@ namespace engine
     input_stream >> j;
     texture_serializer::deserialize(j, instance);
 
-    get_object_registry()->set_custom_display_name(instance->get_runtime_id(), name);
+    REG.set_custom_display_name(instance->get_runtime_id(), name);
 
     if (!load_img(instance->img_file_name, instance->width, instance->height, instance))
     {

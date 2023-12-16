@@ -19,7 +19,7 @@ namespace engine
     assert(value != nullptr);
     nlohmann::json j;
     j["material_asset"] = soft_asset_ptr_base_serializer::serialize(&value->material_asset_ptr);
-    j["custom_display_name"] = get_object_registry()->get_custom_display_name(value->get_runtime_id());
+    j["custom_display_name"] = REG.get_custom_display_name(value->get_runtime_id());
     return j;
   }
 
@@ -87,7 +87,7 @@ namespace engine
     if (TRY_PARSE(nlohmann::json, j, "material_asset", jmaterial)) { soft_asset_ptr_base_serializer::deserialize(jmaterial, &out_value->material_asset_ptr); }
 
     std::string name;
-    if (TRY_PARSE(std::string, j, "custom_display_name", name)) { get_object_registry()->set_custom_display_name(out_value->get_runtime_id(), name); }
+    if (TRY_PARSE(std::string, j, "custom_display_name", name)) { REG.set_custom_display_name(out_value->get_runtime_id(), name); }
   }
 
   void scene_serializer::deserialize(const nlohmann::json& j, scene* out_value)
@@ -102,7 +102,7 @@ namespace engine
         std::string class_name;
         if (TRY_PARSE(std::string, jobj, "class_name", class_name))
         {
-          const class_object* class_o = get_object_registry()->find_class(class_name);
+          const class_object* class_o = REG.find_class(class_name);
           hittable* obj = class_o->spawn_instance<hittable>();
           if (obj != nullptr)
           {

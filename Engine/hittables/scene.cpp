@@ -141,7 +141,7 @@ namespace engine
 
   scene* scene::clone() const
   {
-    scene* new_scene = get_object_registry()->copy_shallow<scene>(this);
+    scene* new_scene = REG.copy_shallow<scene>(this);
     // Deep copy
     for (hittable* obj : objects)
     {
@@ -149,15 +149,15 @@ namespace engine
       hittable* new_obj = nullptr;
       if (class_o == class_object::get_class_static())
       {
-        new_obj = get_object_registry()->copy_shallow<scene>(static_cast<scene*>(obj));
+        new_obj = REG.copy_shallow<scene>(static_cast<scene*>(obj));
       }
       else if (class_o == sphere::get_class_static())
       {
-        new_obj = get_object_registry()->copy_shallow<sphere>(static_cast<sphere*>(obj));
+        new_obj = REG.copy_shallow<sphere>(static_cast<sphere*>(obj));
       }
       else if (class_o == static_mesh::get_class_static())
       {
-        new_obj = get_object_registry()->copy_shallow<static_mesh>(static_cast<static_mesh*>(obj));
+        new_obj = REG.copy_shallow<static_mesh>(static_cast<static_mesh*>(obj));
       }
       else
       {

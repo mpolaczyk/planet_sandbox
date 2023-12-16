@@ -115,6 +115,7 @@
     <ClInclude Include="assets\texture.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="core\application.h" />
+    <ClInclude Include="object\object_visitor.h" />
     <ClInclude Include="persistence\camera_config_json.h" />
     <ClInclude Include="persistence\frame_renderer_json.h" />
     <ClInclude Include="persistence\hittables_json.h" />
@@ -174,6 +175,7 @@
     <ClCompile Include="asset\soft_asset_ptr_inst.cpp" />
     <ClCompile Include="assets\texture.cpp" />
     <ClCompile Include="core\application.cpp" />
+    <ClCompile Include="object\object_visitor.cpp" />
     <ClCompile Include="persistence\camera_config_json.cpp" />
     <ClCompile Include="persistence\frame_renderer_json.cpp" />
     <ClCompile Include="persistence\hittables_json.cpp" />

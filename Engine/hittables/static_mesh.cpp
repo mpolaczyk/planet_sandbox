@@ -94,7 +94,7 @@ namespace engine
 
   static_mesh* static_mesh::clone() const
   {
-    return get_object_registry()->copy_shallow<static_mesh>(this);
+    return REG.copy_shallow<static_mesh>(this);
   }
 
   void static_mesh::load_resources()
@@ -111,7 +111,7 @@ namespace engine
 
     if (runtime_asset_ptr == nullptr)
     {
-      runtime_asset_ptr = get_object_registry()->copy_shallow<static_mesh_asset>(mesh_asset_ptr.get());
+      runtime_asset_ptr = REG.copy_shallow<static_mesh_asset>(mesh_asset_ptr.get());
     }
 
     float y_rotation = rotation.y / 180.0f * math::pi;

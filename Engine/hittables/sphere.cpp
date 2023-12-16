@@ -64,7 +64,7 @@ namespace engine
 
   sphere* sphere::clone() const
   {
-    return get_object_registry()->copy_shallow<sphere>(this);
+    return REG.copy_shallow<sphere>(this);
   }
 
 }

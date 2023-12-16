@@ -1,7 +1,7 @@
 #pragma once
 
 #include <corecrt_math.h>
-#include <assert.h>
+#include <cassert>
 #include <stdint.h>
 
 #include "math/math.h"

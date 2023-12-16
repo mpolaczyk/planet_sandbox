@@ -3,7 +3,7 @@
 
 #include <random>
 #include <intsafe.h>
-#include <assert.h>
+#include <cassert>
 #include <chrono>
 
 namespace engine

@@ -1,22 +1,11 @@
 
-#include <assert.h>
+#include <cassert>
 
 #include "object/object_registry.h"
 #include "engine/log.h"
 
 namespace engine
 {
-  object_registry* g_object_registy = nullptr;
-
-  object_registry* get_object_registry()
-  {
-    if (g_object_registy == nullptr)
-    {
-      g_object_registy = new object_registry();
-    }
-    return g_object_registy;
-  }
-
   object_registry::~object_registry()
   {
     for (int i = 0; i < objects.size(); i++)

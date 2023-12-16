@@ -28,7 +28,7 @@ namespace engine
 
     std::string type_name;
     TRY_PARSE(std::string, j, "type", type_name);
-    value.type = get_object_registry()->find_class(type_name);
+    value.type = REG.find_class(type_name);
 
     //assert(cpu_renderer_base::is_parent_of_static(value.type)); // FIX
     TRY_PARSE(bool, j, "reuse_buffer", value.reuse_buffer);

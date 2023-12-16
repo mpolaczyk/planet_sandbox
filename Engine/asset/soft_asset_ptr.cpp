@@ -3,8 +3,7 @@
 #include "asset/asset.h"
 #include "object/object_registry.h"
 #include "engine/log.h"
-#include <assert.h>
-
+#include <cassert>
 
 namespace engine
 {
@@ -35,7 +34,7 @@ namespace engine
   {
     if (!is_loaded())
     {
-      T* asset_ptr_temp = get_object_registry()->find<T>([=](const T* obj) -> bool { return obj->file_name == name; });
+      T* asset_ptr_temp = REG.find<T>([=](const T* obj) -> bool { return obj->file_name == name; });
       
       if (asset_ptr_temp == nullptr)
       {

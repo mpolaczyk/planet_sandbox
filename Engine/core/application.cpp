@@ -8,6 +8,6 @@ namespace engine
   void application::run()
   {
     logger::init();
-    get_object_registry()->create_class_objects();
+    REG.create_class_objects();
   }
 }

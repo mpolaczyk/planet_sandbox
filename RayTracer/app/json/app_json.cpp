@@ -161,7 +161,7 @@ void app_instance::save_materials()
 {
   LOG_INFO("Saving: materials");
 
-  std::vector<engine::material_asset*> materials = engine::get_object_registry()->get_all_by_type<engine::material_asset>();
+  std::vector<engine::material_asset*> materials = engine::REG.get_all_by_type<engine::material_asset>();
   for (engine::material_asset* m : materials)
   {
     engine::material_asset::save(m);

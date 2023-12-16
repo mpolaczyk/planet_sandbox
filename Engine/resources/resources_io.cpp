@@ -2,7 +2,7 @@
 #include <filesystem>
 #include <random>
 #include <fstream>
-#include <assert.h>
+#include <cassert>
 
 #include "resources/resources_io.h"
 

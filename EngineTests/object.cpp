@@ -45,7 +45,7 @@ namespace EngineTests
     {
       // Find class object by name
       std::string name = "static_mesh";
-      const class_object* hco = get_object_registry()->find_class(name);
+      const class_object* hco = REG.find_class(name);
 
       Assert::IsTrue(name == hco->class_name);
     }

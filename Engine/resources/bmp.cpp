@@ -1,7 +1,7 @@
 
 #include <corecrt_memory.h>
 #include <stdio.h>
-#include <assert.h>
+#include <cassert>
 #include <cmath>
 
 #include "resources/bmp.h"

@@ -9,11 +9,11 @@ namespace engine
 {
   class asset_base;
   class soft_asset_ptr_base_serializer;
-
+  
   struct ENGINE_API soft_asset_ptr_base
   {
     friend class soft_asset_ptr_base_serializer;
-
+    
   protected:
     // Persistent name, or the one used to discovery on the disk
     // Can't change at runtime as I have no dependency update mechanism

@@ -1,9 +1,9 @@
 
-#include <assert.h>
 #include <sstream>  
 
-#include "object.h"
+#include "object/object.h"
 #include "object/object_registry.h"
+#include "object/object_visitor.h"
 
 namespace engine
 {
@@ -12,7 +12,8 @@ namespace engine
 
   OBJECT_DEFINE(object, object, Object)
   OBJECT_DEFINE_NOSPAWN(object)
-
+  OBJECT_DEFINE_VISITOR(object)
+  
   void object::set_runtime_id(int id)
   {
     if (runtime_id == -1)
@@ -28,7 +29,7 @@ namespace engine
 
   void object::destroy()
   {
-    get_object_registry()->destroy(runtime_id);
+    REG.destroy(runtime_id);
   }
 
 }

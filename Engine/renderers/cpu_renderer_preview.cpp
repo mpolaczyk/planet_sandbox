@@ -1,5 +1,5 @@
 #include <sstream>
-#include <assert.h>
+#include <cassert>
 #include <ppl.h>
 
 #include "hittables/hittables.h"

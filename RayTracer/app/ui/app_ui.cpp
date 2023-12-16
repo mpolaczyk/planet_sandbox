@@ -176,7 +176,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
 
   draw_material_selection_combo(model.m_model, state);
 
-  engine::material_asset* mat = engine::get_object_registry()->get<engine::material_asset>(model.m_model.selected_id);
+  engine::material_asset* mat = engine::REG.get<engine::material_asset>(model.m_model.selected_id);
   if (mat != nullptr)
   {
     material_asset_draw_edit_panel(mat);
@@ -288,7 +288,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
     draw_material_selection_combo(m_model, state);
     if (m_model.selected_id != -1)
     {
-      std::string selected_name = engine::get_object_registry()->get<engine::material_asset>(m_model.selected_id)->file_name;
+      std::string selected_name = engine::REG.get<engine::material_asset>(m_model.selected_id)->file_name;
       selected_obj->material_asset_ptr.set_name(selected_name);
     }
 
@@ -307,7 +307,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
   if (ImGui::BeginPopupModal("New object?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
   {
-    model.c_model.objects = get_object_registry()->get_classes();
+    model.c_model.objects = REG.get_classes();
     std::string hittable_class_name = hittable::get_class_static()->class_name;
 
     draw_selection_combo<class_object>(model.c_model, state, [=](const class_object* obj) -> bool { return obj->parent_class_name == hittable_class_name; });
@@ -371,8 +371,8 @@ void draw_selection_combo(selection_combo_model<T>& model, app_instance& state, 
 void draw_hittable_selection_combo(hittable_selection_combo_model& model, app_instance& state)
 {
   using namespace engine;
-  std::vector<hittable*> hittables = get_object_registry()->get_all_by_type<hittable>();
-  hittable* selected_hittable = get_object_registry()->get<hittable>(model.selected_id);
+  std::vector<hittable*> hittables = REG.get_all_by_type<hittable>();
+  hittable* selected_hittable = REG.get<hittable>(model.selected_id);
 
   if (hittables.size() > 0)
   {
@@ -409,8 +409,8 @@ void draw_hittable_selection_combo(hittable_selection_combo_model& model, app_in
 
 void draw_material_selection_combo(material_selection_combo_model& model, app_instance& state)
 {
-  std::vector<engine::material_asset*> materials = engine::get_object_registry()->get_all_by_type<engine::material_asset>();
-  engine::material_asset* selected_material = engine::get_object_registry()->get<engine::material_asset>(model.selected_id);
+  std::vector<engine::material_asset*> materials = engine::REG.get_all_by_type<engine::material_asset>();
+  engine::material_asset* selected_material = engine::REG.get<engine::material_asset>(model.selected_id);
 
   if (materials.size() > 0)
   {
@@ -447,8 +447,8 @@ void draw_material_selection_combo(material_selection_combo_model& model, app_in
 
 void draw_renderer_selection_combo(renderer_selection_combo_model& model, app_instance& state)
 {
-  std::vector<engine::cpu_renderer_base*> renderers = engine::get_object_registry()->get_all_by_type<engine::cpu_renderer_base>();
-  engine::cpu_renderer_base* selected_renderer = engine::get_object_registry()->get<engine::cpu_renderer_base>(model.selected_id);
+  std::vector<engine::cpu_renderer_base*> renderers = engine::REG.get_all_by_type<engine::cpu_renderer_base>();
+  engine::cpu_renderer_base* selected_renderer = engine::REG.get<engine::cpu_renderer_base>(model.selected_id);
 
   if (renderers.size() > 0)
   {
@@ -522,7 +522,7 @@ void draw_managed_objects_panel(app_instance& state)
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MANAGED OBJECTS");
   ImGui::Separator();
 
-  const std::vector<object*>& objects = engine::get_object_registry()->get_all();
+  const std::vector<object*>& objects = engine::REG.get_all();
 
   int num_objects = (int)objects.size();
   if (ImGui::BeginListBox("Assets", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))

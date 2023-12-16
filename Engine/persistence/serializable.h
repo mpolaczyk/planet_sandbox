@@ -11,13 +11,6 @@
 
 namespace engine
 {
-  //template<class T>     FIX make sure this is safe to remove, rename the file
-  //class ENGINE_API serializable
-  //{
-  //  virtual T serialize() = 0;
-  //  virtual void deserialize(const T& payload) = 0;
-  //};
-
   template<typename T>
   bool ENGINE_API try_parse(const nlohmann::json& j, const std::string& key, T& out_value, const char* function_name = nullptr);
 }

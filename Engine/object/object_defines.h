@@ -18,15 +18,17 @@
   static bool is_class_static(const class_object* type, int depth = MAX_INHERITANCE_DEPTH); \
   virtual std::string get_display_name() const;
 
-// FIX only object registry can spawn or delete, no move no copy operators and ctors
 // FIX rename is_type to is_child_of
+
+#define OBJECT_DECLARE_VISITOR_BASE virtual void accept(class object_visitor const& visitor);
+#define OBJECT_DECLARE_VISITOR      virtual void accept(class object_visitor const& visitor) override;
 
 // Put this in the cpp file. Mandatory for every type.
 // Requires:
 // #include "object/object_registry.h"
 #define OBJECT_DEFINE(CLASS_NAME, PARENT_CLASS_NAME, DEFAULT_DISPLAY_NAME) \
-  const class_object* CLASS_NAME::get_class_static()         { static const class_object* cache = nullptr; if (cache == nullptr) { cache = get_object_registry()->find_class(#CLASS_NAME); }        return cache; } \
-  const class_object* CLASS_NAME::get_parent_class_static()  { static const class_object* cache = nullptr; if (cache == nullptr) { cache = get_object_registry()->find_class(#PARENT_CLASS_NAME); } return cache; } \
+  const class_object* CLASS_NAME::get_class_static()         { static const class_object* cache = nullptr; if (cache == nullptr) { cache = REG.find_class(#CLASS_NAME); }        return cache; } \
+  const class_object* CLASS_NAME::get_parent_class_static()  { static const class_object* cache = nullptr; if (cache == nullptr) { cache = REG.find_class(#PARENT_CLASS_NAME); } return cache; } \
   const class_object* CLASS_NAME::get_class() const          { return CLASS_NAME::get_class_static();        } \
   const class_object* CLASS_NAME::get_parent_class() const   { return CLASS_NAME::get_parent_class_static(); } \
   bool CLASS_NAME::is_class(const class_object* type) const  { return CLASS_NAME::is_class_static(type); } \
@@ -38,7 +40,7 @@
   } \
   std::string CLASS_NAME::get_display_name() const \
   { \
-    std::string name = get_object_registry()->get_custom_display_name(get_runtime_id()); \
+    std::string name = REG.get_custom_display_name(get_runtime_id()); \
     if (name.empty()) { return #DEFAULT_DISPLAY_NAME; } \
     return name; \
   }
@@ -47,9 +49,13 @@
 #define OBJECT_DEFINE_SPAWN(CLASS_NAME) CLASS_NAME* CLASS_NAME::spawn() \
   { \
     CLASS_NAME* obj = new CLASS_NAME(); \
-    bool success = get_object_registry()->add<CLASS_NAME>(obj); \
+    bool success = REG.add<CLASS_NAME>(obj); \
     return success ? obj : nullptr; \
   }
 
 // Put this in the cpp file. Dummy plugs, use if object does not need the functionality.
-#define OBJECT_DEFINE_NOSPAWN(CLASS_NAME) CLASS_NAME* CLASS_NAME::spawn() { return nullptr; }  // FIX assert
+#define OBJECT_DEFINE_NOSPAWN(CLASS_NAME) CLASS_NAME* CLASS_NAME::spawn() { return nullptr; }
+
+// Requires:
+// #include "object/object_visitor.h"
+#define OBJECT_DEFINE_VISITOR(CLASS_NAME) void CLASS_NAME::accept(object_visitor const& visitor) { visitor.visit( *this ); }

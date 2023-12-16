@@ -4,7 +4,6 @@
 
 #include "object/object.h"
 #include "math/vec3.h"
-#include "asset/soft_asset_ptr.h"
 #include "asset/asset.h"
 
 namespace engine
@@ -15,7 +14,7 @@ namespace engine
     OBJECT_DECLARE(material_asset, asset_base)
     OBJECT_DECLARE_LOAD(material_asset)
     OBJECT_DECLARE_SAVE(material_asset)
-
+    
     // JSON persistent
     bool is_light = false;
     vec3 color;

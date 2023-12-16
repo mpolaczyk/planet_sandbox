@@ -37,7 +37,7 @@ namespace engine
     input_stream >> j;
     mesh_serializer::deserialize(j, instance);
 
-    get_object_registry()->set_custom_display_name(instance->get_runtime_id(), name);
+    REG.set_custom_display_name(instance->get_runtime_id(), name);
 
     if (!load_obj(instance->obj_file_name, instance->shape_index, instance->faces))
     {

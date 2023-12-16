@@ -14,7 +14,7 @@ namespace engine
 {
   OBJECT_DEFINE(material_asset, asset_base, Material asset)
   OBJECT_DEFINE_SPAWN(material_asset)
-
+  
   bool material_asset::load(material_asset* instance, const std::string& name)
   {
     asset_base::load(instance, name);
@@ -36,7 +36,7 @@ namespace engine
     input_stream >> j;
     material_serializer::deserialize(j, instance);
 
-    get_object_registry()->set_custom_display_name(instance->get_runtime_id(), name);
+    REG.set_custom_display_name(instance->get_runtime_id(), name);
 
     return true;
   }

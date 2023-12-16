@@ -1,7 +1,7 @@
 
 #include <ppl.h>
 #include <sstream>
-#include <assert.h>
+#include <cassert>
 
 #include "math/camera.h"
 #include "profile/benchmark.h"

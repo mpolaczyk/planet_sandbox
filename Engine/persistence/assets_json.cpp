@@ -5,7 +5,7 @@
 #include "math/colors.h"
 
 #include "nlohmann/json.hpp"
-#include <assert.h>
+#include <cassert>
 
 namespace engine
 {

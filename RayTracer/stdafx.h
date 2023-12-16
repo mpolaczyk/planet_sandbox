@@ -3,7 +3,7 @@
 // Common library headers
 #include <string>
 #include <vector>
-#include <assert.h>
+#include <cassert>
 
 #include <ppl.h>
 #include <sstream>

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "core/core.h"
-
 #include "object/object.h"
 
 // Put this in the h file, implement persistent load/save together with assets.
@@ -16,7 +15,7 @@ namespace engine
   public:
     OBJECT_DECLARE(asset_base, object)
     OBJECT_DECLARE_LOAD(asset_base)
-
+    
     // File system name
     std::string file_name;
   };

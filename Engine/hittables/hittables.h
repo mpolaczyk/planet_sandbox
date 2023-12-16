@@ -1,7 +1,7 @@
 #pragma once
 
 #include <array>
-#include <assert.h>
+#include <cassert>
 
 #include "core/core.h"
 

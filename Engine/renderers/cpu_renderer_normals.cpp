@@ -1,7 +1,7 @@
 
 #include <ppl.h>
 #include <sstream>
-#include <assert.h>
+#include <cassert>
 
 #include "hittables/hittables.h"
 #include "math/camera.h"
