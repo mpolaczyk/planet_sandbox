@@ -14,6 +14,7 @@ namespace engine
     OBJECT_DECLARE(material_asset, asset_base)
     OBJECT_DECLARE_LOAD(material_asset)
     OBJECT_DECLARE_SAVE(material_asset)
+    OBJECT_DECLARE_VISITOR
     
     // JSON persistent
     bool is_light = false;

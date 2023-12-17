@@ -20,8 +20,8 @@
 
 // FIX rename is_type to is_child_of
 
-#define OBJECT_DECLARE_VISITOR_BASE virtual void accept(class object_visitor const& visitor);
-#define OBJECT_DECLARE_VISITOR      virtual void accept(class object_visitor const& visitor) override;
+#define OBJECT_DECLARE_VISITOR_BASE virtual void accept(class object_visitor&& visitor);
+#define OBJECT_DECLARE_VISITOR      virtual void accept(class object_visitor&& visitor) override;
 
 // Put this in the cpp file. Mandatory for every type.
 // Requires:
@@ -58,4 +58,5 @@
 
 // Requires:
 // #include "object/object_visitor.h"
-#define OBJECT_DEFINE_VISITOR(CLASS_NAME) void CLASS_NAME::accept(object_visitor const& visitor) { visitor.visit( *this ); }
+#define OBJECT_DEFINE_VISITOR_BASE(CLASS_NAME) void CLASS_NAME::accept(object_visitor&& visitor) { assert(false);}
+#define OBJECT_DEFINE_VISITOR(CLASS_NAME) void CLASS_NAME::accept(object_visitor&& visitor) { visitor.visit( *this ); }

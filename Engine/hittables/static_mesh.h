@@ -18,7 +18,8 @@ namespace engine
   {
   public:
     OBJECT_DECLARE(static_mesh, hittable)
-
+    OBJECT_DECLARE_VISITOR
+    
     virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
     virtual bool get_bounding_box(aabb& out_box) const override;
     virtual vec3 get_origin() const override { return origin; };

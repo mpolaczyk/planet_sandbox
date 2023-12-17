@@ -9,13 +9,14 @@
 #include "math/math.h"
 #include "math/triangle_face.h"
 #include "object/object_registry.h"
-#include "object/object_registry.h"
+#include "object/object_visitor.h"
 
 namespace engine
 {
   OBJECT_DEFINE(static_mesh, hittable, Static mesh)
   OBJECT_DEFINE_SPAWN(static_mesh)
-
+  OBJECT_DEFINE_VISITOR(static_mesh)
+  
   bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
   {
     if (runtime_asset_ptr == nullptr || runtime_asset_ptr->faces.size() == 0)

@@ -1,9 +1,9 @@
 
 #include <sstream>  
+#include <cassert>
 
 #include "object/object.h"
 #include "object/object_registry.h"
-#include "object/object_visitor.h"
 
 namespace engine
 {
@@ -12,8 +12,8 @@ namespace engine
 
   OBJECT_DEFINE(object, object, Object)
   OBJECT_DEFINE_NOSPAWN(object)
-  OBJECT_DEFINE_VISITOR(object)
-  
+  OBJECT_DEFINE_VISITOR_BASE(object)
+ 
   void object::set_runtime_id(int id)
   {
     if (runtime_id == -1)

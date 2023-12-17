@@ -14,6 +14,7 @@ namespace engine
     OBJECT_DECLARE(texture_asset, asset_base)
     OBJECT_DECLARE_LOAD(texture_asset)
     OBJECT_DECLARE_SAVE(texture_asset)
+    OBJECT_DECLARE_VISITOR
 
     // JSON persistent
     std::string img_file_name;

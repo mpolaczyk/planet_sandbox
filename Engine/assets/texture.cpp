@@ -8,16 +8,16 @@
 
 #include "engine/log.h"
 #include "engine/io.h"
-#include "persistence/assets_json.h"
 #include "resources/resources_io.h"
 #include "object/object_registry.h"
+#include "persistence/object_persistence.h"
 
 namespace engine
 {
   OBJECT_DEFINE(texture_asset, asset_base, Texture asset)
   OBJECT_DEFINE_SPAWN(texture_asset)
- 
-
+  OBJECT_DEFINE_VISITOR(texture_asset)
+  
   bool texture_asset::load(texture_asset* instance, const std::string& name)
   {
     asset_base::load(instance, name);
@@ -37,7 +37,7 @@ namespace engine
 
     nlohmann::json j;
     input_stream >> j;
-    texture_serializer::deserialize(j, instance);
+    instance->accept(deserialize_object(j));
 
     REG.set_custom_display_name(instance->get_runtime_id(), name);
 

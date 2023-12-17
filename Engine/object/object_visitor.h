@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <cassert>
+
 #include "core/core.h"
 
 namespace engine
@@ -14,9 +16,13 @@ namespace engine
     object_visitor& operator=(object_visitor&&) = delete;
     object_visitor& operator=(const object_visitor&) = delete;
 
-    // FIX no operations defined yet, try with drawing
-    // serialize and deserialize don't fit the pattern due to additional arguments, use varargs?
+    virtual void visit(class material_asset& object) const { assert(false); }
+    virtual void visit(class texture_asset& object) const { assert(false); }
+    virtual void visit(class static_mesh_asset& object) const { assert(false); }
     
-    virtual void visit(class object const& object) const = 0;
+    virtual void visit(class hittable& object) const { assert(false); }
+    virtual void visit(class scene& object) const { assert(false); }
+    virtual void visit(class static_mesh& object) const { assert(false); }
+    virtual void visit(class sphere& object) const { assert(false); }
   };    
 }

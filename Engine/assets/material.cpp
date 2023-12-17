@@ -7,13 +7,15 @@
 #include "assets/material.h"
 #include "engine/log.h"
 #include "engine/io.h"
-#include "persistence/assets_json.h"
 #include "object/object_registry.h"
+#include "object/object_visitor.h"
+#include "persistence/object_persistence.h"
 
 namespace engine
 {
   OBJECT_DEFINE(material_asset, asset_base, Material asset)
   OBJECT_DEFINE_SPAWN(material_asset)
+  OBJECT_DEFINE_VISITOR(material_asset)
   
   bool material_asset::load(material_asset* instance, const std::string& name)
   {
@@ -34,7 +36,7 @@ namespace engine
 
     nlohmann::json j;
     input_stream >> j;
-    material_serializer::deserialize(j, instance);
+    instance->accept(deserialize_object(j));
 
     REG.set_custom_display_name(instance->get_runtime_id(), name);
 
@@ -46,7 +48,7 @@ namespace engine
     assert(object != nullptr);
 
     nlohmann::json j;
-    j = material_serializer::serialize(object);
+    object->accept(serialize_object(j));
 
     std::ostringstream oss;
     oss << object->get_class()->class_name << ".json";

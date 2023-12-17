@@ -7,14 +7,15 @@
 
 #include "engine/log.h"
 #include "engine/io.h"
-#include "persistence/assets_json.h"
 #include "resources/resources_io.h"
 #include "object/object_registry.h"
+#include "persistence/object_persistence.h"
 
 namespace engine
 {
   OBJECT_DEFINE(static_mesh_asset, asset_base, Static mesh asset)
   OBJECT_DEFINE_SPAWN(static_mesh_asset)
+  OBJECT_DEFINE_VISITOR(static_mesh_asset)
 
   bool static_mesh_asset::load(static_mesh_asset* instance, const std::string& name)
   {
@@ -35,7 +36,7 @@ namespace engine
 
     nlohmann::json j;
     input_stream >> j;
-    mesh_serializer::deserialize(j, instance);
+    instance->accept(deserialize_object(j));
 
     REG.set_custom_display_name(instance->get_runtime_id(), name);
 

@@ -5,14 +5,16 @@
 #include "profile/stats.h"
 #include "engine/hash.h"
 #include "object/object_registry.h"
-#include "static_mesh.h"
-#include "sphere.h"
+#include "hittables/static_mesh.h"
+#include "hittables/sphere.h"
+#include "object/object_visitor.h"
 
 namespace engine
 {
   OBJECT_DEFINE(scene, hittable, Scene)
   OBJECT_DEFINE_SPAWN(scene)
-
+  OBJECT_DEFINE_VISITOR(scene)
+  
   void scene::add(hittable* object)
   {
     objects.push_back(object);

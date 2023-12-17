@@ -3,15 +3,12 @@
 #include <fstream>
 
 #include "app/json/app_json.h"
-#include "persistence/vec3_json.h"
-#include "persistence/frame_renderer_json.h"
-#include "persistence/assets_json.h"
-#include "persistence/hittables_json.h"
 
-#include "math/camera.h"
+#include "hittables/scene.h"
 
 #include "nlohmann/json.hpp"
-#include "persistence/camera_config_json.h"
+#include "persistence/object_persistence.h"
+#include "persistence/persistence.h"
 
 nlohmann::json window_config_serializer::serialize(const window_config& value)
 {
@@ -48,10 +45,10 @@ void app_instance::load_scene_state()
   input_stream >> j;
 
   nlohmann::json jcamera_conf;
-  if (TRY_PARSE(nlohmann::json, j, "camera_config", jcamera_conf)) { *camera_conf = camera_config_serializer::deserialize(jcamera_conf); }
+  if (TRY_PARSE(nlohmann::json, j, "camera_config", jcamera_conf)) { persistence::deserialize(jcamera_conf, *camera_conf); }
    
   nlohmann::json jscene_root;
-  if (TRY_PARSE(nlohmann::json, j, "scene", jscene_root)) { scene_serializer::deserialize(jscene_root, scene_root); }
+  if (TRY_PARSE(nlohmann::json, j, "scene", jscene_root)) { scene_root->accept(deserialize_object(jscene_root)); }
 
   input_stream.close();
 }
@@ -70,7 +67,7 @@ void app_instance::load_rendering_state()
   nlohmann::json j;
   input_stream >> j;
   nlohmann::json jrenderer_conf;
-  if (TRY_PARSE(nlohmann::json, j, "renderer_config", jrenderer_conf)) { *renderer_conf = renderer_config_serializer::deserialize(jrenderer_conf); }
+  if (TRY_PARSE(nlohmann::json, j, "renderer_config", jrenderer_conf)) { persistence::deserialize(jrenderer_conf, *renderer_conf); }
   input_stream.close();  
 }
 
@@ -131,8 +128,8 @@ void app_instance::save_scene_state()
   LOG_INFO("Saving: scene");
 
   nlohmann::json j;
-  j["camera_config"] = camera_config_serializer::serialize(*camera_conf);
-  j["scene"] = scene_serializer::serialize(scene_root);
+  j["camera_config"] = persistence::serialize(*camera_conf);
+  scene_root->accept(serialize_object(j["scene"]));
   std::ofstream o(engine::io::get_scene_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
   if (o.is_open())
@@ -147,7 +144,7 @@ void app_instance::save_rendering_state()
   LOG_INFO("Saving: rendering state");
 
   nlohmann::json j;
-  j["renderer_config"] = renderer_config_serializer::serialize(*renderer_conf);
+  j["renderer_config"] = persistence::serialize(*renderer_conf);
   std::ofstream o(engine::io::get_rendering_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
   if (o.is_open())

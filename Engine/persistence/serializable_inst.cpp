@@ -1,7 +1,6 @@
 
 #include "persistence/serializable.cpp"
 
-
 namespace engine
 {
   template bool ENGINE_API try_parse<bool>(const nlohmann::json& j, const std::string& key, bool& out_value, const char* function_name);

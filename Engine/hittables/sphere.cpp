@@ -8,12 +8,14 @@
 #include "engine/hash.h"
 #include "math/math.h"
 #include "object/object_registry.h"
+#include "object/object_visitor.h"
 
 namespace engine
 {
   OBJECT_DEFINE(sphere, hittable, Sphere)
   OBJECT_DEFINE_SPAWN(sphere)
-
+  OBJECT_DEFINE_VISITOR(sphere)
+  
   bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
   {
     vec3 oc = in_ray.origin - origin;

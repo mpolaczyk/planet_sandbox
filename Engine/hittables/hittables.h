@@ -25,7 +25,8 @@ namespace engine
   {
   public:
     OBJECT_DECLARE(hittable, object)
-
+    OBJECT_DECLARE_VISITOR
+    
     virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const = 0;
     virtual bool get_bounding_box(aabb& out_box) const = 0;
     virtual vec3 get_origin() const = 0;

@@ -8,11 +8,11 @@
 namespace engine
 {
   class asset_base;
-  class soft_asset_ptr_base_serializer;
+  class persistence;
   
   struct ENGINE_API soft_asset_ptr_base
   {
-    friend class soft_asset_ptr_base_serializer;
+    friend class persistence;
     
   protected:
     // Persistent name, or the one used to discovery on the disk
