@@ -1,16 +1,15 @@
 ﻿#pragma once
 
 #include "nlohmann/json_fwd.hpp"
-
 #include "core/core.h"
-#include "math/vec3.h"
 
 namespace engine
 {
   class renderer_config;
   class camera_config;
   struct soft_asset_ptr_base;
-
+  struct vec3;
+  
   class ENGINE_API persistence
   {
   public:

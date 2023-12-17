@@ -1,5 +1,5 @@
 ﻿#include "persistence/persistence.h"
-#include "persistence/serializable.h"
+#include "persistence/persistence_helper.h"
 
 #include "asset/soft_asset_ptr.h"
 #include "math/camera.h"

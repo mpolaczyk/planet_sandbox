@@ -14,7 +14,7 @@
 #include "hittables/sphere.h"
 #include "hittables/scene.h"
 
-#include "persistence/serializable.h"
+#include "persistence/persistence_helper.h"
 #include "persistence/persistence.h"
 
 #include "math/colors.h"

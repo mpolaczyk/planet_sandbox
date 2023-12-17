@@ -143,7 +143,7 @@
     <ClInclude Include="math\plane.h" />
     <ClInclude Include="math\random.h" />
     <ClInclude Include="math\ray.h" />
-    <ClInclude Include="persistence\serializable.h" />
+    <ClInclude Include="persistence\persistence_helper.h" />
     <ClInclude Include="profile\benchmark.h" />
     <ClInclude Include="profile\stats.h" />
     <ClInclude Include="math\triangle_face.h" />
@@ -273,8 +273,8 @@
     <ClCompile Include="math\plane.cpp" />
     <ClCompile Include="math\random.cpp" />
     <ClCompile Include="math\ray.cpp" />
-    <ClCompile Include="persistence\serializable.cpp" />
-    <ClCompile Include="persistence\serializable_inst.cpp" />
+    <ClCompile Include="persistence\persistence_helper.cpp" />
+    <ClCompile Include="persistence\persistence_helper_inst.cpp" />
     <ClCompile Include="profile\benchmark.cpp" />
     <ClCompile Include="profile\stats.cpp" />
     <ClCompile Include="resources\resources_io.cpp" />

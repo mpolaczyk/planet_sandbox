@@ -1,11 +1,8 @@
 #pragma once
 
-// Warning!
-// Don't include serializable.h outside of "*_json.h" files. "nlohmann\json.hpp" is heavy to compile.
+#include "nlohmann/json_fwd.hpp"
 
 #include "core/core.h"
-
-#include "nlohmann/json_fwd.hpp"
 
 #define TRY_PARSE(t, j, key, out_value) engine::try_parse<t>(j, key, out_value, __FUNCTION__) 
 

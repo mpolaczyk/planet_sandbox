@@ -2,33 +2,13 @@
 
 #include <fstream>
 
-#include "app/json/app_json.h"
-
+#include "ui_persistence.h"
+#include "app/app.h"
 #include "hittables/scene.h"
 
 #include "nlohmann/json.hpp"
 #include "persistence/object_persistence.h"
 #include "persistence/persistence.h"
-
-nlohmann::json window_config_serializer::serialize(const window_config& value)
-{
-  nlohmann::json j;
-  j["x"] = value.x;
-  j["y"] = value.y;
-  j["w"] = value.w;
-  j["h"] = value.h;
-  return j;
-}
-
-window_config window_config_serializer::deserialize(const nlohmann::json& j)
-{
-  window_config value;
-  TRY_PARSE(int, j, "x", value.x);
-  TRY_PARSE(int, j, "y", value.y);
-  TRY_PARSE(int, j, "w", value.w);
-  TRY_PARSE(int, j, "h", value.h);
-  return value;
-}
 
 void app_instance::load_scene_state()
 {
@@ -114,7 +94,7 @@ void app_instance::load_window_state()
   input_stream >> j;
 
   nlohmann::json jwindow;
-  if (TRY_PARSE(nlohmann::json, j, "window", jwindow)) { window_conf = window_config_serializer::deserialize(jwindow); }
+  if (TRY_PARSE(nlohmann::json, j, "window", jwindow)) { ui_persistence::deserialize(jwindow, window_conf); }
 
   TRY_PARSE(bool, j, "auto_render", ow_model.auto_render);
   TRY_PARSE(float, j, "zoom", ow_model.zoom);
@@ -170,7 +150,7 @@ void app_instance::save_window_state()
   LOG_INFO("Saving: window state");
 
   nlohmann::json j;
-  j["window"] = window_config_serializer::serialize(window_conf);
+  j["window"] = ui_persistence::serialize(window_conf);
   j["auto_render"] = ow_model.auto_render;
   j["zoom"] = ow_model.zoom;
   std::ofstream o(engine::io::get_window_file_path().c_str(), std::ios_base::out | std::ios::binary);

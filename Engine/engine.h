@@ -32,7 +32,7 @@
 #include "assets/mesh.h"
 #include "assets/texture.h"
 #include "resources/resources_io.h"
-#include "persistence/serializable.h"
+#include "persistence/persistence_helper.h"
 
 #include "profile/stats.h"
 
