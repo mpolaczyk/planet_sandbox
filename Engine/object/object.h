@@ -42,13 +42,18 @@ namespace engine
   // Base class for all class types. Each registered object has object class instance in the registry.
   class ENGINE_API class_object : public object
   {
+    friend object_registry;
+    
   public:
     OBJECT_DECLARE(class_object, object)
 
     template<derives_from<object> T>
-    T* spawn_instance() const;      // FIX move it somewhere else, also it is not comfortable in use
+    T* spawn_instance() const;          // FIX move this to the object registry 
 
-    // FIX make private, add getters, friend what is needed
+    std::string get_class_name() const { return class_name; }
+    std::string get_parent_class_name() const { return parent_class_name; }
+    
+  private:
     spawn_instance_func_type spawn_instance_func;
     std::string class_name;
     std::string parent_class_name;

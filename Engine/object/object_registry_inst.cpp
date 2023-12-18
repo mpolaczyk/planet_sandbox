@@ -21,7 +21,10 @@
   template ENGINE_API std::vector<CLASS_NAME*> object_registry::get_all_by_type<CLASS_NAME>(); \
   template ENGINE_API std::vector<const CLASS_NAME*> object_registry::get_all_by_type<const CLASS_NAME>(); \
   template ENGINE_API CLASS_NAME* object_registry::copy_shallow<CLASS_NAME>(const CLASS_NAME* source); \
-  template ENGINE_API CLASS_NAME* object_registry::find<CLASS_NAME>(std::function<bool(const CLASS_NAME*)> predicate) const;
+  template ENGINE_API CLASS_NAME* object_registry::find<CLASS_NAME>(std::function<bool(CLASS_NAME*)> predicate) const; \
+  template ENGINE_API const CLASS_NAME* object_registry::find<const CLASS_NAME>(std::function<bool(const CLASS_NAME*)> predicate) const; \
+  template ENGINE_API std::vector<CLASS_NAME*> object_registry::find_all<CLASS_NAME>(std::function<bool(CLASS_NAME*)> predicate) const; \
+  template ENGINE_API std::vector<const CLASS_NAME*> object_registry::find_all<const CLASS_NAME>(std::function<bool(const CLASS_NAME*)> predicate) const;
 
 #define CLASS_OBJECT_EXPLICIT_INSTANTIATE(CLASS_NAME) \
   template ENGINE_API CLASS_NAME* class_object::spawn_instance() const;

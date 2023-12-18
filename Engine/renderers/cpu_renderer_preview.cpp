@@ -17,11 +17,6 @@ namespace engine
   OBJECT_DEFINE(cpu_renderer_preview, cpu_renderer_base, CPU renderer preview)
   OBJECT_DEFINE_SPAWN(cpu_renderer_preview)
 
-  std::string cpu_renderer_preview::get_name() const
-  {
-    return "CPU Preview";
-  }
-
   void cpu_renderer_preview::render()
   {
     save_output = false;

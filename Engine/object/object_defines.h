@@ -14,11 +14,9 @@
   static const class_object* get_parent_class_static(); \
   virtual const class_object* get_class() const; \
   virtual const class_object* get_parent_class() const; \
-  virtual bool is_class(const class_object* type) const; \
-  static bool is_class_static(const class_object* type, int depth = MAX_INHERITANCE_DEPTH); \
+  virtual bool is_child_of(const class_object* type) const; \
+  static bool is_child_of_static(const class_object* type, int depth = MAX_INHERITANCE_DEPTH); \
   virtual std::string get_display_name() const;
-
-// FIX rename is_type to is_child_of
 
 #define OBJECT_DECLARE_VISITOR_BASE virtual void accept(class object_visitor&& visitor);
 #define OBJECT_DECLARE_VISITOR      virtual void accept(class object_visitor&& visitor) override;
@@ -31,12 +29,12 @@
   const class_object* CLASS_NAME::get_parent_class_static()  { static const class_object* cache = nullptr; if (cache == nullptr) { cache = REG.find_class(#PARENT_CLASS_NAME); } return cache; } \
   const class_object* CLASS_NAME::get_class() const          { return CLASS_NAME::get_class_static();        } \
   const class_object* CLASS_NAME::get_parent_class() const   { return CLASS_NAME::get_parent_class_static(); } \
-  bool CLASS_NAME::is_class(const class_object* type) const  { return CLASS_NAME::is_class_static(type); } \
-  bool CLASS_NAME::is_class_static(const class_object* type, int depth) \
+  bool CLASS_NAME::is_child_of(const class_object* type) const  { return CLASS_NAME::is_child_of_static(type); } \
+  bool CLASS_NAME::is_child_of_static(const class_object* type, int depth) \
   { \
     if (depth <= 0) { return false; } \
     if (type == object::get_class_static()) { return true; } \
-    return type == CLASS_NAME::get_class_static() || type == PARENT_CLASS_NAME::get_class_static() || PARENT_CLASS_NAME::is_class_static(type, --depth); \
+    return type == CLASS_NAME::get_class_static() || type == PARENT_CLASS_NAME::get_class_static() || PARENT_CLASS_NAME::is_child_of_static(type, --depth); \
   } \
   std::string CLASS_NAME::get_display_name() const \
   { \

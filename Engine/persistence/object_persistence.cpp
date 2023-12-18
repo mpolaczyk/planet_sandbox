@@ -56,7 +56,7 @@ namespace engine
     nlohmann::json jarr = nlohmann::json::array();
     for (hittable* h : object.objects)
     {
-      j["class_name"] = h->get_class()->class_name;
+      j["class_name"] = h->get_class()->get_class_name();
       h->accept(serialize_object(j));
     }
     j["objects"] = jarr;

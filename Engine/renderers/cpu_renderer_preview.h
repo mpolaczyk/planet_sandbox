@@ -10,9 +10,7 @@ namespace engine
   {
   public:
     OBJECT_DECLARE(cpu_renderer_preview, cpu_renderer_base)
-
-    virtual std::string get_name() const override;
-
+  
   private:
     virtual void render() override;
 

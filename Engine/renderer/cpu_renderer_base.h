@@ -39,7 +39,7 @@ namespace engine
     int ray_bounces = 7;
 
     // How work is processed
-    const class_object* type = nullptr;   //FIX
+    const class_object* type = nullptr;
 
     // Draw in the same memory - real time update
     bool reuse_buffer = true;
@@ -52,7 +52,7 @@ namespace engine
 
     inline uint32_t get_hash() const
     {
-      return hash::combine(rays_per_pixel, ray_bounces, hash::get(reinterpret_cast<const void*>(&type)), hash::get(white_point));
+      return hash::combine(rays_per_pixel, ray_bounces, reuse_buffer, hash::combine(resolution_vertical, resolution_horizontal, hash::get(white_point), 1));
     }
   };
 
@@ -89,12 +89,11 @@ namespace engine
   public:
     OBJECT_DECLARE(cpu_renderer_base, object)
 
-      cpu_renderer_base();
+    cpu_renderer_base();
     ~cpu_renderer_base();
 
     // Renderer instance interface
-    virtual std::string get_name() const { return ""; };
-    virtual void render() {};
+    virtual void render() = 0;
 
     // Renderer public interface. Usage:
     // 1. Set scene, camera and settings first

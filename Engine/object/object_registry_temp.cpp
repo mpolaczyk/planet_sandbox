@@ -19,11 +19,6 @@ namespace engine
       LOG_ERROR("Unable to add nullptr object.");
       return false;
     }
-    /*if (instance->get_class() == object::get_class_static()) FIX
-    {
-      LOG_ERROR("Unable to add object of type object.");
-      return false;
-    }*/
     if (instance->runtime_id != -1)
     {
       LOG_ERROR("Unable to add already added object.");
@@ -37,18 +32,17 @@ namespace engine
     }
     instance->set_runtime_id(static_cast<int>(objects.size()));
     objects.push_back(instance);
-    types.push_back(T::get_class_static());
-    custom_display_names.push_back("");
+    object_classes.push_back(T::get_class_static());
+    object_custom_display_names.push_back("");
     return true;
   }
 
   template<derives_from<object> T>
   T* object_registry::get(int id) const
   {
-    // FIX should not allow to get class object instances, they can't be changed
     if (is_valid(id))
     {
-      if (objects[id] != nullptr && get_class(id) == T::get_class_static())
+      if (objects[id] != nullptr && get_class(id) == T::get_class_static() && T::get_class_static() != class_object::get_class_static())
       {
         return static_cast<T*>(objects[id]); // Risky! no RTTI, no dynamic_cast
       }
@@ -59,11 +53,10 @@ namespace engine
   template<derives_from<object> T>
   std::vector<T*> object_registry::get_all_by_type()
   {
-    // FIX don't allow class objects
     std::vector<T*> ans;
     for (int i = 0; i < objects.size(); i++)  // FIX: Linear search, at some point better structure will be needed
     {
-      if (objects[i] != nullptr && objects[i]->is_class(T::get_class_static()))
+      if (objects[i] != nullptr && objects[i]->is_child_of(T::get_class_static()))
       {
         assert(objects[i] != nullptr);
         ans.push_back(static_cast<T*>(objects[i])); // Risky! no RTTI, no dynamic_cast
@@ -84,9 +77,9 @@ namespace engine
       LOG_ERROR("Unable to clone asset. Unknown source runtime id: {0}", source_runtime_id);
       return nullptr;
     }
-    if (types[source_runtime_id] != T::get_class_static())
+    if (object_classes[source_runtime_id] != T::get_class_static())
     {
-      LOG_ERROR("Unable to clone asset. Type mismatch: {0} and {1}", types[source_runtime_id]->class_name, T::get_class_static()->class_name);
+      LOG_ERROR("Unable to clone asset. Type mismatch: {0} and {1}", object_classes[source_runtime_id]->class_name, T::get_class_static()->class_name);
       return nullptr;
     }
     // Shallow copy
@@ -108,12 +101,12 @@ namespace engine
   }
 
   template<derives_from<object> T>
-  T* object_registry::find(std::function<bool(const T*)> predicate) const
+  T* object_registry::find(std::function<bool(T*)> predicate) const
   {
     const class_object* T_class = T::get_class_static();
     for (int i = 0; i < objects.size(); i++)  // FIX: Linear search, at some point better structure will be needed
     {
-      if (types[i] == T_class && predicate(static_cast<T*>(objects[i])))
+      if (objects[i] != nullptr && objects[i]->is_child_of(T_class) && predicate(static_cast<T*>(objects[i])))
       {
         return static_cast<T*>(objects[i]);
       }
@@ -121,4 +114,18 @@ namespace engine
     return nullptr;
   }
 
+  template<derives_from<object> T>
+  std::vector<T*> object_registry::find_all(std::function<bool(T*)> predicate) const
+  {
+    std::vector<T*> ans;
+    const class_object* T_class = T::get_class_static();
+    for (int i = 0; i < objects.size(); i++)  // FIX: Linear search, at some point better structure will be needed
+    {
+      if (objects[i] != nullptr && objects[i]->is_child_of(T_class) && predicate(static_cast<T*>(objects[i])))
+      {
+        ans.push_back(static_cast<T*>(objects[i]));
+      }
+    }
+    return ans;
+  }
 }

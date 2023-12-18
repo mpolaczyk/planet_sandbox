@@ -40,7 +40,7 @@ namespace engine
     void set_custom_display_name(int id, const std::string& name);
     const class_object* get_class(int id) const;
     void destroy(int id); 
-    std::vector<object*> get_all(bool no_nullptr = true);   // FIX those getters are stupid, add iterators to objects, names and class objects
+    std::vector<object*> get_all(bool no_nullptr = true);
     std::vector<int> get_all_ids(const class_object* type, bool no_nullptr = true) const;
 
     const class_object* find_class(const std::string& name) const;
@@ -50,17 +50,17 @@ namespace engine
 
   protected:
     // Index is runtime id.
-    std::vector<object*> objects;                       // Main object registry. Holds the ownership.
-    std::vector<const class_object*> types;             // Does not store class objects but points to an instance owned by the objects vector (that happens to be the class_object)
-    std::vector<std::string> custom_display_names;      // Don't store this on instances, don't break the alignment, cache them here.
+    std::vector<object*> objects;                           // Main object registry. Holds the ownership.
+    std::vector<const class_object*> object_classes;        // Does not store class objects but points to an instance owned by the objects vector (that happens to be the class_object)
+    std::vector<std::string> object_custom_display_names;   // Don't store this on instances, don't break the alignment, cache them here.
 
     // Index is not related to the objects vector
-    std::vector<const class_object*> class_objects;     // A subset of objects of the class_object type. No ownership. FIX Classes can't be deleted.    
+    std::vector<const class_object*> class_objects;     // A subset of objects of the class_object type. No ownership.    
 
   public:
 
     template<derives_from<object> T >
-    bool add(T* instance);   // FIX private?
+    bool add(T* instance);
 
     template<derives_from<object> T>
     T* get(int id) const;
@@ -72,6 +72,9 @@ namespace engine
     T* copy_shallow(const T* source);
 
     template<derives_from<object> T>
-    T* find(std::function<bool(const T*)> predicate) const;
+    T* find(std::function<bool(T*)> predicate) const;
+
+    template<derives_from<object> T>
+    std::vector<T*> find_all(std::function<bool(T*)> predicate) const;
   };
 }

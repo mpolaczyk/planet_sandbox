@@ -20,11 +20,6 @@ namespace engine
   OBJECT_DEFINE(cpu_renderer_reference, cpu_renderer_base, CPU renderer reference)
   OBJECT_DEFINE_SPAWN(cpu_renderer_reference)
 
-  std::string cpu_renderer_reference::get_name() const
-  {
-    return "Reference CPU";
-  }
-
   void cpu_renderer_reference::render()
   {
     save_output = true;

@@ -62,7 +62,7 @@ struct renderer_panel_model
 {
   bool render_pressed = false;
   selection_combo_model<material_asset> m_model;
-  selection_combo_model<cpu_renderer_base> r_model;
+  selection_combo_model<class_object> r_model;
 };
 
 struct raytracer_window_model

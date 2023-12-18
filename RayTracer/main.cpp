@@ -174,7 +174,7 @@ int app_main()
             app_state.renderer->destroy();
             app_state.renderer = app_state.renderer_conf->type->spawn_instance<engine::cpu_renderer_base>();
           }
-          LOG_INFO("### New frame using: {0}", app_state.renderer->get_name().c_str());
+          LOG_INFO("### New frame using: {0}", app_state.renderer->get_display_name().c_str());
           app_state.scene_root->load_resources();
           app_state.scene_root->pre_render();
           app_state.scene_root->build_boxes();

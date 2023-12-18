@@ -23,34 +23,32 @@ namespace engine
   std::string object_registry::get_custom_display_name(int id) const
   {
     assert(is_valid(id));
-    return custom_display_names[id];
+    return object_custom_display_names[id];
   }
 
   void object_registry::set_custom_display_name(int id, const std::string& name)
   {
     assert(is_valid(id));
-    custom_display_names[id] = name;
+    object_custom_display_names[id] = name;
   }
 
   const class_object* object_registry::get_class(int id) const
   {
     assert(is_valid(id));
-    return types[id];
+    return object_classes[id];
   }
 
   void object_registry::destroy(int id)
   {
-    // FIX don't destroy class objects
     assert(is_valid(id));
     delete objects[id];
     objects[id] = nullptr;
-    custom_display_names[id] = "";
-    types[id] = nullptr;
+    object_custom_display_names[id] = "";
+    object_classes[id] = nullptr;
   }
 
   std::vector<object*> object_registry::get_all(bool no_nullptr)
   {
-    // FIX don't get class objects
     // Warning, null objects may be filtered, indexes in the return vector will not match the runtime id
     std::vector<object*> ans;
     for (int i = 0; i < objects.size(); i++)
@@ -66,15 +64,14 @@ namespace engine
 
   std::vector<int> object_registry::get_all_ids(const class_object* type, bool no_nullptr) const
   {
-    // FIX don't get class objects
     std::vector<int> ans;
-    for (int i = 0; i < types.size(); i++)
+    for (int i = 0; i < object_classes.size(); i++)
     {
       if (no_nullptr && !is_valid(i))
       {
         continue;
       }
-      if (types[i] == type)  // FIX is a child of
+      if (object_classes[i]->is_child_of(type))
       {
         ans.push_back(i);
       }
@@ -117,8 +114,8 @@ namespace engine
     new_class->set_runtime_id(objects.size());
     objects.push_back(new_class);
     class_objects.push_back(new_class);
-    types.push_back(new_class);
-    custom_display_names.push_back(class_name);
+    object_classes.push_back(new_class);
+    object_custom_display_names.push_back(class_name);
     return new_class;
   }
 }

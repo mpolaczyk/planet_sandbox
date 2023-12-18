@@ -42,7 +42,7 @@ void app_instance::load_rendering_state()
   if (input_stream.fail())
   {
 	  LOG_ERROR("Unable to open file: {0}", rendering_file);
-      return;
+    return;
   }
   nlohmann::json j;
   input_stream >> j;

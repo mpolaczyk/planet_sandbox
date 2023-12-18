@@ -46,7 +46,7 @@ namespace engine
     virtual void pre_render() {};
 
     // Persistent members
-    soft_asset_ptr<material_asset> material_asset_ptr;    // FIX This does not have to be here, move to mesh and sphere?
+    soft_asset_ptr<material_asset> material_asset_ptr;
 
     // Runtime members
     aabb bounding_box;

@@ -59,15 +59,30 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
 {
   ImGui::Separator();
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
+  
   ImGui::Separator();
+  model.r_model.objects = REG.find_all<const class_object>([](const class_object* obj) -> bool { return obj->get_parent_class_name() == cpu_renderer_base::get_class_static()->get_class_name(); });
+  draw_selection_combo<class_object>(model.r_model, state, "Renderer class",
+    [=](const class_object* obj) -> bool { return true; }, state.renderer_conf->type);
+  if(model.r_model.selected_object != state.renderer_conf->type)
+  {
+    auto target_class = model.r_model.selected_object;
+    auto new_renderer = REG.find<cpu_renderer_base>([target_class](cpu_renderer_base* obj)->bool{ return obj->get_class() == target_class; });
+    if(new_renderer == nullptr)
+    {
+      new_renderer = model.r_model.selected_object->spawn_instance<cpu_renderer_base>();
+    }
+    state.renderer_conf->type = model.r_model.selected_object;
+    state.renderer = new_renderer;
+    state.renderer->set_config(state.renderer_conf, state.scene_root, state.camera_conf);
+  }
+  ImGui::Separator();
+  
   ImGui::InputInt("Resolution v", &state.renderer_conf->resolution_vertical, 1, 2160);
   state.renderer_conf->resolution_horizontal = (int)((float)state.renderer_conf->resolution_vertical * state.camera_conf->aspect_ratio_w / state.camera_conf->aspect_ratio_h);
   ImGui::Text("Resolution h = %d", state.renderer_conf->resolution_horizontal);
 
   ImGui::Separator();
-
-  model.r_model.objects = REG.get_all_by_type<const cpu_renderer_base>();
-  draw_selection_combo<cpu_renderer_base>(model.r_model, state, "Renderer", [=](const cpu_renderer_base* obj) -> bool { return true; });
 
   ImGui::InputInt("Rays per pixel", &state.renderer_conf->rays_per_pixel, 1, 10);
   ImGui::InputInt("Ray bounces", &state.renderer_conf->ray_bounces, 1);
@@ -87,7 +102,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
     {
       ImGui::SameLine();
       char name[50];
-      std::sprintf(name, "Rendering with %s renderer", state.renderer->get_name().c_str());
+      std::sprintf(name, "Rendering with %s renderer", state.renderer->get_display_name().c_str());
       ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), name);
     }
     ImGui::Text("Last render time = %lld [ms]", state.renderer->get_render_time() / 1000);
@@ -248,9 +263,9 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
   if (ImGui::BeginPopupModal("New object?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
   {
     model.c_model.objects = REG.get_classes();
-    std::string hittable_class_name = hittable::get_class_static()->class_name;
+    std::string hittable_class_name = hittable::get_class_static()->get_class_name();
 
-    draw_selection_combo<class_object>(model.c_model, state, "Class", [=](const class_object* obj) -> bool { return obj->parent_class_name == hittable_class_name; });
+    draw_selection_combo<class_object>(model.c_model, state, "Class", [=](const class_object* obj) -> bool { return obj->get_parent_class_name() == hittable_class_name; });
 
     if (ImGui::Button("Add", ImVec2(120, 0)) && model.c_model.selected_object != nullptr)
     {
@@ -370,7 +385,7 @@ void draw_managed_objects_panel(app_instance& state)
     for (int n = 0; n < num_objects; n++)
     {
       std::ostringstream oss;
-      oss << "[" << objects[n]->get_runtime_id() << "] " << objects[n]->get_display_name() << " (" << objects[n]->get_class()->class_name << ")";
+      oss << "[" << objects[n]->get_runtime_id() << "] " << objects[n]->get_display_name() << " (" << objects[n]->get_class()->get_class_name() << ")";
       if (ImGui::Selectable(oss.str().c_str()))
       {
 

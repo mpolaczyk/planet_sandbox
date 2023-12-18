@@ -163,7 +163,7 @@ namespace engine
       }
       else
       {
-        LOG_ERROR("Unable to clone a hittable of type: {0}", obj->get_class()->class_name.c_str());
+        LOG_ERROR("Unable to clone a hittable of type: {0}", obj->get_class()->get_class_name().c_str());
         return nullptr;
       }
       

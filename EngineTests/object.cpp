@@ -47,7 +47,7 @@ namespace EngineTests
       std::string name = "static_mesh";
       const class_object* hco = REG.find_class(name);
 
-      Assert::IsTrue(name == hco->class_name);
+      Assert::IsTrue(name == hco->get_class_name());
     }
 
     TEST_METHOD(object_spawn_from_class)
@@ -76,12 +76,12 @@ namespace EngineTests
       Assert::IsTrue(r->get_parent_class() == cpu_renderer_base::get_class_static(), L"bb");
 
       // Base class recognition
-      Assert::IsTrue(r->is_class(object::get_class_static()), L"c");
-      Assert::IsTrue(r->is_class(cpu_renderer_base::get_class_static()), L"cc");
-      Assert::IsTrue(r->is_class(cpu_renderer_reference::get_class_static()), L"ccc");
+      Assert::IsTrue(r->is_child_of(object::get_class_static()), L"c");
+      Assert::IsTrue(r->is_child_of(cpu_renderer_base::get_class_static()), L"cc");
+      Assert::IsTrue(r->is_child_of(cpu_renderer_reference::get_class_static()), L"ccc");
 
-      Assert::IsFalse(r->is_class(hittable::get_class_static()), L"d");
-      Assert::IsFalse(r->is_class(cpu_renderer_normals::get_class_static()), L"dd");
+      Assert::IsFalse(r->is_child_of(hittable::get_class_static()), L"d");
+      Assert::IsFalse(r->is_child_of(cpu_renderer_normals::get_class_static()), L"dd");
 
       r->destroy();
       n->destroy();
