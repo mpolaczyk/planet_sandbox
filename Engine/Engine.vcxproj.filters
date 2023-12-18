@@ -35,27 +35,25 @@
     <ClInclude Include="third_party\tiny_obj_loader.h" />
     <ClInclude Include="resources\bmp.h" />
     <ClInclude Include="resources\resources_io.h" />
-    <ClInclude Include="persistence\assets_json.h" />
-    <ClInclude Include="persistence\serializable.h" />
-    <ClInclude Include="persistence\vec3_json.h" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp" />
     <ClInclude Include="object\object_defines.h" />
     <ClInclude Include="math\chunk_generator.h" />
     <ClInclude Include="renderer\cpu_renderer_base.h" />
     <ClInclude Include="hittables\hittables.h" />
-    <ClInclude Include="persistence\hittables_json.h" />
-    <ClInclude Include="persistence\frame_renderer_json.h" />
     <ClInclude Include="renderers\cpu_renderer_faces.h" />
     <ClInclude Include="renderers\cpu_renderer_normals.h" />
     <ClInclude Include="renderers\cpu_renderer_preview.h" />
     <ClInclude Include="renderers\cpu_renderer_reference.h" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json_fwd.hpp" />
-    <ClInclude Include="persistence\camera_config_json.h" />
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="core\concepts.h" />
     <ClInclude Include="hittables\scene.h" />
     <ClInclude Include="hittables\static_mesh.h" />
     <ClInclude Include="hittables\sphere.h" />
+    <ClInclude Include="object\object_visitor.h" />
+    <ClInclude Include="persistence\object_persistence.h" />
+    <ClInclude Include="persistence\persistence.h" />
+    <ClInclude Include="persistence\persistence_helper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -86,23 +84,21 @@
     <ClCompile Include="profile\benchmark.cpp" />
     <ClCompile Include="resources\bmp.cpp" />
     <ClCompile Include="resources\resources_io.cpp" />
-    <ClCompile Include="persistence\assets_json.cpp" />
-    <ClCompile Include="persistence\serializable.cpp" />
-    <ClCompile Include="persistence\vec3_json.cpp" />
-    <ClCompile Include="persistence\serializable_inst.cpp" />
     <ClCompile Include="renderer\cpu_renderer_base.cpp" />
     <ClCompile Include="math\chunk_generator.cpp" />
     <ClCompile Include="hittables\hittables.cpp" />
-    <ClCompile Include="persistence\hittables_json.cpp" />
-    <ClCompile Include="persistence\frame_renderer_json.cpp" />
     <ClCompile Include="renderers\cpu_renderer_faces.cpp" />
     <ClCompile Include="renderers\cpu_renderer_normals.cpp" />
     <ClCompile Include="renderers\cpu_renderer_preview.cpp" />
     <ClCompile Include="renderers\cpu_renderer_reference.cpp" />
-    <ClCompile Include="persistence\camera_config_json.cpp" />
     <ClCompile Include="asset\asset.cpp" />
     <ClCompile Include="hittables\scene.cpp" />
     <ClCompile Include="hittables\static_mesh.cpp" />
     <ClCompile Include="hittables\sphere.cpp" />
+    <ClCompile Include="object\object_visitor.cpp" />
+    <ClCompile Include="persistence\object_persistence.cpp" />
+    <ClCompile Include="persistence\persistence.cpp" />
+    <ClCompile Include="persistence\persistence_helper.cpp" />
+    <ClCompile Include="persistence\persistence_helper_inst.cpp" />
   </ItemGroup>
 </Project>
