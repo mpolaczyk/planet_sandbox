@@ -377,7 +377,7 @@ void draw_managed_objects_panel(app_instance& state)
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MANAGED OBJECTS");
   ImGui::Separator();
 
-  const std::vector<object*>& objects = engine::REG.get_all();
+  const std::vector<object*>& objects = REG.get_all();
 
   int num_objects = (int)objects.size();
   if (ImGui::BeginListBox("Assets", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))

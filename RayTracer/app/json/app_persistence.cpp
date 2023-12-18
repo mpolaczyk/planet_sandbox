@@ -10,11 +10,13 @@
 #include "persistence/object_persistence.h"
 #include "persistence/persistence.h"
 
+using namespace engine;
+
 void app_instance::load_scene_state()
 {
   LOG_INFO("Loading: scene");
 
-  std::string path = engine::io::get_scene_file_path();
+  std::string path = io::get_scene_file_path();
   std::ifstream input_stream(path.c_str());
   if (input_stream.fail())
   {
@@ -37,7 +39,7 @@ void app_instance::load_rendering_state()
 {
   LOG_INFO("Loading: rendering state");
 
-  std::string rendering_file = engine::io::get_rendering_file_path();
+  std::string rendering_file = io::get_rendering_file_path();
   std::ifstream input_stream(rendering_file.c_str());
   if (input_stream.fail())
   {
@@ -71,7 +73,7 @@ void app_instance::load_assets()
   }
 
   LOG_INFO("Loading: static meshes");
-  std::vector<std::string> mesh_names = engine::io::discover_mesh_files(false);
+  std::vector<std::string> mesh_names = io::discover_mesh_files(false);
   for (const std::string& name : mesh_names)
   {
     static_mesh_asset* temp = static_mesh_asset::spawn();
@@ -83,7 +85,7 @@ void app_instance::load_window_state()
 {
   LOG_INFO("Loading: window state");
 
-  std::string work_file = engine::io::get_window_file_path();
+  std::string work_file = io::get_window_file_path();
   std::ifstream input_stream(work_file.c_str());
   if (input_stream.fail())
   {
@@ -110,7 +112,7 @@ void app_instance::save_scene_state()
   nlohmann::json j;
   j["camera_config"] = persistence::serialize(camera_conf);
   scene_root->accept(serialize_object(j["scene"]));
-  std::ofstream o(engine::io::get_scene_file_path().c_str(), std::ios_base::out | std::ios::binary);
+  std::ofstream o(io::get_scene_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
   if (o.is_open())
   {
@@ -125,7 +127,7 @@ void app_instance::save_rendering_state()
 
   nlohmann::json j;
   j["renderer_config"] = persistence::serialize(renderer_conf);
-  std::ofstream o(engine::io::get_rendering_file_path().c_str(), std::ios_base::out | std::ios::binary);
+  std::ofstream o(io::get_rendering_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
   if (o.is_open())
   {
@@ -138,10 +140,10 @@ void app_instance::save_materials()
 {
   LOG_INFO("Saving: materials");
 
-  std::vector<engine::material_asset*> materials = engine::REG.get_all_by_type<engine::material_asset>();
-  for (engine::material_asset* m : materials)
+  std::vector<material_asset*> materials = REG.get_all_by_type<material_asset>();
+  for (material_asset* m : materials)
   {
-    engine::material_asset::save(m);
+    material_asset::save(m);
   }
 }
 
@@ -153,7 +155,7 @@ void app_instance::save_window_state()
   j["window"] = ui_persistence::serialize(window_conf);
   j["auto_render"] = ow_model.auto_render;
   j["zoom"] = ow_model.zoom;
-  std::ofstream o(engine::io::get_window_file_path().c_str(), std::ios_base::out | std::ios::binary);
+  std::ofstream o(io::get_window_file_path().c_str(), std::ios_base::out | std::ios::binary);
   std::string str = j.dump(2);
   if (o.is_open())
   {
