@@ -3,6 +3,7 @@
 #include <functional>
 
 #include "math/camera.h"
+#include "renderer/cpu_renderer_base.h"
 #include "ui/ui.h"
 
 struct ID3D11ShaderResourceView;
@@ -13,7 +14,6 @@ namespace engine
   class cpu_renderer_base;
   class material_asset;
   class hittable;
-  class renderer_config;
   class scene;
 }
 
@@ -31,10 +31,10 @@ public:
 
   // Scene state
   scene* scene_root = nullptr;
-  camera_config* camera_conf = nullptr;
+  camera_config camera_conf;
 
   // Rendering state
-  renderer_config*renderer_conf = nullptr;
+  renderer_config renderer_conf;
   
   // OS window state
   window_config window_conf;

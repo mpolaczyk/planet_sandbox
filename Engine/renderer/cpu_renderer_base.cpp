@@ -38,26 +38,20 @@ namespace engine
     if (state.img_bgr != nullptr) delete state.img_bgr;
   }
 
-  void cpu_renderer_base::set_config(const renderer_config* in_renderer_config, scene* in_scene, const camera_config* in_camera_config)
+  void cpu_renderer_base::set_config(const renderer_config& in_renderer_config, scene* in_scene, const camera_config& in_camera_config)
   {
     assert(in_scene != nullptr);
-    assert(in_camera_config != nullptr);
-    assert(in_renderer_config != nullptr);
 
     if (state.is_working) return;
 
-    bool force_recreate_buffers = state.image_width != in_renderer_config->resolution_horizontal || state.image_height != in_renderer_config->resolution_vertical;
+    bool force_recreate_buffers = state.image_width != in_renderer_config.resolution_horizontal || state.image_height != in_renderer_config.resolution_vertical;
 
     // Copy all objects on purpose
     // - allows original scene to be edited while this one is rendering
     // - allows to detect if existing is dirty
-    state.image_width = in_renderer_config->resolution_horizontal;
-    state.image_height = in_renderer_config->resolution_vertical;
-    if (state.renderer_conf == nullptr)
-    {
-      state.renderer_conf = new renderer_config();
-    }
-    *state.renderer_conf = *in_renderer_config;
+    state.image_width = in_renderer_config.resolution_horizontal;
+    state.image_height = in_renderer_config.resolution_vertical;
+    state.renderer_conf = in_renderer_config;
     state.scene_root = in_scene;
     state.scene_root_hash = in_scene->get_hash();
     if (state.cam == nullptr)
@@ -69,7 +63,7 @@ namespace engine
     // Delete buffers 
     if (state.img_rgb != nullptr)
     {
-      if (force_recreate_buffers || !state.renderer_conf->reuse_buffer)
+      if (force_recreate_buffers || !state.renderer_conf.reuse_buffer)
       {
         delete state.img_rgb;
         delete state.img_bgr;
@@ -100,31 +94,20 @@ namespace engine
     return state.scene_root_hash != in_scene->get_hash();
   }
 
-  bool cpu_renderer_base::is_renderer_setting_dirty(const renderer_config* in_renderer_config)
+  bool cpu_renderer_base::is_renderer_setting_dirty(const renderer_config& in_renderer_config)
   {
-    assert(in_renderer_config != nullptr);
-    if (state.renderer_conf == nullptr)
-    {
-      return true;
-    }
-    return state.renderer_conf->get_hash() != in_renderer_config->get_hash();
+    return state.renderer_conf.get_hash() != in_renderer_config.get_hash();
   }
 
-  bool cpu_renderer_base::is_renderer_type_different(const renderer_config* in_renderer_config)
+  bool cpu_renderer_base::is_renderer_type_different(const renderer_config& in_renderer_config)
   {
-    assert(in_renderer_config != nullptr);
-    if (state.renderer_conf == nullptr)
-    {
-      return true;
-    }
-    return state.renderer_conf->type != in_renderer_config->type;
+    return state.renderer_conf.type != in_renderer_config.type;
   }
 
-  bool cpu_renderer_base::is_camera_setting_dirty(const camera_config* in_camera_config)
+  bool cpu_renderer_base::is_camera_setting_dirty(const camera_config& in_camera_config)
   {
-    assert(in_camera_config != nullptr);
     assert(state.cam != nullptr);
-    return state.cam->get_hash() != in_camera_config->get_hash();
+    return state.cam->get_hash() != in_camera_config.get_hash();
   }
 
   void cpu_renderer_base::async_job()

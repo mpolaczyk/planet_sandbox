@@ -45,7 +45,7 @@ namespace engine
   {
   public:
 
-    void configure(const camera_config* in_camera_config);
+    void configure(const camera_config& in_camera_config);
 
     ray inline get_ray(float uu, float vv) const;
 

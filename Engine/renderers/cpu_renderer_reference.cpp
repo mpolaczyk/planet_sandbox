@@ -52,7 +52,7 @@ namespace engine
         assert(isfinite(hdr_color.y));
         assert(isfinite(hdr_color.z));
 
-        vec3 ldr_color = tone_mapping::reinhard_extended(hdr_color, state.renderer_conf->white_point);
+        vec3 ldr_color = tone_mapping::reinhard_extended(hdr_color, state.renderer_conf.white_point);
 
         bmp_pixel p(ldr_color);
         state.img_rgb->draw_pixel(x, y, &p, bmp_format::rgba);
@@ -69,7 +69,7 @@ namespace engine
     assert(state.cam != nullptr);
     uint32_t seed = uint32_t(y * resolution.x + x);  // Each pixel has a unique seed, gradient from white to black
 
-    const int rays_per_pixel = state.renderer_conf->rays_per_pixel;
+    const int rays_per_pixel = state.renderer_conf.rays_per_pixel;
     vec3 sum_colors;
 
     for (int i = 0; i < rays_per_pixel; ++i)
@@ -108,7 +108,7 @@ namespace engine
     // Allow light to exceed 1.0f. Non-emissive materials can emit a little bit of light
     vec3 incoming_light = vec3(0.0f);
 
-    int bounces = state.renderer_conf->ray_bounces;
+    int bounces = state.renderer_conf.ray_bounces;
     for (int i = 0; i < bounces; ++i)
     {
       stats::inc_ray();

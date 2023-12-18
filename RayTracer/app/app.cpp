@@ -11,8 +11,6 @@
 
 app_instance::app_instance()
 {
-  camera_conf = new camera_config();
-  renderer_conf = new renderer_config();
   scene_root = scene::spawn();
 }
 
@@ -26,16 +24,14 @@ app_instance::~app_instance()
   {
     scene_root->destroy();
   }
-  delete camera_conf;
-  delete renderer_conf;
 }
 
 void update_default_spawn_position(app_instance& state)
 {
   // Find center of the scene, new objects scan be spawned there
-  vec3 look_from = state.camera_conf->look_from;
-  vec3 look_dir = state.camera_conf->look_dir;
-  float dist_to_focus = state.camera_conf->dist_to_focus;
+  vec3 look_from = state.camera_conf.look_from;
+  vec3 look_dir = state.camera_conf.look_dir;
+  float dist_to_focus = state.camera_conf.dist_to_focus;
 
   // Ray to the look at position to find non colliding spawn point
   ray center_of_scene_ray(look_from, look_dir);
@@ -82,24 +78,24 @@ void handle_input(app_instance& state)
   }
   if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F1)))
   {
-    if (state.renderer_conf->type == cpu_renderer_preview::get_class_static())
+    if (state.renderer_conf.type == cpu_renderer_preview::get_class_static())
     {
       state.rw_model.rp_model.render_pressed = true;
     }
     else
     {
-      state.renderer_conf->type = cpu_renderer_preview::get_class_static();
+      state.renderer_conf.type = cpu_renderer_preview::get_class_static();
     }
   }
   if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F2)))
   {
-    if (state.renderer_conf->type == cpu_renderer_reference::get_class_static())
+    if (state.renderer_conf.type == cpu_renderer_reference::get_class_static())
     {
       state.rw_model.rp_model.render_pressed = true;
     }
     else
     {
-      state.renderer_conf->type = cpu_renderer_reference::get_class_static();
+      state.renderer_conf.type = cpu_renderer_reference::get_class_static();
     }
   }
   if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F5)))
@@ -116,27 +112,27 @@ void handle_input(app_instance& state)
   {
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_E)))
     {
-      state.camera_conf->move_up(state.move_speed);
+      state.camera_conf.move_up(state.move_speed);
     }
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Q)))
     {
-      state.camera_conf->move_down(state.move_speed);
+      state.camera_conf.move_down(state.move_speed);
     }
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_W)))
     {
-      state.camera_conf->move_forward(state.move_speed);
+      state.camera_conf.move_forward(state.move_speed);
     }
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S)))
     {
-      state.camera_conf->move_backward(state.move_speed);
+      state.camera_conf.move_backward(state.move_speed);
     }
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_A)))
     {
-      state.camera_conf->move_left(state.move_speed);
+      state.camera_conf.move_left(state.move_speed);
     }
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D)))
     {
-      state.camera_conf->move_right(state.move_speed);
+      state.camera_conf.move_right(state.move_speed);
     }
   }
   
@@ -149,7 +145,7 @@ void handle_input(app_instance& state)
     if (mouse_delta.x != 0.0f || mouse_delta.y != 0.0f)
     {
       float rotate_speed = 0.001f; // proportion - screen space delta to radians
-      state.camera_conf->rotate(mouse_delta.x * rotate_speed, mouse_delta.y * rotate_speed);
+      state.camera_conf.rotate(mouse_delta.x * rotate_speed, mouse_delta.y * rotate_speed);
     }
   }
  
@@ -162,7 +158,7 @@ void handle_input(app_instance& state)
     {
       object_movement_axis = vec3(1.0f, 0.0f, 0.0f);
       mouse_delta = ImGui::GetIO().MouseDelta.x;
-      if (state.camera_conf->look_dir.z < 0.0f)
+      if (state.camera_conf.look_dir.z < 0.0f)
       {
         mouse_delta = -mouse_delta;
       }
@@ -176,7 +172,7 @@ void handle_input(app_instance& state)
     {
       object_movement_axis = vec3(0.0f, 0.0f, 1.0f);
       mouse_delta = ImGui::GetIO().MouseDelta.x;
-      if (state.camera_conf->look_dir.x > 0.0f)
+      if (state.camera_conf.look_dir.x > 0.0f)
       {
         mouse_delta = -mouse_delta;
       }

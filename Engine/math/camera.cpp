@@ -62,9 +62,9 @@ namespace engine
   }
 
 
-  void camera::configure(const camera_config* in_camera_config)
+  void camera::configure(const camera_config& in_camera_config)
   {
-    camera_conf = *in_camera_config;
+    camera_conf = in_camera_config;
 
     float theta = math::degrees_to_radians(camera_conf.field_of_view);
     float h = (float)tan(theta / 2.0f);

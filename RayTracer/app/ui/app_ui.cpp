@@ -39,20 +39,20 @@ void draw_camera_panel(camera_panel_model& model, app_instance& state)
   ImGui::Separator();
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
   ImGui::Separator();
-  float ar[2] = { state.camera_conf->aspect_ratio_w, state.camera_conf->aspect_ratio_h };
+  float ar[2] = { state.camera_conf.aspect_ratio_w, state.camera_conf.aspect_ratio_h };
   ImGui::InputFloat2("Aspect ratio", ar);
-  state.camera_conf->aspect_ratio_w = ar[0];
-  state.camera_conf->aspect_ratio_h = ar[1];
-  ImGui::Text("Aspect ratio = %.3f", state.camera_conf->aspect_ratio_w / state.camera_conf->aspect_ratio_h);
-  ImGui::InputFloat("Field of view", &state.camera_conf->field_of_view, 1.0f, 189.0f, "%.0f");
-  ImGui::InputFloat("Projection", &state.camera_conf->type, 0.1f, 1.0f, "%.2f");
+  state.camera_conf.aspect_ratio_w = ar[0];
+  state.camera_conf.aspect_ratio_h = ar[1];
+  ImGui::Text("Aspect ratio = %.3f", state.camera_conf.aspect_ratio_w / state.camera_conf.aspect_ratio_h);
+  ImGui::InputFloat("Field of view", &state.camera_conf.field_of_view, 1.0f, 189.0f, "%.0f");
+  ImGui::InputFloat("Projection", &state.camera_conf.type, 0.1f, 1.0f, "%.2f");
   ImGui::Text("0 = Perspective; 1 = Orthografic");
   ImGui::Separator();
-  ImGui::InputFloat3("Look from", state.camera_conf->look_from.e, "%.2f");
-  ImGui::InputFloat3("Look direction", state.camera_conf->look_dir.e, "%.2f");
+  ImGui::InputFloat3("Look from", state.camera_conf.look_from.e, "%.2f");
+  ImGui::InputFloat3("Look direction", state.camera_conf.look_dir.e, "%.2f");
   ImGui::Separator();
-  ImGui::InputFloat("Focus distance", &state.camera_conf->dist_to_focus, 0.0f, 1000.0f, "%.2f");
-  ImGui::InputFloat("Aperture", &state.camera_conf->aperture, 0.1f, 1.0f, "%.2f");
+  ImGui::InputFloat("Focus distance", &state.camera_conf.dist_to_focus, 0.0f, 1000.0f, "%.2f");
+  ImGui::InputFloat("Aperture", &state.camera_conf.aperture, 0.1f, 1.0f, "%.2f");
 }
 
 void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
@@ -63,8 +63,8 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
   ImGui::Separator();
   model.r_model.objects = REG.find_all<const class_object>([](const class_object* obj) -> bool { return obj->get_parent_class_name() == cpu_renderer_base::get_class_static()->get_class_name(); });
   draw_selection_combo<class_object>(model.r_model, state, "Renderer class",
-    [=](const class_object* obj) -> bool { return true; }, state.renderer_conf->type);
-  if(model.r_model.selected_object != state.renderer_conf->type)
+    [=](const class_object* obj) -> bool { return true; }, state.renderer_conf.type);
+  if(model.r_model.selected_object != state.renderer_conf.type)
   {
     auto target_class = model.r_model.selected_object;
     auto new_renderer = REG.find<cpu_renderer_base>([target_class](cpu_renderer_base* obj)->bool{ return obj->get_class() == target_class; });
@@ -72,25 +72,25 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
     {
       new_renderer = REG.spawn_from_class<cpu_renderer_base>(model.r_model.selected_object);
     }
-    state.renderer_conf->type = model.r_model.selected_object;
+    state.renderer_conf.type = model.r_model.selected_object;
     state.renderer = new_renderer;
     state.renderer->set_config(state.renderer_conf, state.scene_root, state.camera_conf);
   }
   ImGui::Separator();
   
-  ImGui::InputInt("Resolution v", &state.renderer_conf->resolution_vertical, 1, 2160);
-  state.renderer_conf->resolution_horizontal = (int)((float)state.renderer_conf->resolution_vertical * state.camera_conf->aspect_ratio_w / state.camera_conf->aspect_ratio_h);
-  ImGui::Text("Resolution h = %d", state.renderer_conf->resolution_horizontal);
+  ImGui::InputInt("Resolution v", &state.renderer_conf.resolution_vertical, 1, 2160);
+  state.renderer_conf.resolution_horizontal = (int)((float)state.renderer_conf.resolution_vertical * state.camera_conf.aspect_ratio_w / state.camera_conf.aspect_ratio_h);
+  ImGui::Text("Resolution h = %d", state.renderer_conf.resolution_horizontal);
 
   ImGui::Separator();
 
-  ImGui::InputInt("Rays per pixel", &state.renderer_conf->rays_per_pixel, 1, 10);
-  ImGui::InputInt("Ray bounces", &state.renderer_conf->ray_bounces, 1);
+  ImGui::InputInt("Rays per pixel", &state.renderer_conf.rays_per_pixel, 1, 10);
+  ImGui::InputInt("Ray bounces", &state.renderer_conf.ray_bounces, 1);
   
-  ImGui::Checkbox("Reuse buffers", &state.renderer_conf->reuse_buffer);
+  ImGui::Checkbox("Reuse buffers", &state.renderer_conf.reuse_buffer);
 
   ImGui::Text("Tone mapping - Reinhard extended");
-  ImGui::InputFloat("White point", &state.renderer_conf->white_point, 0.1f);
+  ImGui::InputFloat("White point", &state.renderer_conf.white_point, 0.1f);
 
   if (ImGui::Button("Render"))
   {

@@ -68,7 +68,7 @@ namespace engine
     int image_height = 0;
     int image_width = 0;
 
-    renderer_config* renderer_conf = nullptr;
+    renderer_config renderer_conf;
     camera* cam = nullptr;
     scene* scene_root = nullptr;
     uint32_t scene_root_hash = 0;
@@ -97,15 +97,15 @@ namespace engine
 
     // Renderer public interface. Usage:
     // 1. Set scene, camera and settings first
-    void set_config(const renderer_config* in_renderer_config, scene* in_scene, const camera_config* in_camera_config);
+    void set_config(const renderer_config& in_renderer_config, scene* in_scene, const camera_config& in_camera_config);
     // 2. Request work
     void render_single_async();
 
     // State checks
     bool is_world_dirty(const scene* in_scene);
-    bool is_renderer_setting_dirty(const renderer_config* in_renderer_config);
-    bool is_renderer_type_different(const renderer_config* in_renderer_config);
-    bool is_camera_setting_dirty(const camera_config* in_camera_config);
+    bool is_renderer_setting_dirty(const renderer_config& in_renderer_config);
+    bool is_renderer_type_different(const renderer_config& in_renderer_config);
+    bool is_camera_setting_dirty(const camera_config& in_camera_config);
     bool is_working() const { return state.is_working; }
 
     uint64_t get_render_time() const { return state.benchmark_render_time; }
