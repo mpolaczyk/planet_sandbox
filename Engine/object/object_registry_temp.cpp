@@ -42,7 +42,7 @@ namespace engine
   {
     if (is_valid(id))
     {
-      if (objects[id] != nullptr && get_class(id) == T::get_class_static() && T::get_class_static() != class_object::get_class_static())
+      if (objects[id] != nullptr && get_class(id) == T::get_class_static())
       {
         return static_cast<T*>(objects[id]); // Risky! no RTTI, no dynamic_cast
       }
@@ -53,16 +53,8 @@ namespace engine
   template<derives_from<object> T>
   std::vector<T*> object_registry::get_all_by_type()
   {
-    std::vector<T*> ans;
-    for (int i = 0; i < objects.size(); i++)  // FIX: Linear search, at some point better structure will be needed
-    {
-      if (objects[i] != nullptr && objects[i]->is_child_of(T::get_class_static()))
-      {
-        assert(objects[i] != nullptr);
-        ans.push_back(static_cast<T*>(objects[i])); // Risky! no RTTI, no dynamic_cast
-      }
-    }
-    return ans;
+    auto type = T::get_class_static();
+    return find_all<T>([type](T* obj) -> bool { return obj->is_child_of(type);});
   }
 
   template<derives_from<object> T>
