@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "draw_edit_panel.h"
 #include "imgui.h"
 
 #include "app/app.h"
@@ -12,58 +13,6 @@
 #include "hittables/hittables.h"
 #include "hittables/static_mesh.h"
 #include "hittables/scene.h"
-
-
-void material_asset_draw_edit_panel(material_asset* obj)
-{
-  ImGui::Checkbox("Is light", &obj->is_light);
-
-  ImGui::ColorEdit3("Color", obj->color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-  ImGui::ColorEdit3("Emitted color", obj->emitted_color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-
-  ImGui::DragFloat("Smoothness", &obj->smoothness, 0.01f, 0.0f, 1.0f);
-
-  ImGui::DragFloat("Gloss probability", &obj->gloss_probability, 0.01f, 0.0f, 1.0f);
-  ImGui::ColorEdit3("Gloss color", obj->gloss_color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-
-  ImGui::DragFloat("Refraction probability", &obj->refraction_probability, 0.01f, 0.0f, 1.0f);
-  ImGui::DragFloat("Refraction index", &obj->refraction_index, 0.01f);
-}
-
-
-// FIX implement the visitor panel for hittables, use RTTI to call proper function, sphere is missing
-void hittable_draw_edit_panel(hittable* obj)
-{
-  std::string hittable_name = obj->get_display_name();
-  ImGui::Text("Object: ");
-  ImGui::SameLine();
-  ImGui::Text(hittable_name.c_str());
-}
-
-void scene_draw_edit_panel(scene* obj)
-{
-  hittable_draw_edit_panel(obj);
-}
-
-void static_mesh_draw_edit_panel(static_mesh* obj)
-{
-  hittable_draw_edit_panel(obj);
-  ImGui::DragFloat3("Origin", obj->origin.e);
-  ImGui::DragFloat3("Rotation", obj->rotation.e);
-  ImGui::DragFloat3("Scale", obj->scale.e);
-  {
-    std::string name = obj->mesh_asset_ptr.get_name();
-    assert(name.size() <= 256);
-    char* buffer = new char[256];
-    strcpy(buffer, name.c_str());
-    if (ImGui::InputText("Object file", buffer, 256))
-    {
-      obj->mesh_asset_ptr.set_name(buffer);
-    }
-    delete[] buffer;
-  }
-}
-
 
 void draw_raytracer_window(raytracer_window_model& model, app_instance& state)
 {
@@ -179,7 +128,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
   engine::material_asset* mat = engine::REG.get<engine::material_asset>(model.m_model.selected_id);
   if (mat != nullptr)
   {
-    material_asset_draw_edit_panel(mat);
+    mat->accept(draw_edit_panel());
   }
 }
 
@@ -274,7 +223,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
 
     hittable* selected_obj = state.scene_root->objects[model.selected_id];
     state.selected_object = selected_obj;
-    hittable_draw_edit_panel(selected_obj);
+    selected_obj->accept(draw_edit_panel());
 
     material_selection_combo_model m_model;
     if (model.m_model.selected_id == -1)
@@ -497,7 +446,7 @@ void draw_delete_object_panel(delete_object_panel_model& model, app_instance& st
     if (selected_obj != nullptr)
     {
       ImGui::BeginDisabled(true);
-      hittable_draw_edit_panel(selected_obj);
+      selected_obj->accept(draw_edit_panel());
       ImGui::EndDisabled();
 
       if (ImGui::Button("Delete", ImVec2(120, 0)))

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-class window_config
+struct window_config
 {
 public:
   int x = 100;

@@ -130,6 +130,7 @@
     <ClCompile Include="app\json\app_persistence.cpp" />
     <ClCompile Include="app\json\ui_persistence.cpp" />
     <ClCompile Include="app\ui\app_ui.cpp" />
+    <ClCompile Include="app\ui\draw_edit_panel.cpp" />
     <ClCompile Include="gfx\dx11_helper.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -168,6 +169,7 @@
   <ItemGroup>
     <ClInclude Include="app\app.h" />
     <ClInclude Include="app\json\ui_persistence.h" />
+    <ClInclude Include="app\ui\draw_edit_panel.h" />
     <ClInclude Include="app\ui\ui.h" />
     <ClInclude Include="gfx\dx11_helper.h" />
     <ClInclude Include="stdafx.h" />
