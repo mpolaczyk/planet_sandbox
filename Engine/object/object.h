@@ -47,9 +47,6 @@ namespace engine
   public:
     OBJECT_DECLARE(class_object, object)
 
-    template<derives_from<object> T>
-    T* spawn_instance() const;          // FIX move this to the object registry 
-
     std::string get_class_name() const { return class_name; }
     std::string get_parent_class_name() const { return parent_class_name; }
     

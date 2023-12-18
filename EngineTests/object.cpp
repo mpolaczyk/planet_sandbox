@@ -54,7 +54,7 @@ namespace EngineTests
     {
       // Spawn object instance from class object that defines the type
       const class_object* hco = static_mesh::get_class_static();
-      hittable* m1 = hco->spawn_instance<hittable>();
+      hittable* m1 = REG.spawn_from_class<hittable>(hco);
 
       Assert::IsTrue(hco == m1->get_class());
     }

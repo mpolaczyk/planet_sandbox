@@ -111,7 +111,7 @@ int app_main()
   app_state.load_assets();
   app_state.load_scene_state();
   app_state.scene_root->load_resources();
-  app_state.renderer = app_state.renderer_conf->type->spawn_instance<engine::cpu_renderer_base>();
+  app_state.renderer = REG.spawn_from_class<cpu_renderer_base>(app_state.renderer_conf->type);
   app_state.renderer->set_config(app_state.renderer_conf, app_state.scene_root, app_state.camera_conf);
   ::SetWindowPos(hwnd, NULL, app_state.window_conf.x, app_state.window_conf.y, app_state.window_conf.w, app_state.window_conf.h, NULL);
 
@@ -172,7 +172,7 @@ int app_main()
           if (app_state.renderer->is_renderer_type_different(app_state.renderer_conf))
           {
             app_state.renderer->destroy();
-            app_state.renderer = app_state.renderer_conf->type->spawn_instance<engine::cpu_renderer_base>();
+            app_state.renderer = REG.spawn_from_class<cpu_renderer_base>(app_state.renderer_conf->type);
           }
           LOG_INFO("### New frame using: {0}", app_state.renderer->get_display_name().c_str());
           app_state.scene_root->load_resources();

@@ -137,7 +137,7 @@ namespace engine
         if (TRY_PARSE(std::string, jobj, "class_name", class_name))
         {
           const class_object* class_o = REG.find_class(class_name);
-          hittable* obj = class_o->spawn_instance<hittable>();
+          hittable* obj = REG.spawn_from_class<hittable>(class_o);
           if (obj != nullptr)
           {
             obj->accept(deserialize_object(jobj));

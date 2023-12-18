@@ -95,9 +95,10 @@ namespace engine
   }
 
   template<derives_from<object> T>
-  T* class_object::spawn_instance() const
-  { 
-    return static_cast<T*>(spawn_instance_func());
+  T* object_registry::spawn_from_class(const class_object* type)
+  {
+    assert(type);
+    return static_cast<T*>(type->spawn_instance_func());
   }
 
   template<derives_from<object> T>

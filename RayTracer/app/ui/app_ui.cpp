@@ -70,7 +70,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
     auto new_renderer = REG.find<cpu_renderer_base>([target_class](cpu_renderer_base* obj)->bool{ return obj->get_class() == target_class; });
     if(new_renderer == nullptr)
     {
-      new_renderer = model.r_model.selected_object->spawn_instance<cpu_renderer_base>();
+      new_renderer = REG.spawn_from_class<cpu_renderer_base>(model.r_model.selected_object);
     }
     state.renderer_conf->type = model.r_model.selected_object;
     state.renderer = new_renderer;
@@ -269,7 +269,7 @@ void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
 
     if (ImGui::Button("Add", ImVec2(120, 0)) && model.c_model.selected_object != nullptr)
     {
-      state.scene_root->add(model.c_model.selected_object->spawn_instance<hittable>());
+      state.scene_root->add(REG.spawn_from_class<hittable>(model.c_model.selected_object));
       ImGui::CloseCurrentPopup();
     }
     ImGui::SetItemDefaultFocus();

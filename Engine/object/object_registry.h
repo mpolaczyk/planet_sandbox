@@ -76,5 +76,8 @@ namespace engine
 
     template<derives_from<object> T>
     std::vector<T*> find_all(std::function<bool(T*)> predicate) const;
+
+    template<derives_from<object> T>
+    T* spawn_from_class(const class_object* type);
   };
 }

@@ -24,10 +24,8 @@
   template ENGINE_API CLASS_NAME* object_registry::find<CLASS_NAME>(std::function<bool(CLASS_NAME*)> predicate) const; \
   template ENGINE_API const CLASS_NAME* object_registry::find<const CLASS_NAME>(std::function<bool(const CLASS_NAME*)> predicate) const; \
   template ENGINE_API std::vector<CLASS_NAME*> object_registry::find_all<CLASS_NAME>(std::function<bool(CLASS_NAME*)> predicate) const; \
-  template ENGINE_API std::vector<const CLASS_NAME*> object_registry::find_all<const CLASS_NAME>(std::function<bool(const CLASS_NAME*)> predicate) const;
-
-#define CLASS_OBJECT_EXPLICIT_INSTANTIATE(CLASS_NAME) \
-  template ENGINE_API CLASS_NAME* class_object::spawn_instance() const;
+  template ENGINE_API std::vector<const CLASS_NAME*> object_registry::find_all<const CLASS_NAME>(std::function<bool(const CLASS_NAME*)> predicate) const; \
+  template ENGINE_API CLASS_NAME* object_registry::spawn_from_class(const class_object* type);
 
 // Creates an instance of a class object for a given object type
 #define CLASS_OBJECT_REGISTER(CLASS_NAME, PARENT_CLASS_NAME) \
@@ -52,20 +50,6 @@ namespace engine
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(scene)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(sphere)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(static_mesh)
-
-  CLASS_OBJECT_EXPLICIT_INSTANTIATE(asset_base)
-  CLASS_OBJECT_EXPLICIT_INSTANTIATE(static_mesh_asset)
-  CLASS_OBJECT_EXPLICIT_INSTANTIATE(texture_asset)
-  CLASS_OBJECT_EXPLICIT_INSTANTIATE(material_asset)
-  CLASS_OBJECT_EXPLICIT_INSTANTIATE(cpu_renderer_base)
-  CLASS_OBJECT_EXPLICIT_INSTANTIATE(cpu_renderer_reference)
-  CLASS_OBJECT_EXPLICIT_INSTANTIATE(cpu_renderer_preview)
-  CLASS_OBJECT_EXPLICIT_INSTANTIATE(cpu_renderer_faces)
-  CLASS_OBJECT_EXPLICIT_INSTANTIATE(cpu_renderer_normals)
-  CLASS_OBJECT_EXPLICIT_INSTANTIATE(hittable)
-  CLASS_OBJECT_EXPLICIT_INSTANTIATE(scene)
-  CLASS_OBJECT_EXPLICIT_INSTANTIATE(sphere)
-  CLASS_OBJECT_EXPLICIT_INSTANTIATE(static_mesh)
     
   void object_registry::create_class_objects()
   {
