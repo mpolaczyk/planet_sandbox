@@ -19,6 +19,7 @@
   template ENGINE_API bool object_registry::add<CLASS_NAME>(CLASS_NAME* instance); \
   template ENGINE_API CLASS_NAME* object_registry::get<CLASS_NAME>(int id) const; \
   template ENGINE_API std::vector<CLASS_NAME*> object_registry::get_all_by_type<CLASS_NAME>(); \
+  template ENGINE_API std::vector<const CLASS_NAME*> object_registry::get_all_by_type<const CLASS_NAME>(); \
   template ENGINE_API CLASS_NAME* object_registry::copy_shallow<CLASS_NAME>(const CLASS_NAME* source); \
   template ENGINE_API CLASS_NAME* object_registry::find<CLASS_NAME>(std::function<bool(const CLASS_NAME*)> predicate) const;
 

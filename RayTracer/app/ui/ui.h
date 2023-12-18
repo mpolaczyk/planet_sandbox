@@ -1,5 +1,10 @@
 ﻿#pragma once
 
+namespace engine
+{
+  class cpu_renderer_base;
+}
+
 struct window_config
 {
 public:
@@ -30,6 +35,12 @@ struct selection_combo_model
   // Out, selected by the widget
   int selected_id = 0;
   const T* selected_object = nullptr;
+
+  void reset()
+  {
+    selected_object = nullptr;
+    selected_id = -1;
+  }
 };
 
 struct hittable_selection_combo_model
@@ -50,8 +61,8 @@ struct renderer_selection_combo_model
 struct renderer_panel_model
 {
   bool render_pressed = false;
-  material_selection_combo_model m_model;
-  renderer_selection_combo_model r_model;
+  selection_combo_model<material_asset> m_model;
+  selection_combo_model<cpu_renderer_base> r_model;
 };
 
 struct raytracer_window_model
@@ -81,5 +92,5 @@ struct scene_editor_window_model
   camera_panel_model cp_model;
   new_object_panel_model nop_model;
   delete_object_panel_model d_model;
-  material_selection_combo_model m_model;
+  selection_combo_model<material_asset> m_model;
 };

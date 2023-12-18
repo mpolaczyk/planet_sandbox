@@ -80,10 +80,7 @@ void draw_scene_editor_window(scene_editor_window_model& model, app_instance& st
 void draw_new_object_panel(new_object_panel_model& model, app_instance& state);
 
 template<typename T>
-void draw_selection_combo(selection_combo_model<T>& model, app_instance& state, std::function<bool(const T*)> predicate);
-void draw_hittable_selection_combo(hittable_selection_combo_model& model, app_instance& state);
-void draw_material_selection_combo(material_selection_combo_model& model, app_instance& state);   // FIX all 3 can be handled by draw_selection_combo
-void draw_renderer_selection_combo(renderer_selection_combo_model& model, app_instance& state);
+void draw_selection_combo(selection_combo_model<T>& model, app_instance& state, const char* name, std::function<bool(const T*)> predicate, const T* default_selected_object = nullptr);
 
 void draw_delete_object_panel(delete_object_panel_model& model, app_instance& state);
 
