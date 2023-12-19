@@ -57,14 +57,14 @@ namespace engine
         ray r = state.cam->get_ray(u, v);
         hit_record h;
 
-        if (state.scene_root->hit(r, 0.01f, math::infinity, h))
+        if (state.scene_root->hit(r, math::infinity, h))
         {
           r.origin = h.p;
           vec3 light_dir = math::normalize(light - r.origin);
           r.direction = light_dir;
           hit_record sh;
           bool in_shadow = false;
-          if (state.scene_root->hit(r, 0.01f, math::infinity, sh))
+          if (state.scene_root->hit(r, math::infinity, sh))
           {
             assert(sh.material_ptr != nullptr);
             in_shadow = !sh.material_ptr->is_light;

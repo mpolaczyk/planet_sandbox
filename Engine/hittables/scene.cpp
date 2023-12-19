@@ -8,6 +8,7 @@
 #include "hittables/static_mesh.h"
 #include "hittables/sphere.h"
 #include "object/object_visitor.h"
+#include "math/math.h"
 
 namespace engine
 {
@@ -87,7 +88,7 @@ namespace engine
 
 
 
-  bool scene::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
+  bool scene::hit(const ray& in_ray, float t_max, hit_record& out_hit) const
   {
     hit_record temp_rec;
     bool hit_anything = false;
@@ -96,13 +97,14 @@ namespace engine
     for (hittable* object : objects)
     {
 #if USE_TLAS
-      if (!object->bounding_box.hit(in_ray, t_min, t_max))
+      if (!object->bounding_box.hit(in_ray, math::t_min, t_max))
       {
         continue;
       }
 #endif USE_TLAS
       stats::inc_ray_object_intersection();
-      if (object->hit(in_ray, t_min, closest_so_far, temp_rec))
+      // FIX use branchless
+      if (object->hit(in_ray, closest_so_far, temp_rec))
       {
         hit_anything = true;
         closest_so_far = temp_rec.t;

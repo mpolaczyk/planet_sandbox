@@ -17,12 +17,14 @@ namespace engine
   OBJECT_DEFINE_SPAWN(static_mesh)
   OBJECT_DEFINE_VISITOR(static_mesh)
   
-  bool static_mesh::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
+  bool static_mesh::hit(const ray& in_ray, float t_max, hit_record& out_hit) const
   {
+#if BUILD_DEBUG
     if (runtime_asset_ptr == nullptr || runtime_asset_ptr->faces.size() == 0)
     {
       return false;
     }
+#endif
     const std::vector<triangle_face>& faces = runtime_asset_ptr->faces;
 
     bool result = false;
@@ -39,7 +41,7 @@ namespace engine
     {
       const triangle_face* face = &faces[i];
       hit_record h;
-      if (math::ray_triangle(in_ray, t_min, t_max, face, h, !can_refract))
+      if (math::ray_triangle(in_ray, math::t_min, math::t_max, face, h, !can_refract))
       {
         if (hits == 0)
         {

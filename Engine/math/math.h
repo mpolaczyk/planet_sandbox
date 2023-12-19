@@ -19,6 +19,7 @@ namespace engine
     static constexpr float small_number = 0.0001f;
     static constexpr float very_small_number = 0.00000001f;
     static constexpr float epsilon = FLT_EPSILON;
+    static constexpr float t_min = 0.01f;
 
     // FLOAT
     static float reflectance(float cosine, float ref_idx);

@@ -113,7 +113,7 @@ namespace engine
     {
       stats::inc_ray();
       hit_record hit;
-      if (state.scene_root->hit(in_ray, 0.01f, math::infinity, hit))
+      if (state.scene_root->hit(in_ray, math::infinity, hit))
       {
         // Don't bounce if ray has no color
         if (math::length_squared(ray_color) < 0.1f)

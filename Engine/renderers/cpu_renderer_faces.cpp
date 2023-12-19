@@ -49,7 +49,7 @@ namespace engine
         ray r = state.cam->get_ray(u, v);
         hit_record h;
 
-        if (state.scene_root->hit(r, 0.01f, math::infinity, h))
+        if (state.scene_root->hit(r, math::infinity, h))
         {
           int color_index = (static_cast<hittable*>(h.object)->get_runtime_id() + h.face_id) % colors::num;
           pixel_color = colors::all[color_index];

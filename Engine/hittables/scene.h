@@ -20,7 +20,7 @@ namespace engine
     OBJECT_DECLARE(scene, hittable)
     OBJECT_DECLARE_VISITOR
     
-    virtual bool hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const override;
+    virtual bool hit(const ray& in_ray, float t_max, hit_record& out_hit) const override;
     virtual bool get_bounding_box(aabb& out_box) const override;
     virtual vec3 get_origin() const override { assert(false); return vec3(0, 0, 0); };
     virtual vec3 get_extent() const override { assert(false); return vec3(0, 0, 0); };

@@ -48,7 +48,7 @@ namespace engine
         ray r = state.cam->get_ray(u, v);
         hit_record h;
 
-        if (state.scene_root->hit(r, 0.01f, math::infinity, h))
+        if (state.scene_root->hit(r, math::infinity, h))
         {
           pixel_color = (h.normal + 1.0f) * .5f;
         }

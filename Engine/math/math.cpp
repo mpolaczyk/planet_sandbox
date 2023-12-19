@@ -120,6 +120,7 @@ namespace engine
 
   bool math::ray_triangle(const ray& in_ray, float t_min, float t_max, const triangle_face* in_triangle, hit_record& out_hit, bool drop_backface)
   {
+    // FIX use SIMD
     assert(in_triangle != nullptr);
     stats::inc_ray_triangle_intersection();
 
@@ -143,6 +144,7 @@ namespace engine
 
     // Detect backface
     // !!!! it works but should be the opposite! are faces left or right oriented?
+    // FIX use branchless
     if ((dot(n, w) < 0))
     {
       out_hit.front_face = true;
@@ -220,9 +222,19 @@ namespace engine
 #endif
   }
 
+  // https://geometrian.com/programming/tutorials/cross-product/index.php
   vec3 math::cross(const vec3& u, const vec3& v)
   {
+#if USE_SIMD
+    __m128 tmp0 = _mm_shuffle_ps(u.R128, u.R128, _MM_SHUFFLE(3, 0, 2, 1));
+    __m128 tmp1 = _mm_shuffle_ps(v.R128, v.R128, _MM_SHUFFLE(3, 1, 0, 2));
+    __m128 tmp2 = _mm_mul_ps(tmp0, v.R128);
+    __m128 tmp3 = _mm_mul_ps(tmp0, tmp1);
+    __m128 tmp4 = _mm_shuffle_ps(tmp2, tmp2, _MM_SHUFFLE(3, 0, 2, 1));
+    return vec3(_mm_sub_ps(tmp3, tmp4));
+#else
     return vec3(u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x);
+#endif
   }
 
   vec3 math::normalize(const vec3& v)

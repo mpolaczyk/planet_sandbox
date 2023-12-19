@@ -16,7 +16,7 @@ namespace engine
   OBJECT_DEFINE_SPAWN(sphere)
   OBJECT_DEFINE_VISITOR(sphere)
   
-  bool sphere::hit(const ray& in_ray, float t_min, float t_max, hit_record& out_hit) const
+  bool sphere::hit(const ray& in_ray, float t_max, hit_record& out_hit) const
   {
     vec3 oc = in_ray.origin - origin;
     float a = math::length_squared(in_ray.direction);
@@ -32,10 +32,10 @@ namespace engine
     // Find the nearest root that lies in the acceptable range.
     float sqrtd = sqrt(delta);
     float root = (-half_b - sqrtd) / a;
-    if (root < t_min || t_max < root)
+    if (root < math::t_min || t_max < root)
     {
       root = (-half_b + sqrtd) / a;
-      if (root < t_min || t_max < root)
+      if (root < math::t_min || t_max < root)
       {
         return false;
       }

@@ -19,6 +19,7 @@ namespace engine
 
   vec3 tone_mapping::reinhard_extended(const vec3& v, float max_white)
   {
+    // FIX use SIMD
     vec3 numerator = v * (1.0f + (v / vec3(max_white * max_white)));
     return numerator / (1.0f + v);
   }

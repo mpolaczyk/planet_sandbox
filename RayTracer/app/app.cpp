@@ -36,7 +36,7 @@ void update_default_spawn_position(app_instance& state)
   // Ray to the look at position to find non colliding spawn point
   ray center_of_scene_ray(look_from, look_dir);
   hit_record center_of_scene_hit;
-  if (state.scene_root->hit(center_of_scene_ray, 0.01f, 2.0f*dist_to_focus, center_of_scene_hit))
+  if (state.scene_root->hit(center_of_scene_ray, 2.0f*dist_to_focus, center_of_scene_hit))
   {
     state.center_of_scene = center_of_scene_hit.p;
     state.distance_to_center_of_scene = math::length(center_of_scene_hit.p - look_from);
@@ -60,7 +60,7 @@ void handle_input(app_instance& state)
     cam.configure(state.camera_conf);
     ray r = cam.get_ray(u, v);
     hit_record hit;
-    if (state.scene_root->hit(r, 0.0f, math::infinity, hit))
+    if (state.scene_root->hit(r, math::infinity, hit))
     {
       state.selected_object = hit.object;
     }
