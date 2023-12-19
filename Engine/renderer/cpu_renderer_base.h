@@ -69,7 +69,7 @@ namespace engine
     int image_width = 0;
 
     renderer_config renderer_conf;
-    camera* cam = nullptr;
+    camera cam;
     scene* scene_root = nullptr;
     uint32_t scene_root_hash = 0;
 

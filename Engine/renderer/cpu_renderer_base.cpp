@@ -33,7 +33,6 @@ namespace engine
     delete worker_semaphore;
     delete worker_thread;
     delete state.scene_root;
-    delete state.cam;
     if (state.img_rgb != nullptr) delete state.img_rgb;
     if (state.img_bgr != nullptr) delete state.img_bgr;
   }
@@ -54,11 +53,7 @@ namespace engine
     state.renderer_conf = in_renderer_config;
     state.scene_root = in_scene;
     state.scene_root_hash = in_scene->get_hash();
-    if (state.cam == nullptr)
-    {
-      state.cam = new camera();
-    }
-    state.cam->configure(in_camera_config);
+    state.cam.configure(in_camera_config);
 
     // Delete buffers 
     if (state.img_rgb != nullptr)
@@ -106,8 +101,7 @@ namespace engine
 
   bool cpu_renderer_base::is_camera_setting_dirty(const camera_config& in_camera_config)
   {
-    assert(state.cam != nullptr);
-    return state.cam->get_hash() != in_camera_config.get_hash();
+    return state.cam.get_hash() != in_camera_config.get_hash();
   }
 
   void cpu_renderer_base::async_job()

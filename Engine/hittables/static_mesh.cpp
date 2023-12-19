@@ -41,7 +41,7 @@ namespace engine
     {
       const triangle_face* face = &faces[i];
       hit_record h;
-      if (math::ray_triangle(in_ray, math::t_min, math::t_max, face, h, !can_refract))
+      if (math::ray_triangle(in_ray, t_max, face, h, !can_refract))
       {
         if (hits == 0)
         {

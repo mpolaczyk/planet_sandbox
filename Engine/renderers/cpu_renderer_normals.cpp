@@ -45,7 +45,7 @@ namespace engine
 
         float u = float(x) / (state.image_width - 1);
         float v = float(y) / (state.image_height - 1);
-        ray r = state.cam->get_ray(u, v);
+        ray r = state.cam.get_ray(u, v);
         hit_record h;
 
         if (state.scene_root->hit(r, math::infinity, h))

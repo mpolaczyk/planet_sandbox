@@ -40,7 +40,7 @@ namespace engine
     static bool flip_normal_if_front_face(const vec3& in_ray_direction, const vec3& in_outward_normal, vec3& out_normal);
     static vec3 lerp_vec3(const vec3& a, const vec3& b, float f);
     static vec3 clamp_vec3(float a, float b, const vec3& f);
-    static bool ray_triangle(const ray& ray, float t_min, float t_max, const triangle_face* in_triangle, hit_record& out_hit, bool drop_backface = false);
+    static bool ray_triangle(const ray& ray, float t_max, const triangle_face* in_triangle, hit_record& out_hit, bool drop_backface = false);
     static bool is_near_zero(const vec3& value);
     static bool is_zero(const vec3& value);
     static float dot(const vec3& u, const vec3& v);

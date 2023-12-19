@@ -118,7 +118,7 @@ namespace engine
     return ans;
   }
 
-  bool math::ray_triangle(const ray& in_ray, float t_min, float t_max, const triangle_face* in_triangle, hit_record& out_hit, bool drop_backface)
+  bool math::ray_triangle(const ray& in_ray, float t_max, const triangle_face* in_triangle, hit_record& out_hit, bool drop_backface)
   {
     // FIX use SIMD
     assert(in_triangle != nullptr);

@@ -78,7 +78,7 @@ namespace engine
       float u = (float(x) + random_seed::rand_pcg(seed)) / (resolution.x - 1);
       float v = (float(y) + random_seed::rand_pcg(seed)) / (resolution.y - 1);
       // Trace the ray
-      ray r = state.cam->get_ray(u, v);
+      ray r = state.cam.get_ray(u, v);
       sum_colors += trace_ray(r, seed);
     }
 
