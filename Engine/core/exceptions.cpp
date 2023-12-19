@@ -52,7 +52,7 @@ namespace engine
 
     if (pErrorOffset)
     {
-      // Float exceptions may be reported in a delayed manner — report the
+      // Float exceptions may be reported in a delayed manner â€” report the
       // actual instruction as well.
       printf("SEH Faulting instruction may actually be at % p.\n", pErrorOffset);
     }
@@ -83,5 +83,22 @@ namespace engine
     //strcpy(buff, str.c_str());
     strcpy_s(buff, str.size() + 1, str.c_str());
     return buff;
+  }
+
+  std::string win32_error::get_last_error_as_string()
+  {
+    DWORD last_error = ::GetLastError();
+    if(last_error == 0)
+    {
+      return std::string();
+    }
+    LPSTR buffer = nullptr;
+    size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                 NULL, last_error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                                 (LPSTR)&buffer, 0, NULL);
+    
+    std::string message(buffer, size);
+    LocalFree(buffer);
+    return message;
   }
 }

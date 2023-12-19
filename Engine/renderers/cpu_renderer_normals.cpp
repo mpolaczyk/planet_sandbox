@@ -29,7 +29,6 @@ namespace engine
   void cpu_renderer_normals::render_chunk(const chunk& in_chunk)
   {
     assert(state.scene_root != nullptr);
-    assert(state.cam != nullptr);
     std::thread::id thread_id = std::this_thread::get_id();
 
     std::ostringstream oss;

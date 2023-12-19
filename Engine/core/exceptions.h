@@ -34,4 +34,9 @@ namespace engine
   private:
     unsigned int exception_code;
   };
+
+  struct ENGINE_API win32_error
+  {
+    static std::string get_last_error_as_string();
+  };
 }

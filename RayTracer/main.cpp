@@ -7,7 +7,7 @@
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
-#include <d3d11.h>
+#include <d3d11_1.h>
 #include <tchar.h>
 
 #include "app/app.h"
@@ -66,13 +66,16 @@ int app_main()
   HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("RayTracer"), WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
 
   // Initialize Direct3D
-  if (!dx11::CreateDeviceD3D(hwnd))
+  if (!dx11::CreateDeviceD3D())
   {
     dx11::CleanupDeviceD3D();
     ::UnregisterClass(wc.lpszClassName, wc.hInstance);
     return 1;
   }
-
+  dx11::CreateDebugLayer();
+  dx11::CreateSwapChain(hwnd);
+  dx11::CreateRenderTarget();
+  
   // Show the window
   ::ShowWindow(hwnd, SW_SHOWDEFAULT);
   ::UpdateWindow(hwnd);

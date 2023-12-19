@@ -66,7 +66,6 @@ namespace engine
 
   vec3 cpu_renderer_reference::fragment(float x, float y, const vec3& resolution)
   {
-    assert(state.cam != nullptr);
     uint32_t seed = uint32_t(y * resolution.x + x);  // Each pixel has a unique seed, gradient from white to black
 
     const int rays_per_pixel = state.renderer_conf.rays_per_pixel;
