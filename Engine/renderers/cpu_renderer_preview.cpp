@@ -19,8 +19,6 @@ namespace engine
 
   void cpu_renderer_preview::render()
   {
-    save_output = false;
-
     std::vector<chunk> chunks;
     chunk_generator::generate_chunks(chunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency() * 32, state.image_width, state.image_height, chunks);
 

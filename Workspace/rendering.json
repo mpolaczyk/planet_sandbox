@@ -4,7 +4,7 @@
     "rays_per_pixel": 10,
     "resolution_horizontal": 200,
     "resolution_vertical": 200,
-    "reuse_buffer": false,
+    "reuse_buffer": true,
     "type": "cpu_renderer_reference",
     "white_point": 1.0
   }

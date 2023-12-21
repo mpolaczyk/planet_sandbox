@@ -22,8 +22,6 @@ namespace engine
 
   void cpu_renderer_reference::render()
   {
-    save_output = true;
-
     std::vector<chunk> chunks;
     const int chunks_per_thread = 32;
     chunk_generator::generate_chunks(chunk_strategy_type::rectangles, std::thread::hardware_concurrency() * chunks_per_thread, state.image_width, state.image_height, chunks);

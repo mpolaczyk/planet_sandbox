@@ -175,7 +175,7 @@ void draw_output_window(output_window_model& model, app_instance& state)
       state.output_window_lmb_y = mousePos.y - itemMin.y;
     }
 
-    ImGui::Checkbox("Auto render on scene change", &model.auto_render);
+    ImGui::Checkbox("Auto render", &model.auto_render);
 
     ImGui::End();
   }

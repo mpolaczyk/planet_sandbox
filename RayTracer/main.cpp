@@ -28,11 +28,11 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   switch (msg)
   {
   case WM_SIZE:
-    if (dx11::g_pd3dDevice != NULL && wParam != SIZE_MINIMIZED)
+    if (dx11::g_device != NULL && wParam != SIZE_MINIMIZED)
     {
-      dx11::CleanupRenderTarget();
-      dx11::g_pSwapChain->ResizeBuffers(0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
-      dx11::CreateRenderTarget();
+      dx11::cleanup_render_target();
+      dx11::g_swap_chain->ResizeBuffers(0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
+      dx11::create_render_target();
     }
     return 0;
   case WM_SYSCOMMAND:
@@ -66,15 +66,15 @@ int app_main()
   HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("RayTracer"), WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
 
   // Initialize Direct3D
-  if (!dx11::CreateDeviceD3D())
+  if (!dx11::create_device())
   {
-    dx11::CleanupDeviceD3D();
+    dx11::cleanup_device();
     ::UnregisterClass(wc.lpszClassName, wc.hInstance);
     return 1;
   }
-  dx11::CreateDebugLayer();
-  dx11::CreateSwapChain(hwnd);
-  dx11::CreateRenderTarget();
+  dx11::create_debug_layer();
+  dx11::create_swap_chain(hwnd);
+  dx11::create_render_target();
   
   // Show the window
   ::ShowWindow(hwnd, SW_SHOWDEFAULT);
@@ -102,7 +102,7 @@ int app_main()
 
   // Setup Platform/Renderer backends
   ImGui_ImplWin32_Init(hwnd);
-  ImGui_ImplDX11_Init(dx11::g_pd3dDevice, dx11::g_pd3dDeviceContext);
+  ImGui_ImplDX11_Init(dx11::g_device, dx11::g_device_context);
 
   // Raytracer init
   random_cache::init();
@@ -150,6 +150,12 @@ int app_main()
 
     handle_input(app_state);
 
+    if (app_state.renderer->is_renderer_type_different(app_state.renderer_conf))
+    {
+      app_state.renderer->destroy();
+      app_state.renderer = REG.spawn_from_class<cpu_renderer_base>(app_state.renderer_conf.type);
+    }
+    
     // Draw UI
 #ifndef IMGUI_DISABLE_DEMO_WINDOWS
       // Debug UI only in debug mode
@@ -159,50 +165,39 @@ int app_main()
     draw_output_window(app_state.ow_model, app_state);
     draw_scene_editor_window(app_state.sew_model, app_state);
 
-    // Check if rendering is needed and do it 
+    // Scene rendering
     if (app_state.renderer != nullptr)
     {
+      // Rendering to a texture is happening in the separate thread.
+      // Main loop updates UI and the texture output window while it is rendered.
+      // UI framerate is locked to VSync frequency while scene rendering may take longer time.
       bool is_working = app_state.renderer->is_working();
       if (!is_working && (app_state.rw_model.rp_model.render_pressed || app_state.ow_model.auto_render))
       {
-        bool do_render = app_state.rw_model.rp_model.render_pressed
-          || app_state.renderer->is_world_dirty(app_state.scene_root)
-          || app_state.renderer->is_renderer_setting_dirty(app_state.renderer_conf)
-          || app_state.renderer->is_camera_setting_dirty(app_state.camera_conf);
+        app_state.scene_root->load_resources();
+        app_state.scene_root->pre_render();
+        app_state.scene_root->build_boxes();
+        app_state.scene_root->update_materials();
+        app_state.scene_root->query_lights();
 
-        if (do_render)
-        {
-          if (app_state.renderer->is_renderer_type_different(app_state.renderer_conf))
-          {
-            app_state.renderer->destroy();
-            app_state.renderer = REG.spawn_from_class<cpu_renderer_base>(app_state.renderer_conf.type);
-          }
-          LOG_INFO("### New frame using: {0}", app_state.renderer->get_display_name().c_str());
-          app_state.scene_root->load_resources();
-          app_state.scene_root->pre_render();
-          app_state.scene_root->build_boxes();
-          app_state.scene_root->update_materials();
-          app_state.scene_root->query_lights();
+        update_default_spawn_position(app_state);
 
-          update_default_spawn_position(app_state);
+        app_state.output_width = app_state.renderer_conf.resolution_horizontal;
+        app_state.output_height = app_state.renderer_conf.resolution_vertical;
 
-          app_state.output_width = app_state.renderer_conf.resolution_horizontal;
-          app_state.output_height = app_state.renderer_conf.resolution_vertical;
+        app_state.renderer->set_config(app_state.renderer_conf, app_state.scene_root, app_state.camera_conf);
+        app_state.renderer->render_single_async();
 
-          app_state.renderer->set_config(app_state.renderer_conf, app_state.scene_root, app_state.camera_conf);
-          app_state.renderer->render_single_async();
+        bool ret = dx11::load_texture_from_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, &app_state.output_srv, &app_state.output_texture);
+        IM_ASSERT(ret);
 
-          bool ret = dx11::LoadTextureFromBuffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, &app_state.output_srv, &app_state.output_texture);
-          IM_ASSERT(ret);
-
-          app_state.rw_model.rp_model.render_pressed = false;
-        }
+        app_state.rw_model.rp_model.render_pressed = false;
       }
 
-      // Update the output panel
+      // Updating the texture output window so that the scene render is visible in UI
       if (app_state.output_texture)
       {
-        dx11::UpdateTextureBuffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, app_state.output_texture);
+        dx11::update_texture_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, app_state.output_texture);
       }
     }
 
@@ -215,20 +210,20 @@ int app_main()
       clear_color.z * clear_color.w,
       clear_color.w
     };
-    ImGui::Render();
-    dx11::g_pd3dDeviceContext->OMSetRenderTargets(1, &dx11::g_mainRenderTargetView, NULL);
-    dx11::g_pd3dDeviceContext->ClearRenderTargetView(dx11::g_mainRenderTargetView, clear_color_with_alpha);
+    ImGui::Render(); // Draw, prepare for render
+    dx11::g_device_context->OMSetRenderTargets(1, &dx11::g_frame_buffer_view, NULL);
+    dx11::g_device_context->ClearRenderTargetView(dx11::g_frame_buffer_view, clear_color_with_alpha);
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
     if (true)
     {
-      dx11::g_pSwapChain->Present(1, 0); // Present with vsync
+      dx11::g_swap_chain->Present(1, 0); // Present with vsync
     }
     else
     {
       // Hardcoded frame limiter
       std::this_thread::sleep_for(std::chrono::milliseconds(40));
-      dx11::g_pSwapChain->Present(0, 0); // Present without vsync
+      dx11::g_swap_chain->Present(0, 0); // Present without vsync
     }
 
     RECT rect;
@@ -246,7 +241,7 @@ int app_main()
   ImGui_ImplWin32_Shutdown();
   ImGui::DestroyContext();
 
-  dx11::CleanupDeviceD3D();
+  dx11::cleanup_device();
   ::DestroyWindow(hwnd);
   ::UnregisterClass(wc.lpszClassName, wc.hInstance);
 

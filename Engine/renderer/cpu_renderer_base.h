@@ -117,7 +117,7 @@ namespace engine
     uint8_t* get_img_bgr() { return state.img_bgr->get_buffer(); }
     uint8_t* get_img_rgb() { return state.img_rgb->get_buffer(); }
 
-    bool save_output = true;
+    bool save_output = false; // FIX Expose to a UI setting
 
   protected:
     job_state state;
