@@ -10,6 +10,7 @@
 #include "renderers/cpu_renderer_preview.h"
 #include "renderers/cpu_renderer_faces.h"
 #include "renderers/cpu_renderer_normals.h"
+#include "renderers/gpu_renderer.h"
 #include "hittables/scene.h"
 #include "hittables/sphere.h"
 #include "hittables/static_mesh.h"
@@ -50,6 +51,7 @@ namespace engine
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(scene)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(sphere)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(static_mesh)
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(gpu_renderer)
     
   void object_registry::create_class_objects()
   {
@@ -68,6 +70,7 @@ namespace engine
     CLASS_OBJECT_REGISTER(scene, hittable)
     CLASS_OBJECT_REGISTER(static_mesh, hittable)
     CLASS_OBJECT_REGISTER(sphere, hittable)
+    CLASS_OBJECT_REGISTER(gpu_renderer, cpu_renderer_base)
   }
 }
 

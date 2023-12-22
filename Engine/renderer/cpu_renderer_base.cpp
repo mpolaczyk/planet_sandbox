@@ -83,23 +83,23 @@ namespace engine
     worker_semaphore->release();
   }
 
-  bool cpu_renderer_base::is_world_dirty(const scene* in_scene)
+  bool cpu_renderer_base::is_world_dirty(const scene* in_scene) const
   {
     assert(in_scene != nullptr);
     return state.scene_root_hash != in_scene->get_hash();
   }
 
-  bool cpu_renderer_base::is_renderer_setting_dirty(const renderer_config& in_renderer_config)
+  bool cpu_renderer_base::is_renderer_setting_dirty(const renderer_config& in_renderer_config) const
   {
     return state.renderer_conf.get_hash() != in_renderer_config.get_hash();
   }
 
-  bool cpu_renderer_base::is_renderer_type_different(const renderer_config& in_renderer_config)
+  bool cpu_renderer_base::is_renderer_type_different(const renderer_config& in_renderer_config) const
   {
     return state.renderer_conf.type != in_renderer_config.type;
   }
 
-  bool cpu_renderer_base::is_camera_setting_dirty(const camera_config& in_camera_config)
+  bool cpu_renderer_base::is_camera_setting_dirty(const camera_config& in_camera_config) const
   {
     return state.cam.get_hash() != in_camera_config.get_hash();
   }

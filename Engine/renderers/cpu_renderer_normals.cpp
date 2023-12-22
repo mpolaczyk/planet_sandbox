@@ -31,7 +31,7 @@ namespace engine
 
     std::ostringstream oss;
     oss << "Thread=" << thread_id << " Chunk=" << in_chunk.id;
-    engine::scope_counter benchmark_render_chunk(oss.str(), false);
+    engine::scope_counter benchmark_render_chunk(oss.str());
 
     for (int y = in_chunk.y; y < in_chunk.y + in_chunk.size_y; ++y)
     {

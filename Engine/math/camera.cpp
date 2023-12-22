@@ -111,7 +111,7 @@ namespace engine
     }
   }
 
-  uint32_t camera::get_hash()
+  uint32_t camera::get_hash() const
   {
     return camera_conf.get_hash();
   }

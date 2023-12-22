@@ -36,7 +36,7 @@ namespace engine
 
     std::ostringstream oss;
     oss << "Thread=" << thread_id << " Chunk=" << in_chunk.id;
-    engine::scope_counter benchmark_render_chunk(oss.str(), false);
+    engine::scope_counter benchmark_render_chunk(oss.str());
 
     vec3 resolution((float)state.image_width, (float)state.image_height, 0.0f);
 

@@ -32,7 +32,7 @@ namespace engine
 
     std::ostringstream oss;
     oss << "Thread=" << thread_id << " Chunk=" << in_chunk.id;
-    engine::scope_counter benchmark_render_chunk(oss.str(), false);
+    engine::scope_counter benchmark_render_chunk(oss.str());
 
     hittable* l = state.scene_root->lights[0];
     if (l == nullptr)

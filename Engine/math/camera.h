@@ -49,7 +49,7 @@ namespace engine
 
     ray inline get_ray(float uu, float vv) const;
 
-    inline uint32_t get_hash();
+    inline uint32_t get_hash() const;
 
   private:
     camera_config camera_conf;

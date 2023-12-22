@@ -102,10 +102,10 @@ namespace engine
     void render_single_async();
 
     // State checks
-    bool is_world_dirty(const scene* in_scene);
-    bool is_renderer_setting_dirty(const renderer_config& in_renderer_config);
-    bool is_renderer_type_different(const renderer_config& in_renderer_config);
-    bool is_camera_setting_dirty(const camera_config& in_camera_config);
+    bool is_world_dirty(const scene* in_scene) const;
+    bool is_renderer_setting_dirty(const renderer_config& in_renderer_config) const;
+    bool is_renderer_type_different(const renderer_config& in_renderer_config) const;
+    bool is_camera_setting_dirty(const camera_config& in_camera_config) const;
     bool is_working() const { return state.is_working; }
 
     uint64_t get_render_time() const { return state.benchmark_render_time; }
@@ -114,8 +114,8 @@ namespace engine
     uint64_t get_ray_triangle_intersection_count() const { return state.ray_triangle_intersection_count; }
     uint64_t get_ray_box_intersection_count() const { return state.ray_box_intersection_count; }
     uint64_t get_ray_object_intersection_count() const { return state.ray_object_intersection_count; }
-    uint8_t* get_img_bgr() { return state.img_bgr->get_buffer(); }
-    uint8_t* get_img_rgb() { return state.img_rgb->get_buffer(); }
+    uint8_t* get_img_bgr() const { return state.img_bgr->get_buffer(); }
+    uint8_t* get_img_rgb() const { return state.img_rgb->get_buffer(); }
 
     bool save_output = false; // FIX Expose to a UI setting
 
