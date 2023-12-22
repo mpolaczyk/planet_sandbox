@@ -5,7 +5,7 @@
 
 #include "app/app.h"
 #include "math/chunk_generator.h"
-#include "renderer/cpu_renderer_base.h"
+#include "renderer/async_renderer_base.h"
 #include "math/camera.h"
 
 #include "core/core.h"
@@ -61,20 +61,19 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
   
   ImGui::Separator();
-  model.r_model.objects = REG.find_all<const class_object>([](const class_object* obj) -> bool { return obj->get_parent_class_name() == cpu_renderer_base::get_class_static()->get_class_name(); });
+  model.r_model.objects = REG.find_all<const class_object>([](const class_object* obj) -> bool { return obj->get_parent_class_name() == async_renderer_base::get_class_static()->get_class_name(); });
   draw_selection_combo<class_object>(model.r_model, state, "Renderer class",
     [=](const class_object* obj) -> bool { return true; }, state.renderer_conf.type);
   if(model.r_model.selected_object != state.renderer_conf.type)
   {
     auto target_class = model.r_model.selected_object;
-    auto new_renderer = REG.find<cpu_renderer_base>([target_class](cpu_renderer_base* obj)->bool{ return obj->get_class() == target_class; });
+    auto new_renderer = REG.find<async_renderer_base>([target_class](async_renderer_base* obj)->bool{ return obj->get_class() == target_class; });
     if(new_renderer == nullptr)
     {
-      new_renderer = REG.spawn_from_class<cpu_renderer_base>(model.r_model.selected_object);
+      new_renderer = REG.spawn_from_class<async_renderer_base>(model.r_model.selected_object);
     }
     state.renderer_conf.type = model.r_model.selected_object;
     state.renderer = new_renderer;
-    state.renderer->set_config(state.renderer_conf, state.scene_root, state.camera_conf);
   }
   ImGui::Separator();
   

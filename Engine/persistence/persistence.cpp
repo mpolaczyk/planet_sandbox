@@ -3,7 +3,7 @@
 
 #include "asset/soft_asset_ptr.h"
 #include "math/camera.h"
-#include "renderer/cpu_renderer_base.h"
+#include "renderer/async_renderer_base.h"
 
 #include "nlohmann/json.hpp"
 #include "object/object_registry.h"
@@ -86,8 +86,8 @@ namespace engine
     std::string type_name;
     TRY_PARSE(std::string, j, "type", type_name);
     out_value.type = REG.find_class(type_name);
-
-    //assert(cpu_renderer_base::is_parent_of_static(value.type)); // FIX
+    assert(out_value.type);
+    
     TRY_PARSE(bool, j, "reuse_buffer", out_value.reuse_buffer);
     TRY_PARSE(int, j, "resolution_vertical", out_value.resolution_vertical);
     TRY_PARSE(int, j, "resolution_horizontal", out_value.resolution_horizontal);

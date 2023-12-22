@@ -2,7 +2,7 @@
 
 namespace engine
 {
-  class cpu_renderer_base;
+  class async_renderer_base;
 }
 
 struct window_config

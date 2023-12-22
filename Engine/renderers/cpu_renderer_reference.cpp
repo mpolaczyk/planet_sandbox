@@ -17,14 +17,14 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(cpu_renderer_reference, cpu_renderer_base, CPU renderer reference)
+  OBJECT_DEFINE(cpu_renderer_reference, async_renderer_base, CPU renderer reference)
   OBJECT_DEFINE_SPAWN(cpu_renderer_reference)
 
-  void cpu_renderer_reference::render()
+  void cpu_renderer_reference::job_update()
   {
     std::vector<chunk> chunks;
     const int chunks_per_thread = 32;
-    chunk_generator::generate_chunks(chunk_strategy_type::rectangles, std::thread::hardware_concurrency() * chunks_per_thread, state.image_width, state.image_height, chunks);
+    chunk_generator::generate_chunks(chunk_strategy_type::rectangles, std::thread::hardware_concurrency() * chunks_per_thread, job_state.image_width, job_state.image_height, chunks);
 
     concurrency::parallel_for_each(begin(chunks), end(chunks), [&](const chunk& ch) { render_chunk(ch); });
   }
@@ -38,7 +38,7 @@ namespace engine
     oss << "Thread=" << thread_id << " Chunk=" << in_chunk.id;
     engine::scope_counter benchmark_render_chunk(oss.str());
 
-    vec3 resolution((float)state.image_width, (float)state.image_height, 0.0f);
+    vec3 resolution((float)job_state.image_width, (float)job_state.image_height, 0.0f);
 
     for (int y = in_chunk.y; y < in_chunk.y + in_chunk.size_y; ++y)
     {
@@ -50,13 +50,13 @@ namespace engine
         assert(isfinite(hdr_color.y));
         assert(isfinite(hdr_color.z));
 
-        vec3 ldr_color = tone_mapping::reinhard_extended(hdr_color, state.renderer_conf.white_point);
+        vec3 ldr_color = tone_mapping::reinhard_extended(hdr_color, job_state.renderer_conf.white_point);
 
         bmp_pixel p(ldr_color);
-        state.img_rgb->draw_pixel(x, y, &p, bmp_format::rgba);
+        job_state.img_rgb->draw_pixel(x, y, &p, bmp_format::rgba);
         if (save_output)
         {
-          state.img_bgr->draw_pixel(x, y, &p);
+          job_state.img_bgr->draw_pixel(x, y, &p);
         }
       }
     }
@@ -66,7 +66,7 @@ namespace engine
   {
     uint32_t seed = uint32_t(y * resolution.x + x);  // Each pixel has a unique seed, gradient from white to black
 
-    const int rays_per_pixel = state.renderer_conf.rays_per_pixel;
+    const int rays_per_pixel = job_state.renderer_conf.rays_per_pixel;
     vec3 sum_colors;
 
     for (int i = 0; i < rays_per_pixel; ++i)
@@ -75,7 +75,7 @@ namespace engine
       float u = (float(x) + random_seed::rand_pcg(seed)) / (resolution.x - 1);
       float v = (float(y) + random_seed::rand_pcg(seed)) / (resolution.y - 1);
       // Trace the ray
-      ray r = state.cam.get_ray(u, v);
+      ray r = job_state.cam.get_ray(u, v);
       sum_colors += trace_ray(r, seed);
     }
 
@@ -97,7 +97,7 @@ namespace engine
 
   vec3 cpu_renderer_reference::trace_ray(ray in_ray, uint32_t seed)
   {
-    assert(state.scene_root != nullptr);
+    assert(job_state.scene_root != nullptr);
     // Defined by material color of all bounces, mixing colors (multiply to aggregate) [0.0f, 1.0f]
     vec3 ray_color = vec3(1.0f);
 
@@ -105,12 +105,12 @@ namespace engine
     // Allow light to exceed 1.0f. Non-emissive materials can emit a little bit of light
     vec3 incoming_light = vec3(0.0f);
 
-    int bounces = state.renderer_conf.ray_bounces;
+    int bounces = job_state.renderer_conf.ray_bounces;
     for (int i = 0; i < bounces; ++i)
     {
       stats::inc_ray();
       hit_record hit;
-      if (state.scene_root->hit(in_ray, math::infinity, hit))
+      if (job_state.scene_root->hit(in_ray, math::infinity, hit))
       {
         // Don't bounce if ray has no color
         if (math::length_squared(ray_color) < 0.1f)

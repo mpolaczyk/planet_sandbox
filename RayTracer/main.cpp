@@ -13,7 +13,7 @@
 #include "app/app.h"
 #include "gfx/dx11_helper.h"
 
-#include "renderer/cpu_renderer_base.h"
+#include "renderer/async_renderer_base.h"
 
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -114,8 +114,7 @@ int app_main()
   app_state.load_assets();
   app_state.load_scene_state();
   app_state.scene_root->load_resources();
-  app_state.renderer = REG.spawn_from_class<cpu_renderer_base>(app_state.renderer_conf.type);
-  app_state.renderer->set_config(app_state.renderer_conf, app_state.scene_root, app_state.camera_conf);
+  app_state.renderer = REG.spawn_from_class<async_renderer_base>(app_state.renderer_conf.type);
   ::SetWindowPos(hwnd, NULL, app_state.window_conf.x, app_state.window_conf.y, app_state.window_conf.w, app_state.window_conf.h, NULL);
 
   // Auto render on startup
@@ -153,7 +152,7 @@ int app_main()
     if (app_state.renderer->is_renderer_type_different(app_state.renderer_conf))
     {
       app_state.renderer->destroy();
-      app_state.renderer = REG.spawn_from_class<cpu_renderer_base>(app_state.renderer_conf.type);
+      app_state.renderer = REG.spawn_from_class<async_renderer_base>(app_state.renderer_conf.type);
     }
     
     // Draw UI
@@ -171,7 +170,7 @@ int app_main()
       // Rendering to a texture is happening in the separate thread.
       // Main loop updates UI and the texture output window while it is rendered.
       // UI framerate is locked to VSync frequency while scene rendering may take longer time.
-      bool is_working = app_state.renderer->is_working();
+      const bool is_working = app_state.renderer->is_working();
       if (!is_working && (app_state.rw_model.rp_model.render_pressed || app_state.ow_model.auto_render))
       {
         app_state.scene_root->load_resources();
@@ -185,8 +184,7 @@ int app_main()
         app_state.output_width = app_state.renderer_conf.resolution_horizontal;
         app_state.output_height = app_state.renderer_conf.resolution_vertical;
 
-        app_state.renderer->set_config(app_state.renderer_conf, app_state.scene_root, app_state.camera_conf);
-        app_state.renderer->render_single_async();
+        app_state.renderer->render_single_async(app_state.scene_root, app_state.renderer_conf, app_state.camera_conf);
 
         bool ret = dx11::load_texture_from_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, &app_state.output_srv, &app_state.output_texture);
         IM_ASSERT(ret);

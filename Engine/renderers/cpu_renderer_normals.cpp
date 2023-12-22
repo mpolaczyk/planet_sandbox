@@ -13,20 +13,20 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(cpu_renderer_normals, cpu_renderer_base, CPU renderer normals)
+  OBJECT_DEFINE(cpu_renderer_normals, async_renderer_base, CPU renderer normals)
   OBJECT_DEFINE_SPAWN(cpu_renderer_normals)
 
-  void cpu_renderer_normals::render()
+  void cpu_renderer_normals::job_update()
   {
     std::vector<chunk> chunks;
-    chunk_generator::generate_chunks(chunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency() * 32, state.image_width, state.image_height, chunks);
+    chunk_generator::generate_chunks(chunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency() * 32, job_state.image_width, job_state.image_height, chunks);
 
     concurrency::parallel_for_each(begin(chunks), end(chunks), [&](const chunk& ch) { render_chunk(ch); });
   }
 
   void cpu_renderer_normals::render_chunk(const chunk& in_chunk)
   {
-    assert(state.scene_root != nullptr);
+    assert(job_state.scene_root != nullptr);
     std::thread::id thread_id = std::this_thread::get_id();
 
     std::ostringstream oss;
@@ -40,21 +40,21 @@ namespace engine
         // Effectively it is a fragment shader
         vec3 pixel_color;
 
-        float u = float(x) / (state.image_width - 1);
-        float v = float(y) / (state.image_height - 1);
-        ray r = state.cam.get_ray(u, v);
+        float u = float(x) / (job_state.image_width - 1);
+        float v = float(y) / (job_state.image_height - 1);
+        ray r = job_state.cam.get_ray(u, v);
         hit_record h;
 
-        if (state.scene_root->hit(r, math::infinity, h))
+        if (job_state.scene_root->hit(r, math::infinity, h))
         {
           pixel_color = (h.normal + 1.0f) * .5f;
         }
 
         bmp_pixel p(pixel_color);
-        state.img_rgb->draw_pixel(x, y, &p, bmp_format::rgba);
+        job_state.img_rgb->draw_pixel(x, y, &p, bmp_format::rgba);
         if (save_output)
         {
-          state.img_bgr->draw_pixel(x, y, &p);
+          job_state.img_bgr->draw_pixel(x, y, &p);
         }
       }
     }

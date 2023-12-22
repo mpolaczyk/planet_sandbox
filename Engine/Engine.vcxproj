@@ -123,7 +123,7 @@
     <ClInclude Include="renderers\cpu_renderer_preview.h" />
     <ClInclude Include="renderers\cpu_renderer_reference.h" />
     <ClInclude Include="renderers\gpu_renderer.h" />
-    <ClInclude Include="renderer\cpu_renderer_base.h" />
+    <ClInclude Include="renderer\async_renderer_base.h" />
     <ClInclude Include="math\chunk_generator.h" />
     <ClInclude Include="resources\bmp.h" />
     <ClInclude Include="core\exceptions.h" />
@@ -179,7 +179,7 @@
     <ClCompile Include="renderers\cpu_renderer_preview.cpp" />
     <ClCompile Include="renderers\cpu_renderer_reference.cpp" />
     <ClCompile Include="renderers\gpu_renderer.cpp" />
-    <ClCompile Include="renderer\cpu_renderer_base.cpp" />
+    <ClCompile Include="renderer\async_renderer_base.cpp" />
     <ClCompile Include="math\chunk_generator.cpp" />
     <ClCompile Include="resources\bmp.cpp" />
     <ClCompile Include="core\exceptions.cpp" />

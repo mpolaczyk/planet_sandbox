@@ -5,7 +5,7 @@
 #include "app.h"
 #include "hittables/hittables.h"
 
-#include "renderer/cpu_renderer_base.h"
+#include "renderer/async_renderer_base.h"
 #include "renderers/cpu_renderer_preview.h"
 #include "renderers/cpu_renderer_reference.h"
 

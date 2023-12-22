@@ -1,18 +1,18 @@
 #pragma once
 
-#include "renderer/cpu_renderer_base.h"
+#include "renderer/async_renderer_base.h"
 #include "math/chunk_generator.h"
 #include "core/core.h"
 
 namespace engine
 {
-  class ENGINE_API cpu_renderer_normals : public cpu_renderer_base
+  class ENGINE_API cpu_renderer_normals : public async_renderer_base
   {
   public:
-    OBJECT_DECLARE(cpu_renderer_normals, cpu_renderer_base)
+    OBJECT_DECLARE(cpu_renderer_normals, async_renderer_base)
   
   private:
-    virtual void render() override;
+    virtual void job_update() override;
 
     void render_chunk(const chunk& in_chunk);
   };

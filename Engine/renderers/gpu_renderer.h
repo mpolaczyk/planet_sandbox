@@ -1,16 +1,18 @@
 ﻿#pragma once
 
-#include "renderer/cpu_renderer_base.h"
+#include "renderer/async_renderer_base.h"
 #include "core/core.h"
 
 namespace engine
 {
-  class ENGINE_API gpu_renderer : public cpu_renderer_base
+  class ENGINE_API gpu_renderer : public async_renderer_base
   {
   public:
-    OBJECT_DECLARE(gpu_renderer, cpu_renderer_base)
+    OBJECT_DECLARE(gpu_renderer, async_renderer_base)
   
   private:
-    virtual void render() override;
+    virtual void job_init() override;
+    virtual void job_update() override;
+    virtual void job_cleanup() override;
   };
 }
