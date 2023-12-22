@@ -28,6 +28,8 @@ namespace engine
     virtual void visit(class material_asset& object) const { assert(false); }
     virtual void visit(class texture_asset& object) const { assert(false); }
     virtual void visit(class static_mesh_asset& object) const { assert(false); }
+    virtual void visit(class vertex_shader_asset& object) const { assert(false); }
+    virtual void visit(class pixel_shader_asset& object) const { assert(false); }
     
     virtual void visit(class hittable& object) const { assert(false); }
     virtual void visit(class scene& object) const { assert(false); }

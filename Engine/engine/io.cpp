@@ -55,6 +55,14 @@ namespace engine
     return oss.str();
   }
 
+  std::string io::get_shaders_dir()
+  {
+    std::string content_dir = get_content_dir();
+    std::ostringstream oss;
+    oss << content_dir << "Shaders\\";
+    return oss.str();
+  }
+  
   std::string io::get_images_dir()
   {
     std::string workspace_dir = get_workspace_dir();
@@ -114,6 +122,14 @@ namespace engine
     return oss.str();
   }
 
+  std::string io::get_shader_file_path(const char* file_name)
+  {
+    std::string textures_dir = get_shaders_dir();
+    std::ostringstream oss;
+    oss << textures_dir << file_name;
+    return oss.str();
+  }
+  
   std::string io::get_window_file_path()
   {
     return get_workspace_file_path("window.json");

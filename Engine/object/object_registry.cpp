@@ -107,7 +107,7 @@ namespace engine
     {
       if (class_objects[i]->class_name == class_name)
       {
-        LOG_ERROR("Unable to add class_object, it is already registered: {0}", class_name.c_str());
+        LOG_ERROR("Unable to add class_object, it is already registered: {0}", class_name);
         return nullptr;
       }
     }

@@ -3,20 +3,21 @@
 #include "nlohmann/json.hpp"
 
 #include "persistence/object_persistence.h"
+#include "persistence/persistence_helper.h"
+#include "persistence/persistence.h"
 
 #include "assets/material.h"
 #include "assets/mesh.h"
 #include "assets/texture.h"
-#include "engine/log.h"
+#include "assets/vertex_shader.h"
+#include "assets/pixel_shader.h"
 
 #include "hittables/hittables.h"
 #include "hittables/static_mesh.h"
 #include "hittables/sphere.h"
 #include "hittables/scene.h"
 
-#include "persistence/persistence_helper.h"
-#include "persistence/persistence.h"
-
+#include "engine/log.h"
 #include "math/colors.h"
 #include "object/object_registry.h"
 
@@ -43,6 +44,14 @@ namespace engine
   {
     j["shape_index"] = object.shape_index;
     j["obj_file_name"] = object.obj_file_name;
+  }
+  void serialize_object::visit(class vertex_shader_asset& object) const
+  {
+    j["shader_file_name"] = object.shader_file_name;
+  }
+  void serialize_object::visit(class pixel_shader_asset& object) const
+  {
+    j["shader_file_name"] = object.shader_file_name;
   }
   
   void serialize_object::visit(class hittable& object) const
@@ -115,7 +124,15 @@ namespace engine
 
     TRY_PARSE(std::string, j, "obj_file_name", object.obj_file_name);
   }
-
+  void deserialize_object::visit(class vertex_shader_asset& object) const
+  {
+    TRY_PARSE(std::string, j, "shader_file_name", object.shader_file_name);
+  }
+  void deserialize_object::visit(class pixel_shader_asset& object) const
+  {
+    TRY_PARSE(std::string, j, "shader_file_name", object.shader_file_name);
+  }
+  
   void deserialize_object::visit(class hittable& object) const
   {
     nlohmann::json jmaterial;

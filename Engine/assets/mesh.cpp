@@ -22,15 +22,15 @@ namespace engine
     asset_base::load(instance, name);
 
     assert(instance);
-    LOG_DEBUG("Loading mesh: {0}", name.c_str());
+    LOG_DEBUG("Loading mesh: {0}", name);
 
     std::ostringstream oss;
     oss << name << ".json";
-    std::string file_path = io::get_mesh_file_path(oss.str().c_str());
+    const std::string file_path = io::get_mesh_file_path(oss.str().c_str());
     std::ifstream input_stream(file_path.c_str());
     if (input_stream.fail())
     {
-      LOG_ERROR("Unable to open mesh asset: {0}", file_path.c_str());
+      LOG_ERROR("Unable to open mesh asset: {0}", file_path);
       return false;
     }
 
@@ -42,7 +42,7 @@ namespace engine
 
     if (!load_obj(instance->obj_file_name, instance->shape_index, instance->faces))
     {
-      LOG_ERROR("Failed to load object file: {0}", instance->obj_file_name.c_str());
+      LOG_ERROR("Failed to load object file: {0}", instance->obj_file_name);
       return false;
     }
     return true;

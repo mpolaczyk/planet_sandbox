@@ -42,7 +42,7 @@ namespace dx11
     {
       LOG_CRITICAL("D3D11CreateDevice() failed.");
       const std::string error = win32_error::get_last_error_as_string();
-      LOG_CRITICAL("{0}", error.c_str());
+      LOG_CRITICAL("{0}", error);
       return false;
     }
 

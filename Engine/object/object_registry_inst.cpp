@@ -5,6 +5,8 @@
 #include "assets/mesh.h"
 #include "assets/material.h"
 #include "assets/texture.h"
+#include "assets/vertex_shader.h"
+#include "assets/pixel_shader.h"
 #include "renderer/async_renderer_base.h"
 #include "renderers/cpu_renderer_reference.h"
 #include "renderers/cpu_renderer_preview.h"
@@ -38,39 +40,50 @@
 namespace engine
 {
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(class_object)
+  
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(asset_base)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(static_mesh_asset)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(texture_asset)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(material_asset)
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(vertex_shader_asset)
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(pixel_shader_asset)
+  
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(async_renderer_base)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(cpu_renderer_reference)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(cpu_renderer_preview)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(cpu_renderer_faces)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(cpu_renderer_normals)
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(gpu_renderer)
+  
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(hittable)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(scene)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(sphere)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(static_mesh)
-  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(gpu_renderer)
     
   void object_registry::create_class_objects()
   {
     CLASS_OBJECT_REGISTER(object, object)
     CLASS_OBJECT_REGISTER(class_object, object)
+
+    CLASS_OBJECT_REGISTER(asset_base, object)
     CLASS_OBJECT_REGISTER(material_asset, asset_base)
     CLASS_OBJECT_REGISTER(texture_asset, asset_base)
     CLASS_OBJECT_REGISTER(static_mesh_asset, asset_base)
-    CLASS_OBJECT_REGISTER(asset_base, object)
+    CLASS_OBJECT_REGISTER(vertex_shader_asset, asset_base)
+    CLASS_OBJECT_REGISTER(pixel_shader_asset, asset_base)
+    
     CLASS_OBJECT_REGISTER(async_renderer_base, object)
     CLASS_OBJECT_REGISTER(cpu_renderer_preview, async_renderer_base)
     CLASS_OBJECT_REGISTER(cpu_renderer_normals, async_renderer_base)
     CLASS_OBJECT_REGISTER(cpu_renderer_faces, async_renderer_base)
     CLASS_OBJECT_REGISTER(cpu_renderer_reference, async_renderer_base)
+    CLASS_OBJECT_REGISTER(gpu_renderer, async_renderer_base)
+    
     CLASS_OBJECT_REGISTER(hittable, object)
     CLASS_OBJECT_REGISTER(scene, hittable)
     CLASS_OBJECT_REGISTER(static_mesh, hittable)
     CLASS_OBJECT_REGISTER(sphere, hittable)
-    CLASS_OBJECT_REGISTER(gpu_renderer, async_renderer_base)
+    
   }
 }
 

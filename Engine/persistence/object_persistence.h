@@ -15,7 +15,9 @@ namespace engine
     virtual void visit(class material_asset& object) const override;
     virtual void visit(class texture_asset& object) const override;
     virtual void visit(class static_mesh_asset& object) const override;
-
+    virtual void visit(class vertex_shader_asset& object) const override;
+    virtual void visit(class pixel_shader_asset& object) const override;
+    
     virtual void visit(class hittable& object) const override;
     virtual void visit(class scene& object) const override;
     virtual void visit(class static_mesh& object) const override;
@@ -32,6 +34,8 @@ namespace engine
     virtual void visit(class material_asset& object) const override;
     virtual void visit(class texture_asset& object) const override;
     virtual void visit(class static_mesh_asset& object) const override;
+    virtual void visit(class vertex_shader_asset& object) const override;
+    virtual void visit(class pixel_shader_asset& object) const override;
     
     virtual void visit(class hittable& object) const override;
     virtual void visit(class scene& object) const override;

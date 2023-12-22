@@ -3,7 +3,6 @@
 #include "core/core.h"
 
 #include "object/object.h"
-#include "math/vec3.h"
 #include "asset/asset.h"
 
 namespace engine

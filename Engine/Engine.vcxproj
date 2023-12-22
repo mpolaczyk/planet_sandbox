@@ -100,6 +100,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="assets\pixel_shader.h" />
+    <ClInclude Include="assets\vertex_shader.h" />
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="core\concepts.h" />
     <ClInclude Include="hittables\hittables.h" />
@@ -156,6 +158,8 @@
     <ClInclude Include="third_party\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="assets\pixel_shader.cpp" />
+    <ClCompile Include="assets\vertex_shader.cpp" />
     <ClCompile Include="asset\asset.cpp" />
     <ClCompile Include="hittables\hittables.cpp" />
     <ClCompile Include="hittables\scene.cpp" />

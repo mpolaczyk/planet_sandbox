@@ -4,8 +4,6 @@
 #include <thread>
 #include <semaphore>
 
-
-#include "math/vec3.h"
 #include "resources/bmp.h"
 #include "engine/hash.h"
 
@@ -13,19 +11,6 @@
 #include "hittables/hittables.h"
 #include "hittables/scene.h"
 #include "object/object.h"
-
-//// Forward declaration for std::binary_semaphore    FIX
-//#pragma warning(disable:4091)
-//// warning C4091: 'typedef ': ignored on left of '__int64' when no variable is declared
-//namespace std
-//{
-//  class thread;
-//  typedef ptrdiff_t;
-//  template <ptrdiff_t _Least_max_value>
-//  class counting_semaphore;
-//  using binary_semaphore = counting_semaphore<1>;
-//}
-//#pragma warning(default:4091)
 
 namespace engine
 {

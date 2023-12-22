@@ -17,6 +17,7 @@ namespace engine
     static std::string get_materials_dir();
     static std::string get_meshes_dir();
     static std::string get_textures_dir();
+    static std::string get_shaders_dir();
     static std::string get_images_dir();
 
     // Validation
@@ -28,6 +29,7 @@ namespace engine
     static std::string get_material_file_path(const char* file_name);
     static std::string get_mesh_file_path(const char* file_name);
     static std::string get_texture_file_path(const char* file_name);
+    static std::string get_shader_file_path(const char* file_name);
     static std::string get_window_file_path();
     static std::string get_scene_file_path();
     static std::string get_rendering_file_path();

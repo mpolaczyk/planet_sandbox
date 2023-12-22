@@ -22,15 +22,15 @@ namespace engine
     asset_base::load(instance, name);
 
     assert(instance);
-    LOG_DEBUG("Loading material: {0}", name.c_str());
+    LOG_DEBUG("Loading material: {0}", name);
 
     std::ostringstream oss;
     oss << name << ".json";
-    std::string file_path = io::get_material_file_path(oss.str().c_str());
+    const std::string file_path = io::get_material_file_path(oss.str().c_str());
     std::ifstream input_stream(file_path.c_str());
     if (input_stream.fail())
     {
-      LOG_ERROR("Unable to open material asset: {0}", file_path.c_str());
+      LOG_ERROR("Unable to open material asset: {0}", file_path);
       return false;
     }
 

@@ -37,9 +37,9 @@ namespace engine
 
     void draw_pixel(uint32_t x, uint32_t y, const bmp_pixel* p, bmp_format format = bmp_format::bgra);
     void save_to_file(const char* image_file_name) const;
-    uint8_t* get_buffer() { return buffer; }
-    uint32_t get_width() { return width; }
-    uint32_t get_height() { return height; }
+    uint8_t* get_buffer() const { return buffer; }
+    uint32_t get_width() const { return width; }
+    uint32_t get_height() const { return height; }
 
   private:
     uint8_t* create_file_header(uint32_t height, uint32_t stride) const;
