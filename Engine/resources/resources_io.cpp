@@ -6,7 +6,10 @@
 
 #include "resources/resources_io.h"
 
+#define STB_IMAGE_IMPLEMENTATION
 #include "third_party/stb_image.h"
+
+#define TINYOBJLOADER_IMPLEMENTATION
 #include "third_party/tiny_obj_loader.h"
 
 #include "engine/log.h"
@@ -101,7 +104,7 @@ namespace engine
     std::string path = io::get_texture_file_path(file_name.c_str());
 
     out_texture->is_hdr = static_cast<bool>(stbi_is_hdr(path.c_str()));
-
+    
     if (out_texture->is_hdr)
     {
       out_texture->data_hdr = stbi_loadf(path.c_str(), &width, &height, nullptr, STBI_rgb);

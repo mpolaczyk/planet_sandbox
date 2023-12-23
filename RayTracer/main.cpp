@@ -11,8 +11,7 @@
 #include <tchar.h>
 
 #include "app/app.h"
-#include "gfx/dx11_helper.h"
-
+#include "renderer/dx11_lib.h"
 #include "renderer/async_renderer_base.h"
 
 
@@ -25,14 +24,15 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
     return true;
 
+  dx11& dx = dx11::instance();
   switch (msg)
   {
   case WM_SIZE:
-    if (dx11::g_device != NULL && wParam != SIZE_MINIMIZED)
+    if (dx.device != NULL && wParam != SIZE_MINIMIZED)
     {
-      dx11::cleanup_render_target();
-      dx11::g_swap_chain->ResizeBuffers(0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
-      dx11::create_render_target();
+      dx.cleanup_render_target();
+      dx.swap_chain->ResizeBuffers(0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
+      dx.create_render_target();
     }
     return 0;
   case WM_SYSCOMMAND:
@@ -66,15 +66,16 @@ int app_main()
   HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("RayTracer"), WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
 
   // Initialize Direct3D
-  if (!dx11::create_device())
+  dx11& dx = dx11::instance();
+  if (!dx.create_device())
   {
-    dx11::cleanup_device();
+    dx.cleanup_device();
     ::UnregisterClass(wc.lpszClassName, wc.hInstance);
     return 1;
   }
-  dx11::create_debug_layer();
-  dx11::create_swap_chain(hwnd);
-  dx11::create_render_target();
+  dx.create_debug_layer();
+  dx.create_swap_chain(hwnd);
+  dx.create_render_target();
   
   // Show the window
   ::ShowWindow(hwnd, SW_SHOWDEFAULT);
@@ -102,7 +103,7 @@ int app_main()
 
   // Setup Platform/Renderer backends
   ImGui_ImplWin32_Init(hwnd);
-  ImGui_ImplDX11_Init(dx11::g_device, dx11::g_device_context);
+  ImGui_ImplDX11_Init(dx.device, dx.device_context);
 
   // Raytracer init
   random_cache::init();
@@ -186,7 +187,7 @@ int app_main()
 
         app_state.renderer->render_single_async(app_state.scene_root, app_state.renderer_conf, app_state.camera_conf);
 
-        bool ret = dx11::load_texture_from_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, &app_state.output_srv, &app_state.output_texture);
+        bool ret = dx.load_texture_from_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, &app_state.output_srv, &app_state.output_texture);
         IM_ASSERT(ret);
 
         app_state.rw_model.rp_model.render_pressed = false;
@@ -195,7 +196,7 @@ int app_main()
       // Updating the texture output window so that the scene render is visible in UI
       if (app_state.output_texture)
       {
-        dx11::update_texture_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, app_state.output_texture);
+        dx.update_texture_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, app_state.output_texture);
       }
     }
 
@@ -209,19 +210,19 @@ int app_main()
       clear_color.w
     };
     ImGui::Render(); // Draw, prepare for render
-    dx11::g_device_context->OMSetRenderTargets(1, &dx11::g_frame_buffer_view, NULL);
-    dx11::g_device_context->ClearRenderTargetView(dx11::g_frame_buffer_view, clear_color_with_alpha);
+    dx.device_context->OMSetRenderTargets(1, &dx.frame_buffer_view, NULL);
+    dx.device_context->ClearRenderTargetView(dx.frame_buffer_view, clear_color_with_alpha);
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
     if (true)
     {
-      dx11::g_swap_chain->Present(1, 0); // Present with vsync
+      dx.swap_chain->Present(1, 0); // Present with vsync
     }
     else
     {
       // Hardcoded frame limiter
       std::this_thread::sleep_for(std::chrono::milliseconds(40));
-      dx11::g_swap_chain->Present(0, 0); // Present without vsync
+      dx.swap_chain->Present(0, 0); // Present without vsync
     }
 
     RECT rect;
@@ -239,7 +240,8 @@ int app_main()
   ImGui_ImplWin32_Shutdown();
   ImGui::DestroyContext();
 
-  dx11::cleanup_device();
+  dx.cleanup_device();
+  dx.cleanup_render_target();
   ::DestroyWindow(hwnd);
   ::UnregisterClass(wc.lpszClassName, wc.hInstance);
 

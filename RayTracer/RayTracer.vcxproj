@@ -131,7 +131,6 @@
     <ClCompile Include="app\json\ui_persistence.cpp" />
     <ClCompile Include="app\ui\app_ui.cpp" />
     <ClCompile Include="app\ui\draw_edit_panel.cpp" />
-    <ClCompile Include="gfx\dx11_helper.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -171,7 +170,6 @@
     <ClInclude Include="app\json\ui_persistence.h" />
     <ClInclude Include="app\ui\draw_edit_panel.h" />
     <ClInclude Include="app\ui\ui.h" />
-    <ClInclude Include="gfx\dx11_helper.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="third_party\imgui_v1.87\backends\imgui_impl_dx11.h" />
     <ClInclude Include="third_party\imgui_v1.87\backends\imgui_impl_win32.h" />

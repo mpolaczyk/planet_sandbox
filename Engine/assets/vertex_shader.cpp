@@ -2,6 +2,9 @@
 #include <fstream>
 #include <sstream>
 
+#include <d3d11_1.h>
+#include <d3dcompiler.h>
+
 #include "nlohmann/json.hpp"
 
 #include "assets/vertex_shader.h"
@@ -11,6 +14,7 @@
 #include "resources/resources_io.h"
 #include "object/object_registry.h"
 #include "persistence/object_persistence.h"
+#include "renderer/dx11_lib.h"
 
 namespace engine
 {
@@ -39,14 +43,37 @@ namespace engine
     input_stream >> j;
     instance->accept(deserialize_object(j));
 
-    REG.set_custom_display_name(instance->get_runtime_id(), name);
+    ID3DBlob* vs_blob;
+    ID3D11VertexShader* vs;
+    {
+      ID3DBlob* shader_compiler_errors_blob;
+      std::wstring stemp = std::wstring(instance->shader_file_name.begin(), instance->shader_file_name.end());
+      LPCWSTR sw = stemp.c_str();
+      HRESULT result = D3DCompileFromFile(sw, nullptr, nullptr, "vs_main", "vs_5_0", 0, 0, &vs_blob, &shader_compiler_errors_blob);
+      if (FAILED(result))
+      {
+        if (result == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+        {
+          LOG_ERROR("Could not compile shader, file {0} not found.", instance->shader_file_name);
+        }
+        else if (shader_compiler_errors_blob)
+        {
+          LOG_ERROR("{0}", (const char*)shader_compiler_errors_blob->GetBufferPointer());
+          shader_compiler_errors_blob->Release();
+        }
+        vs_blob->Release();// FIX RAII for DX11 objects
+        return false;
+      }
 
-    //if (!load_img(instance->img_file_name, instance->width, instance->height, instance))
-    //{
-    //  LOG_ERROR("Failed to load texture file: {0}", instance->img_file_name.c_str());
-    //  return false;
-    //}
-    // FIX compile asset
+      result = dx11::instance().device->CreateVertexShader(vs_blob->GetBufferPointer(), vs_blob->GetBufferSize(), nullptr, &vs);
+      if (FAILED(result))
+      {
+        LOG_ERROR("Unable to create vertex shader: {0}", instance->shader_file_name);
+        vs_blob->Release();
+        return false;
+      }
+     vs_blob->Release();
+    }
     return true;
   }
 }

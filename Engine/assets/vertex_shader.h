@@ -5,8 +5,11 @@
 #include "object/object.h"
 #include "asset/asset.h"
 
+struct ID3D11VertexShader;
+
 namespace engine
 {
+
   class ENGINE_API vertex_shader_asset : public asset_base
   {
   public:
@@ -17,5 +20,8 @@ namespace engine
 
     // JSON persistent
     std::string shader_file_name;
+
+    // Runtime
+    ID3D11VertexShader* vertex_shader;
   };
 }

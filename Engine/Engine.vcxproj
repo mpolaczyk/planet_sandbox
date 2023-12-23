@@ -69,7 +69,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)$(Platform)\$(Configuration)\WinPixEventRuntime.dll</Command>
@@ -96,7 +96,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -127,6 +127,7 @@
     <ClInclude Include="renderers\gpu_renderer.h" />
     <ClInclude Include="renderer\async_renderer_base.h" />
     <ClInclude Include="math\chunk_generator.h" />
+    <ClInclude Include="renderer\dx11_lib.h" />
     <ClInclude Include="resources\bmp.h" />
     <ClInclude Include="core\exceptions.h" />
     <ClInclude Include="core\windows_minimal.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="renderers\gpu_renderer.cpp" />
     <ClCompile Include="renderer\async_renderer_base.cpp" />
     <ClCompile Include="math\chunk_generator.cpp" />
+    <ClCompile Include="renderer\dx11_lib.cpp" />
     <ClCompile Include="resources\bmp.cpp" />
     <ClCompile Include="core\exceptions.cpp" />
     <ClCompile Include="math\aabb.cpp" />

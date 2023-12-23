@@ -111,7 +111,7 @@ namespace engine
         return nullptr;
       }
     }
-    new_class->set_runtime_id(objects.size());
+    new_class->set_runtime_id(static_cast<int>(objects.size()));
     objects.push_back(new_class);
     class_objects.push_back(new_class);
     object_classes.push_back(new_class);

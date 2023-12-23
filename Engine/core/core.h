@@ -45,10 +45,6 @@
 #define SPDLOG_USE_STD_FORMAT
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 
-#define TINYOBJLOADER_IMPLEMENTATION
-
-#define STB_IMAGE_IMPLEMENTATION
-
 // warning C4251 : ? needs to have dll - interface to be used by clients of struct ? (compiling source file ?)
 // for standard library types!
 #pragma warning( disable : 4251)

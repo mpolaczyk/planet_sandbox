@@ -16,7 +16,7 @@ namespace engine
     OBJECT_DECLARE(asset_base, object)
     OBJECT_DECLARE_LOAD(asset_base)
     
-    // File system name
+    // JSON file name
     std::string file_name;
   };
 }

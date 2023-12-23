@@ -3,17 +3,11 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="gfx\dx11_helper.cpp">
-      <Filter>gfx</Filter>
-    </ClCompile>
     <ClCompile Include="app\app.cpp">
       <Filter>app</Filter>
     </ClCompile>
     <ClCompile Include="app\ui\app_ui.cpp">
       <Filter>app\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="app\json\app_json.cpp">
-      <Filter>app\json</Filter>
     </ClCompile>
     <ClCompile Include="third_party\imgui_v1.87\imgui.cpp">
       <Filter>third_party\imgui</Filter>
@@ -36,17 +30,14 @@
     <ClCompile Include="third_party\imgui_v1.87\imgui_widgets.cpp">
       <Filter>third_party\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="app\json\app_persistence.cpp" />
+    <ClCompile Include="app\json\ui_persistence.cpp" />
+    <ClCompile Include="app\ui\draw_edit_panel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="gfx\dx11_helper.h">
-      <Filter>gfx</Filter>
-    </ClInclude>
     <ClInclude Include="app\app.h">
       <Filter>app</Filter>
-    </ClInclude>
-    <ClInclude Include="app\json\app_json.h">
-      <Filter>app\json</Filter>
     </ClInclude>
     <ClInclude Include="third_party\imgui_v1.87\imconfig.h">
       <Filter>third_party\imgui</Filter>
@@ -72,13 +63,13 @@
     <ClInclude Include="third_party\imgui_v1.87\imstb_truetype.h">
       <Filter>third_party\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="app\json\ui_persistence.h" />
+    <ClInclude Include="app\ui\draw_edit_panel.h" />
+    <ClInclude Include="app\ui\ui.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="gfx">
       <UniqueIdentifier>{f3a219ff-2773-4511-96db-7a99edbb2a8a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="processing">
-      <UniqueIdentifier>{41cda635-464e-493b-889e-dee157ce371c}</UniqueIdentifier>
     </Filter>
     <Filter Include="app">
       <UniqueIdentifier>{3409d441-34d2-487e-b09f-150b0062d9d2}</UniqueIdentifier>
@@ -88,12 +79,6 @@
     </Filter>
     <Filter Include="app\ui">
       <UniqueIdentifier>{8594a8f2-8463-427c-86ba-f6856f062b5c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="renderers">
-      <UniqueIdentifier>{053f23db-0ee8-4515-80b4-ee8376594f49}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="math">
-      <UniqueIdentifier>{baec1bfd-a43e-4749-98b8-f37ed9248f5c}</UniqueIdentifier>
     </Filter>
     <Filter Include="third_party">
       <UniqueIdentifier>{d3b5586e-ddd7-4ae0-af04-61d06235d413}</UniqueIdentifier>
