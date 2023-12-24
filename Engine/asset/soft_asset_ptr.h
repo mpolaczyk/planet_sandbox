@@ -25,6 +25,7 @@ namespace engine
   // Second get() call will return cached pointer
   // No ref counting, no ownership
   // set_name can be called multiple times with different values, this will invalidate existing pointer and load different asset
+  // FIX Using derives_from<asset_base> requires to include T. Forward declare does not work!
   template<derives_from<asset_base> T>
   struct ENGINE_API soft_asset_ptr : public soft_asset_ptr_base
   {

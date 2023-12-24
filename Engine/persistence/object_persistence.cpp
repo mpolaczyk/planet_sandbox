@@ -48,10 +48,14 @@ namespace engine
   void serialize_object::visit(class vertex_shader_asset& object) const
   {
     j["shader_file_name"] = object.shader_file_name;
+    j["entrypoint"] = object.entrypoint;
+    j["target"] = object.target;
   }
   void serialize_object::visit(class pixel_shader_asset& object) const
   {
     j["shader_file_name"] = object.shader_file_name;
+    j["entrypoint"] = object.entrypoint;
+    j["target"] = object.target;
   }
   
   void serialize_object::visit(class hittable& object) const
@@ -127,10 +131,14 @@ namespace engine
   void deserialize_object::visit(class vertex_shader_asset& object) const
   {
     TRY_PARSE(std::string, j, "shader_file_name", object.shader_file_name);
+    TRY_PARSE(std::string, j, "entrypoint", object.entrypoint);
+    TRY_PARSE(std::string, j, "target", object.target);
   }
   void deserialize_object::visit(class pixel_shader_asset& object) const
   {
     TRY_PARSE(std::string, j, "shader_file_name", object.shader_file_name);
+    TRY_PARSE(std::string, j, "entrypoint", object.entrypoint);
+    TRY_PARSE(std::string, j, "target", object.target);
   }
   
   void deserialize_object::visit(class hittable& object) const

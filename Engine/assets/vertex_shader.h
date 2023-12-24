@@ -6,10 +6,10 @@
 #include "asset/asset.h"
 
 struct ID3D11VertexShader;
+struct ID3D10Blob;
 
 namespace engine
 {
-
   class ENGINE_API vertex_shader_asset : public asset_base
   {
   public:
@@ -20,8 +20,11 @@ namespace engine
 
     // JSON persistent
     std::string shader_file_name;
-
+    std::string entrypoint;
+    std::string target;
+    
     // Runtime
-    ID3D11VertexShader* vertex_shader;
+    ID3D11VertexShader* shader = nullptr;
+    ID3D10Blob* shader_blob = nullptr;
   };
 }

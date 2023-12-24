@@ -6,17 +6,21 @@
 
 #include "resources/resources_io.h"
 
+// FIX This cpp file is getting really heavy, split it
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "third_party/stb_image.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "third_party/tiny_obj_loader.h"
 
+#include <d3d11_1.h>
+#include <d3dcompiler.h>
+
 #include "engine/log.h"
 #include "engine/io.h"
 #include "math/vec3.h"
 #include "math/math.h"
-
 
 namespace engine
 {
@@ -122,6 +126,34 @@ namespace engine
         LOG_ERROR("Texture file: {0} failed to open", path);
         return false;
       }
+    }
+    return true;
+  }
+  
+  bool load_hlsl(const std::string& file_name, const std::string& entrypoint, const std::string& target, ID3D10Blob** out_shader_blob)
+  {
+    std::string path = io::get_shader_file_path(file_name.c_str());
+    
+    ID3DBlob* shader_compiler_errors_blob = nullptr;
+    std::wstring wpath = std::wstring(path.begin(), path.end());
+    LPCWSTR sw = wpath.c_str();
+    HRESULT result = D3DCompileFromFile(sw, nullptr, nullptr, entrypoint.c_str(), target.c_str(), 0, 0, out_shader_blob, &shader_compiler_errors_blob);
+    if (FAILED(result))
+    {
+      if (result == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+      {
+        LOG_ERROR("Could not compile shader, file {0} not found.", file_name);
+      }
+      else if (shader_compiler_errors_blob)
+      {
+        LOG_ERROR("Could not copile shader. {0}", static_cast<const char*>(shader_compiler_errors_blob->GetBufferPointer()));
+        shader_compiler_errors_blob->Release();
+      }
+      else
+      {
+        LOG_ERROR("Could not copile shader. Result: {0}", result);
+      }
+      return false;
     }
     return true;
   }

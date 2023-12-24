@@ -4,6 +4,7 @@
 
 #include <d3d11_1.h>
 #include <d3dcompiler.h>
+#include "renderer/dx11_lib.h"
 
 #include "nlohmann/json.hpp"
 
@@ -14,7 +15,6 @@
 #include "resources/resources_io.h"
 #include "object/object_registry.h"
 #include "persistence/object_persistence.h"
-#include "renderer/dx11_lib.h"
 
 namespace engine
 {
@@ -42,37 +42,19 @@ namespace engine
     nlohmann::json j;
     input_stream >> j;
     instance->accept(deserialize_object(j));
-
-    ID3DBlob* vs_blob;
-    ID3D11VertexShader* vs;
+    
+    if(!load_hlsl(instance->shader_file_name, instance->entrypoint, instance->target, &instance->shader_blob))
     {
-      ID3DBlob* shader_compiler_errors_blob;
-      std::wstring stemp = std::wstring(instance->shader_file_name.begin(), instance->shader_file_name.end());
-      LPCWSTR sw = stemp.c_str();
-      HRESULT result = D3DCompileFromFile(sw, nullptr, nullptr, "vs_main", "vs_5_0", 0, 0, &vs_blob, &shader_compiler_errors_blob);
-      if (FAILED(result))
-      {
-        if (result == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
-        {
-          LOG_ERROR("Could not compile shader, file {0} not found.", instance->shader_file_name);
-        }
-        else if (shader_compiler_errors_blob)
-        {
-          LOG_ERROR("{0}", (const char*)shader_compiler_errors_blob->GetBufferPointer());
-          shader_compiler_errors_blob->Release();
-        }
-        vs_blob->Release();// FIX RAII for DX11 objects
-        return false;
-      }
+      instance->shader_blob->Release();
+      return false;
+    }
 
-      result = dx11::instance().device->CreateVertexShader(vs_blob->GetBufferPointer(), vs_blob->GetBufferSize(), nullptr, &vs);
-      if (FAILED(result))
-      {
-        LOG_ERROR("Unable to create vertex shader: {0}", instance->shader_file_name);
-        vs_blob->Release();
-        return false;
-      }
-     vs_blob->Release();
+    HRESULT result = dx11::instance().device->CreateVertexShader(instance->shader_blob->GetBufferPointer(), instance->shader_blob->GetBufferSize(), nullptr, &instance->shader);
+    if (FAILED(result))
+    {
+      LOG_ERROR("Unable to create vertex shader: {0}", instance->shader_file_name);
+      instance->shader_blob->Release();
+      return false;
     }
     return true;
   }

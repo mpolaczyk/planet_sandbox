@@ -1,0 +1,5 @@
+{
+  "shader_file_name": "gpu_renderer_shaders.hlsl",
+  "entrypoint" : "ps_main",
+  "target": "ps_5_0"
+}

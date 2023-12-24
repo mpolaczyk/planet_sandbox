@@ -67,7 +67,7 @@ namespace engine
   {
     std::string workspace_dir = get_workspace_dir();
     std::ostringstream oss;
-    oss << workspace_dir << "Images\\";
+    oss << workspace_dir << "Images\\"; // FIX Rename to renders so it does not confuse with get_textures_dir()
     return oss.str();
   }
 
@@ -124,9 +124,9 @@ namespace engine
 
   std::string io::get_shader_file_path(const char* file_name)
   {
-    std::string textures_dir = get_shaders_dir();
+    std::string shaders_dir = get_shaders_dir();
     std::ostringstream oss;
-    oss << textures_dir << file_name;
+    oss << shaders_dir << file_name;
     return oss.str();
   }
   

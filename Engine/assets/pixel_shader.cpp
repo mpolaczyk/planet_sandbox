@@ -2,6 +2,10 @@
 #include <fstream>
 #include <sstream>
 
+#include <d3d11_1.h>
+#include <d3dcompiler.h>
+#include "renderer/dx11_lib.h"
+
 #include "nlohmann/json.hpp"
 
 #include "assets/pixel_shader.h"
@@ -38,15 +42,20 @@ namespace engine
     nlohmann::json j;
     input_stream >> j;
     instance->accept(deserialize_object(j));
-
-    REG.set_custom_display_name(instance->get_runtime_id(), name);
-
-    //if (!load_img(instance->img_file_name, instance->width, instance->height, instance))
-    //{
-    //  LOG_ERROR("Failed to load texture file: {0}", instance->img_file_name.c_str());
-    //  return false;
-    //}
-    // FIX compile asset
+    
+    if(!load_hlsl(instance->shader_file_name, instance->entrypoint, instance->target, &instance->shader_blob))
+    {
+      instance->shader_blob->Release();
+      return false;
+    }
+    
+    HRESULT result = dx11::instance().device->CreatePixelShader(instance->shader_blob->GetBufferPointer(), instance->shader_blob->GetBufferSize(), nullptr, &instance->shader);
+    if (FAILED(result))
+    {
+      LOG_ERROR("Unable to create pixel shader: {0}", instance->shader_file_name);
+      instance->shader_blob->Release();
+      return false;
+    }
     return true;
   }
 }
