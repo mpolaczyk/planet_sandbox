@@ -185,19 +185,21 @@ int app_main()
         app_state.output_width = app_state.renderer_conf.resolution_horizontal;
         app_state.output_height = app_state.renderer_conf.resolution_vertical;
 
-        app_state.renderer->render_single_async(app_state.scene_root, app_state.renderer_conf, app_state.camera_conf);
+        app_state.renderer->render_frame(app_state.scene_root, app_state.renderer_conf, app_state.camera_conf);
 
-        bool ret = dx.load_texture_from_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, &app_state.output_srv, &app_state.output_texture);
-        IM_ASSERT(ret);
+        // FIX this break CPU renderers
+        //bool ret = dx.load_texture_from_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, &app_state.output_srv, &app_state.output_texture);
+        //IM_ASSERT(ret);
 
         app_state.rw_model.rp_model.render_pressed = false;
       }
 
+      // FIX this break CPU renderers
       // Updating the texture output window so that the scene render is visible in UI
-      if (app_state.output_texture)
-      {
-        dx.update_texture_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, app_state.output_texture);
-      }
+      //if (app_state.output_texture)
+      //{
+      //  dx.update_texture_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, app_state.output_texture);
+      //}
     }
 
     // UI rendering
@@ -210,8 +212,8 @@ int app_main()
       clear_color.w
     };
     ImGui::Render(); // Draw, prepare for render
-    dx.device_context->OMSetRenderTargets(1, &dx.frame_buffer_view, NULL);
-    dx.device_context->ClearRenderTargetView(dx.frame_buffer_view, clear_color_with_alpha);
+    dx.device_context->OMSetRenderTargets(1, &dx.rtv, NULL);
+    dx.device_context->ClearRenderTargetView(dx.rtv, clear_color_with_alpha);
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
     if (true)

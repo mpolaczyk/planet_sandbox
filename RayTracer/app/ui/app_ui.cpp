@@ -13,6 +13,7 @@
 #include "hittables/hittables.h"
 #include "hittables/static_mesh.h"
 #include "hittables/scene.h"
+#include "renderer/dx11_lib.h"
 
 void draw_raytracer_window(raytracer_window_model& model, app_instance& state)
 {
@@ -159,12 +160,13 @@ void draw_hotkeys_panel(app_instance& state)
 
 void draw_output_window(output_window_model& model, app_instance& state)
 {
-  if (state.output_texture != nullptr)
+  dx11& dx = dx11::instance();
+  if (dx.output_texture != nullptr)
   {
     ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
     ImVec2 size = ImVec2(state.output_width * model.zoom, state.output_height * model.zoom);
-    ImGui::Image((ImTextureID)state.output_srv, size, ImVec2(0, 1), ImVec2(1, 0));
+    ImGui::Image((ImTextureID)dx.output_srv, size, ImVec2(0, 1), ImVec2(1, 0));
 
     if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
     {

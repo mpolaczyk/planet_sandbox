@@ -8,17 +8,6 @@
 
 namespace engine
 {
-  void dx11::create_render_target()
-  {
-    ID3D11Texture2D* frame_buffer;
-    HRESULT result = swap_chain->GetBuffer(0, IID_PPV_ARGS(&frame_buffer));
-    assert(SUCCEEDED(result));
-    
-    result = device->CreateRenderTargetView(frame_buffer, NULL, &frame_buffer_view);
-    assert(SUCCEEDED(result));
-    frame_buffer->Release();
-  }
-
   bool dx11::create_device()
   {
     ID3D11Device* base_device;
@@ -134,9 +123,73 @@ namespace engine
     return true;
   }
 
+  void dx11::create_render_target()
+  {
+    ID3D11Texture2D* frame_buffer;
+    HRESULT result = swap_chain->GetBuffer(0, IID_PPV_ARGS(&frame_buffer));
+    assert(SUCCEEDED(result));
+    
+    result = device->CreateRenderTargetView(frame_buffer, NULL, &rtv);
+    assert(SUCCEEDED(result));
+    frame_buffer->Release();
+  }
+  
+  void dx11::create_output_texture(unsigned int width, unsigned int height)
+  {
+    if(width == output_width && height == output_height && output_texture)
+    {
+      return;
+    }
+    if(width != output_width || height != output_height)
+    {
+      output_width = width;
+      output_height = height;
+      if(output_texture != nullptr)
+      {
+        output_rtv->Release();
+        output_srv->Release();
+        output_texture->Release();
+        output_rtv = nullptr;
+        output_srv = nullptr;
+        output_texture = nullptr;
+      }
+    }
+    {
+      D3D11_TEXTURE2D_DESC desc = {};
+      desc.Width = output_width;
+      desc.Height = output_height;
+      desc.MipLevels = 1;
+      desc.ArraySize = 1;
+      desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+      desc.SampleDesc.Count = 1;
+      desc.Usage = D3D11_USAGE_DEFAULT;
+      desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+      desc.CPUAccessFlags = 0;
+      desc.MiscFlags = 0;
+      device->CreateTexture2D(&desc, NULL, &output_texture);
+    }
+    {
+      D3D11_RENDER_TARGET_VIEW_DESC desc = {};
+      desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+      desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+      desc.Texture2D.MipSlice = 0;
+      HRESULT result = device->CreateRenderTargetView(output_texture, &desc, &output_rtv);
+      assert(SUCCEEDED(result));
+    }
+    {
+      D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
+      desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+      desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+      desc.Texture2D.MostDetailedMip = 0;
+      desc.Texture2D.MipLevels = 1;
+      HRESULT result = device->CreateShaderResourceView(output_texture, &desc, &output_srv);
+      assert(SUCCEEDED(result));
+    }
+  }
+
   void dx11::cleanup_render_target()
   {
-    if (frame_buffer_view) { frame_buffer_view->Release(); frame_buffer_view = NULL; }
+    if (rtv) { rtv->Release(); rtv = NULL; }
   }
 
   void dx11::cleanup_device()

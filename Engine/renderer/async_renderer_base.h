@@ -46,9 +46,9 @@ namespace engine
   public:
     OBJECT_DECLARE(async_renderer_base, object)
 
-    async_renderer_base();
+    async_renderer_base() = default;
     virtual ~async_renderer_base();
-    async_renderer_base(const async_renderer_base&) = default;
+    async_renderer_base(const async_renderer_base&) = default; // FIX w don't want to copy renderer but all objects are copyable... make it optional
     async_renderer_base& operator=(const async_renderer_base&) = default;
     async_renderer_base(async_renderer_base&&) = delete;
     async_renderer_base& operator=(async_renderer_base&&) = delete;
@@ -59,7 +59,8 @@ namespace engine
     virtual void job_cleanup() {}
     
     // Main thread public interface.
-    void render_single_async(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config);
+    void render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config);
+    virtual bool is_async() const { return true; }
     bool is_world_dirty(const scene* in_scene) const;
     bool is_renderer_setting_dirty(const renderer_config& in_renderer_config) const;
     bool is_renderer_type_different(const renderer_config& in_renderer_config) const;

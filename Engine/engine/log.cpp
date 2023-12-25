@@ -14,7 +14,7 @@ namespace engine
     s_console_logger = spdlog::stdout_color_mt("console");
 
 #if BUILD_DEBUG
-    s_console_logger->set_level(spdlog::level::trace);
+    s_console_logger->set_level(spdlog::level::debug);
 #elif BUILD_RELEASE
     s_console_logger->set_level(spdlog::level::info);
 #endif

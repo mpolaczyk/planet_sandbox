@@ -20,18 +20,16 @@ namespace engine
   OBJECT_DEFINE(async_renderer_base, object, Async renderer base)
   OBJECT_DEFINE_NOSPAWN(async_renderer_base)
 
-  async_renderer_base::async_renderer_base()
-  {
-    worker_thread = new std::thread(&async_renderer_base::worker_function, this);
-    worker_semaphore = new std::binary_semaphore(0);
-  }
   async_renderer_base::~async_renderer_base()
   {
-    job_state.requested_stop = true;
-    worker_semaphore->release();
-    worker_thread->join();
-    delete worker_semaphore;
-    delete worker_thread;
+    if (worker_thread)
+    {
+      job_state.requested_stop = true;
+      worker_semaphore->release();
+      worker_thread->join();
+      delete worker_semaphore;
+      delete worker_thread;
+    }
     delete job_state.img_rgb;
     delete job_state.img_bgr;
   }
@@ -54,7 +52,7 @@ namespace engine
     job_state.scene_root_hash = in_scene->get_hash();
     job_state.cam.configure(in_camera_config);
 
-    // Delete buffers 
+    // Delete CPU buffers   // FIX unify this with GPU buffers
     if (job_state.img_rgb != nullptr)
     {
       if (force_recreate_buffers || !job_state.renderer_conf.reuse_buffer)
@@ -74,14 +72,26 @@ namespace engine
     }
   }
 
-  void async_renderer_base::render_single_async(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config)
+  void async_renderer_base::render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config)
   {
     if (job_state.is_working) return;
     
     set_job_state(in_scene, in_renderer_config, in_camera_config);
 
     job_state.is_working = true;
-    worker_semaphore->release();
+    if(is_async())
+    {
+      if(worker_thread == nullptr)
+      {
+        worker_thread = new std::thread(&async_renderer_base::worker_function, this);
+        worker_semaphore = new std::binary_semaphore(0);
+      }
+      worker_semaphore->release();
+    }
+    else
+    {
+      worker_function();
+    }
   }
 
   bool async_renderer_base::is_world_dirty(const scene* in_scene) const
@@ -110,9 +120,12 @@ namespace engine
     job_init();
     while (true)
     {
-      worker_semaphore->acquire();
-      if (job_state.requested_stop) { break; }
-
+      if(worker_thread)
+      {
+        worker_semaphore->acquire();
+        if (job_state.requested_stop) { break; }
+      }
+      
       stats::reset();
       instance benchmark_render;
       benchmark_render.start("Render");
@@ -137,6 +150,10 @@ namespace engine
       }
 
       job_state.is_working = false;
+      if(!worker_thread)
+      {
+        break;
+      }
     }
     job_cleanup();
   }
