@@ -49,10 +49,6 @@ public:
   int output_width = 0;
   int output_height = 0;
   renderer_base* renderer = nullptr;
-
-  // FIX used only for cpu renderer...
-  ID3D11ShaderResourceView* output_srv = nullptr;
-  ID3D11Texture2D* output_texture = nullptr;
   
   vec3 center_of_scene;
   float distance_to_center_of_scene = 0.0f;

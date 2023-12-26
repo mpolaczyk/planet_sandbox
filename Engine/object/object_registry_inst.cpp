@@ -8,6 +8,7 @@
 #include "assets/vertex_shader.h"
 #include "assets/pixel_shader.h"
 #include "renderer/renderer_base.h"
+#include "renderer/cpu_renderer.h"
 #include "renderers/cpu_renderer_reference.h"
 #include "renderers/cpu_renderer_preview.h"
 #include "renderers/cpu_renderer_faces.h"
@@ -49,6 +50,7 @@ namespace engine
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(pixel_shader_asset)
   
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(renderer_base)
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(cpu_renderer)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(cpu_renderer_reference)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(cpu_renderer_preview)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(cpu_renderer_faces)
@@ -73,10 +75,11 @@ namespace engine
     CLASS_OBJECT_REGISTER(pixel_shader_asset, asset_base)
     
     CLASS_OBJECT_REGISTER(renderer_base, object)
-    CLASS_OBJECT_REGISTER(cpu_renderer_preview, renderer_base)
-    CLASS_OBJECT_REGISTER(cpu_renderer_normals, renderer_base)
-    CLASS_OBJECT_REGISTER(cpu_renderer_faces, renderer_base)
-    CLASS_OBJECT_REGISTER(cpu_renderer_reference, renderer_base)
+    CLASS_OBJECT_REGISTER(cpu_renderer, renderer_base)
+    CLASS_OBJECT_REGISTER(cpu_renderer_preview, cpu_renderer)
+    CLASS_OBJECT_REGISTER(cpu_renderer_normals, cpu_renderer)
+    CLASS_OBJECT_REGISTER(cpu_renderer_faces, cpu_renderer)
+    CLASS_OBJECT_REGISTER(cpu_renderer_reference, cpu_renderer)
     CLASS_OBJECT_REGISTER(gpu_renderer, renderer_base)
     
     CLASS_OBJECT_REGISTER(hittable, object)

@@ -17,7 +17,7 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(cpu_renderer_reference, renderer_base, CPU renderer reference)
+  OBJECT_DEFINE(cpu_renderer_reference, cpu_renderer, CPU renderer reference)
   OBJECT_DEFINE_SPAWN(cpu_renderer_reference)
 
   void cpu_renderer_reference::job_update()

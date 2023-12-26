@@ -1,15 +1,15 @@
 #pragma once
 
-#include "renderer/renderer_base.h"
+#include "renderer/cpu_renderer.h"
 #include "math/chunk_generator.h"
 #include "core/core.h"
 
 namespace engine
 {
-  class ENGINE_API cpu_renderer_faces : public renderer_base
+  class ENGINE_API cpu_renderer_faces : public cpu_renderer
   {
   public:
-    OBJECT_DECLARE(cpu_renderer_faces, renderer_base)
+    OBJECT_DECLARE(cpu_renderer_faces, cpu_renderer)
   
   private:
     virtual void job_update() override;

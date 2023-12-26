@@ -14,7 +14,7 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(cpu_renderer_preview, renderer_base, CPU renderer preview)
+  OBJECT_DEFINE(cpu_renderer_preview, cpu_renderer, CPU renderer preview)
   OBJECT_DEFINE_SPAWN(cpu_renderer_preview)
 
   void cpu_renderer_preview::job_update()

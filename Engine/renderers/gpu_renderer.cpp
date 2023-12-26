@@ -11,19 +11,19 @@ namespace engine
 {
   OBJECT_DEFINE(gpu_renderer, renderer_base, GPU renderer)
   OBJECT_DEFINE_SPAWN(gpu_renderer)
-  
-  void gpu_renderer::setup_output_texture(unsigned int width, unsigned int height)
+
+  void gpu_renderer::render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config)
   {
-    if(width == output_width && height == output_height && output_texture)
-    {
-      return;
-    }
-    if(width != output_width || height != output_height)
-    {
-      output_width = width;
-      output_height = height;
-      cleanup_output_texture();
-    }
+    output_width = in_renderer_config.resolution_horizontal;
+    output_height = in_renderer_config.resolution_vertical;
+    
+    init();
+    update();
+    cleanup();
+  }
+  
+  void gpu_renderer::setup_output_texture()
+  {
     dx11& dx = dx11::instance();
     {
       D3D11_TEXTURE2D_DESC desc = {};
@@ -57,28 +57,8 @@ namespace engine
       assert(SUCCEEDED(result));
     }
   }
-
-  void gpu_renderer::cleanup_output_texture()
-  {
-    if(output_texture != nullptr)
-    {
-      output_texture->Release();
-      output_texture = nullptr;
-    }
-    if(output_rtv != nullptr)
-    {
-      output_rtv->Release();
-      output_rtv = nullptr;
-    }
-    if(output_srv != nullptr)
-    {
-      output_srv->Release();
-      output_srv = nullptr;
-    }
-  }
-
   
-  void gpu_renderer::job_init()
+  void gpu_renderer::init()
   {
     // FIX temporary hack here! It should be properly persistent as part fo the scene (not hittable)
     vertex_shader.set_name("gpu_renderer_vs");
@@ -122,12 +102,12 @@ namespace engine
     }
   }
   
-  void gpu_renderer::job_update()
+  void gpu_renderer::update()
   {
     FLOAT bg_color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-    D3D11_VIEWPORT viewport = { 0.0f, 0.0f, static_cast<float>(job_state.image_width), static_cast<float>(job_state.image_height), 0.0f, 1.0f };
+    D3D11_VIEWPORT viewport = { 0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f };
     
-    setup_output_texture(job_state.image_width, job_state.image_height);
+    setup_output_texture();
 
     dx11& dx = dx11::instance();
     dx.device_context->RSSetViewports(1, &viewport);
@@ -141,8 +121,23 @@ namespace engine
     dx.device_context->Draw(num_verts, 0);
   }
 
-  void gpu_renderer::job_cleanup()
+  void gpu_renderer::cleanup()
   {
-    cleanup_output_texture();
+    renderer_base::cleanup();
+    if(output_rtv != nullptr)
+    {
+      output_rtv->Release();
+      output_rtv = nullptr;
+    }
+    if(input_layout != nullptr)
+    {
+      input_layout->Release();
+      input_layout = nullptr;
+    }
+    if(vertex_buffer != nullptr)
+    {
+      vertex_buffer->Release();
+      vertex_buffer = nullptr;
+    }
   }
 }
