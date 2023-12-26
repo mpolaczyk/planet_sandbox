@@ -3,7 +3,7 @@
 #include <functional>
 
 #include "math/camera.h"
-#include "renderer/async_renderer_base.h"
+#include "renderer/renderer_base.h"
 #include "ui/ui.h"
 
 struct ID3D11ShaderResourceView;
@@ -11,7 +11,7 @@ struct ID3D11Texture2D;
 
 namespace engine
 {
-  class async_renderer_base;
+  class renderer_base;
   class material_asset;
   class hittable;
   class scene;
@@ -48,7 +48,7 @@ public:
   bool is_running = true;
   int output_width = 0;
   int output_height = 0;
-  async_renderer_base* renderer = nullptr;
+  renderer_base* renderer = nullptr;
 
   // FIX used only for cpu renderer...
   ID3D11ShaderResourceView* output_srv = nullptr;

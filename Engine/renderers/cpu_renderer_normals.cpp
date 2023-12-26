@@ -13,7 +13,7 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(cpu_renderer_normals, async_renderer_base, CPU renderer normals)
+  OBJECT_DEFINE(cpu_renderer_normals, renderer_base, CPU renderer normals)
   OBJECT_DEFINE_SPAWN(cpu_renderer_normals)
 
   void cpu_renderer_normals::job_update()

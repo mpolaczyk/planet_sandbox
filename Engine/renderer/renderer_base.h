@@ -44,17 +44,17 @@ namespace engine
   };
 
   // The responsibility of this class is to render to a texture
-  class ENGINE_API async_renderer_base : public object
+  class ENGINE_API renderer_base : public object
   {
   public:
-    OBJECT_DECLARE(async_renderer_base, object)
+    OBJECT_DECLARE(renderer_base, object)
 
-    async_renderer_base() = default;
-    virtual ~async_renderer_base();
-    async_renderer_base(const async_renderer_base&) = default; // FIX w don't want to copy renderer but all objects are copyable... make it optional
-    async_renderer_base& operator=(const async_renderer_base&) = default;
-    async_renderer_base(async_renderer_base&&) = delete;
-    async_renderer_base& operator=(async_renderer_base&&) = delete;
+    renderer_base() = default;
+    virtual ~renderer_base();
+    renderer_base(const renderer_base&) = default; // FIX w don't want to copy renderer but all objects are copyable... make it optional
+    renderer_base& operator=(const renderer_base&) = default;
+    renderer_base(renderer_base&&) = delete;
+    renderer_base& operator=(renderer_base&&) = delete;
     
     // Worker thread public interface, implement rendering logic here
     virtual void job_init() {}        // Fired once in a lifetime

@@ -62,9 +62,9 @@ namespace EngineTests
     TEST_METHOD(object_types)
     {
       // A few checks for comparing class types and their hierachy
-      async_renderer_base* b = async_renderer_base::spawn();
-      async_renderer_base* r = cpu_renderer_reference::spawn();
-      async_renderer_base* n = cpu_renderer_normals::spawn();
+      renderer_base* b = renderer_base::spawn();
+      renderer_base* r = cpu_renderer_reference::spawn();
+      renderer_base* n = cpu_renderer_normals::spawn();
 
       // Spawn and no spawn
       Assert::IsNull(b, L"a");
@@ -73,11 +73,11 @@ namespace EngineTests
 
       // Basic class information
       Assert::IsTrue(r->get_class() == cpu_renderer_reference::get_class_static(), L"b");
-      Assert::IsTrue(r->get_parent_class() == async_renderer_base::get_class_static(), L"bb");
+      Assert::IsTrue(r->get_parent_class() == renderer_base::get_class_static(), L"bb");
 
       // Base class recognition
       Assert::IsTrue(r->is_child_of(object::get_class_static()), L"c");
-      Assert::IsTrue(r->is_child_of(async_renderer_base::get_class_static()), L"cc");
+      Assert::IsTrue(r->is_child_of(renderer_base::get_class_static()), L"cc");
       Assert::IsTrue(r->is_child_of(cpu_renderer_reference::get_class_static()), L"ccc");
 
       Assert::IsFalse(r->is_child_of(hittable::get_class_static()), L"d");

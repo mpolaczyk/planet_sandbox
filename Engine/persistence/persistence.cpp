@@ -3,7 +3,7 @@
 
 #include "asset/soft_asset_ptr.h"
 #include "math/camera.h"
-#include "renderer/async_renderer_base.h"
+#include "renderer/renderer_base.h"
 
 #include "nlohmann/json.hpp"
 #include "object/object_registry.h"

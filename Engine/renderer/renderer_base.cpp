@@ -2,7 +2,7 @@
 #include <thread>
 #include <semaphore>
 
-#include "async_renderer_base.h"
+#include "renderer_base.h"
 
 #include "resources/bmp.h"
 
@@ -17,10 +17,10 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(async_renderer_base, object, Async renderer base)
-  OBJECT_DEFINE_NOSPAWN(async_renderer_base)
+  OBJECT_DEFINE(renderer_base, object, Async renderer base)
+  OBJECT_DEFINE_NOSPAWN(renderer_base)
 
-  async_renderer_base::~async_renderer_base()
+  renderer_base::~renderer_base()
   {
     if (worker_thread)
     {
@@ -34,7 +34,7 @@ namespace engine
     delete job_state.img_bgr;
   }
 
-  void async_renderer_base::set_job_state(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config)
+  void renderer_base::set_job_state(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config)
   {
     assert(in_scene != nullptr);
 
@@ -72,7 +72,7 @@ namespace engine
     }
   }
 
-  void async_renderer_base::render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config)
+  void renderer_base::render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config)
   {
     if (job_state.is_working) return;
     
@@ -83,7 +83,7 @@ namespace engine
     {
       if(worker_thread == nullptr)
       {
-        worker_thread = new std::thread(&async_renderer_base::worker_function, this);
+        worker_thread = new std::thread(&renderer_base::worker_function, this);
         worker_semaphore = new std::binary_semaphore(0);
       }
       worker_semaphore->release();
@@ -94,12 +94,12 @@ namespace engine
     }
   }
 
-  void async_renderer_base::cancel()
+  void renderer_base::cancel()
   {
     job_state.requested_stop = true;
   }
 
-  void async_renderer_base::worker_function()
+  void renderer_base::worker_function()
   {
     if(!job_init_done)
     {
@@ -128,13 +128,13 @@ namespace engine
     }
   }
   
-  void async_renderer_base::job_pre_update()
+  void renderer_base::job_pre_update()
   {
     stats::reset();
     benchmark_render.start("Render");
   }
 
-  void async_renderer_base::job_post_update()
+  void renderer_base::job_post_update()
   {
     job_state.benchmark_render_time = benchmark_render.stop();
     job_state.is_working = false;
@@ -156,7 +156,7 @@ namespace engine
     }
   }
 
-  void async_renderer_base::save(const char* file_name) const
+  void renderer_base::save(const char* file_name) const
   {
     job_state.img_bgr->save_to_file(file_name);
   }

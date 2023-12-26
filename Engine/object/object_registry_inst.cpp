@@ -7,7 +7,7 @@
 #include "assets/texture.h"
 #include "assets/vertex_shader.h"
 #include "assets/pixel_shader.h"
-#include "renderer/async_renderer_base.h"
+#include "renderer/renderer_base.h"
 #include "renderers/cpu_renderer_reference.h"
 #include "renderers/cpu_renderer_preview.h"
 #include "renderers/cpu_renderer_faces.h"
@@ -48,7 +48,7 @@ namespace engine
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(vertex_shader_asset)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(pixel_shader_asset)
   
-  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(async_renderer_base)
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(renderer_base)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(cpu_renderer_reference)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(cpu_renderer_preview)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(cpu_renderer_faces)
@@ -72,12 +72,12 @@ namespace engine
     CLASS_OBJECT_REGISTER(vertex_shader_asset, asset_base)
     CLASS_OBJECT_REGISTER(pixel_shader_asset, asset_base)
     
-    CLASS_OBJECT_REGISTER(async_renderer_base, object)
-    CLASS_OBJECT_REGISTER(cpu_renderer_preview, async_renderer_base)
-    CLASS_OBJECT_REGISTER(cpu_renderer_normals, async_renderer_base)
-    CLASS_OBJECT_REGISTER(cpu_renderer_faces, async_renderer_base)
-    CLASS_OBJECT_REGISTER(cpu_renderer_reference, async_renderer_base)
-    CLASS_OBJECT_REGISTER(gpu_renderer, async_renderer_base)
+    CLASS_OBJECT_REGISTER(renderer_base, object)
+    CLASS_OBJECT_REGISTER(cpu_renderer_preview, renderer_base)
+    CLASS_OBJECT_REGISTER(cpu_renderer_normals, renderer_base)
+    CLASS_OBJECT_REGISTER(cpu_renderer_faces, renderer_base)
+    CLASS_OBJECT_REGISTER(cpu_renderer_reference, renderer_base)
+    CLASS_OBJECT_REGISTER(gpu_renderer, renderer_base)
     
     CLASS_OBJECT_REGISTER(hittable, object)
     CLASS_OBJECT_REGISTER(scene, hittable)

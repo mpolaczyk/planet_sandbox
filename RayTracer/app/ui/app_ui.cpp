@@ -5,7 +5,7 @@
 
 #include "app/app.h"
 #include "math/chunk_generator.h"
-#include "renderer/async_renderer_base.h"
+#include "renderer/renderer_base.h"
 #include "math/camera.h"
 
 #include "core/core.h"
@@ -62,7 +62,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
   
   ImGui::Separator();
-  model.r_model.objects = REG.find_all<const class_object>([](const class_object* obj) -> bool { return obj->get_parent_class_name() == async_renderer_base::get_class_static()->get_class_name(); });
+  model.r_model.objects = REG.find_all<const class_object>([](const class_object* obj) -> bool { return obj->get_parent_class_name() == renderer_base::get_class_static()->get_class_name(); });
   draw_selection_combo<class_object>(model.r_model, state, "Renderer class",
     [=](const class_object* obj) -> bool { return true; }, state.renderer_conf.type);
   if(model.r_model.selected_object != state.renderer_conf.type)

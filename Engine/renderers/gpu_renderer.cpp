@@ -9,7 +9,7 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(gpu_renderer, async_renderer_base, GPU renderer)
+  OBJECT_DEFINE(gpu_renderer, renderer_base, GPU renderer)
   OBJECT_DEFINE_SPAWN(gpu_renderer)
   
   void gpu_renderer::setup_output_texture(unsigned int width, unsigned int height)

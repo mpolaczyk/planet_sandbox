@@ -12,7 +12,7 @@
 
 #include "app/app.h"
 #include "renderer/dx11_lib.h"
-#include "renderer/async_renderer_base.h"
+#include "renderer/renderer_base.h"
 #include "renderers/gpu_renderer.h"
 
 
@@ -116,7 +116,7 @@ int app_main()
   app_state.load_assets();
   app_state.load_scene_state();
   app_state.scene_root->load_resources();
-  app_state.renderer = REG.spawn_from_class<async_renderer_base>(app_state.renderer_conf.type);
+  app_state.renderer = REG.spawn_from_class<renderer_base>(app_state.renderer_conf.type);
   ::SetWindowPos(hwnd, NULL, app_state.window_conf.x, app_state.window_conf.y, app_state.window_conf.w, app_state.window_conf.h, NULL);
 
   // Auto render on startup
@@ -166,7 +166,7 @@ int app_main()
 
       // Add new one
       auto new_class = app_state.renderer_conf.new_type;
-      auto new_renderer = REG.spawn_from_class<async_renderer_base>(new_class);
+      auto new_renderer = REG.spawn_from_class<renderer_base>(new_class);
       app_state.renderer_conf.type = new_class;
       app_state.renderer = new_renderer;
     }
