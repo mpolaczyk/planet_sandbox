@@ -9,178 +9,181 @@
 #include "renderers/cpu_renderer_preview.h"
 #include "renderers/cpu_renderer_reference.h"
 
-app_instance::app_instance()
+namespace ray_tracer
 {
-  scene_root = scene::spawn();
-}
-
-app_instance::~app_instance()
-{
-  if (renderer)
+  app_instance::app_instance()
   {
-    renderer->destroy();
+    scene_root = scene::spawn();
   }
-  if (scene_root)
-  {
-    scene_root->destroy();
-  }
-}
 
-void update_default_spawn_position(app_instance& state)
-{
-  // Find center of the scene, new objects scan be spawned there
-  vec3 look_from = state.camera_conf.look_from;
-  vec3 look_dir = state.camera_conf.look_dir;
-  float dist_to_focus = state.camera_conf.dist_to_focus;
-
-  // Ray to the look at position to find non colliding spawn point
-  ray center_of_scene_ray(look_from, look_dir);
-  hit_record center_of_scene_hit;
-  if (state.scene_root->hit(center_of_scene_ray, 2.0f*dist_to_focus, center_of_scene_hit))
+  app_instance::~app_instance()
   {
-    state.center_of_scene = center_of_scene_hit.p;
-    state.distance_to_center_of_scene = math::length(center_of_scene_hit.p - look_from);
-  }
-  else
-  {
-    state.center_of_scene = look_from - look_dir * dist_to_focus;
-    state.distance_to_center_of_scene = dist_to_focus;
-  }
-}
-
-void handle_input(app_instance& state)
-{
-  // Handle clicks on the output window - select the object under the cursor
-  if (state.output_window_lmb_x > 0.0f && state.output_window_lmb_y > 0.0f)
-  {
-    float u = state.output_window_lmb_x / (state.output_width - 1);
-    float v = state.output_window_lmb_y / (state.output_height - 1);
-    v = 1.0f - v; // because vertical axis is flipped in the output window
-    camera cam;
-    cam.configure(state.camera_conf);
-    ray r = cam.get_ray(u, v);
-    hit_record hit;
-    if (state.scene_root->hit(r, math::infinity, hit))
+    if (renderer)
     {
-      state.selected_object = hit.object;
+      renderer->destroy();
     }
-
-    state.output_window_lmb_x = -1.0f;
-    state.output_window_lmb_y = -1.0f;
-  }
-
-  const ImGuiIO& io = ImGui::GetIO();
-
-  // Handle hotkeys
-  if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
-  {
-    state.is_running = false;
-  }
-  if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F1)))
-  {
-    if (state.renderer_conf.type == cpu_renderer_preview::get_class_static())
+    if (scene_root)
     {
-      state.rw_model.rp_model.render_pressed = true;
+      scene_root->destroy();
+    }
+  }
+
+  void update_default_spawn_position(app_instance& state)
+  {
+    // Find center of the scene, new objects scan be spawned there
+    vec3 look_from = state.camera_conf.look_from;
+    vec3 look_dir = state.camera_conf.look_dir;
+    float dist_to_focus = state.camera_conf.dist_to_focus;
+
+    // Ray to the look at position to find non colliding spawn point
+    ray center_of_scene_ray(look_from, look_dir);
+    hit_record center_of_scene_hit;
+    if (state.scene_root->hit(center_of_scene_ray, 2.0f*dist_to_focus, center_of_scene_hit))
+    {
+      state.center_of_scene = center_of_scene_hit.p;
+      state.distance_to_center_of_scene = math::length(center_of_scene_hit.p - look_from);
     }
     else
     {
-      state.renderer_conf.type = cpu_renderer_preview::get_class_static();
+      state.center_of_scene = look_from - look_dir * dist_to_focus;
+      state.distance_to_center_of_scene = dist_to_focus;
     }
   }
-  if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F2)))
+
+  void handle_input(app_instance& state)
   {
-    if (state.renderer_conf.type == cpu_renderer_reference::get_class_static())
+    // Handle clicks on the output window - select the object under the cursor
+    if (state.output_window_lmb_x > 0.0f && state.output_window_lmb_y > 0.0f)
+    {
+      float u = state.output_window_lmb_x / (state.output_width - 1);
+      float v = state.output_window_lmb_y / (state.output_height - 1);
+      v = 1.0f - v; // because vertical axis is flipped in the output window
+      camera cam;
+      cam.configure(state.camera_conf);
+      ray r = cam.get_ray(u, v);
+      hit_record hit;
+      if (state.scene_root->hit(r, math::infinity, hit))
+      {
+        state.selected_object = hit.object;
+      }
+
+      state.output_window_lmb_x = -1.0f;
+      state.output_window_lmb_y = -1.0f;
+    }
+
+    const ImGuiIO& io = ImGui::GetIO();
+
+    // Handle hotkeys
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
+    {
+      state.is_running = false;
+    }
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F1)))
+    {
+      if (state.renderer_conf.type == cpu_renderer_preview::get_class_static())
+      {
+        state.rw_model.rp_model.render_pressed = true;
+      }
+      else
+      {
+        state.renderer_conf.type = cpu_renderer_preview::get_class_static();
+      }
+    }
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F2)))
+    {
+      if (state.renderer_conf.type == cpu_renderer_reference::get_class_static())
+      {
+        state.rw_model.rp_model.render_pressed = true;
+      }
+      else
+      {
+        state.renderer_conf.type = cpu_renderer_reference::get_class_static();
+      }
+    }
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F5)))
     {
       state.rw_model.rp_model.render_pressed = true;
     }
-    else
-    {
-      state.renderer_conf.type = cpu_renderer_reference::get_class_static();
-    }
-  }
-  if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F5)))
-  {
-    state.rw_model.rp_model.render_pressed = true;
-  }
 
-  // Handle speed
-  float wheel_delta = ImGui::GetIO().MouseWheel;
-  state.move_speed = math::max1(0.5f, state.move_speed + wheel_delta / 2.0f);
+    // Handle speed
+    float wheel_delta = ImGui::GetIO().MouseWheel;
+    state.move_speed = math::max1(0.5f, state.move_speed + wheel_delta / 2.0f);
 
-  // Handle camera movement
-  if (!io.WantCaptureKeyboard)
-  {
-    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_E)))
+    // Handle camera movement
+    if (!io.WantCaptureKeyboard)
     {
-      state.camera_conf.move_up(state.move_speed);
+      if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_E)))
+      {
+        state.camera_conf.move_up(state.move_speed);
+      }
+      if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Q)))
+      {
+        state.camera_conf.move_down(state.move_speed);
+      }
+      if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_W)))
+      {
+        state.camera_conf.move_forward(state.move_speed);
+      }
+      if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S)))
+      {
+        state.camera_conf.move_backward(state.move_speed);
+      }
+      if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_A)))
+      {
+        state.camera_conf.move_left(state.move_speed);
+      }
+      if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D)))
+      {
+        state.camera_conf.move_right(state.move_speed);
+      }
     }
-    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Q)))
-    {
-      state.camera_conf.move_down(state.move_speed);
-    }
-    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_W)))
-    {
-      state.camera_conf.move_forward(state.move_speed);
-    }
-    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S)))
-    {
-      state.camera_conf.move_backward(state.move_speed);
-    }
-    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_A)))
-    {
-      state.camera_conf.move_left(state.move_speed);
-    }
-    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D)))
-    {
-      state.camera_conf.move_right(state.move_speed);
-    }
-  }
   
-  // Handle camera rotation
-  if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
-  {
-    ImVec2 mouse_delta = ImGui::GetIO().MouseDelta;
+    // Handle camera rotation
+    if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
+    {
+      ImVec2 mouse_delta = ImGui::GetIO().MouseDelta;
 
-    // Check if the mouse has moved
-    if (mouse_delta.x != 0.0f || mouse_delta.y != 0.0f)
-    {
-      float rotate_speed = 0.001f; // proportion - screen space delta to radians
-      state.camera_conf.rotate(mouse_delta.x * rotate_speed, mouse_delta.y * rotate_speed);
+      // Check if the mouse has moved
+      if (mouse_delta.x != 0.0f || mouse_delta.y != 0.0f)
+      {
+        float rotate_speed = 0.001f; // proportion - screen space delta to radians
+        state.camera_conf.rotate(mouse_delta.x * rotate_speed, mouse_delta.y * rotate_speed);
+      }
     }
-  }
  
-  // Object movement
-  if (!io.WantCaptureKeyboard)
-  {
-    vec3 object_movement_axis = vec3(0.0f, 0.0f, 0.0f);
-    float mouse_delta = 0.0f;
-    if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Z)))
+    // Object movement
+    if (!io.WantCaptureKeyboard)
     {
-      object_movement_axis = vec3(1.0f, 0.0f, 0.0f);
-      mouse_delta = ImGui::GetIO().MouseDelta.x;
-      if (state.camera_conf.look_dir.z < 0.0f)
+      vec3 object_movement_axis = vec3(0.0f, 0.0f, 0.0f);
+      float mouse_delta = 0.0f;
+      if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Z)))
       {
-        mouse_delta = -mouse_delta;
+        object_movement_axis = vec3(1.0f, 0.0f, 0.0f);
+        mouse_delta = ImGui::GetIO().MouseDelta.x;
+        if (state.camera_conf.look_dir.z < 0.0f)
+        {
+          mouse_delta = -mouse_delta;
+        }
       }
-    }
-    else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_C)))
-    {
-      object_movement_axis = vec3(0.0f, -1.0f, 0.0f);
-      mouse_delta = ImGui::GetIO().MouseDelta.y;
-    }
-    else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_X)))
-    {
-      object_movement_axis = vec3(0.0f, 0.0f, 1.0f);
-      mouse_delta = ImGui::GetIO().MouseDelta.x;
-      if (state.camera_conf.look_dir.x > 0.0f)
+      else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_C)))
       {
-        mouse_delta = -mouse_delta;
+        object_movement_axis = vec3(0.0f, -1.0f, 0.0f);
+        mouse_delta = ImGui::GetIO().MouseDelta.y;
       }
-    }
-    if (!math::is_zero(object_movement_axis) && mouse_delta != 0.0f && state.selected_object != nullptr)
-    {
-      vec3 selected_origin = state.selected_object->get_origin();
-      state.selected_object->set_origin(selected_origin + object_movement_axis * mouse_delta);
+      else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_X)))
+      {
+        object_movement_axis = vec3(0.0f, 0.0f, 1.0f);
+        mouse_delta = ImGui::GetIO().MouseDelta.x;
+        if (state.camera_conf.look_dir.x > 0.0f)
+        {
+          mouse_delta = -mouse_delta;
+        }
+      }
+      if (!math::is_zero(object_movement_axis) && mouse_delta != 0.0f && state.selected_object != nullptr)
+      {
+        vec3 selected_origin = state.selected_object->get_origin();
+        state.selected_object->set_origin(selected_origin + object_movement_axis * mouse_delta);
+      }
     }
   }
 }

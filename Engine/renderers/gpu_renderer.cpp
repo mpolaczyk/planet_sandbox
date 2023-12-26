@@ -21,10 +21,7 @@ namespace engine
     output_height = in_renderer_config.resolution_vertical;
     if(recreate_output_buffers)
     {
-      DX_RELEASE(output_rtv)
-      DX_RELEASE(output_srv)
-      DX_RELEASE(output_texture)
-      create_output_texture();
+      create_output_texture(true);
     }
     
     if(!init_done) { init(); init_done = true; }
@@ -32,8 +29,14 @@ namespace engine
     update_frame();
   }
   
-  void gpu_renderer::create_output_texture()
+  void gpu_renderer::create_output_texture(bool cleanup)
   {
+    if(cleanup)
+    {
+      DX_RELEASE(output_rtv)
+      DX_RELEASE(output_srv)
+      DX_RELEASE(output_texture)
+    }
     dx11& dx = dx11::instance();
     {
       D3D11_TEXTURE2D_DESC desc = {};

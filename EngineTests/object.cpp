@@ -18,7 +18,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace engine;
 
-application* engine::create_appliation()
+application* engine::create_application()
 {
   return new application();
 }
@@ -32,7 +32,7 @@ namespace EngineTests
 
     TEST_CLASS_INITIALIZE(test_init)
     {
-      app = create_appliation();
+      app = create_application();
       app->run();
     }
 

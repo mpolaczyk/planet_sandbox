@@ -43,7 +43,7 @@ namespace engine
     bool init_done = false;
     
   protected:
-    void create_output_texture();
+    void create_output_texture(bool cleanup = false);
     void init();
     void update_frame();
   };
