@@ -11,10 +11,10 @@
 #include <tchar.h>
 
 #include "app/app.h"
+#include "renderer/cpu_renderer.h"
 #include "renderer/dx11_lib.h"
 #include "renderer/renderer_base.h"
 #include "renderers/gpu_renderer.h"
-
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -143,8 +143,6 @@ int app_main()
       ::DispatchMessage(&msg);
     }
     if (!app_state.is_running) break;
-
-    bool is_cpu_renderer = app_state.renderer->get_class() != gpu_renderer::get_class_static();
     
     // Start the Dear ImGui frame
     ImGui_ImplDX11_NewFrame();
@@ -204,32 +202,9 @@ int app_main()
 
         app_state.renderer->render_frame(app_state.scene_root, app_state.renderer_conf, app_state.camera_conf);
 
-        // FIX move this to the cpu_renderer, each renderer needs to handle resources internally
-        if (is_cpu_renderer)
-        {
-          bool ret = dx.load_texture_from_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, &app_state.output_srv, &app_state.output_texture);
-          IM_ASSERT(ret);
-        }
         app_state.rw_model.rp_model.render_pressed = false;
       }
-
-      // FIX move this to the cpu_renderer, each renderer needs to handle resources internally
-      if(is_cpu_renderer)
-      {
-        // Updating the texture output window so that the scene render is visible in UI
-        if (app_state.output_texture)
-        {
-          dx.update_texture_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, app_state.output_texture);
-        }
-      }
-    }
-    
-    // FIX
-    if(!is_cpu_renderer)
-    {
-      auto r = static_cast<gpu_renderer*>(app_state.renderer);
-      app_state.output_texture = r->output_texture;
-      app_state.output_srv = r->output_srv;
+      app_state.renderer->push_partial_update();
     }
 
     // UI rendering

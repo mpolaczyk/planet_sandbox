@@ -17,8 +17,10 @@ namespace engine
  
     // Main thread public interface.
     virtual void render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config) override;
+    virtual void push_partial_update() override;
     virtual void cancel() override { job_state.requested_stop = true; }
     virtual bool is_working() const override { return job_state.is_working; }
+    virtual bool ic_cancelled() const override { return job_state.requested_stop; }
     virtual void cleanup() override;
     
     uint64_t get_render_time() const { return job_state.benchmark_render_time; }
@@ -65,11 +67,10 @@ namespace engine
     std::thread* worker_thread = nullptr;
     std::binary_semaphore* worker_semaphore = nullptr;
     void worker_function();
-    // Worker thread private interface, implement rendering logic here
+    // Worker thread protected interface, implement rendering logic here
     virtual void job_pre_update();
     virtual void job_update() = 0;
     virtual void job_post_update();
-    
     timer_instance benchmark_render;
     
     bool save_output = false; // FIX Expose to a UI setting

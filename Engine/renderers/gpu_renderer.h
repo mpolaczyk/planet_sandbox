@@ -22,11 +22,12 @@ namespace engine
     soft_asset_ptr<vertex_shader_asset> vertex_shader;
 
     virtual void render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config) override;
+    virtual void push_partial_update() override {}
     virtual void cancel() override {}
     virtual bool is_working() const override { return false; }
-    
-    void setup_output_texture();
-    
+    virtual bool ic_cancelled() const override { return false; }
+    virtual void cleanup() override;
+        
     // Output texture, renders the scene there
     ID3D11RenderTargetView* output_rtv = nullptr;
     unsigned int output_width = 0;
@@ -38,9 +39,9 @@ namespace engine
     unsigned int stride;
     unsigned int offset;
     
-  private:
+  protected:
+    void create_output_texture();
     void init();
-    void update();
-    virtual void cleanup() override;
+    void update_frame();
   };
 }

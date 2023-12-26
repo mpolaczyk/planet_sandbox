@@ -14,15 +14,22 @@ namespace engine
 
   void gpu_renderer::render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config)
   {
+    if(output_width != in_renderer_config.resolution_vertical || output_height != in_renderer_config.resolution_horizontal)
+    {
+      DX_RELEASE(output_rtv)
+      DX_RELEASE(output_srv)
+      DX_RELEASE(output_texture)
+    }
     output_width = in_renderer_config.resolution_horizontal;
     output_height = in_renderer_config.resolution_vertical;
+
+    static bool init_done = false;
+    if(!init_done) { init(); }
     
-    init();
-    update();
-    cleanup();
+    update_frame();
   }
   
-  void gpu_renderer::setup_output_texture()
+  void gpu_renderer::create_output_texture()
   {
     dx11& dx = dx11::instance();
     {
@@ -66,6 +73,8 @@ namespace engine
     pixel_shader.set_name("gpu_renderer_ps");
     pixel_shader.get();
     
+    create_output_texture();
+    
     {
       D3D11_INPUT_ELEMENT_DESC input_element_desc[] =
       {
@@ -102,13 +111,11 @@ namespace engine
     }
   }
   
-  void gpu_renderer::update()
+  void gpu_renderer::update_frame()
   {
     FLOAT bg_color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
     D3D11_VIEWPORT viewport = { 0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f };
     
-    setup_output_texture();
-
     dx11& dx = dx11::instance();
     dx.device_context->RSSetViewports(1, &viewport);
     dx.device_context->OMSetRenderTargets(1, &output_rtv, NULL);
@@ -124,20 +131,8 @@ namespace engine
   void gpu_renderer::cleanup()
   {
     renderer_base::cleanup();
-    if(output_rtv != nullptr)
-    {
-      output_rtv->Release();
-      output_rtv = nullptr;
-    }
-    if(input_layout != nullptr)
-    {
-      input_layout->Release();
-      input_layout = nullptr;
-    }
-    if(vertex_buffer != nullptr)
-    {
-      vertex_buffer->Release();
-      vertex_buffer = nullptr;
-    }
+    DX_RELEASE(output_rtv)
+    DX_RELEASE(input_layout)
+    DX_RELEASE(vertex_buffer)
   }
 }

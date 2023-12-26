@@ -1,5 +1,4 @@
 #pragma once
-#include <windef.h>
 
 #include "core/core.h"
 
@@ -9,6 +8,13 @@ struct IDXGISwapChain1;
 struct ID3D11RenderTargetView;
 struct ID3D11Texture2D;
 struct ID3D11ShaderResourceView;
+
+#if !defined(_WINDEF_) && !defined(__INTELLISENSE__)
+class HWND__;
+typedef HWND__* HWND;
+#endif
+
+#define DX_RELEASE(resource) if(resource!=nullptr) { resource->Release(); resource = nullptr; }
 
 namespace engine
 {

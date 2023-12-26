@@ -36,7 +36,7 @@ namespace engine
       LOG_CRITICAL("ID3D11Device1 query failed.");
       return false;
     }
-    base_device->Release();
+    DX_RELEASE(base_device)
 
     result = base_device_context->QueryInterface(IID_PPV_ARGS(&device_context));
     if(FAILED(result))
@@ -44,7 +44,7 @@ namespace engine
       LOG_CRITICAL("ID3D11DeviceContext1 query failed.");
       return false;
     }
-    base_device_context->Release();
+    DX_RELEASE(base_device_context)
     return true;
   }
 
@@ -61,14 +61,14 @@ namespace engine
         info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
         info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
         info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
-        info_queue->Release();
+        DX_RELEASE(info_queue)
       }
       else
       {
         LOG_CRITICAL("ID3D11InfoQueue query failed.");
         return false;
       }
-      debug->Release();
+      DX_RELEASE(debug)
     }
     else
     {
@@ -90,7 +90,7 @@ namespace engine
       IDXGIAdapter* adapter;
       result = dxgi_device->GetAdapter(&adapter);
       assert(SUCCEEDED(result));  
-      dxgi_device->Release();
+      DX_RELEASE(dxgi_device)
 
       DXGI_ADAPTER_DESC adapter_desc;
       adapter->GetDesc(&adapter_desc);
@@ -100,7 +100,7 @@ namespace engine
       
       result = adapter->GetParent(IID_PPV_ARGS(&factory));
       assert(SUCCEEDED(result));
-      adapter->Release();
+      DX_RELEASE(adapter)
     }
 
     DXGI_SWAP_CHAIN_DESC1 swap_chain_desc = {};
@@ -119,7 +119,7 @@ namespace engine
     HRESULT result = factory->CreateSwapChainForHwnd(device, hwnd, &swap_chain_desc, 0, 0, &swap_chain);
     assert(SUCCEEDED(result));
 
-    factory->Release();
+    DX_RELEASE(factory)
     return true;
   }
 
@@ -131,20 +131,20 @@ namespace engine
     
     result = device->CreateRenderTargetView(frame_buffer, NULL, &rtv);
     assert(SUCCEEDED(result));
-    frame_buffer->Release();
+    DX_RELEASE(frame_buffer)
   }
 
   void dx11::cleanup_render_target()
   {
-    if (rtv) { rtv->Release(); rtv = NULL; }
+    DX_RELEASE(rtv)
   }
 
   void dx11::cleanup_device()
   {
     cleanup_render_target();
-    if (swap_chain) { swap_chain->Release(); swap_chain = NULL; }
-    if (device_context) { device_context->Release(); device_context = NULL; }
-    if (device) { device->Release(); device = NULL; }
+    DX_RELEASE(swap_chain)
+    DX_RELEASE(device_context)
+    DX_RELEASE(device)
   }
 
   bool dx11::load_texture_from_buffer(unsigned char* buffer, int width, int height, ID3D11ShaderResourceView** out_srv, ID3D11Texture2D** out_texture)

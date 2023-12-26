@@ -13,7 +13,8 @@
 #include "hittables/hittables.h"
 #include "hittables/static_mesh.h"
 #include "hittables/scene.h"
-#include "renderer/dx11_lib.h"
+#include "renderer/cpu_renderer.h"
+#include "renderers/gpu_renderer.h"
 
 void draw_raytracer_window(raytracer_window_model& model, app_instance& state)
 {
@@ -62,7 +63,12 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
   ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
   
   ImGui::Separator();
-  model.r_model.objects = REG.find_all<const class_object>([](const class_object* obj) -> bool { return obj->get_parent_class_name() == renderer_base::get_class_static()->get_class_name(); });
+  
+  // FIX this does not work for class objects!
+  // co->is_child_of(renderer_base::get_class_static());
+  model.r_model.objects = REG.find_all<const class_object>([](const class_object* co) -> bool { return co->get_parent_class_name() == cpu_renderer::get_class_static()->get_class_name(); });  
+  model.r_model.objects.push_back(gpu_renderer::get_class_static());
+  
   draw_selection_combo<class_object>(model.r_model, state, "Renderer class",
     [=](const class_object* obj) -> bool { return true; }, state.renderer_conf.type);
   if(model.r_model.selected_object != state.renderer_conf.type)
@@ -98,24 +104,25 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
       std::sprintf(name, "Rendering with %s renderer", state.renderer->get_display_name().c_str());
       ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), name);
     }
-    ImGui::Text("Last render time = %lld [ms]", state.renderer->get_render_time() / 1000);
-    ImGui::Text("Last save time = %lld [ms]", state.renderer->get_save_time() / 1000);
+    // FIX
+    //ImGui::Text("Last render time = %lld [ms]", state.renderer->get_render_time() / 1000);
+    //ImGui::Text("Last save time = %lld [ms]", state.renderer->get_save_time() / 1000);
 #if USE_STAT
-    uint64_t rc = state.renderer->get_ray_count();
-    uint64_t rtc = state.renderer->get_ray_triangle_intersection_count();
-    uint64_t rbc = state.renderer->get_ray_box_intersection_count();
-    uint64_t roc = state.renderer->get_ray_object_intersection_count();
-    float frc = static_cast<float>(rc);
-    float frtc = static_cast<float>(rtc);
-    float frbc = static_cast<float>(rbc);
-    float froc = static_cast<float>(roc);
-    ImGui::Text("Rays: %lld", rc);
-    {
-      fpe_disabled_scope fpe;
-      ImGui::Text("Ray-triangle: %lld  percentage: %f", rtc, frtc / frc);
-      ImGui::Text("Ray-box: %lld percentage: %f", rbc, frbc / frc);
-      ImGui::Text("Ray-object: %lld percentage: %f", roc, froc / frc);
-    }
+    //uint64_t rc = state.renderer->get_ray_count();
+    //uint64_t rtc = state.renderer->get_ray_triangle_intersection_count();
+    //uint64_t rbc = state.renderer->get_ray_box_intersection_count();
+    //uint64_t roc = state.renderer->get_ray_object_intersection_count();
+    //float frc = static_cast<float>(rc);
+    //float frtc = static_cast<float>(rtc);
+    //float frbc = static_cast<float>(rbc);
+    //float froc = static_cast<float>(roc);
+    //ImGui::Text("Rays: %lld", rc);
+    //{
+    //  fpe_disabled_scope fpe;
+    //  ImGui::Text("Ray-triangle: %lld  percentage: %f", rtc, frtc / frc);
+    //  ImGui::Text("Ray-box: %lld percentage: %f", rbc, frbc / frc);
+    //  ImGui::Text("Ray-object: %lld percentage: %f", roc, froc / frc);
+    //}
 #endif
   }
   else
@@ -153,19 +160,19 @@ void draw_hotkeys_panel(app_instance& state)
 
 void draw_output_window(output_window_model& model, app_instance& state)
 {
-  if (state.output_texture != nullptr)
+  if (state.renderer->output_texture != nullptr)
   {
     ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
     ImVec2 size = ImVec2(state.output_width * model.zoom, state.output_height * model.zoom);
-    ImGui::Image((ImTextureID)state.output_srv, size, ImVec2(0, 1), ImVec2(1, 0));
+    ImGui::Image((ImTextureID)state.renderer->output_srv, size, ImVec2(0, 1), ImVec2(1, 0));
 
     if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
     {
-      ImVec2 itemMin = ImGui::GetItemRectMin();
-      ImVec2 mousePos = ImGui::GetMousePos();
-      state.output_window_lmb_x = mousePos.x - itemMin.x;
-      state.output_window_lmb_y = mousePos.y - itemMin.y;
+      ImVec2 item_min = ImGui::GetItemRectMin();
+      ImVec2 mouse_pos = ImGui::GetMousePos();
+      state.output_window_lmb_x = mouse_pos.x - item_min.x;
+      state.output_window_lmb_y = mouse_pos.y - item_min.y;
     }
 
     ImGui::Checkbox("Auto render", &model.auto_render);

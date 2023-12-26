@@ -38,7 +38,7 @@ namespace engine
     {
       for (int x = in_chunk.x; x < in_chunk.x + in_chunk.size_x; ++x)
       {
-        if(job_state.requested_stop) { return; }
+        if(ic_cancelled()) { return; }
         
         // Effectively it is a fragment shader
         vec3 pixel_color;

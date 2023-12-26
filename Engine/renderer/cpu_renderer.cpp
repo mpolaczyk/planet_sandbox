@@ -4,6 +4,7 @@
 
 #include "renderer/cpu_renderer.h"
 
+#include "renderer/dx11_lib.h"
 #include "engine/io.h"
 #include "object/object_registry.h"
 #include "profile/stats.h"
@@ -78,6 +79,15 @@ namespace engine
     worker_semaphore->release();
   }
 
+  void cpu_renderer::push_partial_update()
+  {
+    dx11& dx = dx11::instance();
+    if (output_texture)
+    {
+      dx.update_texture_buffer(get_img_rgb(), job_state.image_width, job_state.image_height, output_texture);
+    }
+  }
+
   void cpu_renderer::worker_function()
   {
     while (true)
@@ -94,6 +104,10 @@ namespace engine
   {
     stats::reset();
     benchmark_render.start("Render");
+    
+    dx11& dx = dx11::instance();
+    bool ret = dx.load_texture_from_buffer(get_img_rgb(), job_state.image_width, job_state.image_height, &output_srv, &output_texture);
+    assert(ret);
   }
 
   void cpu_renderer::job_post_update()
