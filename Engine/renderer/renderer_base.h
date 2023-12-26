@@ -52,8 +52,8 @@ namespace engine
 
     renderer_base() = default;
     virtual ~renderer_base();
-    renderer_base(const renderer_base&) = default; // FIX w don't want to copy renderer but all objects are copyable... make it optional
-    renderer_base& operator=(const renderer_base&) = default;
+    renderer_base(const renderer_base&) = delete;
+    renderer_base& operator=(const renderer_base&) = delete;
     renderer_base(renderer_base&&) = delete;
     renderer_base& operator=(renderer_base&&) = delete;
     
@@ -65,8 +65,9 @@ namespace engine
     virtual void render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config) = 0;
     virtual void push_partial_update() = 0;
     virtual void cancel() = 0;
+    virtual bool is_async() const = 0;
     virtual bool is_working() const = 0;
-    virtual bool ic_cancelled() const = 0;
+    virtual bool is_cancelled() const = 0;
     virtual void cleanup();
   };
 }

@@ -63,11 +63,11 @@ namespace engine
     return oss.str();
   }
   
-  std::string io::get_images_dir()
+  std::string io::get_renders_dir()
   {
     std::string workspace_dir = get_workspace_dir();
     std::ostringstream oss;
-    oss << workspace_dir << "Images\\"; // FIX Rename to renders so it does not confuse with get_textures_dir()
+    oss << workspace_dir << "Renders\\";
     return oss.str();
   }
 
@@ -90,11 +90,11 @@ namespace engine
     return oss.str();
   }
 
-  std::string io::get_images_file_path(const char* file_name)
+  std::string io::get_renders_file_path(const char* file_name)
   {
-    std::string images_dir = get_images_dir();
+    std::string renders_dir = get_renders_dir();
     std::ostringstream oss;
-    oss << images_dir << file_name;
+    oss << renders_dir << file_name;
     return oss.str();
   }
 
@@ -155,7 +155,7 @@ namespace engine
     std::time_t t = std::time(nullptr);
     std::ostringstream oss;
     oss << "output_" << t << ".bmp";
-    return get_images_file_path(oss.str().c_str());
+    return get_renders_file_path(oss.str().c_str());
   }
 
   std::vector<std::string> io::discover_files(const std::string& path, const std::string& extension, bool include_extension)

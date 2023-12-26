@@ -18,14 +18,14 @@ namespace engine
     static std::string get_meshes_dir();
     static std::string get_textures_dir();
     static std::string get_shaders_dir();
-    static std::string get_images_dir();
+    static std::string get_renders_dir();
 
     // Validation
     static bool validate_workspace_dir();
 
     // Files
     static std::string get_workspace_file_path(const char* file_name);
-    static std::string get_images_file_path(const char* file_name);
+    static std::string get_renders_file_path(const char* file_name);
     static std::string get_material_file_path(const char* file_name);
     static std::string get_mesh_file_path(const char* file_name);
     static std::string get_texture_file_path(const char* file_name);

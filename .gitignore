@@ -15,7 +15,7 @@
 *.scor.incl
 *.scor.t0000
 Archive/*
-Workspace/Images/*.bmp
+Workspace/Renders/*.bmp
 rt-cppcheck-build-dir/*
 Engine/x64
 RayTracer/x64

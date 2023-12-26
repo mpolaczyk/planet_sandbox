@@ -24,12 +24,14 @@
   template ENGINE_API CLASS_NAME* object_registry::get<CLASS_NAME>(int id) const; \
   template ENGINE_API std::vector<CLASS_NAME*> object_registry::get_all_by_type<CLASS_NAME>(); \
   template ENGINE_API std::vector<const CLASS_NAME*> object_registry::get_all_by_type<const CLASS_NAME>(); \
-  template ENGINE_API CLASS_NAME* object_registry::copy_shallow<CLASS_NAME>(const CLASS_NAME* source); \
   template ENGINE_API CLASS_NAME* object_registry::find<CLASS_NAME>(std::function<bool(CLASS_NAME*)> predicate) const; \
   template ENGINE_API const CLASS_NAME* object_registry::find<const CLASS_NAME>(std::function<bool(const CLASS_NAME*)> predicate) const; \
   template ENGINE_API std::vector<CLASS_NAME*> object_registry::find_all<CLASS_NAME>(std::function<bool(CLASS_NAME*)> predicate) const; \
   template ENGINE_API std::vector<const CLASS_NAME*> object_registry::find_all<const CLASS_NAME>(std::function<bool(const CLASS_NAME*)> predicate) const; \
   template ENGINE_API CLASS_NAME* object_registry::spawn_from_class(const class_object* type);
+
+#define OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(CLASS_NAME) \
+  template ENGINE_API CLASS_NAME* object_registry::copy_shallow<CLASS_NAME>(const CLASS_NAME* source);
 
 // Creates an instance of a class object for a given object type
 #define CLASS_OBJECT_REGISTER(CLASS_NAME, PARENT_CLASS_NAME) \
@@ -61,7 +63,15 @@ namespace engine
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(scene)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(sphere)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(static_mesh)
-    
+
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(asset_base)
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(static_mesh_asset)
+  
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(hittable)
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(scene)
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(sphere)
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(static_mesh)
+  
   void object_registry::create_class_objects()
   {
     CLASS_OBJECT_REGISTER(object, object)

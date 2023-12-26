@@ -14,17 +14,20 @@ namespace engine
 
   void gpu_renderer::render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config)
   {
-    if(output_width != in_renderer_config.resolution_vertical || output_height != in_renderer_config.resolution_horizontal)
+    if (in_renderer_config.resolution_vertical == 0 || in_renderer_config.resolution_horizontal == 0) return;
+    
+    const bool recreate_output_buffers = output_width != in_renderer_config.resolution_vertical || output_height != in_renderer_config.resolution_horizontal;
+    output_width = in_renderer_config.resolution_horizontal;
+    output_height = in_renderer_config.resolution_vertical;
+    if(recreate_output_buffers)
     {
       DX_RELEASE(output_rtv)
       DX_RELEASE(output_srv)
       DX_RELEASE(output_texture)
+      create_output_texture();
     }
-    output_width = in_renderer_config.resolution_horizontal;
-    output_height = in_renderer_config.resolution_vertical;
-
-    static bool init_done = false;
-    if(!init_done) { init(); }
+    
+    if(!init_done) { init(); init_done = true; }
     
     update_frame();
   }

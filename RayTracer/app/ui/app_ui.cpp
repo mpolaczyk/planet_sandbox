@@ -101,28 +101,39 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
     {
       ImGui::SameLine();
       char name[50];
-      std::sprintf(name, "Rendering with %s renderer", state.renderer->get_display_name().c_str());
+      std::sprintf(name, "Rendering with %s", state.renderer->get_display_name().c_str());
       ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), name);
     }
-    // FIX
-    //ImGui::Text("Last render time = %lld [ms]", state.renderer->get_render_time() / 1000);
-    //ImGui::Text("Last save time = %lld [ms]", state.renderer->get_save_time() / 1000);
+    
+    cpu_renderer* cpu_r = nullptr;
+    if(state.renderer->is_child_of(cpu_renderer::get_class_static()))
+    {
+      cpu_r = static_cast<cpu_renderer*>(state.renderer);
+    }
+    if(cpu_r)
+    {
+      ImGui::Text("Last render time = %lld [ms]", cpu_r->get_render_time() / 1000);
+      ImGui::Text("Last save time = %lld [ms]",   cpu_r->get_save_time() / 1000);
+    }
 #if USE_STAT
-    //uint64_t rc = state.renderer->get_ray_count();
-    //uint64_t rtc = state.renderer->get_ray_triangle_intersection_count();
-    //uint64_t rbc = state.renderer->get_ray_box_intersection_count();
-    //uint64_t roc = state.renderer->get_ray_object_intersection_count();
-    //float frc = static_cast<float>(rc);
-    //float frtc = static_cast<float>(rtc);
-    //float frbc = static_cast<float>(rbc);
-    //float froc = static_cast<float>(roc);
-    //ImGui::Text("Rays: %lld", rc);
-    //{
-    //  fpe_disabled_scope fpe;
-    //  ImGui::Text("Ray-triangle: %lld  percentage: %f", rtc, frtc / frc);
-    //  ImGui::Text("Ray-box: %lld percentage: %f", rbc, frbc / frc);
-    //  ImGui::Text("Ray-object: %lld percentage: %f", roc, froc / frc);
-    //}
+    if(cpu_r)
+    {
+      uint64_t rc =  cpu_r->get_ray_count();
+      uint64_t rtc = cpu_r->get_ray_triangle_intersection_count();
+      uint64_t rbc = cpu_r->get_ray_box_intersection_count();
+      uint64_t roc = cpu_r->get_ray_object_intersection_count();
+      float frc = static_cast<float>(rc);
+      float frtc = static_cast<float>(rtc);
+      float frbc = static_cast<float>(rbc);
+      float froc = static_cast<float>(roc);
+      ImGui::Text("Rays: %lld", rc);
+      {
+        fpe_disabled_scope fpe;
+        ImGui::Text("Ray-triangle: %lld  percentage: %f", rtc, frtc / frc);
+        ImGui::Text("Ray-box: %lld percentage: %f", rbc, frbc / frc);
+        ImGui::Text("Ray-object: %lld percentage: %f", roc, froc / frc);
+      }
+    }
 #endif
   }
   else

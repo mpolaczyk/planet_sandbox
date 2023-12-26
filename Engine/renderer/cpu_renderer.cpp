@@ -31,7 +31,8 @@ namespace engine
     assert(in_scene != nullptr);
 
     if (job_state.is_working) return;
-
+    if (in_renderer_config.resolution_vertical == 0|| in_renderer_config.resolution_horizontal == 0) return;
+    
     const bool force_recreate_buffers = job_state.image_width != in_renderer_config.resolution_horizontal || job_state.image_height != in_renderer_config.resolution_vertical;
 
     // Copy all objects on purpose
@@ -44,7 +45,6 @@ namespace engine
     job_state.scene_root_hash = in_scene->get_hash();
     job_state.cam.configure(in_camera_config);
 
-    // Delete CPU buffers   // FIX unify this with GPU buffers
     if (job_state.img_rgb != nullptr)
     {
       if (force_recreate_buffers || !job_state.renderer_conf.reuse_buffer)
@@ -62,6 +62,7 @@ namespace engine
       job_state.img_rgb = new bmp_image(job_state.image_width, job_state.image_height);
       job_state.img_bgr = new bmp_image(job_state.image_width, job_state.image_height);
     }
+    job_state.can_partial_update = false;
   }
 
   void cpu_renderer::render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config)
@@ -81,6 +82,8 @@ namespace engine
 
   void cpu_renderer::push_partial_update()
   {
+    if(!job_state.can_partial_update) return;
+    
     dx11& dx = dx11::instance();
     if (output_texture)
     {
@@ -104,10 +107,15 @@ namespace engine
   {
     stats::reset();
     benchmark_render.start("Render");
+
+    if(job_state.image_width != 0 && job_state.image_height != 0)
+    {
+      dx11& dx = dx11::instance();
+      bool ret = dx.load_texture_from_buffer(get_img_rgb(), job_state.image_width, job_state.image_height, &output_srv, &output_texture);
+      assert(ret);
     
-    dx11& dx = dx11::instance();
-    bool ret = dx.load_texture_from_buffer(get_img_rgb(), job_state.image_width, job_state.image_height, &output_srv, &output_texture);
-    assert(ret);
+      job_state.can_partial_update = true;
+    }
   }
 
   void cpu_renderer::job_post_update()

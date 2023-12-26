@@ -24,8 +24,9 @@ namespace engine
     virtual void render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config) override;
     virtual void push_partial_update() override {}
     virtual void cancel() override {}
-    virtual bool is_working() const override { return false; }
-    virtual bool ic_cancelled() const override { return false; }
+    virtual bool is_async() const override { return false; }
+    virtual bool is_working() const override { return true; }
+    virtual bool is_cancelled() const override { return false; }
     virtual void cleanup() override;
         
     // Output texture, renders the scene there
@@ -38,6 +39,8 @@ namespace engine
     unsigned int num_verts;
     unsigned int stride;
     unsigned int offset;
+
+    bool init_done = false;
     
   protected:
     void create_output_texture();

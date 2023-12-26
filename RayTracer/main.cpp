@@ -154,11 +154,14 @@ int app_main()
     // Respawn the renderer if the type needs to be different
     if (app_state.renderer->get_class() != app_state.renderer_conf.new_type && app_state.renderer_conf.new_type != nullptr)
     {
-      // Wait until existing one ends and kill it 
+      // Wait until existing one ends and kill it
       app_state.renderer->cancel();
-      while(app_state.renderer->is_working())
+      if(app_state.renderer->is_async())
       {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        while(app_state.renderer->is_working())
+        {
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
       }
       app_state.renderer->destroy();
 
@@ -186,8 +189,8 @@ int app_main()
       // Main loop updates UI and the texture output window while it is rendered.
       // UI framerate is locked to VSync frequency while scene rendering may take longer time.
       // For now, GPU rendering is blocking the main thread.
-      const bool is_working = app_state.renderer->is_working();
-      if (!is_working && (app_state.rw_model.rp_model.render_pressed || app_state.ow_model.auto_render))
+      const bool is_working_async = app_state.renderer->is_async() && app_state.renderer->is_working();
+      if (!is_working_async && (app_state.rw_model.rp_model.render_pressed || app_state.ow_model.auto_render))
       {
         app_state.scene_root->load_resources();
         app_state.scene_root->pre_render();
