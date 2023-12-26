@@ -31,12 +31,14 @@ namespace engine
 
     std::ostringstream oss;
     oss << "Thread=" << thread_id << " Chunk=" << in_chunk.id;
-    engine::scope_counter benchmark_render_chunk(oss.str());
+    engine::scope_timer benchmark_render_chunk(oss.str());
 
     for (int y = in_chunk.y; y < in_chunk.y + in_chunk.size_y; ++y)
     {
       for (int x = in_chunk.x; x < in_chunk.x + in_chunk.size_x; ++x)
       {
+        if(job_state.requested_stop) { return; }
+        
         // Effectively it is a fragment shader
         vec3 pixel_color;
 

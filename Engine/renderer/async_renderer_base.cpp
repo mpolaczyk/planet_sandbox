@@ -24,7 +24,7 @@ namespace engine
   {
     if (worker_thread)
     {
-      job_state.requested_stop = true;
+      cancel();
       worker_semaphore->release();
       worker_thread->join();
       delete worker_semaphore;
@@ -94,30 +94,18 @@ namespace engine
     }
   }
 
-  bool async_renderer_base::is_world_dirty(const scene* in_scene) const
+  void async_renderer_base::cancel()
   {
-    assert(in_scene != nullptr);
-    return job_state.scene_root_hash != in_scene->get_hash();
-  }
-
-  bool async_renderer_base::is_renderer_setting_dirty(const renderer_config& in_renderer_config) const
-  {
-    return job_state.renderer_conf.get_hash() != in_renderer_config.get_hash();
-  }
-
-  bool async_renderer_base::is_renderer_type_different(const renderer_config& in_renderer_config) const
-  {
-    return job_state.renderer_conf.type != in_renderer_config.type;
-  }
-
-  bool async_renderer_base::is_camera_setting_dirty(const camera_config& in_camera_config) const
-  {
-    return job_state.cam.get_hash() != in_camera_config.get_hash();
+    job_state.requested_stop = true;
   }
 
   void async_renderer_base::worker_function()
   {
-    job_init();
+    if(!job_init_done)
+    {
+      job_init();
+      job_init_done = true;
+    }
     while (true)
     {
       if(worker_thread)
@@ -125,37 +113,47 @@ namespace engine
         worker_semaphore->acquire();
         if (job_state.requested_stop) { break; }
       }
-      
-      stats::reset();
-      instance benchmark_render;
-      benchmark_render.start("Render");
-
+      job_pre_update();
       job_update();
-
-      job_state.ray_count = stats::get_ray_count();
-      job_state.ray_triangle_intersection_count = stats::get_ray_triangle_intersection_count();
-      job_state.ray_box_intersection_count = stats::get_ray_box_intersection_count();
-      job_state.ray_object_intersection_count = stats::get_ray_object_intersection_count();
-      job_state.benchmark_render_time = benchmark_render.stop();
-
-      if (save_output)
-      {
-        char image_file_name[300];  // Run-Time Check Failure #2 - Stack around the variable 'image_file_name' was corrupted.
-        std::sprintf(image_file_name, io::get_render_output_file_path().c_str());
-
-        instance benchmark_save;
-        benchmark_save.start("Save");
-        save(image_file_name);
-        job_state.benchmark_save_time = benchmark_save.stop();
-      }
-
-      job_state.is_working = false;
+      job_post_update();
       if(!worker_thread)
       {
         break;
       }
     }
-    job_cleanup();
+    if(!job_cleanup_done)
+    {
+      job_cleanup();
+      job_cleanup_done = true;
+    }
+  }
+  
+  void async_renderer_base::job_pre_update()
+  {
+    stats::reset();
+    benchmark_render.start("Render");
+  }
+
+  void async_renderer_base::job_post_update()
+  {
+    job_state.benchmark_render_time = benchmark_render.stop();
+    job_state.is_working = false;
+    
+    job_state.ray_count = stats::get_ray_count();
+    job_state.ray_triangle_intersection_count = stats::get_ray_triangle_intersection_count();
+    job_state.ray_box_intersection_count = stats::get_ray_box_intersection_count();
+    job_state.ray_object_intersection_count = stats::get_ray_object_intersection_count();
+    
+    if (save_output)
+    {
+      char image_file_name[300];  // Run-Time Check Failure #2 - Stack around the variable 'image_file_name' was corrupted.
+      std::sprintf(image_file_name, io::get_render_output_file_path().c_str());
+
+      timer_instance benchmark_save;
+      benchmark_save.start("Save");
+      save(image_file_name);
+      job_state.benchmark_save_time = benchmark_save.stop();
+    }
   }
 
   void async_renderer_base::save(const char* file_name) const

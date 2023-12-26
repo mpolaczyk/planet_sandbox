@@ -6,7 +6,7 @@
 #include "object/object_defines.h"
 
 /* Adding new object classes:
- * 1. Add new class, derive from async_renderer_base.
+ * 1. Add new class, derive from object.
  * 2. Add OBJECT_DECLARE in the header file.
  * 3. Add OBJECT_DEFINE in the cpp file.
  * 4. Add OBJECT_DEFINE_SPAWN or OBJECT_DEFINE_NOSPAWN in the cpp file. Depending if your class is meant to be spawned.

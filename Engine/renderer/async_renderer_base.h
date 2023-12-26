@@ -11,6 +11,7 @@
 #include "hittables/hittables.h"
 #include "hittables/scene.h"
 #include "object/object.h"
+#include "profile/benchmark.h"
 
 namespace engine
 {
@@ -25,7 +26,8 @@ namespace engine
 
     // How work is processed
     const class_object* type = nullptr;
-
+    const class_object* new_type = nullptr;
+    
     // Draw in the same memory - real time update
     bool reuse_buffer = true;
 
@@ -40,7 +42,8 @@ namespace engine
       return hash::combine(rays_per_pixel, ray_bounces, reuse_buffer, hash::combine(resolution_vertical, resolution_horizontal, hash::get(white_point), 1));
     }
   };
-  
+
+  // The responsibility of this class is to render to a texture
   class ENGINE_API async_renderer_base : public object
   {
   public:
@@ -54,17 +57,16 @@ namespace engine
     async_renderer_base& operator=(async_renderer_base&&) = delete;
     
     // Worker thread public interface, implement rendering logic here
-    virtual void job_init() {}
+    virtual void job_init() {}        // Fired once in a lifetime
+    virtual void job_pre_update();
     virtual void job_update() = 0;
-    virtual void job_cleanup() {}
+    virtual void job_post_update();
+    virtual void job_cleanup() {}     // Fired once in a lifetime
     
     // Main thread public interface.
     void render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config);
+    void cancel();
     virtual bool is_async() const { return true; }
-    bool is_world_dirty(const scene* in_scene) const;
-    bool is_renderer_setting_dirty(const renderer_config& in_renderer_config) const;
-    bool is_renderer_type_different(const renderer_config& in_renderer_config) const;
-    bool is_camera_setting_dirty(const camera_config& in_camera_config) const;
     bool is_working() const { return job_state.is_working; }
     uint64_t get_render_time() const { return job_state.benchmark_render_time; }
     uint64_t get_save_time() const { return job_state.benchmark_save_time; }
@@ -104,12 +106,15 @@ namespace engine
     };
     worker_job_state job_state;
     bool save_output = false; // FIX Expose to a UI setting
-    
+  
   private:
     void set_job_state(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config);
     // Synchronisation pattern through a semaphore
     std::thread* worker_thread = nullptr;
     std::binary_semaphore* worker_semaphore = nullptr;
+    timer_instance benchmark_render;
+    bool job_init_done = false;
+    bool job_cleanup_done = false;
     void worker_function();
     void save(const char* file_name) const;
   };

@@ -13,6 +13,7 @@
 #include "app/app.h"
 #include "renderer/dx11_lib.h"
 #include "renderer/async_renderer_base.h"
+#include "renderers/gpu_renderer.h"
 
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -143,6 +144,8 @@ int app_main()
     }
     if (!app_state.is_running) break;
 
+    bool is_cpu_renderer = app_state.renderer->get_class() != gpu_renderer::get_class_static();
+    
     // Start the Dear ImGui frame
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
@@ -150,10 +153,22 @@ int app_main()
 
     handle_input(app_state);
 
-    if (app_state.renderer->is_renderer_type_different(app_state.renderer_conf))
+    // Respawn the renderer if the type needs to be different
+    if (app_state.renderer->get_class() != app_state.renderer_conf.new_type && app_state.renderer_conf.new_type != nullptr)
     {
+      // Wait until existing one ends and kill it 
+      app_state.renderer->cancel();
+      while(app_state.renderer->is_working())
+      {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+      }
       app_state.renderer->destroy();
-      app_state.renderer = REG.spawn_from_class<async_renderer_base>(app_state.renderer_conf.type);
+
+      // Add new one
+      auto new_class = app_state.renderer_conf.new_type;
+      auto new_renderer = REG.spawn_from_class<async_renderer_base>(new_class);
+      app_state.renderer_conf.type = new_class;
+      app_state.renderer = new_renderer;
     }
     
     // Draw UI
@@ -161,6 +176,7 @@ int app_main()
       // Debug UI only in debug mode
       if (0) { ImGui::ShowDemoWindow(); }
 #endif
+
     draw_raytracer_window(app_state.rw_model, app_state);
     draw_output_window(app_state.ow_model, app_state);
     draw_scene_editor_window(app_state.sew_model, app_state);
@@ -168,9 +184,10 @@ int app_main()
     // Scene rendering
     if (app_state.renderer != nullptr)
     {
-      // Rendering to a texture is happening in the separate thread.
+      // CPU Rendering to a texture is happening in the separate thread.
       // Main loop updates UI and the texture output window while it is rendered.
       // UI framerate is locked to VSync frequency while scene rendering may take longer time.
+      // For now, GPU rendering is blocking the main thread.
       const bool is_working = app_state.renderer->is_working();
       if (!is_working && (app_state.rw_model.rp_model.render_pressed || app_state.ow_model.auto_render))
       {
@@ -187,19 +204,32 @@ int app_main()
 
         app_state.renderer->render_frame(app_state.scene_root, app_state.renderer_conf, app_state.camera_conf);
 
-        // FIX this break CPU renderers
-        //bool ret = dx.load_texture_from_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, &app_state.output_srv, &app_state.output_texture);
-        //IM_ASSERT(ret);
-
+        // FIX move this to the cpu_renderer, each renderer needs to handle resources internally
+        if (is_cpu_renderer)
+        {
+          bool ret = dx.load_texture_from_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, &app_state.output_srv, &app_state.output_texture);
+          IM_ASSERT(ret);
+        }
         app_state.rw_model.rp_model.render_pressed = false;
       }
 
-      // FIX this break CPU renderers
-      // Updating the texture output window so that the scene render is visible in UI
-      //if (app_state.output_texture)
-      //{
-      //  dx.update_texture_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, app_state.output_texture);
-      //}
+      // FIX move this to the cpu_renderer, each renderer needs to handle resources internally
+      if(is_cpu_renderer)
+      {
+        // Updating the texture output window so that the scene render is visible in UI
+        if (app_state.output_texture)
+        {
+          dx.update_texture_buffer(app_state.renderer->get_img_rgb(), app_state.output_width, app_state.output_height, app_state.output_texture);
+        }
+      }
+    }
+    
+    // FIX
+    if(!is_cpu_renderer)
+    {
+      auto r = static_cast<gpu_renderer*>(app_state.renderer);
+      app_state.output_texture = r->output_texture;
+      app_state.output_srv = r->output_srv;
     }
 
     // UI rendering

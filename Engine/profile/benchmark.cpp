@@ -13,7 +13,7 @@
 
 namespace engine
 {
-  void instance::start(const std::string& in_name)
+  void timer_instance::start(const std::string& in_name)
   {
 #if USE_PIX
     PIXBeginEvent(PIX_COLOR(155, 112, 0), in_name.c_str());
@@ -24,7 +24,7 @@ namespace engine
 #endif
   }
 
-  uint64_t instance::repeat(const std::string& name, uint32_t count, const std::function<void()>& func)
+  uint64_t timer_instance::repeat(const std::string& name, uint32_t count, const std::function<void()>& func)
   {
     uint64_t sum = 0;
     for (uint32_t i = 0; i < count; i++)
@@ -36,12 +36,12 @@ namespace engine
     return sum;
   }
 
-  uint64_t instance::once(const std::string& name, const std::function<void()>& func)
+  uint64_t timer_instance::once(const std::string& name, const std::function<void()>& func)
   {
     return repeat(name, 1, func);
   }
 
-  uint64_t instance::stop()
+  uint64_t timer_instance::stop()
   {
 #if USE_PIX
     PIXEndEvent();
@@ -60,12 +60,12 @@ namespace engine
 #endif
   }
   
-  scope_counter::scope_counter(const std::string& name)
+  scope_timer::scope_timer(const std::string& name)
   {
     state.start(name);
   }
 
-  scope_counter::~scope_counter()
+  scope_timer::~scope_timer()
   {
     state.stop();
   }

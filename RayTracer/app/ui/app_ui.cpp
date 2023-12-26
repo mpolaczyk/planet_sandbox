@@ -67,14 +67,7 @@ void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
     [=](const class_object* obj) -> bool { return true; }, state.renderer_conf.type);
   if(model.r_model.selected_object != state.renderer_conf.type)
   {
-    auto target_class = model.r_model.selected_object;
-    auto new_renderer = REG.find<async_renderer_base>([target_class](async_renderer_base* obj)->bool{ return obj->get_class() == target_class; });
-    if(new_renderer == nullptr)
-    {
-      new_renderer = REG.spawn_from_class<async_renderer_base>(model.r_model.selected_object);
-    }
-    state.renderer_conf.type = model.r_model.selected_object;
-    state.renderer = new_renderer;
+    state.renderer_conf.new_type = model.r_model.selected_object;
   }
   ImGui::Separator();
   
@@ -160,13 +153,12 @@ void draw_hotkeys_panel(app_instance& state)
 
 void draw_output_window(output_window_model& model, app_instance& state)
 {
-  dx11& dx = dx11::instance();
-  if (dx.output_texture != nullptr)
+  if (state.output_texture != nullptr)
   {
     ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
     ImVec2 size = ImVec2(state.output_width * model.zoom, state.output_height * model.zoom);
-    ImGui::Image((ImTextureID)dx.output_srv, size, ImVec2(0, 1), ImVec2(1, 0));
+    ImGui::Image((ImTextureID)state.output_srv, size, ImVec2(0, 1), ImVec2(1, 0));
 
     if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
     {

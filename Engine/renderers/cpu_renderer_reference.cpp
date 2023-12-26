@@ -36,7 +36,7 @@ namespace engine
 
     std::ostringstream oss;
     oss << "Thread=" << thread_id << " Chunk=" << in_chunk.id;
-    engine::scope_counter benchmark_render_chunk(oss.str());
+    engine::scope_timer benchmark_render_chunk(oss.str());
 
     vec3 resolution((float)job_state.image_width, (float)job_state.image_height, 0.0f);
 
@@ -44,6 +44,8 @@ namespace engine
     {
       for (int x = in_chunk.x; x < in_chunk.x + in_chunk.size_x; ++x)
       {
+        if(job_state.requested_stop) { return; }
+        
         vec3 hdr_color = fragment((float)x, (float)y, resolution);
 
         assert(isfinite(hdr_color.x));

@@ -11,7 +11,73 @@ namespace engine
 {
   OBJECT_DEFINE(gpu_renderer, async_renderer_base, GPU renderer)
   OBJECT_DEFINE_SPAWN(gpu_renderer)
+  
+  void gpu_renderer::setup_output_texture(unsigned int width, unsigned int height)
+  {
+    if(width == output_width && height == output_height && output_texture)
+    {
+      return;
+    }
+    if(width != output_width || height != output_height)
+    {
+      output_width = width;
+      output_height = height;
+      cleanup_output_texture();
+    }
+    dx11& dx = dx11::instance();
+    {
+      D3D11_TEXTURE2D_DESC desc = {};
+      desc.Width = output_width;
+      desc.Height = output_height;
+      desc.MipLevels = 1;
+      desc.ArraySize = 1;
+      desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+      desc.SampleDesc.Count = 1;
+      desc.Usage = D3D11_USAGE_DEFAULT;
+      desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+      desc.CPUAccessFlags = 0;
+      desc.MiscFlags = 0;
+      dx.device->CreateTexture2D(&desc, NULL, &output_texture);
+    }
+    {
+      D3D11_RENDER_TARGET_VIEW_DESC desc = {};
+      desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+      desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+      desc.Texture2D.MipSlice = 0;
+      HRESULT result = dx.device->CreateRenderTargetView(output_texture, &desc, &output_rtv);
+      assert(SUCCEEDED(result));
+    }
+    {
+      D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
+      desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+      desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+      desc.Texture2D.MostDetailedMip = 0;
+      desc.Texture2D.MipLevels = 1;
+      HRESULT result = dx.device->CreateShaderResourceView(output_texture, &desc, &output_srv);
+      assert(SUCCEEDED(result));
+    }
+  }
 
+  void gpu_renderer::cleanup_output_texture()
+  {
+    if(output_texture != nullptr)
+    {
+      output_texture->Release();
+      output_texture = nullptr;
+    }
+    if(output_rtv != nullptr)
+    {
+      output_rtv->Release();
+      output_rtv = nullptr;
+    }
+    if(output_srv != nullptr)
+    {
+      output_srv->Release();
+      output_srv = nullptr;
+    }
+  }
+
+  
   void gpu_renderer::job_init()
   {
     // FIX temporary hack here! It should be properly persistent as part fo the scene (not hittable)
@@ -33,9 +99,9 @@ namespace engine
       {
         LOG_ERROR("Unable to create input layout.");
       }
-    }
-    
-    
+    }  
+
+    // FIX hardcoded mesh!
     {
       float vertex_data[] = { // x, y, r, g, b, a
         0.0f,  0.5f, 0.f, 1.f, 0.f, 1.f,
@@ -58,14 +124,15 @@ namespace engine
   
   void gpu_renderer::job_update()
   {
-    FLOAT bg_color[4] = { 0.1f, 0.5f, 0.7f, 1.0f };
+    FLOAT bg_color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
     D3D11_VIEWPORT viewport = { 0.0f, 0.0f, static_cast<float>(job_state.image_width), static_cast<float>(job_state.image_height), 0.0f, 1.0f };
     
+    setup_output_texture(job_state.image_width, job_state.image_height);
+
     dx11& dx = dx11::instance();
-    dx.create_output_texture(job_state.image_width, job_state.image_height);
     dx.device_context->RSSetViewports(1, &viewport);
-    dx.device_context->OMSetRenderTargets(1, &dx.output_rtv, NULL);
-    dx.device_context->ClearRenderTargetView(dx.output_rtv, bg_color);
+    dx.device_context->OMSetRenderTargets(1, &output_rtv, NULL);
+    dx.device_context->ClearRenderTargetView(output_rtv, bg_color);
     dx.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     dx.device_context->IASetInputLayout(input_layout);
     dx.device_context->VSSetShader(vertex_shader.get()->shader, nullptr, 0);
@@ -76,6 +143,6 @@ namespace engine
 
   void gpu_renderer::job_cleanup()
   {
-    
+    cleanup_output_texture();
   }
 }
