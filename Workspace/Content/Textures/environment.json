@@ -1,5 +1,4 @@
     {
-      "width": 3286,
-	  "height": 1643,
+      "desired_channels": 3,
       "img_file_name": "environment.hdr"
     }

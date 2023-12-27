@@ -36,8 +36,7 @@ namespace engine
   }
   void serialize_object::visit(class texture_asset& object) const
   {
-    j["width"] = object.width;
-    j["height"] = object.height;
+    j["desired_channels"] = object.desired_channels;
     j["img_file_name"] = object.img_file_name;
   }
   void serialize_object::visit(class static_mesh_asset& object) const
@@ -117,8 +116,7 @@ namespace engine
   }
   void deserialize_object::visit(class texture_asset& object) const
   {
-    TRY_PARSE(int, j, "width", object.width);
-    TRY_PARSE(int, j, "height", object.height);
+    TRY_PARSE(int, j, "desired_channels", object.desired_channels);
 
     TRY_PARSE(std::string, j, "img_file_name", object.img_file_name);
   }

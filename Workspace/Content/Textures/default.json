@@ -1,5 +1,4 @@
     {
-      "width": 128,
-	  "height": 128,
+      "desired_channels": 3,
       "img_file_name": "default.png"
     }

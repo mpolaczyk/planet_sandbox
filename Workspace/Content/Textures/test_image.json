@@ -1,5 +1,4 @@
     {
-      "width": 640,
-	  "height": 480,
+      "desired_channels": 3,
       "img_file_name": "test_image.png"
     }

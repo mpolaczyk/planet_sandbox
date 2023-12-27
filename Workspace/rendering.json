@@ -2,8 +2,8 @@
   "renderer_config": {
     "ray_bounces": 4,
     "rays_per_pixel": 10,
-    "resolution_horizontal": 400,
-    "resolution_vertical": 400,
+    "resolution_horizontal": 800,
+    "resolution_vertical": 800,
     "reuse_buffer": true,
     "type": "gpu_renderer",
     "white_point": 1.0

@@ -103,7 +103,7 @@ namespace engine
     return true;
   }
 
-  bool load_img(const std::string& file_name, int width, int height, texture_asset* out_texture)
+  bool load_img(const std::string& file_name, int desired_channels, texture_asset* out_texture)
   {
     std::string path = io::get_texture_file_path(file_name.c_str());
 
@@ -111,7 +111,7 @@ namespace engine
     
     if (out_texture->is_hdr)
     {
-      out_texture->data_hdr = stbi_loadf(path.c_str(), &width, &height, nullptr, STBI_rgb);
+      out_texture->data_hdr = stbi_loadf(path.c_str(), &out_texture->width, &out_texture->height, &out_texture->num_channels, desired_channels);
       if (out_texture->data_hdr == nullptr)
       {
         LOG_ERROR("Texture file: {0} failed to open", path);
@@ -120,7 +120,7 @@ namespace engine
     }
     else
     {
-      out_texture->data_ldr = stbi_load(path.c_str(), &width, &height, nullptr, STBI_rgb);
+      out_texture->data_ldr = stbi_load(path.c_str(), &out_texture->width, &out_texture->height, &out_texture->num_channels, desired_channels);
       if (out_texture->data_ldr == nullptr)
       {
         LOG_ERROR("Texture file: {0} failed to open", path);

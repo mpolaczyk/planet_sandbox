@@ -5,23 +5,38 @@
 #include "asset/soft_asset_ptr.h"
 #include "assets/pixel_shader.h"
 #include "assets/vertex_shader.h"
+#include "assets/texture.h"
+#include "math/new_maths.h"
 
 struct ID3D11InputLayout;
 struct ID3D11Buffer;
 struct ID3D11RenderTargetView;
+struct ID3D11ShaderResourceView;
+struct ID3D11DepthStencilView;
+struct ID3D11SamplerState;
+struct ID3D11RasterizerState;
+struct ID3D11DepthStencilState;
 
 namespace engine
 {
   class ENGINE_API gpu_renderer : public renderer_base
   {
+    struct constants
+    {
+      float4x4 model_view_proj;
+    };
+    
   public:
     OBJECT_DECLARE(gpu_renderer, renderer_base)
     
     // FIX make them persistent members
-    soft_asset_ptr<pixel_shader_asset> pixel_shader;
-    soft_asset_ptr<vertex_shader_asset> vertex_shader;
-
+    soft_asset_ptr<pixel_shader_asset> pixel_shader_asset;
+    soft_asset_ptr<vertex_shader_asset> vertex_shader_asset;
+    soft_asset_ptr<texture_asset> texture_asset;
+    soft_asset_ptr<static_mesh_asset> mesh_asset;
+    
     virtual void render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config) override;
+    camera_config camera;
     virtual void push_partial_update() override {}
     virtual void cancel() override {}
     virtual bool is_async() const override { return false; }
@@ -31,15 +46,35 @@ namespace engine
         
     // Output texture, renders the scene there
     ID3D11RenderTargetView* output_rtv = nullptr;
+    ID3D11DepthStencilView* output_dsv = nullptr;
     unsigned int output_width = 0;
     unsigned int output_height = 0;
     
     ID3D11InputLayout* input_layout;
     ID3D11Buffer* vertex_buffer;
-    unsigned int num_verts;
+    ID3D11Buffer* index_buffer;
+    unsigned int num_indices;
     unsigned int stride;
     unsigned int offset;
 
+    ID3D11ShaderResourceView* texture_srv;
+    ID3D11SamplerState* sampler_state;
+
+    ID3D11Buffer* constant_buffer;
+    
+    int64_t timestamp_start = 0;
+    int64_t perf_counter_frequency = 0;
+    double current_time = 0.0;  // [s]
+
+    ID3D11RasterizerState* rasterizer_state;
+    ID3D11DepthStencilState* depth_stencil_state;
+
+    float3 cameraPos = {0, 0, 2};
+    float3 cameraFwd = {0, 0, -1};
+    float cameraPitch = 0.f;
+    float cameraYaw = 0.f;
+    float4x4 perspective_mat = {};
+    
     bool init_done = false;
     
   protected:

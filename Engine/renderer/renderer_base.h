@@ -60,7 +60,8 @@ namespace engine
     // Output texture
     ID3D11ShaderResourceView* output_srv = nullptr;
     ID3D11Texture2D* output_texture = nullptr;
-        
+    ID3D11Texture2D* output_depth_texture = nullptr;
+    
     // Main thread public interface.
     virtual void render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config) = 0;
     virtual void push_partial_update() = 0;

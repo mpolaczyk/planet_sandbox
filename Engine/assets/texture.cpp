@@ -41,7 +41,7 @@ namespace engine
 
     REG.set_custom_display_name(instance->get_runtime_id(), name);
 
-    if (!load_img(instance->img_file_name, instance->width, instance->height, instance))
+    if (!load_img(instance->img_file_name, instance->desired_channels, instance))
     {
       LOG_ERROR("Failed to load texture file: {0}", instance->img_file_name);
       return false;

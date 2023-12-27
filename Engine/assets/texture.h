@@ -17,10 +17,12 @@ namespace engine
 
     // JSON persistent
     std::string img_file_name;
+    int desired_channels;
+    
+    // Image file data
     int width;
     int height;
-
-    // Image file data
+    int num_channels;
     bool is_hdr;
     uint8_t* data_ldr = nullptr;
     float* data_hdr = nullptr;
