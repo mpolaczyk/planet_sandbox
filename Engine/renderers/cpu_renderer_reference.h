@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderer/cpu_renderer.h"
+#include "renderers/cpu_renderer.h"
 #include "math/chunk_generator.h"
 #include "core/core.h"
 

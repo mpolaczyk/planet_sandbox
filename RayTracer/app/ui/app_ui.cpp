@@ -13,7 +13,7 @@
 #include "hittables/hittables.h"
 #include "hittables/static_mesh.h"
 #include "hittables/scene.h"
-#include "renderer/cpu_renderer.h"
+#include "renderers/cpu_renderer.h"
 #include "renderers/gpu_renderer.h"
 
 namespace ray_tracer

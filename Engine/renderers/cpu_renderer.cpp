@@ -2,7 +2,7 @@
 #include <thread>
 #include <semaphore>
 
-#include "renderer/cpu_renderer.h"
+#include "renderers/cpu_renderer.h"
 
 #include "renderer/dx11_lib.h"
 #include "engine/io.h"

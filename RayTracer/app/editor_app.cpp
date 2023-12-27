@@ -12,7 +12,7 @@
 #include <tchar.h>
 
 #include "app/app.h"
-#include "renderer/cpu_renderer.h"
+#include "renderers/cpu_renderer.h"
 #include "renderer/dx11_lib.h"
 #include "renderer/renderer_base.h"
 

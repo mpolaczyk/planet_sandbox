@@ -8,7 +8,7 @@
 #include "assets/vertex_shader.h"
 #include "assets/pixel_shader.h"
 #include "renderer/renderer_base.h"
-#include "renderer/cpu_renderer.h"
+#include "renderers/cpu_renderer.h"
 #include "renderers/cpu_renderer_reference.h"
 #include "renderers/cpu_renderer_preview.h"
 #include "renderers/cpu_renderer_faces.h"

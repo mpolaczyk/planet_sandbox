@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include "imgui.h"
-
 #include "app/app.h"
 
 namespace ray_tracer
