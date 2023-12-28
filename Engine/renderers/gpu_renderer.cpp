@@ -251,7 +251,11 @@ namespace engine
     }
     
     float aspect_ratio = static_cast<float>(output_width) / static_cast<float>(output_height);
-    perspective_mat = makePerspectiveMat(aspect_ratio, degreesToRadians(84), 0.1f, 1000.f);
+
+    float _rad = XMConvertToRadians(84);
+    perspective_mat = XMMatrixPerspectiveFovRH(_rad, aspect_ratio, 0.1, 1000.f);
+    camera_pos = {0.f, 0.f, -2.f};
+    camera_rot = {0.f, 0.f, 0.f };
   }
   
   void gpu_renderer::update_frame()
@@ -276,28 +280,19 @@ namespace engine
     dx11& dx = dx11::instance();
 
     // Calculate view matrix from camera data
-    // 
-    // float4x4 viewMat = inverse(rotateXMat(cameraPitch) * rotateYMat(cameraYaw) * translationMat(cameraPos));
-    // NOTE: We can simplify this calculation to avoid inverse()!
-    // Applying the rule inverse(A*B) = inverse(B) * inverse(A) gives:
-    // float4x4 viewMat = inverse(translationMat(cameraPos)) * inverse(rotateYMat(cameraYaw)) * inverse(rotateXMat(cameraPitch));
-    // The inverse of a rotation/translation is a negated rotation/translation:
-    const float4x4 viewMat = translationMat(-cameraPos) * rotateYMat(-cameraYaw) * rotateXMat(-cameraPitch);
-    // Update the forward vector we use for camera movement:
-    cameraFwd = {-viewMat.m[2][0], -viewMat.m[2][1], -viewMat.m[2][2]};
-
-    // Spin the cube
-    const float4x4 modelMat = rotateXMat(-0.2f * static_cast<float>(math::pi * current_time)) * rotateYMat(0.1f * static_cast<float>(math::pi * current_time)) ;
-
-    // Calculate model-view-projection matrix to send to shader
-    float4x4 model_view_proj = modelMat * viewMat * perspective_mat;
+    // Negate the rotation to achieve inverse
+    const XMMATRIX view_mat = XMMatrixMultiply(XMMatrixTranslationFromVector(camera_pos), XMMatrixRotationRollPitchYawFromVector(XMVectorScale(camera_rot, -1.f)));
+    const float angle = static_cast<float>(math::pi * current_time);
+    const XMVECTOR model_rot = { -0.2f * angle, 0.1f * angle, 0.f };
+    const XMMATRIX model_mat = XMMatrixRotationRollPitchYawFromVector(model_rot);
+    const XMMATRIX model_view_proj = XMMatrixMultiply(XMMatrixMultiply(model_mat, view_mat), perspective_mat);
     
     // Update constant buffer
     {
       D3D11_MAPPED_SUBRESOURCE mapped_subresource;
       dx.device_context->Map(constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_subresource);
       constants* c = static_cast<constants*>(mapped_subresource.pData);
-      c->model_view_proj = model_view_proj;
+      c->model_view_proj = XMMatrixTranspose(model_view_proj);
       dx.device_context->Unmap(constant_buffer, 0);
     }
     

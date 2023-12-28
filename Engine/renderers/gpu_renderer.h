@@ -1,12 +1,13 @@
 ﻿#pragma once
 
+#include <DirectXMath.h>
+
 #include "core/core.h"
 #include "renderer/renderer_base.h"
 #include "asset/soft_asset_ptr.h"
 #include "assets/pixel_shader.h"
 #include "assets/vertex_shader.h"
 #include "assets/texture.h"
-#include "math/new_maths.h"
 
 struct ID3D11InputLayout;
 struct ID3D11Buffer;
@@ -17,13 +18,15 @@ struct ID3D11SamplerState;
 struct ID3D11RasterizerState;
 struct ID3D11DepthStencilState;
 
+using namespace DirectX;
+
 namespace engine
 {
   class ENGINE_API gpu_renderer : public renderer_base
   {
     struct constants
     {
-      float4x4 model_view_proj;
+      XMMATRIX model_view_proj;
     };
     
   public:
@@ -69,11 +72,9 @@ namespace engine
     ID3D11RasterizerState* rasterizer_state;
     ID3D11DepthStencilState* depth_stencil_state;
 
-    float3 cameraPos = {0, 0, 2};
-    float3 cameraFwd = {0, 0, -1};
-    float cameraPitch = 0.f;
-    float cameraYaw = 0.f;
-    float4x4 perspective_mat = {};
+    XMVECTOR camera_pos;
+    XMVECTOR camera_rot; //Pitch, Yaw, Roll
+    XMMATRIX perspective_mat;
     
     bool init_done = false;
     

@@ -108,7 +108,6 @@
     <ClInclude Include="hittables\scene.h" />
     <ClInclude Include="hittables\sphere.h" />
     <ClInclude Include="hittables\static_mesh.h" />
-    <ClInclude Include="math\new_maths.h" />
     <ClInclude Include="object\object.h" />
     <ClInclude Include="object\object_defines.h" />
     <ClInclude Include="object\object_registry.h" />
