@@ -46,7 +46,7 @@ namespace engine
       desc.Height = output_height;
       desc.MipLevels = 1;
       desc.ArraySize = 1;
-      desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+      desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
       desc.SampleDesc.Count = 1;
       desc.Usage = D3D11_USAGE_DEFAULT;
       desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
@@ -62,7 +62,7 @@ namespace engine
     }
     {
       D3D11_RENDER_TARGET_VIEW_DESC desc = {};
-      desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+      desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
       desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
       desc.Texture2D.MipSlice = 0;
       HRESULT result = dx.device->CreateRenderTargetView(output_texture, &desc, &output_rtv);
@@ -73,7 +73,7 @@ namespace engine
     }
     {
       D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
-      desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+      desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
       desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
       desc.Texture2D.MostDetailedMip = 0;
       desc.Texture2D.MipLevels = 1;
@@ -84,12 +84,12 @@ namespace engine
   
   void gpu_renderer::init()
   {
-    // FIX temporary hack here! It should be properly persistent as part fo the scene (not hittable)
+    // FIX temporary hack here! It should be properly persistent as part for the scene (not hittable)
     vertex_shader_asset.set_name("gpu_renderer_vs");
     vertex_shader_asset.get();
     pixel_shader_asset.set_name("gpu_renderer_ps");
     pixel_shader_asset.get();
-    texture_asset.set_name("hello");
+    texture_asset.set_name("box");
     texture_asset.get();
     mesh_asset.set_name("cube24");
     mesh_asset.get();
@@ -187,7 +187,7 @@ namespace engine
       texture_desc.Height             = texture_asset.get()->height;
       texture_desc.MipLevels          = 1;
       texture_desc.ArraySize          = 1;
-      texture_desc.Format             = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+      texture_desc.Format             = DXGI_FORMAT_R8G8B8A8_UNORM;
       texture_desc.SampleDesc.Count   = 1;
       texture_desc.Usage              = D3D11_USAGE_IMMUTABLE;
       texture_desc.BindFlags          = D3D11_BIND_SHADER_RESOURCE;
@@ -234,7 +234,7 @@ namespace engine
     
     float aspect_ratio = static_cast<float>(output_width) / static_cast<float>(output_height);
 
-    float _rad = XMConvertToRadians(84);
+    constexpr float _rad = XMConvertToRadians(84);
     perspective_mat = XMMatrixPerspectiveFovRH(_rad, aspect_ratio, 0.1, 1000.f);
     camera_pos = {0.f, 0.f, -2.f};
     camera_rot = {0.f, 0.f, 0.f };
@@ -252,7 +252,7 @@ namespace engine
       delta_time = static_cast<float>(current_time - previous_time);
     }
     
-    FLOAT bg_color[4] = { 0.0f, 0.2f, 0.5f, 1.0f };
+    FLOAT bg_color[4] = { 0.45f, 0.55f, 0.60f, 1.00f }; // FIX use color from the library
     D3D11_VIEWPORT viewport = { 0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f };
 
     dx11& dx = dx11::instance();

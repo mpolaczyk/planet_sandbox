@@ -48,8 +48,8 @@ namespace ray_tracer
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
   
     // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    //ImGui::StyleColorsClassic();
+    //ImGui::StyleColorsDark();
+    ImGui::StyleColorsClassic();
     ImGui::GetIO().KeyRepeatDelay = 0.1f;
     //ImGui::GetIO().KeyRepeatRate = 0.01f;
   
@@ -200,7 +200,7 @@ namespace ray_tracer
   
   void editor_app::present()
   {
-    static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f); // FIX use color from a library
     static float clear_color_with_alpha[4] =
     {
       clear_color.x * clear_color.w,
