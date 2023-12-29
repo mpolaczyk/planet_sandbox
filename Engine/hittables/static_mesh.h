@@ -38,7 +38,7 @@ namespace engine
     vec3 rotation = vec3(0, 0, 0);  // degrees
     soft_asset_ptr<static_mesh_asset> mesh_asset_ptr;
 
-    // Runtime state
+    // Runtime state, only for CPU renderer
     static_mesh_asset* runtime_asset_ptr;  // Vertices translated to the world coordinates
 
     mutable float extent = 0.0f;

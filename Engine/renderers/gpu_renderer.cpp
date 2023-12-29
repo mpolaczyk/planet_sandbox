@@ -7,6 +7,7 @@
 #include "renderers/gpu_renderer.h"
 
 #include "engine/log.h"
+#include "hittables/static_mesh.h"
 
 namespace engine
 {
@@ -18,6 +19,7 @@ namespace engine
     if (in_renderer_config.resolution_vertical == 0 || in_renderer_config.resolution_horizontal == 0) return;
 
     camera = in_camera_config;
+    scenee = in_scene;
     
     const bool recreate_output_buffers = output_width != in_renderer_config.resolution_vertical || output_height != in_renderer_config.resolution_horizontal;
     output_width = in_renderer_config.resolution_horizontal;
@@ -92,8 +94,8 @@ namespace engine
     pixel_shader_asset.get();
     texture_asset.set_name("default");
     texture_asset.get();
-    mesh_asset.set_name("icosphere2");
-    mesh_asset.get();
+    //mesh_asset.set_name("icosphere2");
+    //mesh_asset.get();
     
     create_output_texture();
 
@@ -127,33 +129,15 @@ namespace engine
       assert(SUCCEEDED(result));
     }  
 
-    // Static mesh asset
+    // Poke static mesh loading
+    for(const hittable* obj : scenee->objects)
     {
-      const static_mesh_asset* asset = mesh_asset.get();
-      stride = sizeof(vertex_data);
-      offset = 0;
-      num_indices = asset->index_buffer.size();
+      if(obj->get_class() == static_mesh::get_class_static())
       {
-        D3D11_BUFFER_DESC desc = {};
-        desc.ByteWidth = asset->vertex_buffer.size() * sizeof(vertex_data);
-        desc.Usage     = D3D11_USAGE_IMMUTABLE;
-        desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-        D3D11_SUBRESOURCE_DATA data = { asset->vertex_buffer.data() };
-
-        HRESULT result = device->CreateBuffer(&desc, &data, &vertex_buffer);
-        assert(SUCCEEDED(result));
-      }
-      {
-        D3D11_BUFFER_DESC desc = {};
-        desc.ByteWidth = asset->index_buffer.size() * sizeof(uint16_t);
-        desc.Usage     = D3D11_USAGE_IMMUTABLE;
-        desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-
-        D3D11_SUBRESOURCE_DATA data = { asset->index_buffer.data() };
-
-        HRESULT result = device->CreateBuffer(&desc, &data, &index_buffer);
-        assert(SUCCEEDED(result));
+        const static_mesh* sm = static_cast<const static_mesh*>(obj);
+        const static_mesh_asset* sma = sm->mesh_asset_ptr.get();
+        assert(sma->render_state.index_buffer);
+        assert(sma->render_state.vertex_buffer);
       }
     }
     
@@ -288,31 +272,39 @@ namespace engine
     dx.device_context->PSSetShaderResources(0, 1, &texture_srv);
     dx.device_context->PSSetSamplers(0, 1, &sampler_state);
     dx.device_context->VSSetConstantBuffers(0, 1, &constant_buffer);
+
+    // Draw teh scene
     
-    // Draw a few objects
-    for (int i = 0; i < 5; i++)
+    for(const hittable* obj : scenee->objects)
     {
-      // Mesh location
-      const float angle = static_cast<float>(math::pi * current_time);
-      const float pitch_speed = 0.0f; // Debug feature
-      const float yaw_speed = 0.0f;
-      const XMVECTOR model_pos = XMVectorSet(i*2.f - 2.5, 0.f, 0.f, 0.f);
-      const XMVECTOR model_rot = { pitch_speed * angle, yaw_speed * angle, 0.f };
-      const XMMATRIX model_matrix = XMMatrixMultiply(XMMatrixTranslationFromVector(model_pos), XMMatrixRotationRollPitchYawFromVector(model_rot));
-      XMStoreFloat4x4(&model_view_proj, XMMatrixTranspose(XMMatrixMultiply(XMMatrixMultiply(model_matrix, view_matrix), projection_matrix))); // Transpose: row vs column
-    
-      // Update constant buffer
+      if(obj->get_class() == static_mesh::get_class_static())
       {
-        D3D11_MAPPED_SUBRESOURCE data;
-        dx.device_context->Map(constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
-        constants* c = static_cast<constants*>(data.pData);
-        c->model_view_proj = model_view_proj;
-        dx.device_context->Unmap(constant_buffer, 0);
+        const static_mesh* sm = static_cast<const static_mesh*>(obj);
+        const static_mesh_asset* sma = sm->mesh_asset_ptr.get();
+        const static_mesh_render_state& smrs = sma->render_state;
+        XMFLOAT4X4 model_view_proj;
+        
+        // Model matrix
+        const XMVECTOR model_pos = XMVectorSet(sm->origin.x, sm->origin.y, sm->origin.z, 0.f);
+        const XMVECTOR model_rot = XMVectorSet(sm->rotation.x, sm->rotation.y, sm->rotation.z, 0.f);
+        const XMMATRIX model_matrix = XMMatrixMultiply(XMMatrixTranslationFromVector(model_pos), XMMatrixRotationRollPitchYawFromVector(model_rot));
+        XMStoreFloat4x4(&model_view_proj, XMMatrixTranspose(XMMatrixMultiply(XMMatrixMultiply(model_matrix, view_matrix), projection_matrix))); // Transpose: row vs column
+        // FIX add scale
+        
+        // Update constant buffer
+        {
+          D3D11_MAPPED_SUBRESOURCE data;
+          dx.device_context->Map(constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+          constants* c = static_cast<constants*>(data.pData);
+          c->model_view_proj = model_view_proj;
+          dx.device_context->Unmap(constant_buffer, 0);
+        }
+      
+        // Draw mesh
+        dx.device_context->IASetVertexBuffers(0, 1, &smrs.vertex_buffer, &smrs.stride, &smrs.offset);
+        dx.device_context->IASetIndexBuffer(smrs.index_buffer, DXGI_FORMAT_R16_UINT, 0);
+        dx.device_context->DrawIndexed(smrs.num_indices, 0, 0);
       }
-      dx.device_context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
-      dx.device_context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);
-    
-      dx.device_context->DrawIndexed(num_indices, 0, 0);  
     }
   }
 
@@ -321,6 +313,5 @@ namespace engine
     renderer_base::cleanup();
     DX_RELEASE(output_rtv)
     DX_RELEASE(input_layout)
-    DX_RELEASE(vertex_buffer)
   }
 }

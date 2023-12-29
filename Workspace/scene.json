@@ -43,7 +43,7 @@
           "name": "icosphere2"
         },
         "origin": {
-          "x": 0.0,
+          "x": 2.0,
           "y": 0.0,
           "z": 0.0
         },
@@ -59,6 +59,31 @@
         },
         "class_name": "static_mesh",
         "custom_display_name": "Red rock"
+      },
+	  {
+        "material_asset": {
+          "name": "glass_red"
+        },
+        "mesh_asset": {
+          "name": "icosphere2"
+        },
+        "origin": {
+          "x": -2.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "class_name": "static_mesh",
+        "custom_display_name": "Red rock2"
       }
     ],
     "class_name": "scene"

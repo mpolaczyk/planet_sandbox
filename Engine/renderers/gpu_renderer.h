@@ -40,6 +40,7 @@ namespace engine
     
     virtual void render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config) override;
     camera_config camera;
+    const scene* scenee;
     virtual void push_partial_update() override {}
     virtual void cancel() override {}
     virtual bool is_async() const override { return false; }
@@ -54,11 +55,6 @@ namespace engine
     unsigned int output_height = 0;
     
     ID3D11InputLayout* input_layout;
-    ID3D11Buffer* vertex_buffer;
-    ID3D11Buffer* index_buffer;
-    unsigned int num_indices;
-    unsigned int stride;
-    unsigned int offset;
 
     ID3D11ShaderResourceView* texture_srv;
     ID3D11SamplerState* sampler_state;
@@ -72,8 +68,6 @@ namespace engine
     ID3D11RasterizerState* rasterizer_state;
     ID3D11DepthStencilState* depth_stencil_state;
 
-    XMFLOAT4X4 model_view_proj;
-    
     bool init_done = false;
     
   protected:

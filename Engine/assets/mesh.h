@@ -9,8 +9,19 @@
 #include "math/vertex_data.h"
 #include "asset/asset.h"
 
+struct ID3D11Buffer;
+
 namespace engine
 {
+  struct static_mesh_render_state
+  {
+    unsigned int num_indices;
+    unsigned int stride;
+    unsigned int offset;
+    ID3D11Buffer* vertex_buffer;
+    ID3D11Buffer* index_buffer;
+  };
+  
   class ENGINE_API static_mesh_asset : public asset_base
   {
   public:
@@ -22,11 +33,10 @@ namespace engine
     // JSON persistent
     std::string obj_file_name;
 
-    // OBJ resource
-    std::vector<triangle_face> faces; // for CPU renderers
-    std::vector<vertex_data> vertex_buffer;
-    std::vector<uint16_t> index_buffer;
+    // Runtime state
+    std::vector<triangle_face> faces; // for CPU renderers only
     DirectX::BoundingBox bounding_box;
+    static_mesh_render_state render_state;
   };
 }
 

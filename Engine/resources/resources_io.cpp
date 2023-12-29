@@ -21,6 +21,7 @@
 
 #include "assets/mesh.h"
 #include "assets/texture.h"
+#include "renderer/dx11_lib.h"
 
 #include "third_party/WaveFrontReader.h"
 
@@ -33,6 +34,7 @@ namespace engine
     std::string dir = io::get_meshes_dir();
     std::string path = io::get_mesh_file_path(file_name.c_str());
 
+    // Parse OBJ file
     WaveFrontReader<uint16_t> obj_reader;
     {
       std::wstring widestr = std::wstring(path.begin(), path.end());
@@ -44,6 +46,7 @@ namespace engine
         return false;
       }
     }
+    // Make sure it has enough data
     if(!obj_reader.hasNormals)
     {
       LOG_WARN("Static mesh: {0} has no normals!", file_name);
@@ -52,33 +55,71 @@ namespace engine
     {
       LOG_WARN("Static mesh: {0} has no texture coords!", file_name); 
     }
-    //out_static_mesh->materials = obj_reader.materials;   // FIX not implemented yet
-    out_static_mesh->bounding_box = obj_reader.bounds;
-    out_static_mesh->index_buffer = obj_reader.indices;
-    for (auto& vert : obj_reader.vertices)
+    auto device = dx11::instance().device;
+    // Index buffer
     {
-      vertex_data vd;
-      vd.pos = vert.position;
-      vd.norm = vert.normal;
-      vd.uv = vert.textureCoordinate;
-      out_static_mesh->vertex_buffer.push_back(vd);
-    }
-    for(int i = 0; i < obj_reader.indices.size()-3; i+=3)
-    {
-      triangle_face tf;
-      for(int j = 0; j < 3; j++)
+      D3D11_BUFFER_DESC desc = {};
+      desc.ByteWidth = obj_reader.indices.size() * sizeof(uint16_t);
+      desc.Usage     = D3D11_USAGE_IMMUTABLE;
+      desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+      D3D11_SUBRESOURCE_DATA data = { obj_reader.indices.data() };
+      HRESULT result = device->CreateBuffer(&desc, &data, &out_static_mesh->render_state.index_buffer);
+      if(FAILED(result))
       {
-        tf.vertices[j].x = obj_reader.vertices[obj_reader.indices[i+j]].position.x;
-        tf.vertices[j].y = obj_reader.vertices[obj_reader.indices[i+j]].position.y;
-        tf.vertices[j].z = obj_reader.vertices[obj_reader.indices[i+j]].position.z;
-        tf.normals[j].x = obj_reader.vertices[obj_reader.indices[i+j]].normal.x;
-        tf.normals[j].y = obj_reader.vertices[obj_reader.indices[i+j]].normal.y;
-        tf.normals[j].z = obj_reader.vertices[obj_reader.indices[i+j]].normal.z;
-        tf.UVs[j].x = obj_reader.vertices[obj_reader.indices[i+j]].textureCoordinate.x;
-        tf.UVs[j].y = obj_reader.vertices[obj_reader.indices[i+j]].textureCoordinate.y;
+        LOG_WARN("Failed to build index buffer for: {0}", file_name);
+        return false;
       }
-      out_static_mesh->faces.push_back(tf);
     }
+    // Vertex buffer
+    {
+      std::vector<vertex_data> vertex_buffer;
+      vertex_buffer.reserve(obj_reader.vertices.size());
+      for (const auto& vert : obj_reader.vertices)
+      {
+        vertex_data vd;
+        vd.pos = vert.position;
+        vd.norm = vert.normal;
+        vd.uv = vert.textureCoordinate;
+        vertex_buffer.push_back(vd); // FIX move semantics
+      }
+      D3D11_BUFFER_DESC desc = {};
+      desc.ByteWidth = vertex_buffer.size() * sizeof(vertex_data);
+      desc.Usage     = D3D11_USAGE_IMMUTABLE;
+      desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+      D3D11_SUBRESOURCE_DATA data = { vertex_buffer.data() };
+      HRESULT result = device->CreateBuffer(&desc, &data, &out_static_mesh->render_state.vertex_buffer);
+      if(FAILED(result))
+      {
+        LOG_WARN("Failed to build vertex buffer for: {0}", file_name);
+        return false;
+      }
+    }
+    // Render state, other
+    out_static_mesh->render_state.offset = 0;
+    out_static_mesh->render_state.stride = sizeof(vertex_data);
+    out_static_mesh->render_state.num_indices = obj_reader.indices.size();
+    // Faces
+    {
+      for(int i = 0; i < obj_reader.indices.size()-3; i+=3)
+      {
+        triangle_face tf;
+        for(int j = 0; j < 3; j++)
+        {
+          tf.vertices[j].x = obj_reader.vertices[obj_reader.indices[i+j]].position.x;
+          tf.vertices[j].y = obj_reader.vertices[obj_reader.indices[i+j]].position.y;
+          tf.vertices[j].z = obj_reader.vertices[obj_reader.indices[i+j]].position.z;
+          tf.normals[j].x = obj_reader.vertices[obj_reader.indices[i+j]].normal.x;
+          tf.normals[j].y = obj_reader.vertices[obj_reader.indices[i+j]].normal.y;
+          tf.normals[j].z = obj_reader.vertices[obj_reader.indices[i+j]].normal.z;
+          tf.UVs[j].x = obj_reader.vertices[obj_reader.indices[i+j]].textureCoordinate.x;
+          tf.UVs[j].y = obj_reader.vertices[obj_reader.indices[i+j]].textureCoordinate.y;
+        }
+        out_static_mesh->faces.push_back(tf);
+      }
+    }
+    // Other fields  
+    out_static_mesh->bounding_box = obj_reader.bounds;
+    //out_static_mesh->materials = obj_reader.materials;   // FIX not implemented yet
     return true;
   }
 
