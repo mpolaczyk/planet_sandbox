@@ -16,4 +16,11 @@ namespace engine
 
     // TODO: compute face normal on load?
   };
+
+  struct ENGINE_API vertex_data
+  {
+    float pos[3];
+   // float norm[3];  // FIX
+    float uv[2];
+  };
 }

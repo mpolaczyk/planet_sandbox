@@ -40,7 +40,7 @@ namespace engine
 
     REG.set_custom_display_name(instance->get_runtime_id(), name);
 
-    if (!load_obj(instance->obj_file_name, instance->shape_index, instance->faces))
+    if (!load_obj(instance->obj_file_name, instance->shape_index, instance))
     {
       LOG_ERROR("Failed to load object file: {0}", instance->obj_file_name);
       return false;

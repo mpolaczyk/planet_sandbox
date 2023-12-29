@@ -2,17 +2,16 @@
 
 #include "core/core.h"
 
-#include <vector>
 #include <string>
-
-#include "math/triangle_face.h"
-#include "assets/texture.h"
 
 struct ID3D10Blob;
 
 namespace engine
 {
-  bool ENGINE_API load_obj(const std::string& file_name, int shape_index, std::vector<triangle_face>& out_faces);
+  class static_mesh_asset;
+  class texture_asset;
+  
+  bool ENGINE_API load_obj(const std::string& file_name, int shape_index, static_mesh_asset* out_static_mesh);
 
   bool ENGINE_API load_img(const std::string& file_name, int desired_channels, texture_asset* out_texture);
 

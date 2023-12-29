@@ -7,7 +7,7 @@
 #include "math/vec3.h"
 #include "math/ray.h"
 #include "math/hit.h"
-#include "math/triangle_face.h"
+#include "vertex_data.h"
 
 namespace engine
 {

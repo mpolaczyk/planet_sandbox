@@ -7,7 +7,7 @@
 #include "engine/hash.h"
 #include "profile/stats.h"
 #include "math/math.h"
-#include "math/triangle_face.h"
+#include "math/vertex_data.h"
 #include "object/object_registry.h"
 #include "object/object_visitor.h"
 

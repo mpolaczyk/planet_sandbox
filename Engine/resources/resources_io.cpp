@@ -16,95 +16,133 @@
 
 #include <d3d11_1.h>
 #include <d3dcompiler.h>
+#include <unordered_map>
 
 #include "engine/log.h"
 #include "engine/io.h"
 #include "math/vec3.h"
 #include "math/math.h"
 
+#include "assets/mesh.h"
+#include "assets/texture.h"
+
+#include "third_party/WaveFrontReader.h"
+
+
 namespace engine
 {
-  bool load_obj(const std::string& file_name, int shape_index, std::vector<triangle_face>& out_faces)
+  bool load_obj(const std::string& file_name, int shape_index, static_mesh_asset* out_static_mesh)
   {
+    assert(out_static_mesh);
     assert(shape_index >= 0);
 
-    tinyobj::attrib_t attributes; // not implemented
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials; // not implemented
+    //tinyobj::attrib_t attributes;
+    //std::vector<tinyobj::shape_t> shapes;
+    //std::vector<tinyobj::material_t> materials; // not implemented
 
     std::string dir = io::get_meshes_dir();
     std::string path = io::get_mesh_file_path(file_name.c_str());
 
-    std::string error;
-    if (!tinyobj::LoadObj(&attributes, &shapes, &materials, &error, path.c_str(), dir.c_str(), true))
+    WaveFrontReader<uint16_t> obj_reader;
     {
-      LOG_ERROR("Unable to load object file: {0} {1}", path, error);
-      return false;
+      std::wstring widestr = std::wstring(path.begin(), path.end());
+      const wchar_t* widecstr = widestr.c_str();
+      HRESULT result = obj_reader.Load(widecstr);
+      assert(SUCCEEDED(result));
     }
-    if (shape_index >= shapes.size())
+    for (auto& vert : obj_reader.vertices)
     {
-      LOG_ERROR("Object file: {0} does not have shape index: {1}", path, shape_index);
-      return false;
+      vertex_data vd;
+      vd.pos[0] = vert.position.x;
+      vd.pos[1] = vert.position.y;
+      vd.pos[2] = vert.position.z;
+      //d.norm[0] = vert.normal.x;
+      //d.norm[1] = vert.normal.y;
+      //d.norm[2] = vert.normal.z;
+      vd.uv[0] = vert.textureCoordinate.x;
+      vd.uv[1] = vert.textureCoordinate.y;
+      
+      out_static_mesh->vertex_buffer.push_back(vd);
     }
-
-    tinyobj::shape_t shape = shapes[shape_index];
-    size_t num_faces = shape.mesh.num_face_vertices.size();
-    if (num_faces == 0)
-    {
-      LOG_ERROR("Object file: {0} has no faces", path);
-      return false;
-    }
-    out_faces.reserve(num_faces);
-
-    // loop over faces
-    for (size_t fi = 0; fi < num_faces; ++fi)
-    {
-      out_faces.push_back(triangle_face());
-      triangle_face& face = out_faces[fi];
-
-      // loop over the vertices in the face
-      assert(shape.mesh.num_face_vertices[fi] == 3);
-      for (size_t vi = 0; vi < 3; ++vi)
-      {
-        tinyobj::index_t idx = shape.mesh.indices[3 * fi + vi];
-
-        if (idx.vertex_index == -1)
-        {
-          LOG_ERROR("Object file: {0} faces not found", file_name);
-          return false;
-        }
-        if (idx.normal_index == -1)
-        {
-          LOG_ERROR("Object file: {0} normals not found", file_name);
-          return false;
-        }
-        if (idx.texcoord_index == -1)
-        {
-          LOG_ERROR("Object file: {0} UVs not found", file_name);
-          return false;
-        }
-
-        float vx = attributes.vertices[3 * idx.vertex_index + 0];
-        float vy = attributes.vertices[3 * idx.vertex_index + 1];
-        float vz = attributes.vertices[3 * idx.vertex_index + 2];
-        face.vertices[vi] = vec3(vx, vy, vz);
-
-        float nx = attributes.normals[3 * idx.normal_index + 1];
-        float ny = attributes.normals[3 * idx.normal_index + 2];
-        float nz = attributes.normals[3 * idx.normal_index + 0];
-        face.normals[vi] = math::normalize(vec3(nx, ny, nz));
-
-        float uvx = attributes.texcoords[2 * idx.texcoord_index + 0];
-        float uvy = attributes.texcoords[2 * idx.texcoord_index + 1];
-        face.UVs[vi] = vec3(uvx, uvy, 0.0f);
-      }
-    }
-
+    out_static_mesh->index_buffer = obj_reader.indices;
+    
     return true;
+
+    // FIX don't remove tinyobj loader by provide an alternative way to load files
+    // alternatively, generate faces for cpu renderers
+
+    //std::string error;
+    //if (!tinyobj::LoadObj(&attributes, &shapes, &materials, &error, path.c_str(), dir.c_str(), true))
+    //{
+    //  LOG_ERROR("Unable to load object file: {0} {1}", path, error);
+    //  return false;
+    //}
+    //if (shape_index >= shapes.size())
+    //{
+    //  LOG_ERROR("Object file: {0} does not have shape index: {1}", path, shape_index);
+    //  return false;
+    //}
+
+    //tinyobj::shape_t shape = shapes[shape_index];
+    //size_t num_faces = shape.mesh.num_face_vertices.size();
+    //if (num_faces == 0)
+    //{
+    //  LOG_ERROR("Object file: {0} has no faces", path);
+    //  return false;
+    //}
+    //out_static_mesh->faces.reserve(num_faces);
+
+    //
+    //// loop over faces
+    //for (size_t fi = 0; fi < num_faces; ++fi)
+    //{
+    //  out_static_mesh->faces.push_back(triangle_face());
+    //  triangle_face& face = out_static_mesh->faces[fi];
+    //  
+    //  // loop over the vertices in the face
+    //  assert(shape.mesh.num_face_vertices[fi] == 3);
+    //  for (size_t vi = 0; vi < 3; ++vi)
+    //  {
+    //    tinyobj::index_t idx = shape.mesh.indices[3 * fi + vi];
+
+    //    if (idx.vertex_index == -1)
+    //    {
+    //      LOG_ERROR("Object file: {0} faces not found", file_name);
+    //      return false;
+    //    }
+    //    if (idx.normal_index == -1)
+    //    {
+    //      LOG_ERROR("Object file: {0} normals not found", file_name);
+    //      return false;
+    //    }
+    //    if (idx.texcoord_index == -1)
+    //    {
+    //      LOG_ERROR("Object file: {0} UVs not found", file_name);
+    //      return false;
+    //    }
+
+    //    float vx = attributes.vertices[3 * idx.vertex_index + 0];
+    //    float vy = attributes.vertices[3 * idx.vertex_index + 1];
+    //    float vz = attributes.vertices[3 * idx.vertex_index + 2];
+    //    face.vertices[vi] = vec3(vx, vy, vz);
+
+    //    float nx = attributes.normals[3 * idx.normal_index + 0];
+    //    float ny = attributes.normals[3 * idx.normal_index + 1];
+    //    float nz = attributes.normals[3 * idx.normal_index + 2];
+    //    face.normals[vi] = math::normalize(vec3(nx, ny, nz));
+
+    //    float uvx = attributes.texcoords[2 * idx.texcoord_index + 0];
+    //    float uvy = attributes.texcoords[2 * idx.texcoord_index + 1];
+    //    face.UVs[vi] = vec3(uvx, uvy, 0.0f);
+    //  }
+    //}
+    //return true;
   }
 
   bool load_img(const std::string& file_name, int desired_channels, texture_asset* out_texture)
   {
+    assert(out_texture);
+    
     std::string path = io::get_texture_file_path(file_name.c_str());
 
     out_texture->is_hdr = static_cast<bool>(stbi_is_hdr(path.c_str()));

@@ -117,58 +117,40 @@ namespace engine
       // Input layout
       D3D11_INPUT_ELEMENT_DESC input_element_desc[] =
       {
-        { "POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+        { "POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEX", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }  // FIX add normal
       };
       const auto blob = vertex_shader_asset.get()->shader_blob;
       HRESULT result = device->CreateInputLayout(input_element_desc, ARRAYSIZE(input_element_desc), blob->GetBufferPointer(), blob->GetBufferSize(), &input_layout);
       assert(SUCCEEDED(result));
     }  
 
-    // FIX hardcoded mesh!
+    // Static mesh asset
     {
-      float vertex_data[] = { // x, y, z
-        -0.5f,-0.5f, -0.5f,
-        -0.5f,-0.5f,  0.5f,
-        -0.5f, 0.5f, -0.5f,
-        -0.5f, 0.5f,  0.5f,
-        0.5f,-0.5f, -0.5f,
-        0.5f,-0.5f,  0.5f,
-        0.5f, 0.5f, -0.5f,
-        0.5f, 0.5f,  0.5f };
-      
-      uint16_t indices[] = {
-        0, 6, 4,
-        0, 2, 6, 
-        0, 3, 2, 
-        0, 1, 3, 
-        2, 7, 6, 
-        2, 3, 7, 
-        4, 6, 7, 
-        4, 7, 5, 
-        0, 4, 5, 
-        0, 5, 1, 
-        1, 5, 7, 
-        1, 7, 3  };
-      stride = 3 * sizeof(float);
+      const static_mesh_asset* asset = mesh_asset.get();
+      stride = sizeof(vertex_data);
       offset = 0;
-      num_indices = sizeof(indices) / sizeof(indices[0]);
-
+      num_indices = asset->index_buffer.size();
       {
         D3D11_BUFFER_DESC desc = {};
-        desc.ByteWidth = sizeof(vertex_data);
+        desc.ByteWidth = asset->vertex_buffer.size() * sizeof(vertex_data);
         desc.Usage     = D3D11_USAGE_IMMUTABLE;
         desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-        D3D11_SUBRESOURCE_DATA subresource_data = { vertex_data };
-        HRESULT result = device->CreateBuffer(&desc, &subresource_data, &vertex_buffer);
+
+        D3D11_SUBRESOURCE_DATA data = { asset->vertex_buffer.data() };
+
+        HRESULT result = device->CreateBuffer(&desc, &data, &vertex_buffer);
         assert(SUCCEEDED(result));
       }
       {
         D3D11_BUFFER_DESC desc = {};
-        desc.ByteWidth = sizeof(indices);
+        desc.ByteWidth = asset->index_buffer.size() * sizeof(uint16_t);
         desc.Usage     = D3D11_USAGE_IMMUTABLE;
         desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-        D3D11_SUBRESOURCE_DATA subresource_data = { indices };
-        HRESULT result = device->CreateBuffer(&desc, &subresource_data, &index_buffer);
+
+        D3D11_SUBRESOURCE_DATA data = { asset->index_buffer.data() };
+
+        HRESULT result = device->CreateBuffer(&desc, &data, &index_buffer);
         assert(SUCCEEDED(result));
       }
     }
@@ -190,7 +172,7 @@ namespace engine
       assert(SUCCEEDED(result));
     }
 
-    // Create texture
+    // Load texture asset
     {
       const int texture_bytes_per_row = 4 * texture_asset.get()->width;
       const uint8_t* texture_bytes = texture_asset.get()->data_ldr;
@@ -268,13 +250,9 @@ namespace engine
       const LONGLONG timestamp_now = perf_count.QuadPart;
       current_time = static_cast<double>(timestamp_now - timestamp_start) / static_cast<double>(perf_counter_frequency);
       delta_time = static_cast<float>(current_time - previous_time);
-      //if(dt > (1.f / 60.f))
-      //{
-      //  dt = (1.f / 60.f);
-      //}
     }
     
-    FLOAT bg_color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    FLOAT bg_color[4] = { 0.0f, 0.2f, 0.5f, 1.0f };
     D3D11_VIEWPORT viewport = { 0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f };
 
     dx11& dx = dx11::instance();
@@ -308,8 +286,8 @@ namespace engine
     dx.device_context->IASetInputLayout(input_layout);
     dx.device_context->VSSetShader(vertex_shader_asset.get()->shader, nullptr, 0);
     dx.device_context->PSSetShader(pixel_shader_asset.get()->shader, nullptr, 0);
-    //dx.device_context->PSSetShaderResources(0, 1, &texture_srv);
-    //dx.device_context->PSSetSamplers(0, 1, &sampler_state);
+    dx.device_context->PSSetShaderResources(0, 1, &texture_srv);
+    dx.device_context->PSSetSamplers(0, 1, &sampler_state);
     dx.device_context->VSSetConstantBuffers(0, 1, &constant_buffer);
     dx.device_context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
     dx.device_context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);

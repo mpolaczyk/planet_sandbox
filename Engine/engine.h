@@ -22,7 +22,7 @@
 #include "math/colors.h"
 #include "math/onb.h"
 #include "math/pdf.h"
-#include "math/triangle_face.h"
+#include "math/vertex_data.h"
 #include "math/camera.h"
 #include "math/plane.h"
 #include "object/object.h"

@@ -6,7 +6,7 @@
 
 #include "object/object.h"
 #include "math/vec3.h"
-#include "math/triangle_face.h"
+#include "math/vertex_data.h"
 #include "asset/asset.h"
 
 namespace engine
@@ -25,6 +25,8 @@ namespace engine
 
     // OBJ resource
     std::vector<triangle_face> faces;
+    std::vector<vertex_data> vertex_buffer;
+    std::vector<uint16_t> index_buffer;
   };
 }
 
