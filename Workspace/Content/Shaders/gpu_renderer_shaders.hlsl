@@ -7,6 +7,7 @@ cbuffer constants : register(b0)
 struct VS_Input {
     float3 pos : POS;
     float2 uv : TEX;
+	float3 norm : NORM;
 };
 
 struct VS_Output {

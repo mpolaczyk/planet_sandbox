@@ -89,7 +89,7 @@ namespace engine
     vertex_shader_asset.get();
     pixel_shader_asset.set_name("gpu_renderer_ps");
     pixel_shader_asset.get();
-    texture_asset.set_name("box");
+    texture_asset.set_name("environment");
     texture_asset.get();
     mesh_asset.set_name("cube24");
     mesh_asset.get();
@@ -118,7 +118,8 @@ namespace engine
       D3D11_INPUT_ELEMENT_DESC input_element_desc[] =
       {
         { "POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TEX", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }  // FIX add normal
+        { "TEX", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORM", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
       };
       const auto blob = vertex_shader_asset.get()->shader_blob;
       HRESULT result = device->CreateInputLayout(input_element_desc, ARRAYSIZE(input_element_desc), blob->GetBufferPointer(), blob->GetBufferSize(), &input_layout);
@@ -174,30 +175,41 @@ namespace engine
 
     // Load texture asset
     {
-      const int texture_bytes_per_row = 4 * texture_asset.get()->width;
-      const uint8_t* texture_bytes = texture_asset.get()->data_ldr;
-      assert(texture_bytes);
-    
-      D3D11_SUBRESOURCE_DATA texture_subresource_data = {};
-      texture_subresource_data.SysMemPitch = texture_bytes_per_row;
-      texture_subresource_data.pSysMem = texture_bytes;
+      const engine::texture_asset* tex = texture_asset.get();
+      int texture_bytes_per_row = 0;
+      const void* texture_bytes = nullptr;
+      if (tex->is_hdr)
+      {
+        texture_bytes = static_cast<const void*>(tex->data_hdr);
+        texture_bytes_per_row = tex->desired_channels * sizeof(float) * tex->width;
+      }
+      else
+      {
+        texture_bytes = static_cast<const void*>(tex->data_ldr);
+        texture_bytes_per_row = tex->desired_channels * sizeof(uint8_t) * tex->width;
+      }
     
       D3D11_TEXTURE2D_DESC texture_desc = {};
-      texture_desc.Width              = texture_asset.get()->width;
-      texture_desc.Height             = texture_asset.get()->height;
+      texture_desc.Width              = tex->width;
+      texture_desc.Height             = tex->height;
       texture_desc.MipLevels          = 1;
       texture_desc.ArraySize          = 1;
-      texture_desc.Format             = DXGI_FORMAT_R8G8B8A8_UNORM;
+      texture_desc.Format = tex->is_hdr ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
       texture_desc.SampleDesc.Count   = 1;
       texture_desc.Usage              = D3D11_USAGE_IMMUTABLE;
       texture_desc.BindFlags          = D3D11_BIND_SHADER_RESOURCE;
-    
+      
+      D3D11_SUBRESOURCE_DATA texture_subresource_data = {};
+      texture_subresource_data.SysMemPitch = texture_bytes_per_row;
+      texture_subresource_data.pSysMem = texture_bytes;
+      
       ID3D11Texture2D* texture;
       HRESULT result = device->CreateTexture2D(&texture_desc, &texture_subresource_data, &texture);
       assert(SUCCEEDED(result));
     
       result = device->CreateShaderResourceView(texture, nullptr, &texture_srv);
       assert(SUCCEEDED(result));
+      texture->Release();
     }
 
     // Constant buffer

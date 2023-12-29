@@ -20,7 +20,7 @@ namespace engine
   struct ENGINE_API vertex_data
   {
     float pos[3];
-   // float norm[3];  // FIX
     float uv[2];
+    float norm[3];
   };
 }
