@@ -1,17 +1,17 @@
 ﻿#include "stdafx.h"
-#include "app/editor_app.h"
 
 #include "core/windows_minimal.h"
 
+#include <d3d11_1.h>
+#include <tchar.h>
 #include <thread>
+#include <DirectXColors.h>
 
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
-#include <d3d11_1.h>
-#include <tchar.h>
 
-#include "app/app.h"
+#include "app/editor_app.h"
 #include "renderers/cpu_renderer.h"
 #include "renderer/dx11_lib.h"
 #include "renderer/renderer_base.h"
@@ -200,17 +200,10 @@ namespace ray_tracer
   
   void editor_app::present()
   {
-    static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f); // FIX use color from a library
-    static float clear_color_with_alpha[4] =
-    {
-      clear_color.x * clear_color.w,
-      clear_color.y * clear_color.w,
-      clear_color.z * clear_color.w,
-      clear_color.w
-    };
     dx11& dx = dx11::instance();
     dx.device_context->OMSetRenderTargets(1, &dx.rtv, NULL);
-    dx.device_context->ClearRenderTargetView(dx.rtv, clear_color_with_alpha);
+    
+    dx.device_context->ClearRenderTargetView(dx.rtv, DirectX::Colors::LightSlateGray);
         
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
   

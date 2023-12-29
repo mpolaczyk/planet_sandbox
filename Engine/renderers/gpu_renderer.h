@@ -26,7 +26,7 @@ namespace engine
   {
     struct constants
     {
-      XMMATRIX model_view_proj;
+      XMFLOAT4X4 model_view_proj;
     };
     
   public:
@@ -72,9 +72,7 @@ namespace engine
     ID3D11RasterizerState* rasterizer_state;
     ID3D11DepthStencilState* depth_stencil_state;
 
-    XMVECTOR camera_pos;
-    XMVECTOR camera_rot; //Pitch, Yaw, Roll
-    XMMATRIX perspective_mat;
+    XMFLOAT4X4 model_view_proj;
     
     bool init_done = false;
     

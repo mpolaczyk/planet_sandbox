@@ -1,5 +1,6 @@
 ﻿
 #include <d3d11_1.h>
+#include <DirectXColors.h>
 #include "renderer/dx11_lib.h"
 
 #include "object/object_registry.h"
@@ -91,7 +92,7 @@ namespace engine
     pixel_shader_asset.get();
     texture_asset.set_name("default");
     texture_asset.get();
-    mesh_asset.set_name("torus");
+    mesh_asset.set_name("icosphere2");
     mesh_asset.get();
     
     create_output_texture();
@@ -156,7 +157,7 @@ namespace engine
       }
     }
     
-    // Create Sampler State
+    // Sampler state
     {
       D3D11_SAMPLER_DESC desc = {};
       desc.Filter         = D3D11_FILTER_MIN_MAG_MIP_POINT;
@@ -173,28 +174,28 @@ namespace engine
       assert(SUCCEEDED(result));
     }
 
-    // Load texture asset
+    // Texture asset
     {
-      const engine::texture_asset* tex = texture_asset.get();
+      const engine::texture_asset* temp = texture_asset.get();
       int texture_bytes_per_row = 0;
       const void* texture_bytes = nullptr;
-      if (tex->is_hdr)
+      if (temp->is_hdr)
       {
-        texture_bytes = static_cast<const void*>(tex->data_hdr);
-        texture_bytes_per_row = tex->desired_channels * sizeof(float) * tex->width;
+        texture_bytes = static_cast<const void*>(temp->data_hdr);
+        texture_bytes_per_row = temp->desired_channels * sizeof(float) * temp->width;
       }
       else
       {
-        texture_bytes = static_cast<const void*>(tex->data_ldr);
-        texture_bytes_per_row = tex->desired_channels * sizeof(uint8_t) * tex->width;
+        texture_bytes = static_cast<const void*>(temp->data_ldr);
+        texture_bytes_per_row = temp->desired_channels * sizeof(uint8_t) * temp->width;
       }
     
       D3D11_TEXTURE2D_DESC texture_desc = {};
-      texture_desc.Width              = tex->width;
-      texture_desc.Height             = tex->height;
+      texture_desc.Width              = temp->width;
+      texture_desc.Height             = temp->height;
       texture_desc.MipLevels          = 1;
       texture_desc.ArraySize          = 1;
-      texture_desc.Format = tex->is_hdr ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
+      texture_desc.Format = temp->is_hdr ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
       texture_desc.SampleDesc.Count   = 1;
       texture_desc.Usage              = D3D11_USAGE_IMMUTABLE;
       texture_desc.BindFlags          = D3D11_BIND_SHADER_RESOURCE;
@@ -243,13 +244,6 @@ namespace engine
       HRESULT result = device->CreateDepthStencilState(&desc, &depth_stencil_state);
       assert(SUCCEEDED(result));
     }
-    
-    float aspect_ratio = static_cast<float>(output_width) / static_cast<float>(output_height);
-
-    constexpr float _rad = XMConvertToRadians(90);
-    perspective_mat = XMMatrixPerspectiveFovRH(_rad, aspect_ratio, 0.1, 1000.f);
-    camera_pos = {0.f, 0.f, -2.f};
-    camera_rot = {0.f, 0.f, 0.f };
   }
   
   void gpu_renderer::update_frame()
@@ -264,31 +258,41 @@ namespace engine
       delta_time = static_cast<float>(current_time - previous_time);
     }
     
-    FLOAT bg_color[4] = { 0.45f, 0.55f, 0.60f, 1.00f }; // FIX use color from the library
-    D3D11_VIEWPORT viewport = { 0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f };
+    // Camera and MVP matrix
+    {
+      const float field_of_view = XMConvertToRadians(camera.field_of_view);
+      const float aspect_ratio = camera.aspect_ratio_w / camera.aspect_ratio_h;
+      const XMMATRIX projection_matrix = XMMatrixPerspectiveFovRH(field_of_view, aspect_ratio, math::t_min, math::infinity);
+      
+      const XMVECTOR camera_pos = XMVectorSet(camera.look_from.x, camera.look_from.y, camera.look_from.z, 0.f);
+      const XMVECTOR camera_rot = XMVector3AngleBetweenVectors(XMVectorSet(0.f, 0.f, -1.f, 0.f), XMVectorSet(camera.look_dir.x, camera.look_dir.y, camera.look_dir.z, 0.f));
+      const XMMATRIX view_matrix = XMMatrixMultiply(XMMatrixTranslationFromVector(camera_pos),
+        XMMatrixRotationRollPitchYawFromVector(XMVectorScale(camera_rot, -1.f))); // Negate the rotation to achieve inverse
+      // FIX rotation does not work well this way, test with mouse! 
+
+      const float angle = static_cast<float>(math::pi * current_time);
+      const float pitch_speed = 0.f; // Debug feature
+      const float yaw_speed = 0.f;
+      const XMVECTOR model_rot = { pitch_speed * angle, yaw_speed * angle, 0.f };
+      const XMMATRIX model_matrix = XMMatrixRotationRollPitchYawFromVector(model_rot);
+      XMStoreFloat4x4(&model_view_proj, XMMatrixTranspose(XMMatrixMultiply(XMMatrixMultiply(model_matrix, view_matrix), projection_matrix))); // Transpose: row vs column
+    }
 
     dx11& dx = dx11::instance();
 
-    // Calculate view matrix from camera data
-    // Negate the rotation to achieve inverse
-    const XMMATRIX view_mat = XMMatrixMultiply(XMMatrixTranslationFromVector(camera_pos), XMMatrixRotationRollPitchYawFromVector(XMVectorScale(camera_rot, -1.f)));
-    const float angle = static_cast<float>(math::pi * current_time);
-    const XMVECTOR model_rot = { -0.2f * angle, 0.1f * angle, 0.f };
-    const XMMATRIX model_mat = XMMatrixRotationRollPitchYawFromVector(model_rot);
-    const XMMATRIX model_view_proj = XMMatrixMultiply(XMMatrixMultiply(model_mat, view_mat), perspective_mat);
-    
     // Update constant buffer
     {
-      D3D11_MAPPED_SUBRESOURCE mapped_subresource;
-      dx.device_context->Map(constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_subresource);
-      constants* c = static_cast<constants*>(mapped_subresource.pData);
-      c->model_view_proj = XMMatrixTranspose(model_view_proj);
+      D3D11_MAPPED_SUBRESOURCE data;
+      dx.device_context->Map(constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+      constants* c = static_cast<constants*>(data.pData);
+      c->model_view_proj = model_view_proj;
       dx.device_context->Unmap(constant_buffer, 0);
     }
     
-    dx.device_context->ClearRenderTargetView(output_rtv, bg_color);
+    dx.device_context->ClearRenderTargetView(output_rtv, Colors::LightSlateGray);
     dx.device_context->ClearDepthStencilView(output_dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
+    const D3D11_VIEWPORT viewport = { 0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f };
     dx.device_context->RSSetViewports(1, &viewport);
     dx.device_context->RSSetState(rasterizer_state);
     dx.device_context->OMSetDepthStencilState(depth_stencil_state, 0);
