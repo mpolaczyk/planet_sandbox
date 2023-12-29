@@ -11,7 +11,7 @@ namespace engine
   class static_mesh_asset;
   class texture_asset;
   
-  bool ENGINE_API load_obj(const std::string& file_name, int shape_index, static_mesh_asset* out_static_mesh);
+  bool ENGINE_API load_obj(const std::string& file_name, static_mesh_asset* out_static_mesh);
 
   bool ENGINE_API load_img(const std::string& file_name, int desired_channels, texture_asset* out_texture);
 

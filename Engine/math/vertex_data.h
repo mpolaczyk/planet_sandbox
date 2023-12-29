@@ -1,11 +1,13 @@
 #pragma once
 
+#include <DirectXMath.h>
+
 #include "core/core.h"
 #include "math/vec3.h"
 
 namespace engine
 {
-  ALIGN(64) struct ENGINE_API triangle_face  // todo move somewhere else
+  ALIGN(64) struct ENGINE_API triangle_face
   {
     vec3 vertices[3];
     vec3 pad1;
@@ -13,14 +15,12 @@ namespace engine
     vec3 pad2;
     vec3 UVs[3]; //xy
     vec3 pad3;
-
-    // TODO: compute face normal on load?
   };
 
   struct ENGINE_API vertex_data
   {
-    float pos[3];
-    float uv[2];
-    float norm[3];
+    DirectX::XMFLOAT3 pos = {0.f, 0.f, 0.f};
+    DirectX::XMFLOAT2 uv = {0.f, 0.f};
+    DirectX::XMFLOAT3 norm = {0.f, 0.f, 0.f};
   };
 }

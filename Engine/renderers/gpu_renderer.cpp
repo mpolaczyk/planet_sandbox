@@ -89,9 +89,9 @@ namespace engine
     vertex_shader_asset.get();
     pixel_shader_asset.set_name("gpu_renderer_ps");
     pixel_shader_asset.get();
-    texture_asset.set_name("environment");
+    texture_asset.set_name("default");
     texture_asset.get();
-    mesh_asset.set_name("cube24");
+    mesh_asset.set_name("torus");
     mesh_asset.get();
     
     create_output_texture();
@@ -246,7 +246,7 @@ namespace engine
     
     float aspect_ratio = static_cast<float>(output_width) / static_cast<float>(output_height);
 
-    constexpr float _rad = XMConvertToRadians(84);
+    constexpr float _rad = XMConvertToRadians(90);
     perspective_mat = XMMatrixPerspectiveFovRH(_rad, aspect_ratio, 0.1, 1000.f);
     camera_pos = {0.f, 0.f, -2.f};
     camera_rot = {0.f, 0.f, 0.f };

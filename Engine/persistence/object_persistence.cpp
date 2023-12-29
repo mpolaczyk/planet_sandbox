@@ -41,7 +41,6 @@ namespace engine
   }
   void serialize_object::visit(class static_mesh_asset& object) const
   {
-    j["shape_index"] = object.shape_index;
     j["obj_file_name"] = object.obj_file_name;
   }
   void serialize_object::visit(class vertex_shader_asset& object) const
@@ -122,8 +121,6 @@ namespace engine
   }
   void deserialize_object::visit(class static_mesh_asset& object) const
   {
-    TRY_PARSE(int, j, "shape_index", object.shape_index);
-
     TRY_PARSE(std::string, j, "obj_file_name", object.obj_file_name);
   }
   void deserialize_object::visit(class vertex_shader_asset& object) const
