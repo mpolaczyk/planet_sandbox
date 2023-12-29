@@ -248,6 +248,7 @@ namespace engine
   
   void gpu_renderer::update_frame()
   {
+    // Time flow
     float delta_time = 0.0f;
     {
       const double previous_time = current_time;
@@ -259,35 +260,17 @@ namespace engine
     }
     
     // Camera and MVP matrix
-    {
-      const float field_of_view = XMConvertToRadians(camera.field_of_view);
-      const float aspect_ratio = camera.aspect_ratio_w / camera.aspect_ratio_h;
-      const XMMATRIX projection_matrix = XMMatrixPerspectiveFovRH(field_of_view, aspect_ratio, math::t_min, math::infinity);
+    const float field_of_view = XMConvertToRadians(camera.field_of_view);
+    const float aspect_ratio = camera.aspect_ratio_w / camera.aspect_ratio_h;
+    const XMMATRIX projection_matrix = XMMatrixPerspectiveFovRH(field_of_view, aspect_ratio, math::t_min, math::infinity);
       
-      const XMVECTOR camera_pos = XMVectorSet(camera.look_from.x, camera.look_from.y, camera.look_from.z, 0.f);
-      const XMVECTOR camera_rot = XMVector3AngleBetweenVectors(XMVectorSet(0.f, 0.f, -1.f, 0.f), XMVectorSet(camera.look_dir.x, camera.look_dir.y, camera.look_dir.z, 0.f));
-      const XMMATRIX view_matrix = XMMatrixMultiply(XMMatrixTranslationFromVector(camera_pos),
-        XMMatrixRotationRollPitchYawFromVector(XMVectorScale(camera_rot, -1.f))); // Negate the rotation to achieve inverse
-      // FIX rotation does not work well this way, test with mouse! 
-
-      const float angle = static_cast<float>(math::pi * current_time);
-      const float pitch_speed = 0.f; // Debug feature
-      const float yaw_speed = 0.f;
-      const XMVECTOR model_rot = { pitch_speed * angle, yaw_speed * angle, 0.f };
-      const XMMATRIX model_matrix = XMMatrixRotationRollPitchYawFromVector(model_rot);
-      XMStoreFloat4x4(&model_view_proj, XMMatrixTranspose(XMMatrixMultiply(XMMatrixMultiply(model_matrix, view_matrix), projection_matrix))); // Transpose: row vs column
-    }
+    const XMVECTOR camera_pos = XMVectorSet(camera.look_from.x, camera.look_from.y, camera.look_from.z, 0.f);
+    const XMVECTOR camera_rot = XMVector3AngleBetweenVectors(XMVectorSet(0.f, 0.f, -1.f, 0.f), XMVectorSet(camera.look_dir.x, camera.look_dir.y, camera.look_dir.z, 0.f));
+    const XMMATRIX view_matrix = XMMatrixMultiply(XMMatrixTranslationFromVector(camera_pos),
+      XMMatrixRotationRollPitchYawFromVector(XMVectorScale(camera_rot, -1.f))); // Negate the rotation to achieve inverse
+    // FIX rotation does not work well this way, test with mouse!
 
     dx11& dx = dx11::instance();
-
-    // Update constant buffer
-    {
-      D3D11_MAPPED_SUBRESOURCE data;
-      dx.device_context->Map(constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
-      constants* c = static_cast<constants*>(data.pData);
-      c->model_view_proj = model_view_proj;
-      dx.device_context->Unmap(constant_buffer, 0);
-    }
     
     dx.device_context->ClearRenderTargetView(output_rtv, Colors::LightSlateGray);
     dx.device_context->ClearDepthStencilView(output_dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -297,7 +280,7 @@ namespace engine
     dx.device_context->RSSetState(rasterizer_state);
     dx.device_context->OMSetDepthStencilState(depth_stencil_state, 0);
     dx.device_context->OMSetRenderTargets(1, &output_rtv, output_dsv);
-    
+
     dx.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     dx.device_context->IASetInputLayout(input_layout);
     dx.device_context->VSSetShader(vertex_shader_asset.get()->shader, nullptr, 0);
@@ -305,10 +288,32 @@ namespace engine
     dx.device_context->PSSetShaderResources(0, 1, &texture_srv);
     dx.device_context->PSSetSamplers(0, 1, &sampler_state);
     dx.device_context->VSSetConstantBuffers(0, 1, &constant_buffer);
-    dx.device_context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
-    dx.device_context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);
     
-    dx.device_context->DrawIndexed(num_indices, 0, 0);
+    // Draw a few objects
+    for (int i = 0; i < 5; i++)
+    {
+      // Mesh location
+      const float angle = static_cast<float>(math::pi * current_time);
+      const float pitch_speed = 0.0f; // Debug feature
+      const float yaw_speed = 0.0f;
+      const XMVECTOR model_pos = XMVectorSet(i*2.f - 2.5, 0.f, 0.f, 0.f);
+      const XMVECTOR model_rot = { pitch_speed * angle, yaw_speed * angle, 0.f };
+      const XMMATRIX model_matrix = XMMatrixMultiply(XMMatrixTranslationFromVector(model_pos), XMMatrixRotationRollPitchYawFromVector(model_rot));
+      XMStoreFloat4x4(&model_view_proj, XMMatrixTranspose(XMMatrixMultiply(XMMatrixMultiply(model_matrix, view_matrix), projection_matrix))); // Transpose: row vs column
+    
+      // Update constant buffer
+      {
+        D3D11_MAPPED_SUBRESOURCE data;
+        dx.device_context->Map(constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+        constants* c = static_cast<constants*>(data.pData);
+        c->model_view_proj = model_view_proj;
+        dx.device_context->Unmap(constant_buffer, 0);
+      }
+      dx.device_context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
+      dx.device_context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R16_UINT, 0);
+    
+      dx.device_context->DrawIndexed(num_indices, 0, 0);  
+    }
   }
 
   void gpu_renderer::cleanup()
