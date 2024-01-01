@@ -15,6 +15,11 @@ namespace engine
     OBJECT_DECLARE_LOAD(material_asset)
     OBJECT_DECLARE_SAVE(material_asset)
     OBJECT_DECLARE_VISITOR
+
+    // FIX Move to this class:
+    // - material from hittable
+    // - shaders from renderer
+    // Use those in the gpu renderer
     
     // JSON persistent
     bool is_light = false;

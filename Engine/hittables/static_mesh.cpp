@@ -108,6 +108,14 @@ namespace engine
 
   void static_mesh::pre_render()
   {
+    if(!mesh_asset_ptr.is_loaded())
+    {
+      mesh_asset_ptr.get();
+    }
+    if(!mesh_asset_ptr.is_loaded())
+    {
+      return;
+    }
     // Create a temporary object and modify it, reuse it next frame
     std::ostringstream oss;
     oss << "temp_" << mesh_asset_ptr.get_name().c_str() << "_hittable_id_" << get_runtime_id();

@@ -273,21 +273,23 @@ namespace engine
     dx.device_context->PSSetSamplers(0, 1, &sampler_state);
     dx.device_context->VSSetConstantBuffers(0, 1, &constant_buffer);
 
-    // Draw teh scene
-    
+    // Draw the scene
     for(const hittable* obj : scenee->objects)
     {
       if(obj->get_class() == static_mesh::get_class_static())
       {
         const static_mesh* sm = static_cast<const static_mesh*>(obj);
         const static_mesh_asset* sma = sm->mesh_asset_ptr.get();
+        if(sma == nullptr) { continue; }
         const static_mesh_render_state& smrs = sma->render_state;
         XMFLOAT4X4 model_view_proj;
         
         // Model matrix
         const XMVECTOR model_pos = XMVectorSet(sm->origin.x, sm->origin.y, sm->origin.z, 0.f);
         const XMVECTOR model_rot = XMVectorSet(sm->rotation.x, sm->rotation.y, sm->rotation.z, 0.f);
-        const XMMATRIX model_matrix = XMMatrixMultiply(XMMatrixTranslationFromVector(model_pos), XMMatrixRotationRollPitchYawFromVector(model_rot));
+        const XMVECTOR model_scale = XMVectorSet(sm->scale.x, sm->scale.y, sm->scale.z, 0.f);
+        const XMMATRIX model_matrix = XMMatrixMultiply(XMMatrixScalingFromVector(model_scale),
+          XMMatrixMultiply(XMMatrixTranslationFromVector(model_pos), XMMatrixRotationRollPitchYawFromVector(model_rot)));
         XMStoreFloat4x4(&model_view_proj, XMMatrixTranspose(XMMatrixMultiply(XMMatrixMultiply(model_matrix, view_matrix), projection_matrix))); // Transpose: row vs column
         // FIX add scale
         
