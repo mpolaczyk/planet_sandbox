@@ -291,7 +291,6 @@ namespace engine
         const XMMATRIX model_matrix = XMMatrixMultiply(XMMatrixScalingFromVector(model_scale),
           XMMatrixMultiply(XMMatrixTranslationFromVector(model_pos), XMMatrixRotationRollPitchYawFromVector(model_rot)));
         XMStoreFloat4x4(&model_view_proj, XMMatrixTranspose(XMMatrixMultiply(XMMatrixMultiply(model_matrix, view_matrix), projection_matrix))); // Transpose: row vs column
-        // FIX add scale
         
         // Update constant buffer
         {

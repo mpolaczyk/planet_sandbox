@@ -19,6 +19,9 @@ namespace engine
 
   struct ENGINE_API vertex_data
   {
+    vertex_data(const DirectX::XMFLOAT3& in_pos, const DirectX::XMFLOAT3& in_norm, const DirectX::XMFLOAT2& in_uv)
+      : pos(in_pos), uv(in_uv), norm(in_norm) {}
+
     DirectX::XMFLOAT3 pos = {0.f, 0.f, 0.f};
     DirectX::XMFLOAT2 uv = {0.f, 0.f};
     DirectX::XMFLOAT3 norm = {0.f, 0.f, 0.f};

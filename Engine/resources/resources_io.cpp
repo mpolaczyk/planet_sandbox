@@ -76,11 +76,7 @@ namespace engine
       vertex_buffer.reserve(obj_reader.vertices.size());
       for (const auto& vert : obj_reader.vertices)
       {
-        vertex_data vd;
-        vd.pos = vert.position;
-        vd.norm = vert.normal;
-        vd.uv = vert.textureCoordinate;
-        vertex_buffer.push_back(vd); // FIX move semantics
+        vertex_buffer.push_back(std::move(vertex_data(vert.position, vert.normal, vert.textureCoordinate)));
       }
       D3D11_BUFFER_DESC desc = {};
       desc.ByteWidth = vertex_buffer.size() * sizeof(vertex_data);

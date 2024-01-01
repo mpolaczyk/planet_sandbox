@@ -19,7 +19,6 @@
     <ClInclude Include="math\pdf.h" />
     <ClInclude Include="math\onb.h" />
     <ClInclude Include="math\aabb.h" />
-    <ClInclude Include="math\triangle_face.h" />
     <ClInclude Include="math\camera.h" />
     <ClInclude Include="math\plane.h" />
     <ClInclude Include="assets\texture.h" />
@@ -56,8 +55,11 @@
     <ClInclude Include="assets\pixel_shader.h" />
     <ClInclude Include="assets\vertex_shader.h" />
     <ClInclude Include="renderers\gpu_renderer.h" />
-    <ClInclude Include="renderer\async_renderer_base.h" />
     <ClInclude Include="renderer\dx11_lib.h" />
+    <ClInclude Include="renderers\cpu_renderer.h" />
+    <ClInclude Include="renderer\renderer_base.h" />
+    <ClInclude Include="math\vertex_data.h" />
+    <ClInclude Include="third_party\WaveFrontReader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -106,7 +108,8 @@
     <ClCompile Include="assets\pixel_shader.cpp" />
     <ClCompile Include="assets\vertex_shader.cpp" />
     <ClCompile Include="renderers\gpu_renderer.cpp" />
-    <ClCompile Include="renderer\async_renderer_base.cpp" />
     <ClCompile Include="renderer\dx11_lib.cpp" />
+    <ClCompile Include="renderers\cpu_renderer.cpp" />
+    <ClCompile Include="renderer\renderer_base.cpp" />
   </ItemGroup>
 </Project>
