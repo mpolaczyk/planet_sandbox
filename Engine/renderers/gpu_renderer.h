@@ -20,13 +20,29 @@ struct ID3D11DepthStencilState;
 
 using namespace DirectX;
 
+#define MAX_LIGHTS 8
+
 namespace engine
 {
   class ENGINE_API gpu_renderer : public renderer_base
   {
-    struct constants
+    struct per_frame_data
     {
       XMFLOAT4X4 model_view_proj;
+    };
+
+    struct per_object_data
+    {
+      XMMATRIX world;                    // Used to transform the vertex position from object space to world space
+      XMMATRIX inverse_transpose_world;  // Used to transform the vertex normal from object space to world space
+      XMMATRIX world_view_projection;    // Used to transform the vertex position from object space to projected clip space
+    };
+
+    struct light_data
+    {
+      XMFLOAT4 eye_position;                // 16    16 - 1
+      XMFLOAT4 global_ambient;              // 16    32 - 2
+      light_properties lights[MAX_LIGHTS];  // 8*80 672 - 42
     };
     
   public:
@@ -40,7 +56,7 @@ namespace engine
     
     virtual void render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config) override;
     camera_config camera;
-    const scene* scenee;
+    const scene* scenee; // FIX Name is the same as the type, that creates issues :/ Add prefixes to types!
     virtual void push_partial_update() override {}
     virtual void cancel() override {}
     virtual bool is_async() const override { return false; }
@@ -59,7 +75,10 @@ namespace engine
     ID3D11ShaderResourceView* texture_srv;
     ID3D11SamplerState* sampler_state;
 
-    ID3D11Buffer* constant_buffer;
+    ID3D11Buffer* per_frame_constant_buffer;
+    ID3D11Buffer* per_object_constant_buffer;
+    ID3D11Buffer* material_constant_buffer;
+    ID3D11Buffer* light_constant_buffer;
     
     int64_t timestamp_start = 0;
     int64_t perf_counter_frequency = 0;

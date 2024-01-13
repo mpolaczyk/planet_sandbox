@@ -70,7 +70,7 @@ namespace engine
       desc.Texture2D.MipSlice = 0;
       HRESULT result = dx.device->CreateRenderTargetView(output_texture, &desc, &output_rtv);
       assert(SUCCEEDED(result));
-
+      
       result = dx.device->CreateDepthStencilView(output_depth_texture, nullptr, &output_dsv);
       assert(SUCCEEDED(result));
     }
@@ -115,14 +115,15 @@ namespace engine
       }
       current_time = 0.0;
     }
-    
+
+    // Input layout
     {
-      // Input layout
       D3D11_INPUT_ELEMENT_DESC input_element_desc[] =
       {
-        { "POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TEX", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "NORM", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+        // Per-vertex
+        { "POSITION",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD",  0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
       };
       const auto blob = vertex_shader_asset.get()->shader_blob;
       HRESULT result = device->CreateInputLayout(input_element_desc, ARRAYSIZE(input_element_desc), blob->GetBufferPointer(), blob->GetBufferSize(), &input_layout);
@@ -197,24 +198,43 @@ namespace engine
       texture->Release();
     }
 
-    // Constant buffer
+    // Constant buffers
     {
       D3D11_BUFFER_DESC desc = {};
-      // ByteWidth must be a multiple of 16, per the docs
-      desc.ByteWidth      = sizeof(constants) + 0xf & 0xfffffff0;
-      desc.Usage          = D3D11_USAGE_DYNAMIC;
       desc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
-      desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-      HRESULT result = device->CreateBuffer(&desc, nullptr, &constant_buffer);
+      desc.Usage          = D3D11_USAGE_DEFAULT;
+      desc.CPUAccessFlags = 0;
+
+      desc.ByteWidth      = sizeof(per_frame_data); // Remember that the type needs to be 16 byte aligned
+      HRESULT result = device->CreateBuffer(&desc, nullptr, &per_frame_constant_buffer);
+      assert(SUCCEEDED(result));
+
+      desc.ByteWidth      = sizeof(per_object_data);
+      result = device->CreateBuffer(&desc, nullptr, &per_object_constant_buffer);
+      assert(SUCCEEDED(result));
+
+      desc.ByteWidth      = sizeof(material_properties);
+      result = device->CreateBuffer(&desc, nullptr, &material_constant_buffer);
+      assert(SUCCEEDED(result));
+
+      desc.ByteWidth      = sizeof(light_properties);
+      result = device->CreateBuffer(&desc, nullptr, &light_constant_buffer);
       assert(SUCCEEDED(result));
     }
 
     // Rasterizer state
     {
       D3D11_RASTERIZER_DESC desc = {};
-      desc.FillMode = D3D11_FILL_SOLID;
+      desc.AntialiasedLineEnable = FALSE;
       desc.CullMode = D3D11_CULL_BACK;
-      desc.FrontCounterClockwise = TRUE;
+      desc.DepthBias = 0;
+      desc.DepthBiasClamp = 0.0f;
+      desc.DepthClipEnable = TRUE;
+      desc.FillMode = D3D11_FILL_SOLID;
+      desc.FrontCounterClockwise = FALSE;
+      desc.MultisampleEnable = FALSE;
+      desc.ScissorEnable = FALSE;
+      desc.SlopeScaledDepthBias = 0.0f;
       HRESULT result = device->CreateRasterizerState(&desc, &rasterizer_state);
       assert(SUCCEEDED(result));
     }
@@ -225,6 +245,7 @@ namespace engine
       desc.DepthEnable    = TRUE;
       desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
       desc.DepthFunc      = D3D11_COMPARISON_LESS;
+      desc.StencilEnable = FALSE;
       HRESULT result = device->CreateDepthStencilState(&desc, &depth_stencil_state);
       assert(SUCCEEDED(result));
     }
@@ -271,7 +292,7 @@ namespace engine
     dx.device_context->PSSetShader(pixel_shader_asset.get()->shader, nullptr, 0);
     dx.device_context->PSSetShaderResources(0, 1, &texture_srv);
     dx.device_context->PSSetSamplers(0, 1, &sampler_state);
-    dx.device_context->VSSetConstantBuffers(0, 1, &constant_buffer);
+    dx.device_context->VSSetConstantBuffers(0, 1, &per_frame_constant_buffer);
 
     // Draw the scene
     for(const hittable* obj : scenee->objects)
@@ -295,10 +316,10 @@ namespace engine
         // Update constant buffer
         {
           D3D11_MAPPED_SUBRESOURCE data;
-          dx.device_context->Map(constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
-          constants* c = static_cast<constants*>(data.pData);
+          dx.device_context->Map(per_frame_constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+          per_frame_data* c = static_cast<per_frame_data*>(data.pData);
           c->model_view_proj = model_view_proj;
-          dx.device_context->Unmap(constant_buffer, 0);
+          dx.device_context->Unmap(per_frame_constant_buffer, 0);
         }
       
         // Draw mesh
