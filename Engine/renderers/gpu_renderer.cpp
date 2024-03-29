@@ -124,18 +124,9 @@ namespace engine
             D3D11_INPUT_ELEMENT_DESC input_element_desc[] =
             {
                 // Per-vertex
-                {
-                    "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT,
-                    D3D11_INPUT_PER_VERTEX_DATA, 0
-                },
-                {
-                    "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT,
-                    D3D11_INPUT_PER_VERTEX_DATA, 0
-                },
-                {
-                    "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT,
-                    D3D11_INPUT_PER_VERTEX_DATA, 0
-                }
+                {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+                {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+                {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
             };
             const auto blob = vertex_shader_asset.get()->shader_blob;
             HRESULT result = device->CreateInputLayout(input_element_desc, ARRAYSIZE(input_element_desc), blob->GetBufferPointer(), blob->GetBufferSize(), &input_layout);
@@ -273,8 +264,7 @@ namespace engine
             LARGE_INTEGER perf_count;
             QueryPerformanceCounter(&perf_count);
             const LONGLONG timestamp_now = perf_count.QuadPart;
-            current_time = static_cast<double>(timestamp_now - timestamp_start) / static_cast<double>(
-                perf_counter_frequency);
+            current_time = static_cast<double>(timestamp_now - timestamp_start) / static_cast<double>(perf_counter_frequency);
             delta_time = static_cast<float>(current_time - previous_time);
         }
 
@@ -339,14 +329,14 @@ namespace engine
                 const XMVECTOR model_scale = XMVectorSet(sm->scale.x, sm->scale.y, sm->scale.z, 0.f);
                 const XMMATRIX model_world = XMMatrixMultiply(XMMatrixScalingFromVector(model_scale), XMMatrixMultiply(XMMatrixTranslationFromVector(model_pos), XMMatrixRotationRollPitchYawFromVector(model_rot)));
                 const XMMATRIX model_inverse_transpose_world = XMMatrixTranspose(XMMatrixInverse(nullptr, model_world));
-                const XMMATRIX model_view_projection = XMMatrixMultiply(model_world, view_projection);
+                const XMMATRIX model_view_projection = XMMatrixMultiply(XMMatrixMultiply(model_world, view), projection);
                 
                 // Update per object constant buffer
                 {
                     per_object_data pod;
                     XMStoreFloat4x4(&pod.world, model_world);
                     XMStoreFloat4x4(&pod.inverse_transpose_world, model_inverse_transpose_world);
-                    XMStoreFloat4x4(&pod.world_view_projection, model_view_projection); // TODO Transpose: row vs column
+                    XMStoreFloat4x4(&pod.world_view_projection, XMMatrixTranspose(model_view_projection)); // Transpose: row vs column
 
                     D3D11_MAPPED_SUBRESOURCE data;
                     dx.device_context->Map(per_object_constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
