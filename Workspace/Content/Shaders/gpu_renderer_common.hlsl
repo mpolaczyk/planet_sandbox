@@ -6,10 +6,10 @@ struct VS_Input {
 };
 
 struct VS_Output {
-    //float4 pos_ws    : TEXCOORD1;
-    //float3 normal_ws : TEXCOORD2;
-    //float2 uv        : TEXCOORD0;
-    //float4 pos       : SV_Position;
-    float4 pos : SV_POSITION;
-    float2 uv : TEXCOORD;
+    float4 pos_ws    : TEXCOORD1;
+    float3 normal_ws : TEXCOORD2;
+    float2 uv        : TEXCOORD0;
+    float4 pos       : SV_Position;
+    //float4 pos : SV_POSITION;
+    //float2 uv : TEXCOORD;
 };
