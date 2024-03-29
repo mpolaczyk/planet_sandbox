@@ -26,24 +26,24 @@ namespace engine
 {
   class ENGINE_API gpu_renderer : public renderer_base
   {
-    struct per_frame_data
-    {
-      XMFLOAT4X4 model_view_proj;
-    };
+    //struct per_frame_data
+    //{
+    //  XMFLOAT4X4 model_view_proj;
+    //};
 
     struct per_object_data
     {
-      XMMATRIX world;                    // Used to transform the vertex position from object space to world space
-      XMMATRIX inverse_transpose_world;  // Used to transform the vertex normal from object space to world space
-      XMMATRIX world_view_projection;    // Used to transform the vertex position from object space to projected clip space
+      XMFLOAT4X4 world;                    // Used to transform the vertex position from object space to world space
+      XMFLOAT4X4 inverse_transpose_world;  // Used to transform the vertex normal from object space to world space
+      XMFLOAT4X4 world_view_projection;    // Used to transform the vertex position from object space to projected clip space
     };
 
-    struct light_data
-    {
-      XMFLOAT4 eye_position;                // 16    16 - 1
-      XMFLOAT4 global_ambient;              // 16    32 - 2
-      light_properties lights[MAX_LIGHTS];  // 8*80 672 - 42
-    };
+    //struct light_data
+    //{
+    //  XMFLOAT4 eye_position;                // 16    16 - 1
+    //  XMFLOAT4 global_ambient;              // 16    32 - 2
+    //  light_properties lights[MAX_LIGHTS];  // 8*80 672 - 42
+    //};
     
   public:
     OBJECT_DECLARE(gpu_renderer, renderer_base)

@@ -155,7 +155,7 @@ namespace engine
     ID3DBlob* shader_compiler_errors_blob = nullptr;
     std::wstring wpath = std::wstring(path.begin(), path.end());
     LPCWSTR sw = wpath.c_str();
-    HRESULT result = D3DCompileFromFile(sw, nullptr, nullptr, entrypoint.c_str(), target.c_str(), 0, 0, out_shader_blob, &shader_compiler_errors_blob);
+    HRESULT result = D3DCompileFromFile(sw, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, entrypoint.c_str(), target.c_str(), 0, 0, out_shader_blob, &shader_compiler_errors_blob);
     if (FAILED(result))
     {
       if (result == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))

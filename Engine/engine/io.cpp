@@ -19,7 +19,7 @@ namespace engine
   {
     std::string working_dir = get_working_dir();
     std::ostringstream oss;
-    oss << working_dir << "..\\Workspace\\";
+    oss << working_dir << "..\\..\\Workspace\\";
     return oss.str();
   }
 

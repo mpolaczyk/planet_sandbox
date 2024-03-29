@@ -1,5 +1,5 @@
 .vs
-
+.idea
 *.pdb
 *.ilk
 *.log
@@ -22,3 +22,4 @@ RayTracer/x64
 EngineTests/x64
 x64/Debug
 x64/Release
+Workspace/Images/*

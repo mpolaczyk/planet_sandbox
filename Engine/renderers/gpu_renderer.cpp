@@ -202,24 +202,21 @@ namespace engine
     {
       D3D11_BUFFER_DESC desc = {};
       desc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
-      desc.Usage          = D3D11_USAGE_DEFAULT;
-      desc.CPUAccessFlags = 0;
-
-      desc.ByteWidth      = sizeof(per_frame_data); // Remember that the type needs to be 16 byte aligned
-      HRESULT result = device->CreateBuffer(&desc, nullptr, &per_frame_constant_buffer);
-      assert(SUCCEEDED(result));
+      desc.Usage          = D3D11_USAGE_DYNAMIC;
+      desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
       desc.ByteWidth      = sizeof(per_object_data);
-      result = device->CreateBuffer(&desc, nullptr, &per_object_constant_buffer);
+      HRESULT result = device->CreateBuffer(&desc, nullptr, &per_object_constant_buffer);
       assert(SUCCEEDED(result));
 
-      desc.ByteWidth      = sizeof(material_properties);
-      result = device->CreateBuffer(&desc, nullptr, &material_constant_buffer);
-      assert(SUCCEEDED(result));
-
-      desc.ByteWidth      = sizeof(light_properties);
-      result = device->CreateBuffer(&desc, nullptr, &light_constant_buffer);
-      assert(SUCCEEDED(result));
+      // TODO - remove?
+      //desc.ByteWidth      = sizeof(material_properties);
+      //result = device->CreateBuffer(&desc, nullptr, &material_constant_buffer);
+      //assert(SUCCEEDED(result));
+      //
+      //desc.ByteWidth      = sizeof(light_properties);
+      //result = device->CreateBuffer(&desc, nullptr, &light_constant_buffer);
+      //assert(SUCCEEDED(result));
     }
 
     // Rasterizer state
@@ -289,10 +286,11 @@ namespace engine
     dx.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     dx.device_context->IASetInputLayout(input_layout);
     dx.device_context->VSSetShader(vertex_shader_asset.get()->shader, nullptr, 0);
+    dx.device_context->VSSetConstantBuffers(0, 1, &per_object_constant_buffer);
+    //dx.device_context->VSSetConstantBuffers(0, 1, &per_frame_constant_buffer); //TODO
     dx.device_context->PSSetShader(pixel_shader_asset.get()->shader, nullptr, 0);
     dx.device_context->PSSetShaderResources(0, 1, &texture_srv);
     dx.device_context->PSSetSamplers(0, 1, &sampler_state);
-    dx.device_context->VSSetConstantBuffers(0, 1, &per_frame_constant_buffer);
 
     // Draw the scene
     for(const hittable* obj : scenee->objects)
@@ -303,23 +301,24 @@ namespace engine
         const static_mesh_asset* sma = sm->mesh_asset_ptr.get();
         if(sma == nullptr) { continue; }
         const static_mesh_render_state& smrs = sma->render_state;
-        XMFLOAT4X4 model_view_proj;
         
-        // Model matrix
+        // Model
         const XMVECTOR model_pos = XMVectorSet(sm->origin.x, sm->origin.y, sm->origin.z, 0.f);
         const XMVECTOR model_rot = XMVectorSet(sm->rotation.x, sm->rotation.y, sm->rotation.z, 0.f);
         const XMVECTOR model_scale = XMVectorSet(sm->scale.x, sm->scale.y, sm->scale.z, 0.f);
-        const XMMATRIX model_matrix = XMMatrixMultiply(XMMatrixScalingFromVector(model_scale),
-          XMMatrixMultiply(XMMatrixTranslationFromVector(model_pos), XMMatrixRotationRollPitchYawFromVector(model_rot)));
-        XMStoreFloat4x4(&model_view_proj, XMMatrixTranspose(XMMatrixMultiply(XMMatrixMultiply(model_matrix, view_matrix), projection_matrix))); // Transpose: row vs column
+        const XMMATRIX model_world = XMMatrixMultiply(XMMatrixScalingFromVector(model_scale), XMMatrixMultiply(XMMatrixTranslationFromVector(model_pos), XMMatrixRotationRollPitchYawFromVector(model_rot)));
         
-        // Update constant buffer
+        // Update per object constant buffer
         {
+          per_object_data pod;
+          XMStoreFloat4x4(&pod.world, model_world);
+          XMStoreFloat4x4(&pod.inverse_transpose_world, XMMatrixTranspose( XMMatrixInverse(nullptr, model_world)));
+          XMStoreFloat4x4(&pod.world_view_projection, XMMatrixTranspose(XMMatrixMultiply(XMMatrixMultiply(model_world, view_matrix), projection_matrix))); // Transpose: row vs column
+          
           D3D11_MAPPED_SUBRESOURCE data;
-          dx.device_context->Map(per_frame_constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
-          per_frame_data* c = static_cast<per_frame_data*>(data.pData);
-          c->model_view_proj = model_view_proj;
-          dx.device_context->Unmap(per_frame_constant_buffer, 0);
+          dx.device_context->Map(per_object_constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+          *static_cast<per_object_data*>(data.pData) = pod;
+          dx.device_context->Unmap(per_object_constant_buffer, 0);
         }
       
         // Draw mesh
