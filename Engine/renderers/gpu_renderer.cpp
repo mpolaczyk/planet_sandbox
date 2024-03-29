@@ -124,9 +124,9 @@ namespace engine
             D3D11_INPUT_ELEMENT_DESC input_element_desc[] =
             {
                 // Per-vertex
-                {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-                {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-                {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+                {"POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+                {"TEX", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+                {"NORM", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
             };
             const auto blob = vertex_shader_asset.get()->shader_blob;
             HRESULT result = device->CreateInputLayout(input_element_desc, ARRAYSIZE(input_element_desc), blob->GetBufferPointer(), blob->GetBufferSize(), &input_layout);
@@ -278,7 +278,6 @@ namespace engine
         const XMMATRIX view = XMMatrixMultiply(XMMatrixTranslationFromVector(camera_pos), XMMatrixRotationRollPitchYawFromVector(XMVectorScale(camera_rot, -1.f)));
         // Negate the rotation to achieve inverse
         // FIX rotation does not work well this way, test with mouse!
-        const XMMATRIX view_projection = XMMatrixMultiply(view, projection);
 
         dx11& dx = dx11::instance();
 
@@ -297,7 +296,7 @@ namespace engine
         dx.device_context->IASetInputLayout(input_layout);
         dx.device_context->VSSetShader(vertex_shader_asset.get()->shader, nullptr, 0);
         dx.device_context->VSSetConstantBuffers(0, 1, &per_frame_constant_buffer);
-        dx.device_context->VSSetConstantBuffers(0, 1, &per_object_constant_buffer);
+        dx.device_context->VSSetConstantBuffers(1, 1, &per_object_constant_buffer);
         dx.device_context->PSSetShader(pixel_shader_asset.get()->shader, nullptr, 0);
         dx.device_context->PSSetShaderResources(0, 1, &texture_srv);
         dx.device_context->PSSetSamplers(0, 1, &sampler_state);
@@ -305,8 +304,8 @@ namespace engine
         // Update per frame constant buffer
         {
             per_frame_data pfd;
-            XMStoreFloat4x4(&pfd.view_projection, view_projection);
-        
+            XMStoreFloat4x4(&pfd.view_projection, XMMatrixMultiply(view, projection));
+            
             D3D11_MAPPED_SUBRESOURCE data;
             dx.device_context->Map(per_frame_constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
             *static_cast<per_frame_data*>(data.pData) = pfd;
