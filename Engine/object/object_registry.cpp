@@ -10,7 +10,10 @@ namespace engine
   {
     for (int i = 0; i < objects.size(); i++)
     {
-      delete objects[i];
+      if(objects[i] != nullptr)
+      {
+        objects[i]->destroy();
+      }
       objects[i] = nullptr;
     }
   }

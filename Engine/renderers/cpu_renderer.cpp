@@ -14,16 +14,16 @@ namespace engine
   OBJECT_DEFINE(cpu_renderer, renderer_base, CPU renderer)
   OBJECT_DEFINE_NOSPAWN(cpu_renderer)
   
-  void cpu_renderer::cleanup()
+  void cpu_renderer::destroy()
   {
     cancel();
     worker_semaphore->release();
     worker_thread->join();
-    renderer_base::cleanup();
     delete worker_semaphore;
     delete worker_thread;
     delete job_state.img_rgb;
     delete job_state.img_bgr;
+    renderer_base::destroy();
   }
   
   void cpu_renderer::set_job_state(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config)

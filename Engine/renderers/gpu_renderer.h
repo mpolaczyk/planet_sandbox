@@ -26,10 +26,10 @@ namespace engine
 {
   class ENGINE_API gpu_renderer : public renderer_base
   {
-    //struct per_frame_data
-    //{
-    //  XMFLOAT4X4 model_view_proj;
-    //};
+    struct per_frame_data
+    {
+      XMFLOAT4X4 view_projection;
+    };
 
     struct per_object_data
     {
@@ -56,13 +56,13 @@ namespace engine
     
     virtual void render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config) override;
     camera_config camera;
-    const scene* scenee; // FIX Name is the same as the type, that creates issues :/ Add prefixes to types!
+    const scene* scenee = nullptr; // FIX Name is the same as the type, that creates issues :/ Add prefixes to types!
     virtual void push_partial_update() override {}
     virtual void cancel() override {}
     virtual bool is_async() const override { return false; }
     virtual bool is_working() const override { return true; }
     virtual bool is_cancelled() const override { return false; }
-    virtual void cleanup() override;
+    virtual void destroy() override;
         
     // Output texture, renders the scene there
     ID3D11RenderTargetView* output_rtv = nullptr;
@@ -70,22 +70,22 @@ namespace engine
     unsigned int output_width = 0;
     unsigned int output_height = 0;
     
-    ID3D11InputLayout* input_layout;
+    ID3D11InputLayout* input_layout = nullptr;
 
-    ID3D11ShaderResourceView* texture_srv;
-    ID3D11SamplerState* sampler_state;
+    ID3D11ShaderResourceView* texture_srv = nullptr;
+    ID3D11SamplerState* sampler_state = nullptr;
 
-    ID3D11Buffer* per_frame_constant_buffer;
-    ID3D11Buffer* per_object_constant_buffer;
-    ID3D11Buffer* material_constant_buffer;
-    ID3D11Buffer* light_constant_buffer;
+    ID3D11Buffer* per_frame_constant_buffer = nullptr;
+    ID3D11Buffer* per_object_constant_buffer = nullptr;
+    //ID3D11Buffer* material_constant_buffer = nullptr;
+    //ID3D11Buffer* light_constant_buffer = nullptr;
     
     int64_t timestamp_start = 0;
     int64_t perf_counter_frequency = 0;
     double current_time = 0.0;  // [s]
 
-    ID3D11RasterizerState* rasterizer_state;
-    ID3D11DepthStencilState* depth_stencil_state;
+    ID3D11RasterizerState* rasterizer_state = nullptr;
+    ID3D11DepthStencilState* depth_stencil_state = nullptr;
 
     bool init_done = false;
     

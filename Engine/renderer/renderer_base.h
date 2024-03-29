@@ -51,11 +51,12 @@ namespace engine
     OBJECT_DECLARE(renderer_base, object)
 
     renderer_base() = default;
-    virtual ~renderer_base();
     renderer_base(const renderer_base&) = delete;
     renderer_base& operator=(const renderer_base&) = delete;
     renderer_base(renderer_base&&) = delete;
     renderer_base& operator=(renderer_base&&) = delete;
+
+    virtual void destroy() override;
     
     // Output texture
     ID3D11ShaderResourceView* output_srv = nullptr;
@@ -69,6 +70,5 @@ namespace engine
     virtual bool is_async() const = 0;
     virtual bool is_working() const = 0;
     virtual bool is_cancelled() const = 0;
-    virtual void cleanup();
   };
 }

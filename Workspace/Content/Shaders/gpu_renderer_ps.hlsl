@@ -1,9 +1,9 @@
-#include "gpu_renderer_common.fx"
+#include "gpu_renderer_common.hlsl"
 
-Texture2D    mytexture : register(t0);
-SamplerState mysampler : register(s0);
+Texture2D    texture0 : register(t0);
+SamplerState sampler0 : register(s0);
 
 float4 ps_main(VS_Output input) : SV_Target
 {
-    return mytexture.Sample(mysampler, input.uv);   
+    return texture0.Sample(sampler0, input.uv);   
 }

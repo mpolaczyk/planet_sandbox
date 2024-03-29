@@ -10,16 +10,12 @@ namespace engine
 {
   OBJECT_DEFINE(renderer_base, object, Renderer base)
   OBJECT_DEFINE_NOSPAWN(renderer_base)
-
-  renderer_base::~renderer_base()
-  {
-    cleanup();
-  }
   
-  void renderer_base::cleanup()
+  void renderer_base::destroy()
   {
     DX_RELEASE(output_texture)
     DX_RELEASE(output_srv)
+    object::destroy();
   }
  
 }

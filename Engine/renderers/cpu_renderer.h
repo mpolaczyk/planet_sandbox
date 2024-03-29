@@ -22,7 +22,7 @@ namespace engine
     virtual bool is_async() const override { return true; }
     virtual bool is_working() const override { return job_state.is_working; }
     virtual bool is_cancelled() const override { return job_state.requested_stop; }
-    virtual void cleanup() override;
+    virtual void destroy() override;
     
     uint64_t get_render_time() const { return job_state.benchmark_render_time; }
     uint64_t get_save_time() const { return job_state.benchmark_save_time; }

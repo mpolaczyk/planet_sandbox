@@ -40,7 +40,7 @@ namespace engine
 
     int get_runtime_id() const;
 
-    void destroy();
+    virtual void destroy();
 
   private:
     // Runtime id can be set only once by the registry. Can't change at runtime.
