@@ -1,10 +1,11 @@
 
 #include <thread>
 #include <semaphore>
+#include <d3d11_1.h>
+#include "renderer/dx11_lib.h"
 
 #include "renderers/cpu_renderer.h"
 
-#include "renderer/dx11_lib.h"
 #include "engine/io.h"
 #include "object/object_registry.h"
 #include "profile/stats.h"
@@ -111,6 +112,8 @@ namespace engine
     if(job_state.image_width != 0 && job_state.image_height != 0)
     {
       fdx11& dx = fdx11::instance();
+      DX_RELEASE(output_srv)
+      DX_RELEASE(output_texture)
       bool ret = dx.load_texture_from_buffer(get_img_rgb(), job_state.image_width, job_state.image_height, &output_srv, &output_texture);
       assert(ret);
     

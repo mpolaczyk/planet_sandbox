@@ -43,7 +43,9 @@ namespace engine
         {
             DX_RELEASE(output_rtv)
             DX_RELEASE(output_srv)
+            DX_RELEASE(output_dsv)
             DX_RELEASE(output_texture)
+            DX_RELEASE(output_depth_texture)
         }
         fdx11& dx = fdx11::instance();
         {

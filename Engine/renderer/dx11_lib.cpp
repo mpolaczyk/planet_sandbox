@@ -169,6 +169,7 @@ namespace engine
     sub_resource->SysMemSlicePitch = 0;
 
     ID3D11Texture2D* texture = nullptr;
+    bool success = false;
     if (SUCCEEDED(device->CreateTexture2D(&desc, sub_resource, &texture)) && texture)
     {
       D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc;
@@ -180,10 +181,11 @@ namespace engine
       if (SUCCEEDED(device->CreateShaderResourceView(texture, &srv_desc, out_srv)))
       {
         *out_texture = texture;
-        return true;
+        success = true;
       }
     }
-    return false;
+    delete sub_resource;
+    return success;
   }
 
   bool fdx11::update_texture_buffer(unsigned char* buffer, int width, int height, ID3D11Texture2D* in_texture)
