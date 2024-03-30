@@ -2,12 +2,12 @@
 
 namespace engine
 {
-  ray::ray(const vec3& origin, const vec3& direction)
+  fray::fray(const fvec3& origin, const fvec3& direction)
         : origin(origin), direction(direction)
   {
   }
 
-  vec3 ray::at(float t) const
+  fvec3 fray::at(float t) const
   {
     return origin + t * direction;
   }

@@ -10,7 +10,7 @@
 
 namespace engine
 {
-  nlohmann::json persistence::serialize(const vec3& value)
+  nlohmann::json fpersistence::serialize(const fvec3& value)
   {
     nlohmann::json j;
     j["x"] = value.x;
@@ -18,25 +18,25 @@ namespace engine
     j["z"] = value.z;
     return j;
   }
-  void persistence::deserialize(const nlohmann::json& j, vec3& out_value)
+  void fpersistence::deserialize(const nlohmann::json& j, fvec3& out_value)
   {
     TRY_PARSE(float, j, "x", out_value.x);
     TRY_PARSE(float, j, "y", out_value.y);
     TRY_PARSE(float, j, "z", out_value.z);
   }
 
-  nlohmann::json persistence::serialize(const soft_asset_ptr_base& value)
+  nlohmann::json fpersistence::serialize(const fsoft_asset_ptr_base& value)
   {
     nlohmann::json j;
     j["name"] =value.name;
     return j;
   }
-  void persistence::deserialize(const nlohmann::json& j, soft_asset_ptr_base& out_value)
+  void fpersistence::deserialize(const nlohmann::json& j, fsoft_asset_ptr_base& out_value)
   {
     TRY_PARSE(std::string, j, "name", out_value.name);
   }
 
-  nlohmann::json persistence::serialize(const camera_config& value)
+  nlohmann::json fpersistence::serialize(const fcamera_config& value)
   {
     nlohmann::json j;
     j["field_of_view"] = value.field_of_view;
@@ -45,11 +45,11 @@ namespace engine
     j["aperture"] = value.aperture;
     j["dist_to_focus"] = value.dist_to_focus;
     j["type"] = value.type;
-    j["look_from"] = persistence::serialize(value.look_from);
-    j["look_dir"] = persistence::serialize(value.look_dir);
+    j["look_from"] = fpersistence::serialize(value.look_from);
+    j["look_dir"] = fpersistence::serialize(value.look_dir);
     return j;
   }
-  void persistence::deserialize(const nlohmann::json& j, camera_config& out_value)
+  void fpersistence::deserialize(const nlohmann::json& j, fcamera_config& out_value)
   {
     TRY_PARSE(float, j, "field_of_view", out_value.field_of_view);
     TRY_PARSE(float, j, "aspect_ratio_h", out_value.aspect_ratio_h);
@@ -59,13 +59,13 @@ namespace engine
     TRY_PARSE(float, j, "type", out_value.type);
 
     nlohmann::json jlook_dir;
-    if (TRY_PARSE(nlohmann::json, j, "look_dir", jlook_dir)) { persistence::deserialize(jlook_dir, out_value.look_dir); }
+    if (TRY_PARSE(nlohmann::json, j, "look_dir", jlook_dir)) { fpersistence::deserialize(jlook_dir, out_value.look_dir); }
 
     nlohmann::json jlook_from;
-    if (TRY_PARSE(nlohmann::json, j, "look_from", jlook_from)) { persistence::deserialize(jlook_from, out_value.look_from); }
+    if (TRY_PARSE(nlohmann::json, j, "look_from", jlook_from)) { fpersistence::deserialize(jlook_from, out_value.look_from); }
   }
 
-  nlohmann::json persistence::serialize(const renderer_config& value)
+  nlohmann::json fpersistence::serialize(const frenderer_config& value)
   {
     nlohmann::json j;
     j["rays_per_pixel"] = value.rays_per_pixel;
@@ -78,7 +78,7 @@ namespace engine
     return j;
   }
 
-  void persistence::deserialize(const nlohmann::json& j, renderer_config& out_value)
+  void fpersistence::deserialize(const nlohmann::json& j, frenderer_config& out_value)
   {
     TRY_PARSE(int, j, "rays_per_pixel", out_value.rays_per_pixel);
     TRY_PARSE(int, j, "ray_bounces", out_value.ray_bounces);

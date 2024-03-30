@@ -15,19 +15,19 @@ namespace engine
    That is, C exceptions are identified by an unsigned integer value, whereas C++ exceptions are identified by data type.
   */
 
-  class ENGINE_API seh_exception : public std::exception
+  class ENGINE_API fseh_exception : public std::exception
   {
   public:
     static void handler(unsigned int exception_code, _EXCEPTION_POINTERS* exception_info);
     static int describe(_EXCEPTION_POINTERS* p_exp);
 
   private:
-    seh_exception() = default;
+    fseh_exception() = default;
 
   public:
-    explicit seh_exception(seh_exception& e) : exception_code(e.exception_code) {}
-    explicit seh_exception(unsigned int in_exception_code) : exception_code(in_exception_code) {}
-    ~seh_exception() = default;
+    explicit fseh_exception(fseh_exception& e) : exception_code(e.exception_code) {}
+    explicit fseh_exception(unsigned int in_exception_code) : exception_code(in_exception_code) {}
+    ~fseh_exception() = default;
 
     virtual char const* what() const override;
 
@@ -35,7 +35,7 @@ namespace engine
     unsigned int exception_code;
   };
 
-  struct ENGINE_API win32_error
+  struct ENGINE_API fwin32_error
   {
     static std::string get_last_error_as_string();
   };

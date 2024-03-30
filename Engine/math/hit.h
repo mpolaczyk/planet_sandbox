@@ -6,19 +6,19 @@
 
 namespace engine
 {
-  class material_asset;
-  class hittable;
+  class amaterial;
+  class hhittable_base;
 
-  struct ENGINE_API hit_record
+  struct ENGINE_API fhit_record
   {
-    vec3 p;         // hit point
-    vec3 normal;
+    fvec3 p;         // hit point
+    fvec3 normal;
     float t;        // distance to hit point
     float u;
     float v;
-    const material_asset* material_ptr = nullptr;
+    const amaterial* material_ptr = nullptr;
     bool front_face;
-    hittable* object;
+    hhittable_base* object;
     int face_id = 0;
   };
 }

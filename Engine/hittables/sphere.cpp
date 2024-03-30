@@ -12,16 +12,16 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(sphere, hittable, Sphere)
-  OBJECT_DEFINE_SPAWN(sphere)
-  OBJECT_DEFINE_VISITOR(sphere)
+  OBJECT_DEFINE(hsphere, hhittable_base, Sphere)
+  OBJECT_DEFINE_SPAWN(hsphere)
+  OBJECT_DEFINE_VISITOR(hsphere)
   
-  bool sphere::hit(const ray& in_ray, float t_max, hit_record& out_hit) const
+  bool hsphere::hit(const fray& in_ray, float t_max, fhit_record& out_hit) const
   {
-    vec3 oc = in_ray.origin - origin;
-    float a = math::length_squared(in_ray.direction);
-    float half_b = math::dot(oc, in_ray.direction);
-    float c = math::length_squared(oc) - radius * radius;
+    fvec3 oc = in_ray.origin - origin;
+    float a = fmath::length_squared(in_ray.direction);
+    float half_b = fmath::dot(oc, in_ray.direction);
+    float c = fmath::length_squared(oc) - radius * radius;
 
     float delta = half_b * half_b - a * c;
     if (delta < 0.0f)
@@ -32,10 +32,10 @@ namespace engine
     // Find the nearest root that lies in the acceptable range.
     float sqrtd = sqrt(delta);
     float root = (-half_b - sqrtd) / a;
-    if (root < math::t_min || t_max < root)
+    if (root < fmath::t_min || t_max < root)
     {
       root = (-half_b + sqrtd) / a;
-      if (root < math::t_min || t_max < root)
+      if (root < fmath::t_min || t_max < root)
       {
         return false;
       }
@@ -46,27 +46,27 @@ namespace engine
     out_hit.material_ptr = material_asset_ptr.get();
 
     // Normal always against the ray
-    vec3 outward_normal = (out_hit.p - origin) / radius;
-    out_hit.front_face = math::flip_normal_if_front_face(in_ray.direction, outward_normal, out_hit.normal);
-    math::get_sphere_uv(outward_normal, out_hit.u, out_hit.v);
+    fvec3 outward_normal = (out_hit.p - origin) / radius;
+    out_hit.front_face = fmath::flip_normal_if_front_face(in_ray.direction, outward_normal, out_hit.normal);
+    fmath::get_sphere_uv(outward_normal, out_hit.u, out_hit.v);
     return true;
   }
 
-  bool sphere::get_bounding_box(aabb& out_box) const
+  bool hsphere::get_bounding_box(faabb& out_box) const
   {
-    out_box = aabb(origin - radius, origin + radius);
+    out_box = faabb(origin - radius, origin + radius);
     return true;
   }
 
-  inline uint32_t sphere::get_hash() const
+  inline uint32_t hsphere::get_hash() const
   {
-    return hash::combine(hittable::get_hash(), hash::get(origin), hash::get(radius));
+    return fhash::combine(hhittable_base::get_hash(), fhash::get(origin), fhash::get(radius));
   }
 
 
-  sphere* sphere::clone() const
+  hsphere* hsphere::clone() const
   {
-    return REG.copy_shallow<sphere>(this);
+    return REG.copy_shallow<hsphere>(this);
   }
 
 }

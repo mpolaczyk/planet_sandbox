@@ -5,10 +5,10 @@
 
 namespace engine
 {  
-  class ENGINE_API application
+  class ENGINE_API fapplication
   {
   public:
-    static application* app_weak_ptr;
+    static fapplication* app_weak_ptr;
     
     virtual LRESULT wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     virtual void init();
@@ -20,7 +20,7 @@ namespace engine
     WNDCLASSEX wc;
   };
   
-  application* create_application();
+  fapplication* create_application();
 }
 
 

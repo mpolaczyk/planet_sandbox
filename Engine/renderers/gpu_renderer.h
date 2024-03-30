@@ -24,7 +24,7 @@ using namespace DirectX;
 
 namespace engine
 {
-  class ENGINE_API gpu_renderer : public renderer_base
+  class ENGINE_API rgpu : public rrenderer_base
   {
     struct per_frame_data
     {
@@ -42,21 +42,21 @@ namespace engine
     //{
     //  XMFLOAT4 eye_position;                // 16    16 - 1
     //  XMFLOAT4 global_ambient;              // 16    32 - 2
-    //  light_properties lights[MAX_LIGHTS];  // 8*80 672 - 42
+    //  flight_properties lights[MAX_LIGHTS];  // 8*80 672 - 42
     //};
     
   public:
-    OBJECT_DECLARE(gpu_renderer, renderer_base)
+    OBJECT_DECLARE(rgpu, rrenderer_base)
     
     // FIX make them persistent members
-    soft_asset_ptr<pixel_shader_asset> pixel_shader_asset;
-    soft_asset_ptr<vertex_shader_asset> vertex_shader_asset;
-    soft_asset_ptr<texture_asset> texture_asset;
-    soft_asset_ptr<static_mesh_asset> mesh_asset;
+    fsoft_asset_ptr<apixel_shader> pixel_shader_asset;
+    fsoft_asset_ptr<avertex_shader> vertex_shader_asset;
+    fsoft_asset_ptr<atexture> texture_asset;
+    fsoft_asset_ptr<astatic_mesh> mesh_asset;
     
-    virtual void render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config) override;
-    camera_config camera;
-    const scene* scenee = nullptr; // FIX Name is the same as the type, that creates issues :/ Add prefixes to types!
+    virtual void render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config) override;
+    fcamera_config camera;
+    const hscene* scenee = nullptr; // FIX Name is the same as the type, that creates issues :/ Add prefixes to types!
     virtual void push_partial_update() override {}
     virtual void cancel() override {}
     virtual bool is_async() const override { return false; }

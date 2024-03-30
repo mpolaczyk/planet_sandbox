@@ -10,7 +10,7 @@
 
 namespace engine
 {
-  struct material_properties
+  struct ENGINE_API fmaterial_properties
   {
     DirectX::XMFLOAT4 emissive;   // 16 16  - 1
     DirectX::XMFLOAT4 ambient;    // 16 32  - 2
@@ -21,14 +21,14 @@ namespace engine
     float padding[2];             // 8  80  - 4
   };
 
-  enum light_type
+  enum flight_type
   {
     directional = 0,
     point,
     spotlight
   };
   
-  struct light_properties
+  struct ENGINE_API flight_properties
   {
     DirectX::XMFLOAT4 position  { 0.0f, 0.0f, 0.0f, 1.0f };   // 16 16  - 1
     DirectX::XMFLOAT4 direction { 0.0f, 0.0f, 1.0f, 0.0f };   // 16 32  - 2
@@ -37,17 +37,17 @@ namespace engine
     float constant_attenuation  { 1.0f };                     // 4 56
     float linear_attenuation    { 0.0f };                     // 4 60
     float quadratic_attenuation { 0.0f };                     // 4 64  - 4
-    int light_type              { light_type::point };        // 4 68
+    int light_type              { flight_type::point };        // 4 68
     int enabled                 { 0 };                        // 4 72
     int padding[2];                                           // 8 80  - 5
   };
   
-  class ENGINE_API material_asset : public asset_base
+  class ENGINE_API amaterial : public aasset_base
   {
   public:
-    OBJECT_DECLARE(material_asset, asset_base)
-    OBJECT_DECLARE_LOAD(material_asset)
-    OBJECT_DECLARE_SAVE(material_asset)
+    OBJECT_DECLARE(amaterial, aasset_base)
+    OBJECT_DECLARE_LOAD(amaterial)
+    OBJECT_DECLARE_SAVE(amaterial)
     OBJECT_DECLARE_VISITOR
 
     // FIX Move to this class:
@@ -57,16 +57,16 @@ namespace engine
     
     // JSON persistent - CPU Raytracer
     bool is_light = false;
-    vec3 color;
-    vec3 emitted_color;
-    vec3 gloss_color;
-    vec3 pad;
+    fvec3 color;
+    fvec3 emitted_color;
+    fvec3 gloss_color;
+    fvec3 pad;
     float smoothness = 0.0f;
     float gloss_probability = 0.0f;
     float refraction_probability = 0.0f;
     float refraction_index = 1.0f;
     // JSON persistent - GPU renderer
-    material_properties material_props;
-    light_properties light_props;
+    fmaterial_properties material_props;
+    flight_properties light_props;
   };
 }

@@ -19,30 +19,30 @@
 
 namespace engine
 {
-  class ENGINE_API fpe_enabled_scope
+  class ENGINE_API ffpe_enabled_scope
   {
   public:
-    fpe_enabled_scope(unsigned int enable_bits = _EM_OVERFLOW | _EM_ZERODIVIDE | _EM_INVALID);
-    ~fpe_enabled_scope();
+    ffpe_enabled_scope(unsigned int enable_bits = _EM_OVERFLOW | _EM_ZERODIVIDE | _EM_INVALID);
+    ~ffpe_enabled_scope();
 
   private:
     unsigned int old_values;
 
-    fpe_enabled_scope(const fpe_enabled_scope&);
-    fpe_enabled_scope& operator=(const fpe_enabled_scope&);
+    ffpe_enabled_scope(const ffpe_enabled_scope&);
+    ffpe_enabled_scope& operator=(const ffpe_enabled_scope&);
   };
 
-  class ENGINE_API fpe_disabled_scope
+  class ENGINE_API ffpe_disabled_scope
   {
   public:
-    fpe_disabled_scope();
-    ~fpe_disabled_scope();
+    ffpe_disabled_scope();
+    ~ffpe_disabled_scope();
 
   private:
     unsigned int old_values;
 
-    fpe_disabled_scope(const fpe_disabled_scope&);
-    fpe_disabled_scope& operator=(const fpe_disabled_scope&);
+    ffpe_disabled_scope(const ffpe_disabled_scope&);
+    ffpe_disabled_scope& operator=(const ffpe_disabled_scope&);
   };
 }
 

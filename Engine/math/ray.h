@@ -6,18 +6,18 @@
 
 namespace engine
 {
-  class ENGINE_API ray
+  class ENGINE_API fray
   {
   public:
-    ray() = default;
-    ray(const vec3& origin, const vec3& direction);
+    fray() = default;
+    fray(const fvec3& origin, const fvec3& direction);
 
     // Returns a point at distance "t" from the origin
-    inline vec3 at(float t) const;
+    inline fvec3 at(float t) const;
 
   public:
-    vec3 origin;
-    vec3 direction;
+    fvec3 origin;
+    fvec3 direction;
   };
 }
 

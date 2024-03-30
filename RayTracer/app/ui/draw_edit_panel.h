@@ -4,17 +4,17 @@
 
 namespace ray_tracer
 {
-  class draw_edit_panel final : public object_visitor
+  class fdraw_edit_panel final : public fobject_visitor
   {
   public:
-    virtual void visit(class hittable& object) const override;
-    virtual void visit(class scene& object) const override;
-    virtual void visit(class static_mesh& object) const override;
-    virtual void visit(class sphere& object) const override;
+    virtual void visit(class hhittable_base& object) const override;
+    virtual void visit(class hscene& object) const override;
+    virtual void visit(class hstatic_mesh& object) const override;
+    virtual void visit(class hsphere& object) const override;
 
-    virtual void visit(class material_asset& object) const override;
+    virtual void visit(class amaterial& object) const override;
 
   private:
-    selection_combo_model<material_asset> m_model;  // Used by hittable
+    fselection_combo_model<amaterial> m_model;  // Used by hittable
   };
 }

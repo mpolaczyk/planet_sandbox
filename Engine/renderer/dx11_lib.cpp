@@ -8,7 +8,7 @@
 
 namespace engine
 {
-  bool dx11::create_device()
+  bool fdx11::create_device()
   {
     ID3D11Device* base_device;
     ID3D11DeviceContext* base_device_context;
@@ -48,7 +48,7 @@ namespace engine
     return true;
   }
 
-  bool dx11::create_debug_layer()
+  bool fdx11::create_debug_layer()
   {
 #if BUILD_DEBUG
     ID3D11Debug *debug = nullptr;
@@ -79,7 +79,7 @@ namespace engine
     return true;
   }
 
-  bool dx11::create_swap_chain(HWND hwnd)
+  bool fdx11::create_swap_chain(HWND hwnd)
   {
     IDXGIFactory2* factory;
     {
@@ -123,7 +123,7 @@ namespace engine
     return true;
   }
 
-  void dx11::create_render_target()
+  void fdx11::create_render_target()
   {
     ID3D11Texture2D* frame_buffer;
     HRESULT result = swap_chain->GetBuffer(0, IID_PPV_ARGS(&frame_buffer));
@@ -134,12 +134,12 @@ namespace engine
     DX_RELEASE(frame_buffer)
   }
 
-  void dx11::cleanup_render_target()
+  void fdx11::cleanup_render_target()
   {
     DX_RELEASE(rtv)
   }
 
-  void dx11::cleanup_device()
+  void fdx11::cleanup_device()
   {
     cleanup_render_target();
     DX_RELEASE(swap_chain)
@@ -147,7 +147,7 @@ namespace engine
     DX_RELEASE(device)
   }
 
-  bool dx11::load_texture_from_buffer(unsigned char* buffer, int width, int height, ID3D11ShaderResourceView** out_srv, ID3D11Texture2D** out_texture)
+  bool fdx11::load_texture_from_buffer(unsigned char* buffer, int width, int height, ID3D11ShaderResourceView** out_srv, ID3D11Texture2D** out_texture)
   {
     if (buffer == nullptr) return false;
 
@@ -186,7 +186,7 @@ namespace engine
     return false;
   }
 
-  bool dx11::update_texture_buffer(unsigned char* buffer, int width, int height, ID3D11Texture2D* in_texture)
+  bool fdx11::update_texture_buffer(unsigned char* buffer, int width, int height, ID3D11Texture2D* in_texture)
   {
     D3D11_MAPPED_SUBRESOURCE mapped_resource;
     ZeroMemory(&mapped_resource, sizeof(D3D11_MAPPED_SUBRESOURCE));

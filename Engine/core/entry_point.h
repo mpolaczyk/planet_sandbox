@@ -8,18 +8,18 @@ using namespace engine;
 
 namespace engine
 {
-  extern application* create_application(); // Provide this in the user application
+  extern fapplication* create_application(); // Provide this in the user application
 }
 
 int main(int argc, char** argv)
 {
-  application* app = create_application();
-  application::app_weak_ptr = app;
+  fapplication* app = create_application();
+  fapplication::app_weak_ptr = app;
   
   if (!IsDebuggerPresent())
   {
     // Register SEH exception catching when no debugger is present
-    _set_se_translator(seh_exception::handler);
+    _set_se_translator(fseh_exception::handler);
   }
   try
   {
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     __debugbreak();
     system("pause");
   }
-  application::app_weak_ptr = nullptr;
+  fapplication::app_weak_ptr = nullptr;
   delete app;
   return 0;
 }

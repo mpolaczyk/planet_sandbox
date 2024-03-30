@@ -8,7 +8,7 @@
 
 namespace engine
 {
-  float random_seed::rand_iqint1(uint32_t seed)
+  float frandom_seed::rand_iqint1(uint32_t seed)
   {
     static uint32_t last = 0;
     uint32_t state = seed + last;   // Seed can be the same for multiple calls, we need to rotate it
@@ -18,7 +18,7 @@ namespace engine
     return (float)state / (float)UINT_MAX;   // [0.0f, 1.0f]
   }
 
-  float random_seed::rand_pcg(uint32_t seed)
+  float frandom_seed::rand_pcg(uint32_t seed)
   {
     static uint32_t last = 0;
     uint32_t state = seed + last;   // Seed can be the same for multiple calls, we need to rotate it
@@ -29,23 +29,23 @@ namespace engine
     return (float)result / (float)UINT_MAX;   // [0.0f, 1.0f]
   }
 
-  vec3 random_seed::direction(uint32_t seed)
+  fvec3 frandom_seed::direction(uint32_t seed)
   {
     float x = normal_distribution(seed);
     float y = normal_distribution(seed);
     float z = normal_distribution(seed);
-    return math::normalize(vec3(x, y, z));
+    return fmath::normalize(fvec3(x, y, z));
   }
 
-  float random_seed::normal_distribution(uint32_t seed)
+  float frandom_seed::normal_distribution(uint32_t seed)
   {
-    float theta = 2.0f * math::pi * RAND_SEED_FUNC(seed);
+    float theta = 2.0f * fmath::pi * RAND_SEED_FUNC(seed);
     float rho = sqrt(-2.0f * log(RAND_SEED_FUNC(seed)));
     assert(isfinite(rho));
     return rho * cos(theta);  // [-1.0f, 1.0f]
   }
 
-  vec3 random_seed::cosine_direction(uint32_t seed)
+  fvec3 frandom_seed::cosine_direction(uint32_t seed)
   {
     // https://psgraphics.blogspot.com/2013/11/random-directions-with-cosine.html
     // Cosine distribution around positive z axis
@@ -53,21 +53,21 @@ namespace engine
     float r2 = RAND_SEED_FUNC(seed);
     //float phi = 2 * pi * r1;
     float r = 0.5;
-    float x = cos(2 * math::pi * r1) * sqrt(r);
-    float y = sin(2 * math::pi * r2) * sqrt(r);
+    float x = cos(2 * fmath::pi * r1) * sqrt(r);
+    float y = sin(2 * fmath::pi * r2) * sqrt(r);
     float z = sqrt(1 - r);
-    return vec3(x, y, z);
+    return fvec3(x, y, z);
   }
 
-  vec3 random_seed::in_unit_disk(uint32_t seed)
+  fvec3 frandom_seed::in_unit_disk(uint32_t seed)
   {
-    vec3 dir = math::normalize(vec3(RAND_SEED_FUNC(seed)));
+    fvec3 dir = fmath::normalize(fvec3(RAND_SEED_FUNC(seed)));
     return dir * RAND_SEED_FUNC(seed);
   }
-  vec3 random_seed::unit_in_hemisphere(const vec3& normal, uint32_t seed)
+  fvec3 frandom_seed::unit_in_hemisphere(const fvec3& normal, uint32_t seed)
   {
-    vec3 dir = direction(seed);
-    return dir * math::sign(math::dot(normal, dir));
+    fvec3 dir = direction(seed);
+    return dir * fmath::sign(fmath::dot(normal, dir));
   }
 }
 
@@ -99,9 +99,9 @@ namespace engine
   };
 
   static cache<float, 500000> float_cache; // Range: [-1, 1]
-  static cache<vec3, 50000> cosine_direction_cache;
+  static cache<fvec3, 50000> cosine_direction_cache;
 
-  void random_cache::init()
+  void frandom_cache::init()
   {
     // Fill float cache
     std::uniform_real_distribution<float> distribution;
@@ -119,22 +119,22 @@ namespace engine
     }
   }
 
-  float random_cache::get_float()
+  float frandom_cache::get_float()
   {
     return float_cache.get();
   }
 
-  float random_cache::get_float_0_1()
+  float frandom_cache::get_float_0_1()
   {
     return fabs(float_cache.get());
   }
 
-  float random_cache::get_float_0_N(float N)
+  float frandom_cache::get_float_0_N(float N)
   {
     return fabs(float_cache.get()) * N;
   }
 
-  float random_cache::get_float_M_N(float M, float N)
+  float frandom_cache::get_float_M_N(float M, float N)
   {
     if (M < N)
     {
@@ -143,35 +143,35 @@ namespace engine
     return N + fabs(float_cache.get()) * (M - N);
   }
 
-  vec3 random_cache::get_vec3() // [-1,1]
+  fvec3 frandom_cache::get_vec3() // [-1,1]
   {
-    return vec3(float_cache.get(), float_cache.get(), float_cache.get());
+    return fvec3(float_cache.get(), float_cache.get(), float_cache.get());
   }
 
-  vec3 random_cache::get_vec3_0_1()
+  fvec3 frandom_cache::get_vec3_0_1()
   {
-    return vec3(fabs(float_cache.get()), fabs(float_cache.get()), fabs(float_cache.get()));
+    return fvec3(fabs(float_cache.get()), fabs(float_cache.get()), fabs(float_cache.get()));
   }
 
-  int random_cache::get_int_0_N(int N)
+  int frandom_cache::get_int_0_N(int N)
   {
     return (int)round(get_float_0_1() * N);
   }
 
-  vec3 random_cache::get_cosine_direction()
+  fvec3 frandom_cache::get_cosine_direction()
   {
     return cosine_direction_cache.get();
   }
 
-  vec3 random_cache::direction()
+  fvec3 frandom_cache::direction()
   {
     float x = normal_distribution();
     float y = normal_distribution();
     float z = normal_distribution();
-    return math::normalize(vec3(x, y, z));
+    return fmath::normalize(fvec3(x, y, z));
   }
 
-  vec3 random_cache::cosine_direction()
+  fvec3 frandom_cache::cosine_direction()
   {
     // https://psgraphics.blogspot.com/2013/11/random-directions-with-cosine.html
     // Cosine distribution around positive z axis
@@ -179,42 +179,42 @@ namespace engine
     float r2 = get_float_0_1();
     //float phi = 2 * pi * r1;
     float r = 0.5;
-    float x = cos(2 * math::pi * r1) * sqrt(r);
-    float y = sin(2 * math::pi * r2) * sqrt(r);
+    float x = cos(2 * fmath::pi * r1) * sqrt(r);
+    float y = sin(2 * fmath::pi * r2) * sqrt(r);
     float z = sqrt(1 - r);
-    return vec3(x, y, z);
+    return fvec3(x, y, z);
   }
 
-  vec3 random_cache::in_sphere(float radius, float distance_squared)
+  fvec3 frandom_cache::in_sphere(float radius, float distance_squared)
   {
     float r1 = get_float_0_1();
     float r2 = get_float_0_1();
     float z = 1 + r2 * (sqrt(1 - radius * radius / distance_squared) - 1);
 
-    float phi = 2 * math::pi * r1;
+    float phi = 2 * fmath::pi * r1;
     float x = cos(phi) * sqrt(1 - z * z);
     float y = sin(phi) * sqrt(1 - z * z);
 
-    return vec3(x, y, z);
+    return fvec3(x, y, z);
   }
 
-  float random_cache::normal_distribution()
+  float frandom_cache::normal_distribution()
   {
-    float theta = 2.0f * math::pi * get_float_0_1();
+    float theta = 2.0f * fmath::pi * get_float_0_1();
     float rho = sqrt(-2.0f * log(get_float_0_1()));
     assert(isfinite(rho));
     return rho * cos(theta);  // [-1.0f, 1.0f]
   }
 
-  vec3 random_cache::in_unit_disk()
+  fvec3 frandom_cache::in_unit_disk()
   {
-    vec3 dir = math::normalize(get_vec3());
+    fvec3 dir = fmath::normalize(get_vec3());
     return dir * get_float();
   }
 
-  vec3 random_cache::unit_in_hemisphere(const vec3& normal)
+  fvec3 frandom_cache::unit_in_hemisphere(const fvec3& normal)
   {
-    vec3 dir = math::normalize(get_vec3());
-    return dir * math::sign(math::dot(dir, normal));
+    fvec3 dir = fmath::normalize(get_vec3());
+    return dir * fmath::sign(fmath::dot(dir, normal));
   }
 }

@@ -14,25 +14,25 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(cpu_renderer_faces, cpu_renderer, CPU renderer faces)
-  OBJECT_DEFINE_SPAWN(cpu_renderer_faces)
+  OBJECT_DEFINE(rcpu_faces, rcpu, CPU renderer faces)
+  OBJECT_DEFINE_SPAWN(rcpu_faces)
 
-  void cpu_renderer_faces::job_update()
+  void rcpu_faces::job_update()
   {
-    std::vector<chunk> chunks;
-    chunk_generator::generate_chunks(chunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency() * 32, job_state.image_width, job_state.image_height, chunks);
+    std::vector<fchunk> chunks;
+    fchunk_generator::generate_chunks(chunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency() * 32, job_state.image_width, job_state.image_height, chunks);
 
-    concurrency::parallel_for_each(begin(chunks), end(chunks), [&](const chunk& ch) { render_chunk(ch); });
+    concurrency::parallel_for_each(begin(chunks), end(chunks), [&](const fchunk& ch) { render_chunk(ch); });
   }
 
-  void cpu_renderer_faces::render_chunk(const chunk& in_chunk)
+  void rcpu_faces::render_chunk(const fchunk& in_chunk)
   {
     assert(job_state.scene_root != nullptr);
     std::thread::id thread_id = std::this_thread::get_id();
 
     std::ostringstream oss;
     oss << "Thread=" << thread_id << " Chunk=" << in_chunk.id;
-    engine::scope_timer benchmark_render_chunk(oss.str());
+    engine::fscope_timer benchmark_render_chunk(oss.str());
 
     for (int y = in_chunk.y; y < in_chunk.y + in_chunk.size_y; ++y)
     {
@@ -41,20 +41,20 @@ namespace engine
         if(is_cancelled()) { return; }
         
         // Effectively it is a fragment shader
-        vec3 pixel_color;
+        fvec3 pixel_color;
 
         float u = float(x) / (job_state.image_width - 1);
         float v = float(y) / (job_state.image_height - 1);
-        ray r = job_state.cam.get_ray(u, v);
-        hit_record h;
+        fray r = job_state.cam.get_ray(u, v);
+        fhit_record h;
 
-        if (job_state.scene_root->hit(r, math::infinity, h))
+        if (job_state.scene_root->hit(r, fmath::infinity, h))
         {
-          int color_index = (static_cast<hittable*>(h.object)->get_runtime_id() + h.face_id) % colors::num;
-          pixel_color = colors::all[color_index];
+          int color_index = (static_cast<hhittable_base*>(h.object)->get_runtime_id() + h.face_id) % fcolors::num;
+          pixel_color = fcolors::all[color_index];
         }
 
-        bmp_pixel p(pixel_color);
+        fbmp_pixel p(pixel_color);
         job_state.img_rgb->draw_pixel(x, y, &p, bmp_format::rgba);
         if (save_output)
         {

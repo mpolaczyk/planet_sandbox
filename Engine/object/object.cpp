@@ -7,14 +7,14 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(class_object, object, Class object)
-  OBJECT_DEFINE_SPAWN(class_object)
+  OBJECT_DEFINE(oclass_object, oobject, Class object)
+  OBJECT_DEFINE_SPAWN(oclass_object)
 
-  OBJECT_DEFINE(object, object, Object)
-  OBJECT_DEFINE_NOSPAWN(object)
-  OBJECT_DEFINE_VISITOR_BASE(object)
+  OBJECT_DEFINE(oobject, oobject, Object)
+  OBJECT_DEFINE_NOSPAWN(oobject)
+  OBJECT_DEFINE_VISITOR_BASE(oobject)
  
-  void object::set_runtime_id(int id)
+  void oobject::set_runtime_id(int id)
   {
     if (runtime_id == -1)
     {
@@ -22,12 +22,12 @@ namespace engine
     }
   }
 
-  int object::get_runtime_id() const
+  int oobject::get_runtime_id() const
   {
     return runtime_id;
   }
 
-  void object::destroy()
+  void oobject::destroy()
   {
     REG.destroy(runtime_id);
   }

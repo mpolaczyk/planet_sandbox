@@ -12,26 +12,26 @@
 
 namespace engine
 {
-  class sphere;
+  class hsphere;
 
-  class ENGINE_API sphere : public hittable
+  class ENGINE_API hsphere : public hhittable_base
   {
   public:
-    OBJECT_DECLARE(sphere, hittable)
+    OBJECT_DECLARE(hsphere, hhittable_base)
     OBJECT_DECLARE_VISITOR
     
-    virtual bool hit(const ray& in_ray, float t_max, hit_record& out_hit) const override;
-    virtual bool get_bounding_box(aabb& out_box) const override;
-    virtual vec3 get_origin() const override { return origin; };
-    virtual vec3 get_extent() const override { return vec3(radius); };
-    virtual void set_origin(const vec3& value) override { origin = value; };
+    virtual bool hit(const fray& in_ray, float t_max, fhit_record& out_hit) const override;
+    virtual bool get_bounding_box(faabb& out_box) const override;
+    virtual fvec3 get_origin() const override { return origin; };
+    virtual fvec3 get_extent() const override { return fvec3(radius); };
+    virtual void set_origin(const fvec3& value) override { origin = value; };
     virtual void set_extent(float value) override { radius = value; };
 
     virtual uint32_t get_hash() const override;
-    virtual sphere* clone() const override;
+    virtual hsphere* clone() const override;
 
     // Persistent members
-    vec3 origin = vec3(0, 0, 0);
+    fvec3 origin = fvec3(0, 0, 0);
     float radius = 0.0f;
   };
 }

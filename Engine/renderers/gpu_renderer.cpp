@@ -10,10 +10,10 @@
 
 namespace engine
 {
-    OBJECT_DEFINE(gpu_renderer, renderer_base, GPU renderer)
-    OBJECT_DEFINE_SPAWN(gpu_renderer)
+    OBJECT_DEFINE(rgpu, rrenderer_base, GPU renderer)
+    OBJECT_DEFINE_SPAWN(rgpu)
 
-    void gpu_renderer::render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config)
+    void rgpu::render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config)
     {
         if (in_renderer_config.resolution_vertical == 0 || in_renderer_config.resolution_horizontal == 0) return;
 
@@ -37,7 +37,7 @@ namespace engine
         update_frame();
     }
 
-    void gpu_renderer::create_output_texture(bool cleanup)
+    void rgpu::create_output_texture(bool cleanup)
     {
         if (cleanup)
         {
@@ -45,7 +45,7 @@ namespace engine
             DX_RELEASE(output_srv)
             DX_RELEASE(output_texture)
         }
-        dx11& dx = dx11::instance();
+        fdx11& dx = fdx11::instance();
         {
             D3D11_TEXTURE2D_DESC desc = {};
             desc.Width = output_width;
@@ -88,7 +88,7 @@ namespace engine
         }
     }
 
-    void gpu_renderer::init()
+    void rgpu::init()
     {
         // FIX temporary hack here! It should be properly persistent as part for the scene (not hittable)
         vertex_shader_asset.set_name("gpu_renderer_vs");
@@ -102,7 +102,7 @@ namespace engine
 
         create_output_texture();
 
-        auto device = dx11::instance().device;
+        auto device = fdx11::instance().device;
 
         // Measuring time
         {
@@ -134,12 +134,12 @@ namespace engine
         }
 
         // Poke static mesh loading
-        for (const hittable* obj : scenee->objects)
+        for (const hhittable_base* obj : scenee->objects)
         {
-            if (obj->get_class() == static_mesh::get_class_static())
+            if (obj->get_class() == hstatic_mesh::get_class_static())
             {
-                const static_mesh* sm = static_cast<const static_mesh*>(obj);
-                const static_mesh_asset* sma = sm->mesh_asset_ptr.get();
+                const hstatic_mesh* sm = static_cast<const hstatic_mesh*>(obj);
+                const astatic_mesh* sma = sm->mesh_asset_ptr.get();
                 assert(sma->render_state.index_buffer);
                 assert(sma->render_state.vertex_buffer);
             }
@@ -164,7 +164,7 @@ namespace engine
 
         // Texture asset
         {
-            const engine::texture_asset* temp = texture_asset.get();
+            const atexture* temp = texture_asset.get();
             int texture_bytes_per_row = 0;
             const void* texture_bytes = nullptr;
             if (temp->is_hdr)
@@ -217,11 +217,11 @@ namespace engine
             assert(SUCCEEDED(result));
             
             // TODO - remove?
-            //desc.ByteWidth      = sizeof(material_properties);
+            //desc.ByteWidth      = sizeof(fmaterial_properties);
             //result = device->CreateBuffer(&desc, nullptr, &material_constant_buffer);
             //assert(SUCCEEDED(result));
             //
-            //desc.ByteWidth      = sizeof(light_properties);
+            //desc.ByteWidth      = sizeof(flight_properties);
             //result = device->CreateBuffer(&desc, nullptr, &light_constant_buffer);
             //assert(SUCCEEDED(result));
         }
@@ -255,7 +255,7 @@ namespace engine
         }
     }
 
-    void gpu_renderer::update_frame()
+    void rgpu::update_frame()
     {
         // Time flow
         float delta_time = 0.0f;
@@ -271,7 +271,7 @@ namespace engine
         // Camera and MVP matrix
         const float field_of_view = XMConvertToRadians(camera.field_of_view);
         const float aspect_ratio = camera.aspect_ratio_w / camera.aspect_ratio_h;
-        const XMMATRIX projection = XMMatrixPerspectiveFovRH(field_of_view, aspect_ratio, math::t_min, math::infinity);
+        const XMMATRIX projection = XMMatrixPerspectiveFovRH(field_of_view, aspect_ratio, fmath::t_min, fmath::infinity);
 
         const XMVECTOR camera_pos = XMVectorSet(camera.look_from.x, camera.look_from.y, camera.look_from.z, 0.f);
         const XMVECTOR camera_rot = XMVector3AngleBetweenVectors(XMVectorSet(0.f, 0.f, -1.f, 0.f), XMVectorSet(camera.look_dir.x, camera.look_dir.y, camera.look_dir.z, 0.f));
@@ -279,7 +279,7 @@ namespace engine
         // Negate the rotation to achieve inverse
         // FIX rotation does not work well this way, test with mouse!
 
-        dx11& dx = dx11::instance();
+        fdx11& dx = fdx11::instance();
 
         dx.device_context->ClearRenderTargetView(output_rtv, Colors::LightSlateGray);
         dx.device_context->ClearDepthStencilView(output_dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -313,14 +313,14 @@ namespace engine
         }
         
         // Draw the scene
-        for (const hittable* obj : scenee->objects)
+        for (const hhittable_base* obj : scenee->objects)
         {
-            if (obj->get_class() == static_mesh::get_class_static())
+            if (obj->get_class() == hstatic_mesh::get_class_static())
             {
-                const static_mesh* sm = static_cast<const static_mesh*>(obj);
-                const static_mesh_asset* sma = sm->mesh_asset_ptr.get();
+                const hstatic_mesh* sm = static_cast<const hstatic_mesh*>(obj);
+                const astatic_mesh* sma = sm->mesh_asset_ptr.get();
                 if (sma == nullptr) { continue; }
-                const static_mesh_render_state& smrs = sma->render_state;
+                const fstatic_mesh_render_state& smrs = sma->render_state;
 
                 // Model
                 const XMVECTOR model_pos = XMVectorSet(sm->origin.x, sm->origin.y, sm->origin.z, 0.f);
@@ -351,7 +351,7 @@ namespace engine
         }
     }
 
-    void gpu_renderer::destroy()
+    void rgpu::destroy()
     {
         DX_RELEASE(output_rtv)
         DX_RELEASE(output_dsv)
@@ -362,6 +362,6 @@ namespace engine
         DX_RELEASE(per_object_constant_buffer)
         DX_RELEASE(rasterizer_state)
         DX_RELEASE(depth_stencil_state)
-        renderer_base::destroy();
+        rrenderer_base::destroy();
     }
 }

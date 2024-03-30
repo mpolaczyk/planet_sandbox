@@ -14,20 +14,20 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(texture_asset, asset_base, Texture asset)
-  OBJECT_DEFINE_SPAWN(texture_asset)
-  OBJECT_DEFINE_VISITOR(texture_asset)
+  OBJECT_DEFINE(atexture, aasset_base, Texture asset)
+  OBJECT_DEFINE_SPAWN(atexture)
+  OBJECT_DEFINE_VISITOR(atexture)
   
-  bool texture_asset::load(texture_asset* instance, const std::string& name)
+  bool atexture::load(atexture* instance, const std::string& name)
   {
-    asset_base::load(instance, name);
+    aasset_base::load(instance, name);
 
     assert(instance);
     LOG_DEBUG("Loading texture: {0}", name);
 
     std::ostringstream oss;
     oss << name << ".json";
-    const std::string file_path = io::get_texture_file_path(oss.str().c_str());
+    const std::string file_path = fio::get_texture_file_path(oss.str().c_str());
     std::ifstream input_stream(file_path.c_str());
     if (input_stream.fail())
     {

@@ -5,7 +5,7 @@
 
 namespace engine
 {
-  class ENGINE_API stats
+  class ENGINE_API fstats
   {
   public:
     static void reset();

@@ -8,14 +8,14 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(renderer_base, object, Renderer base)
-  OBJECT_DEFINE_NOSPAWN(renderer_base)
+  OBJECT_DEFINE(rrenderer_base, oobject, Renderer base)
+  OBJECT_DEFINE_NOSPAWN(rrenderer_base)
   
-  void renderer_base::destroy()
+  void rrenderer_base::destroy()
   {
     DX_RELEASE(output_texture)
     DX_RELEASE(output_srv)
-    object::destroy();
+    oobject::destroy();
   }
  
 }

@@ -11,7 +11,7 @@
 
 namespace ray_tracer
 {
-  void draw_edit_panel::visit(class hittable& object) const
+  void fdraw_edit_panel::visit(class hhittable_base& object) const
   {
     std::string hittable_name = object.get_display_name();
     ImGui::Text("Object: ");
@@ -19,14 +19,14 @@ namespace ray_tracer
     ImGui::Text(hittable_name.c_str());
   }
 
-  void draw_edit_panel::visit(class scene& object) const
+  void fdraw_edit_panel::visit(class hscene& object) const
   {
-    object.hittable::accept(draw_edit_panel());
+    object.hhittable_base::accept(fdraw_edit_panel());
   }
 
-  void draw_edit_panel::visit(class static_mesh& object) const 
+  void fdraw_edit_panel::visit(class hstatic_mesh& object) const 
   {
-    object.hittable::accept(draw_edit_panel());
+    object.hhittable_base::accept(fdraw_edit_panel());
     ImGui::DragFloat3("Origin", object.origin.e);
     ImGui::DragFloat3("Rotation", object.rotation.e);
     ImGui::DragFloat3("Scale", object.scale.e);
@@ -43,14 +43,14 @@ namespace ray_tracer
     }
   }
 
-  void draw_edit_panel::visit(class sphere& object) const
+  void fdraw_edit_panel::visit(class hsphere& object) const
   {
-    object.hittable::accept(draw_edit_panel());
+    object.hhittable_base::accept(fdraw_edit_panel());
     ImGui::DragFloat3("Origin", object.origin.e);
     ImGui::InputFloat("Radius", &object.radius);
   }
 
-  void draw_edit_panel::visit(class material_asset& object) const
+  void fdraw_edit_panel::visit(class amaterial& object) const
   {
     ImGui::Checkbox("Is light", &object.is_light);
 

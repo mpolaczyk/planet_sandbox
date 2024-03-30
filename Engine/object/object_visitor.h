@@ -15,25 +15,25 @@
 // 4. Call performance. Don't use it for performance code as it traverses two polymorphic hierarchies.
 namespace engine
 {
-  class ENGINE_API object_visitor
+  class ENGINE_API fobject_visitor
   {
   public:
-    object_visitor() = default;
-    virtual ~object_visitor() = default;
-    object_visitor(const object_visitor&) = delete;
-    object_visitor(object_visitor&&) = delete;
-    object_visitor& operator=(object_visitor&&) = delete;
-    object_visitor& operator=(const object_visitor&) = delete;
+    fobject_visitor() = default;
+    virtual ~fobject_visitor() = default;
+    fobject_visitor(const fobject_visitor&) = delete;
+    fobject_visitor(fobject_visitor&&) = delete;
+    fobject_visitor& operator=(fobject_visitor&&) = delete;
+    fobject_visitor& operator=(const fobject_visitor&) = delete;
 
-    virtual void visit(class material_asset& object) const { assert(false); }
-    virtual void visit(class texture_asset& object) const { assert(false); }
-    virtual void visit(class static_mesh_asset& object) const { assert(false); }
-    virtual void visit(class vertex_shader_asset& object) const { assert(false); }
-    virtual void visit(class pixel_shader_asset& object) const { assert(false); }
+    virtual void visit(class amaterial& object) const { assert(false); }
+    virtual void visit(class atexture& object) const { assert(false); }
+    virtual void visit(class astatic_mesh& object) const { assert(false); }
+    virtual void visit(class avertex_shader& object) const { assert(false); }
+    virtual void visit(class apixel_shader& object) const { assert(false); }
     
-    virtual void visit(class hittable& object) const { assert(false); }
-    virtual void visit(class scene& object) const { assert(false); }
-    virtual void visit(class static_mesh& object) const { assert(false); }
-    virtual void visit(class sphere& object) const { assert(false); }
+    virtual void visit(class hhittable_base& object) const { assert(false); }
+    virtual void visit(class hscene& object) const { assert(false); }
+    virtual void visit(class hstatic_mesh& object) const { assert(false); }
+    virtual void visit(class hsphere& object) const { assert(false); }
   };    
 }

@@ -15,16 +15,16 @@
 
 namespace engine
 {
-  application* application::app_weak_ptr = nullptr;
+  fapplication* fapplication::app_weak_ptr = nullptr;
   
   LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   {
-    return application::app_weak_ptr->wnd_proc(hWnd, msg, wParam, lParam);
+    return fapplication::app_weak_ptr->wnd_proc(hWnd, msg, wParam, lParam);
   }
 
-  LRESULT application::wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+  LRESULT fapplication::wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   {
-    dx11& dx = dx11::instance();
+    fdx11& dx = fdx11::instance();
     switch (msg)
     {
     case WM_SIZE:
@@ -46,16 +46,16 @@ namespace engine
     return ::DefWindowProc(hWnd, msg, wParam, lParam);
   }
   
-  void application::init()
+  void fapplication::init()
   {
-    logger::init();
-    random_cache::init();
+    flogger::init();
+    frandom_cache::init();
     
     REG.create_class_objects();
 
-    LOG_INFO("Working dir: {0}", io::get_working_dir());
-    LOG_INFO("Workspace dir: {0}", io::get_workspace_dir());
-    if (!io::validate_workspace_dir())
+    LOG_INFO("Working dir: {0}", fio::get_working_dir());
+    LOG_INFO("Workspace dir: {0}", fio::get_workspace_dir());
+    if (!fio::validate_workspace_dir())
     {
       LOG_CRITICAL("Invalid workspace directory!");
     }
@@ -66,7 +66,7 @@ namespace engine
     hwnd = ::CreateWindow(wc.lpszClassName, _T("RayTracer"), WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
 
     // Initialize Direct3D
-    dx11& dx = dx11::instance();
+    fdx11& dx = fdx11::instance();
     if (!dx.create_device())
     {
       dx.cleanup_device();
@@ -81,9 +81,9 @@ namespace engine
     ::UpdateWindow(hwnd);
   }
 
-  void application::cleanup()
+  void fapplication::cleanup()
   {
-    dx11& dx = dx11::instance();
+    fdx11& dx = fdx11::instance();
     dx.cleanup_device();
     dx.cleanup_render_target();
     ::DestroyWindow(hwnd);

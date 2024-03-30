@@ -11,8 +11,8 @@
 
 namespace engine
 {
-  template<derives_from<object> T>
-  bool object_registry::add(T* instance)
+  template<derives_from<oobject> T>
+  bool fobject_registry::add(T* instance)
   {
     if (instance == nullptr)
     {
@@ -37,8 +37,8 @@ namespace engine
     return true;
   }
 
-  template<derives_from<object> T>
-  T* object_registry::get(int id) const
+  template<derives_from<oobject> T>
+  T* fobject_registry::get(int id) const
   {
     if (is_valid(id))
     {
@@ -50,15 +50,15 @@ namespace engine
     return nullptr;
   }
 
-  template<derives_from<object> T>
-  std::vector<T*> object_registry::get_all_by_type()
+  template<derives_from<oobject> T>
+  std::vector<T*> fobject_registry::get_all_by_type()
   {
     auto type = T::get_class_static();
     return find_all<T>([type](T* obj) -> bool { return obj->is_child_of(type);});
   }
 
-  template<derives_from<object> T>
-  T* object_registry::copy_shallow(const T* source)
+  template<derives_from<oobject> T>
+  T* fobject_registry::copy_shallow(const T* source)
   {
     assert(source != nullptr);
 
@@ -86,17 +86,17 @@ namespace engine
     return obj;
   }
 
-  template<derives_from<object> T>
-  T* object_registry::spawn_from_class(const class_object* type)
+  template<derives_from<oobject> T>
+  T* fobject_registry::spawn_from_class(const oclass_object* type)
   {
     assert(type);
     return static_cast<T*>(type->spawn_instance_func());
   }
 
-  template<derives_from<object> T>
-  T* object_registry::find(std::function<bool(T*)> predicate) const
+  template<derives_from<oobject> T>
+  T* fobject_registry::find(std::function<bool(T*)> predicate) const
   {
-    const class_object* T_class = T::get_class_static();
+    const oclass_object* T_class = T::get_class_static();
     for (int i = 0; i < objects.size(); i++)  // FIX: Linear search, at some point better structure will be needed
     {
       if (objects[i] != nullptr && objects[i]->is_child_of(T_class) && predicate(static_cast<T*>(objects[i])))
@@ -107,11 +107,11 @@ namespace engine
     return nullptr;
   }
 
-  template<derives_from<object> T>
-  std::vector<T*> object_registry::find_all(std::function<bool(T*)> predicate) const
+  template<derives_from<oobject> T>
+  std::vector<T*> fobject_registry::find_all(std::function<bool(T*)> predicate) const
   {
     std::vector<T*> ans;
-    const class_object* T_class = T::get_class_static();
+    const oclass_object* T_class = T::get_class_static();
     for (int i = 0; i < objects.size(); i++)  // FIX: Linear search, at some point better structure will be needed
     {
       if (objects[i] != nullptr && objects[i]->is_child_of(T_class) && predicate(static_cast<T*>(objects[i])))

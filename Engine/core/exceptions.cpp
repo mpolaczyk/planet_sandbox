@@ -7,7 +7,7 @@
 
 namespace engine
 {
-  int seh_exception::describe(_EXCEPTION_POINTERS* p_exp)
+  int fseh_exception::describe(_EXCEPTION_POINTERS* p_exp)
   {
     // https://randomascii.wordpress.com/2012/04/21/exceptional-floating-point/
     DWORD exceptionCode = p_exp->ExceptionRecord->ExceptionCode;
@@ -65,16 +65,16 @@ namespace engine
     //return EXCEPTION_CONTINUE_SEARCH;
   }
 
-  // Put this in every thread to handle SEH exception: _set_se_translator(seh_exception_handler);
+  // Put this in every thread to handle SEH exception: _set_se_translator(fseh_exception_handler);
   // Compile with: /EHa
   // https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/set-se-translator?view=msvc-170
-  void seh_exception::handler(unsigned int exception_code, _EXCEPTION_POINTERS* exception_info)
+  void fseh_exception::handler(unsigned int exception_code, _EXCEPTION_POINTERS* exception_info)
   {
-    describe(exception_info);  // TODO: passing p_exp to seh_exception causes invalid operation, so we can't use it in what()
-    throw seh_exception(exception_code);
+    describe(exception_info);  // TODO: passing p_exp to fseh_exception causes invalid operation, so we can't use it in what()
+    throw fseh_exception(exception_code);
   }
 
-  char const* seh_exception::what() const
+  char const* fseh_exception::what() const
   {
     std::ostringstream oss;
     oss << "SEH exception code: " << exception_code;
@@ -85,7 +85,7 @@ namespace engine
     return buff;
   }
 
-  std::string win32_error::get_last_error_as_string()
+  std::string fwin32_error::get_last_error_as_string()
   {
     DWORD last_error = ::GetLastError();
     if(last_error == 0)

@@ -5,7 +5,7 @@
 #include "core/core.h"
 #include "object/object_defines.h"
 
-/* Adding new object classes:
+/* Adding new oobject classes:
  * 1. Add new class, derive from object.
  * 2. Add OBJECT_DECLARE in the header file.
  * 3. Add OBJECT_DEFINE in the cpp file.
@@ -19,24 +19,24 @@
 
 namespace engine
 {
-  class object_registry;
-  class class_object;
+  class fobject_registry;
+  class oclass_object;
   
   // Managed object class
   // Base class for all objects, use like abstract
-  class ENGINE_API object
+  class ENGINE_API oobject
   {
-    friend object_registry;
+    friend fobject_registry;
     
   public:
-    OBJECT_DECLARE(object, object)
+    OBJECT_DECLARE(oobject, oobject)
     OBJECT_DECLARE_VISITOR_BASE
     
-    object() = default;
-    object(const object&) = default;
-    object& operator=(const object&) = default;
-	  object(object&&) = delete;
-	  object& operator=(object&&) = delete;
+    oobject() = default;
+    oobject(const oobject&) = default;
+    oobject& operator=(const oobject&) = default;
+	  oobject(oobject&&) = delete;
+	  oobject& operator=(oobject&&) = delete;
 
     int get_runtime_id() const;
 
@@ -48,15 +48,15 @@ namespace engine
     int runtime_id = -1;
   };
 
-  typedef object*(*spawn_instance_func_type)();
+  typedef oobject*(*spawn_instance_func_type)();
   
   // Base class for all class types. Each registered object has object class instance in the registry.
-  class ENGINE_API class_object : public object
+  class ENGINE_API oclass_object : public oobject
   {
-    friend object_registry;
+    friend fobject_registry;
     
   public:
-    OBJECT_DECLARE(class_object, object)
+    OBJECT_DECLARE(oclass_object, oobject)
 
     std::string get_class_name() const { return class_name; }
     std::string get_parent_class_name() const { return parent_class_name; }

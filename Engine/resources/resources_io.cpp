@@ -27,12 +27,12 @@
 
 namespace engine
 {
-  bool load_obj(const std::string& file_name, static_mesh_asset* out_static_mesh)
+  bool load_obj(const std::string& file_name, astatic_mesh* out_static_mesh)
   {
     assert(out_static_mesh);
     
-    std::string dir = io::get_meshes_dir();
-    std::string path = io::get_mesh_file_path(file_name.c_str());
+    std::string dir = fio::get_meshes_dir();
+    std::string path = fio::get_mesh_file_path(file_name.c_str());
 
     // Parse OBJ file
     WaveFrontReader<uint16_t> obj_reader;
@@ -55,7 +55,7 @@ namespace engine
     {
       LOG_WARN("Static mesh: {0} has no texture coords!", file_name); 
     }
-    auto device = dx11::instance().device;
+    auto device = fdx11::instance().device;
     // Index buffer
     {
       D3D11_BUFFER_DESC desc = {};
@@ -72,14 +72,14 @@ namespace engine
     }
     // Vertex buffer
     {
-      std::vector<vertex_data> vertex_buffer;
+      std::vector<fvertex_data> vertex_buffer;
       vertex_buffer.reserve(obj_reader.vertices.size());
       for (const auto& vert : obj_reader.vertices)
       {
-        vertex_buffer.push_back(std::move(vertex_data(vert.position, vert.normal, vert.textureCoordinate)));
+        vertex_buffer.push_back(std::move(fvertex_data(vert.position, vert.normal, vert.textureCoordinate)));
       }
       D3D11_BUFFER_DESC desc = {};
-      desc.ByteWidth = vertex_buffer.size() * sizeof(vertex_data);
+      desc.ByteWidth = vertex_buffer.size() * sizeof(fvertex_data);
       desc.Usage     = D3D11_USAGE_IMMUTABLE;
       desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
       D3D11_SUBRESOURCE_DATA data = { vertex_buffer.data() };
@@ -92,13 +92,13 @@ namespace engine
     }
     // Render state, other
     out_static_mesh->render_state.offset = 0;
-    out_static_mesh->render_state.stride = sizeof(vertex_data);
+    out_static_mesh->render_state.stride = sizeof(fvertex_data);
     out_static_mesh->render_state.num_indices = obj_reader.indices.size();
     // Faces
     {
       for(int i = 0; i < obj_reader.indices.size()-3; i+=3)
       {
-        triangle_face tf;
+        ftriangle_face tf;
         for(int j = 0; j < 3; j++)
         {
           tf.vertices[j].x = obj_reader.vertices[obj_reader.indices[i+j]].position.x;
@@ -119,11 +119,11 @@ namespace engine
     return true;
   }
 
-  bool load_img(const std::string& file_name, int desired_channels, texture_asset* out_texture)
+  bool load_img(const std::string& file_name, int desired_channels, atexture* out_texture)
   {
     assert(out_texture);
     
-    std::string path = io::get_texture_file_path(file_name.c_str());
+    std::string path = fio::get_texture_file_path(file_name.c_str());
 
     out_texture->is_hdr = static_cast<bool>(stbi_is_hdr(path.c_str()));
     
@@ -150,7 +150,7 @@ namespace engine
   
   bool load_hlsl(const std::string& file_name, const std::string& entrypoint, const std::string& target, ID3D10Blob** out_shader_blob)
   {
-    std::string path = io::get_shader_file_path(file_name.c_str());
+    std::string path = fio::get_shader_file_path(file_name.c_str());
     
     ID3DBlob* shader_compiler_errors_blob = nullptr;
     std::wstring wpath = std::wstring(path.begin(), path.end());

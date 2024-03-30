@@ -6,10 +6,10 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(asset_base, object, "Asset base")
-  OBJECT_DEFINE_NOSPAWN(asset_base)
+  OBJECT_DEFINE(aasset_base, oobject, "Asset base")
+  OBJECT_DEFINE_NOSPAWN(aasset_base)
   
-  bool asset_base::load(asset_base* instance, const std::string& name)
+  bool aasset_base::load(aasset_base* instance, const std::string& name)
   {
     assert(instance);
     instance->file_name = name;

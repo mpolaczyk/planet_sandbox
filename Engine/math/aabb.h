@@ -8,20 +8,20 @@
 
 namespace engine
 {
-  class ENGINE_API aabb
+  class ENGINE_API faabb
   {
   public:
-    aabb() = default;
-    aabb(const vec3& in_minimum, const vec3& in_maximum)
+    faabb() = default;
+    faabb(const fvec3& in_minimum, const fvec3& in_maximum)
       : minimum(in_minimum), maximum(in_maximum)
     { }
 
-    bool hit(const ray& in_ray, float t_min, float t_max) const;
-    bool hit2(const ray& in_ray, float t_min, float t_max) const;
+    bool hit(const fray& in_ray, float t_min, float t_max) const;
+    bool hit2(const fray& in_ray, float t_min, float t_max) const;
 
-    vec3 minimum;
-    vec3 maximum;
+    fvec3 minimum;
+    fvec3 maximum;
 
-    static aabb merge(const aabb& box0, const aabb& box1);
+    static faabb merge(const faabb& box0, const faabb& box1);
   };
 }

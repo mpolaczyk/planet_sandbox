@@ -2,7 +2,7 @@
 
 namespace engine
 {
-  fpe_enabled_scope::fpe_enabled_scope(unsigned int enable_bits)
+  ffpe_enabled_scope::ffpe_enabled_scope(unsigned int enable_bits)
   {
 #if USE_FPEXCEPT
     _controlfp_s(&old_values, _MCW_EM, _MCW_EM);
@@ -12,14 +12,14 @@ namespace engine
 #endif
   }
 
-  fpe_enabled_scope::~fpe_enabled_scope()
+  ffpe_enabled_scope::~ffpe_enabled_scope()
   {
 #if USE_FPEXCEPT
     _controlfp_s(0, old_values, _MCW_EM);
 #endif
   }
 
-  fpe_disabled_scope::fpe_disabled_scope()
+  ffpe_disabled_scope::ffpe_disabled_scope()
   {
 #if USE_FPEXCEPT
     _controlfp_s(&old_values, 0, 0);
@@ -27,7 +27,7 @@ namespace engine
 #endif
   }
 
-  fpe_disabled_scope::~fpe_disabled_scope()
+  ffpe_disabled_scope::~ffpe_disabled_scope()
   {
 #if USE_FPEXCEPT
     _clearfp();

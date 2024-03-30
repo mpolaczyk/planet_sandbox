@@ -13,20 +13,20 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(static_mesh_asset, asset_base, Static mesh asset)
-  OBJECT_DEFINE_SPAWN(static_mesh_asset)
-  OBJECT_DEFINE_VISITOR(static_mesh_asset)
+  OBJECT_DEFINE(astatic_mesh, aasset_base, Static mesh asset)
+  OBJECT_DEFINE_SPAWN(astatic_mesh)
+  OBJECT_DEFINE_VISITOR(astatic_mesh)
 
-  bool static_mesh_asset::load(static_mesh_asset* instance, const std::string& name)
+  bool astatic_mesh::load(astatic_mesh* instance, const std::string& name)
   {
-    asset_base::load(instance, name);
+    aasset_base::load(instance, name);
 
     assert(instance);
     LOG_DEBUG("Loading mesh: {0}", name);
 
     std::ostringstream oss;
     oss << name << ".json";
-    const std::string file_path = io::get_mesh_file_path(oss.str().c_str());
+    const std::string file_path = fio::get_mesh_file_path(oss.str().c_str());
     std::ifstream input_stream(file_path.c_str());
     if (input_stream.fail())
     {

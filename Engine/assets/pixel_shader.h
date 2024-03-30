@@ -10,12 +10,12 @@ struct ID3D10Blob;
 
 namespace engine
 {
-  class ENGINE_API pixel_shader_asset : public asset_base
+  class ENGINE_API apixel_shader : public aasset_base
   {
   public:
-    OBJECT_DECLARE(pixel_shader_asset, asset_base)
-    OBJECT_DECLARE_LOAD(pixel_shader_asset)
-    OBJECT_DECLARE_SAVE(pixel_shader_asset)
+    OBJECT_DECLARE(apixel_shader, aasset_base)
+    OBJECT_DECLARE_LOAD(apixel_shader)
+    OBJECT_DECLARE_SAVE(apixel_shader)
     OBJECT_DECLARE_VISITOR
 
     // JSON persistent

@@ -13,20 +13,20 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(material_asset, asset_base, Material asset)
-  OBJECT_DEFINE_SPAWN(material_asset)
-  OBJECT_DEFINE_VISITOR(material_asset)
+  OBJECT_DEFINE(amaterial, aasset_base, Material asset)
+  OBJECT_DEFINE_SPAWN(amaterial)
+  OBJECT_DEFINE_VISITOR(amaterial)
   
-  bool material_asset::load(material_asset* instance, const std::string& name)
+  bool amaterial::load(amaterial* instance, const std::string& name)
   {
-    asset_base::load(instance, name);
+    aasset_base::load(instance, name);
 
     assert(instance);
     LOG_DEBUG("Loading material: {0}", name);
 
     std::ostringstream oss;
     oss << name << ".json";
-    const std::string file_path = io::get_material_file_path(oss.str().c_str());
+    const std::string file_path = fio::get_material_file_path(oss.str().c_str());
     std::ifstream input_stream(file_path.c_str());
     if (input_stream.fail())
     {
@@ -43,7 +43,7 @@ namespace engine
     return true;
   }
 
-  void material_asset::save(material_asset* object)
+  void amaterial::save(amaterial* object)
   {
     assert(object != nullptr);
 
@@ -52,7 +52,7 @@ namespace engine
 
     std::ostringstream oss;
     oss << object->get_class()->get_class_name() << ".json";
-    std::ofstream o(io::get_material_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
+    std::ofstream o(fio::get_material_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
     if (o.is_open())
     {

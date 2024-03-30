@@ -11,12 +11,12 @@
 
 namespace ray_tracer
 {
-  app_instance::app_instance()
+  fapp_instance::fapp_instance()
   {
-    scene_root = scene::spawn();
+    scene_root = hscene::spawn();
   }
 
-  app_instance::~app_instance()
+  fapp_instance::~fapp_instance()
   {
     if (renderer)
     {
@@ -28,20 +28,20 @@ namespace ray_tracer
     }
   }
 
-  void update_default_spawn_position(app_instance& state)
+  void update_default_spawn_position(fapp_instance& state)
   {
     // Find center of the scene, new objects scan be spawned there
-    vec3 look_from = state.camera_conf.look_from;
-    vec3 look_dir = state.camera_conf.look_dir;
+    fvec3 look_from = state.camera_conf.look_from;
+    fvec3 look_dir = state.camera_conf.look_dir;
     float dist_to_focus = state.camera_conf.dist_to_focus;
 
     // Ray to the look at position to find non colliding spawn point
-    ray center_of_scene_ray(look_from, look_dir);
-    hit_record center_of_scene_hit;
+    fray center_of_scene_ray(look_from, look_dir);
+    fhit_record center_of_scene_hit;
     if (state.scene_root->hit(center_of_scene_ray, 2.0f*dist_to_focus, center_of_scene_hit))
     {
       state.center_of_scene = center_of_scene_hit.p;
-      state.distance_to_center_of_scene = math::length(center_of_scene_hit.p - look_from);
+      state.distance_to_center_of_scene = fmath::length(center_of_scene_hit.p - look_from);
     }
     else
     {
@@ -50,7 +50,7 @@ namespace ray_tracer
     }
   }
 
-  void handle_input(app_instance& state)
+  void handle_input(fapp_instance& state)
   {
     // Handle clicks on the output window - select the object under the cursor
     if (state.output_window_lmb_x > 0.0f && state.output_window_lmb_y > 0.0f)
@@ -58,11 +58,11 @@ namespace ray_tracer
       float u = state.output_window_lmb_x / (state.output_width - 1);
       float v = state.output_window_lmb_y / (state.output_height - 1);
       v = 1.0f - v; // because vertical axis is flipped in the output window
-      camera cam;
+      fcamera cam;
       cam.configure(state.camera_conf);
-      ray r = cam.get_ray(u, v);
-      hit_record hit;
-      if (state.scene_root->hit(r, math::infinity, hit))
+      fray r = cam.get_ray(u, v);
+      fhit_record hit;
+      if (state.scene_root->hit(r, fmath::infinity, hit))
       {
         state.selected_object = hit.object;
       }
@@ -80,24 +80,24 @@ namespace ray_tracer
     }
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F1)))
     {
-      if (state.renderer_conf.type == cpu_renderer_preview::get_class_static())
+      if (state.renderer_conf.type == rcpu_preview::get_class_static())
       {
         state.rw_model.rp_model.render_pressed = true;
       }
       else
       {
-        state.renderer_conf.type = cpu_renderer_preview::get_class_static();
+        state.renderer_conf.type = rcpu_preview::get_class_static();
       }
     }
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F2)))
     {
-      if (state.renderer_conf.type == cpu_renderer_reference::get_class_static())
+      if (state.renderer_conf.type == rcpu_reference::get_class_static())
       {
         state.rw_model.rp_model.render_pressed = true;
       }
       else
       {
-        state.renderer_conf.type = cpu_renderer_reference::get_class_static();
+        state.renderer_conf.type = rcpu_reference::get_class_static();
       }
     }
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F5)))
@@ -107,7 +107,7 @@ namespace ray_tracer
 
     // Handle speed
     float wheel_delta = ImGui::GetIO().MouseWheel;
-    state.move_speed = math::max1(0.5f, state.move_speed + wheel_delta / 2.0f);
+    state.move_speed = fmath::max1(0.5f, state.move_speed + wheel_delta / 2.0f);
 
     // Handle camera movement
     if (!io.WantCaptureKeyboard)
@@ -154,11 +154,11 @@ namespace ray_tracer
     // Object movement
     if (!io.WantCaptureKeyboard)
     {
-      vec3 object_movement_axis = vec3(0.0f, 0.0f, 0.0f);
+      fvec3 object_movement_axis = fvec3(0.0f, 0.0f, 0.0f);
       float mouse_delta = 0.0f;
       if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Z)))
       {
-        object_movement_axis = vec3(1.0f, 0.0f, 0.0f);
+        object_movement_axis = fvec3(1.0f, 0.0f, 0.0f);
         mouse_delta = ImGui::GetIO().MouseDelta.x;
         if (state.camera_conf.look_dir.z < 0.0f)
         {
@@ -167,21 +167,21 @@ namespace ray_tracer
       }
       else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_C)))
       {
-        object_movement_axis = vec3(0.0f, -1.0f, 0.0f);
+        object_movement_axis = fvec3(0.0f, -1.0f, 0.0f);
         mouse_delta = ImGui::GetIO().MouseDelta.y;
       }
       else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_X)))
       {
-        object_movement_axis = vec3(0.0f, 0.0f, 1.0f);
+        object_movement_axis = fvec3(0.0f, 0.0f, 1.0f);
         mouse_delta = ImGui::GetIO().MouseDelta.x;
         if (state.camera_conf.look_dir.x > 0.0f)
         {
           mouse_delta = -mouse_delta;
         }
       }
-      if (!math::is_zero(object_movement_axis) && mouse_delta != 0.0f && state.selected_object != nullptr)
+      if (!fmath::is_zero(object_movement_axis) && mouse_delta != 0.0f && state.selected_object != nullptr)
       {
-        vec3 selected_origin = state.selected_object->get_origin();
+        fvec3 selected_origin = state.selected_object->get_origin();
         state.selected_object->set_origin(selected_origin + object_movement_axis * mouse_delta);
       }
     }

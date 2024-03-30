@@ -4,7 +4,7 @@
 
 namespace ray_tracer
 {
-  class editor_app final : public application
+  class feditor_app final : public fapplication
   {
   public:
     // Parent class: application interface
@@ -20,6 +20,6 @@ namespace ray_tracer
     void draw_scene();
     void present();
 
-    app_instance app_state;
+    fapp_instance app_state;
   };
 }

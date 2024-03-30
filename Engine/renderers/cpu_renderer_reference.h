@@ -6,20 +6,20 @@
 
 namespace engine
 {
-  class ENGINE_API cpu_renderer_reference : public cpu_renderer
+  class ENGINE_API rcpu_reference : public rcpu
   {
   public:
-    OBJECT_DECLARE(cpu_renderer_reference, cpu_renderer)
+    OBJECT_DECLARE(rcpu_reference, rcpu)
   
   private:
     virtual void job_update() override;
 
-    void render_chunk(const chunk& in_chunk);
+    void render_chunk(const fchunk& in_chunk);
 
-    vec3 fragment(float x, float y, const vec3& resolution);
+    fvec3 fragment(float x, float y, const fvec3& resolution);
 
-    vec3 enviroment_light(const ray& in_ray);
+    fvec3 enviroment_light(const fray& in_ray);
 
-    vec3 trace_ray(ray in_ray, uint32_t seed);
+    fvec3 trace_ray(fray in_ray, uint32_t seed);
   };
 }

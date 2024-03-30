@@ -10,12 +10,12 @@ struct ID3D10Blob;
 
 namespace engine
 {
-  class ENGINE_API vertex_shader_asset : public asset_base
+  class ENGINE_API avertex_shader : public aasset_base
   {
   public:
-    OBJECT_DECLARE(vertex_shader_asset, asset_base)
-    OBJECT_DECLARE_LOAD(vertex_shader_asset)
-    OBJECT_DECLARE_SAVE(vertex_shader_asset)
+    OBJECT_DECLARE(avertex_shader, aasset_base)
+    OBJECT_DECLARE_LOAD(avertex_shader)
+    OBJECT_DECLARE_SAVE(avertex_shader)
     OBJECT_DECLARE_VISITOR
 
     // JSON persistent

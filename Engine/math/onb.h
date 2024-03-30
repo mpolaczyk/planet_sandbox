@@ -8,11 +8,11 @@
 namespace engine
 {
   // OrthoNormal Base
-  struct ENGINE_API onb
+  struct ENGINE_API fonb
   {
-    vec3 local(const vec3& a) const;
-    void build_from_w(const vec3& in_w);
+    fvec3 local(const fvec3& a) const;
+    void build_from_w(const fvec3& in_w);
 
-    vec3 u, v, w;
+    fvec3 u, v, w;
   };
 }

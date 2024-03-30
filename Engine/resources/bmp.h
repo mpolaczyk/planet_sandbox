@@ -18,24 +18,24 @@ namespace engine
     bgra          // BMP file
   };
 
-  struct ENGINE_API bmp_pixel
+  struct ENGINE_API fbmp_pixel
   {
     uint8_t b = 0;
     uint8_t g = 0;
     uint8_t r = 0;
     uint8_t a = 255;
-    bmp_pixel() = default;
-    bmp_pixel(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) { }
-    explicit bmp_pixel(const vec3& color);
+    fbmp_pixel() = default;
+    fbmp_pixel(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) { }
+    explicit fbmp_pixel(const fvec3& color);
   };
 
 
-  struct ENGINE_API bmp_image
+  struct ENGINE_API fbmp_image
   {
-    bmp_image(uint32_t w, uint32_t h);
-    ~bmp_image();
+    fbmp_image(uint32_t w, uint32_t h);
+    ~fbmp_image();
 
-    void draw_pixel(uint32_t x, uint32_t y, const bmp_pixel* p, bmp_format format = bmp_format::bgra);
+    void draw_pixel(uint32_t x, uint32_t y, const fbmp_pixel* p, bmp_format format = bmp_format::bgra);
     void save_to_file(const char* image_file_name) const;
     uint8_t* get_buffer() const { return buffer; }
     uint32_t get_width() const { return width; }

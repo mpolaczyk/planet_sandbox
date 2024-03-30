@@ -11,10 +11,10 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(cpu_renderer, renderer_base, CPU renderer)
-  OBJECT_DEFINE_NOSPAWN(cpu_renderer)
+  OBJECT_DEFINE(rcpu, rrenderer_base, CPU renderer)
+  OBJECT_DEFINE_NOSPAWN(rcpu)
   
-  void cpu_renderer::destroy()
+  void rcpu::destroy()
   {
     cancel();
     worker_semaphore->release();
@@ -23,10 +23,10 @@ namespace engine
     delete worker_thread;
     delete job_state.img_rgb;
     delete job_state.img_bgr;
-    renderer_base::destroy();
+    rrenderer_base::destroy();
   }
   
-  void cpu_renderer::set_job_state(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config)
+  void rcpu::set_job_state(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config)
   {
     assert(in_scene != nullptr);
 
@@ -59,13 +59,13 @@ namespace engine
     // Create new buffers if they are missing
     if (job_state.img_rgb == nullptr)
     {
-      job_state.img_rgb = new bmp_image(job_state.image_width, job_state.image_height);
-      job_state.img_bgr = new bmp_image(job_state.image_width, job_state.image_height);
+      job_state.img_rgb = new fbmp_image(job_state.image_width, job_state.image_height);
+      job_state.img_bgr = new fbmp_image(job_state.image_width, job_state.image_height);
     }
     job_state.can_partial_update = false;
   }
 
-  void cpu_renderer::render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config)
+  void rcpu::render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config)
   {
     if (job_state.is_working) return;
     
@@ -74,24 +74,24 @@ namespace engine
     job_state.is_working = true;
     if(worker_thread == nullptr)
     {
-      worker_thread = new std::thread(&cpu_renderer::worker_function, this);
+      worker_thread = new std::thread(&rcpu::worker_function, this);
       worker_semaphore = new std::binary_semaphore(0);
     }
     worker_semaphore->release();
   }
 
-  void cpu_renderer::push_partial_update()
+  void rcpu::push_partial_update()
   {
     if(!job_state.can_partial_update) return;
     
-    dx11& dx = dx11::instance();
+    fdx11& dx = fdx11::instance();
     if (output_texture)
     {
       dx.update_texture_buffer(get_img_rgb(), job_state.image_width, job_state.image_height, output_texture);
     }
   }
 
-  void cpu_renderer::worker_function()
+  void rcpu::worker_function()
   {
     while (true)
     {
@@ -103,14 +103,14 @@ namespace engine
     }
   }
 
-  void cpu_renderer::job_pre_update()
+  void rcpu::job_pre_update()
   {
-    stats::reset();
+    fstats::reset();
     benchmark_render.start("Render");
 
     if(job_state.image_width != 0 && job_state.image_height != 0)
     {
-      dx11& dx = dx11::instance();
+      fdx11& dx = fdx11::instance();
       bool ret = dx.load_texture_from_buffer(get_img_rgb(), job_state.image_width, job_state.image_height, &output_srv, &output_texture);
       assert(ret);
     
@@ -118,29 +118,29 @@ namespace engine
     }
   }
 
-  void cpu_renderer::job_post_update()
+  void rcpu::job_post_update()
   {
     job_state.benchmark_render_time = benchmark_render.stop();
     job_state.is_working = false;
     
-    job_state.ray_count = stats::get_ray_count();
-    job_state.ray_triangle_intersection_count = stats::get_ray_triangle_intersection_count();
-    job_state.ray_box_intersection_count = stats::get_ray_box_intersection_count();
-    job_state.ray_object_intersection_count = stats::get_ray_object_intersection_count();
+    job_state.ray_count = fstats::get_ray_count();
+    job_state.ray_triangle_intersection_count = fstats::get_ray_triangle_intersection_count();
+    job_state.ray_box_intersection_count = fstats::get_ray_box_intersection_count();
+    job_state.ray_object_intersection_count = fstats::get_ray_object_intersection_count();
     
     if (save_output)
     {
       char image_file_name[300];  // Run-Time Check Failure #2 - Stack around the variable 'image_file_name' was corrupted.
-      std::sprintf(image_file_name, io::get_render_output_file_path().c_str());
+      std::sprintf(image_file_name, fio::get_render_output_file_path().c_str());
 
-      timer_instance benchmark_save;
+      ftimer_instance benchmark_save;
       benchmark_save.start("Save");
       save(image_file_name);
       job_state.benchmark_save_time = benchmark_save.stop();
     }
   }
   
-  void cpu_renderer::save(const char* file_name) const
+  void rcpu::save(const char* file_name) const
   {
     job_state.img_bgr->save_to_file(file_name);
   }

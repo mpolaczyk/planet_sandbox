@@ -14,10 +14,10 @@
 
 namespace engine
 {
-  template struct soft_asset_ptr<static_mesh_asset>;
-  template struct soft_asset_ptr<material_asset>;
-  template struct soft_asset_ptr<texture_asset>;
+  template struct fsoft_asset_ptr<astatic_mesh>;
+  template struct fsoft_asset_ptr<amaterial>;
+  template struct fsoft_asset_ptr<atexture>;
 
-  template struct soft_asset_ptr<pixel_shader_asset>;
-  template struct soft_asset_ptr<vertex_shader_asset>;
+  template struct fsoft_asset_ptr<apixel_shader>;
+  template struct fsoft_asset_ptr<avertex_shader>;
 }

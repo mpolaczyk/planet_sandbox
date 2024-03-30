@@ -7,7 +7,7 @@ namespace engine
 {
   static std::shared_ptr<spdlog::logger> s_console_logger;
 
-  void logger::init()
+  void flogger::init()
   {
     spdlog::set_pattern("[%H:%M:%S.%e] [thread %t] [%^%l%$] %v");
 
@@ -20,27 +20,27 @@ namespace engine
 #endif
   }
 
-  void logger::trace(const char* fmt)
+  void flogger::trace(const char* fmt)
   {
     s_console_logger->trace(fmt);
   }
-  void logger::debug(const char* fmt)
+  void flogger::debug(const char* fmt)
   {
     s_console_logger->debug(fmt);
   }
-  void logger::info(const char* fmt)
+  void flogger::info(const char* fmt)
   {
     s_console_logger->info(fmt);
   }
-  void logger::warn(const char* fmt)
+  void flogger::warn(const char* fmt)
   {
     s_console_logger->warn(fmt);
   }
-  void logger::error(const char* fmt)
+  void flogger::error(const char* fmt)
   {
     s_console_logger->error(fmt);
   }
-  void logger::critical(const char* fmt)
+  void flogger::critical(const char* fmt)
   {
     s_console_logger->critical(fmt);
   }

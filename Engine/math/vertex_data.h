@@ -7,19 +7,19 @@
 
 namespace engine
 {
-  ALIGN(64) struct ENGINE_API triangle_face
+  ALIGN(64) struct ENGINE_API ftriangle_face
   {
-    vec3 vertices[3];
-    vec3 pad1;
-    vec3 normals[3];  // vertex normals
-    vec3 pad2;
-    vec3 UVs[3]; //xy
-    vec3 pad3;
+    fvec3 vertices[3];
+    fvec3 pad1;
+    fvec3 normals[3];  // vertex normals
+    fvec3 pad2;
+    fvec3 UVs[3]; //xy
+    fvec3 pad3;
   };
 
-  struct ENGINE_API vertex_data
+  struct ENGINE_API fvertex_data
   {
-    vertex_data(const DirectX::XMFLOAT3& in_pos, const DirectX::XMFLOAT3& in_norm, const DirectX::XMFLOAT2& in_uv)
+    fvertex_data(const DirectX::XMFLOAT3& in_pos, const DirectX::XMFLOAT3& in_norm, const DirectX::XMFLOAT2& in_uv)
       : pos(in_pos), uv(in_uv), norm(in_norm) {}
 
     DirectX::XMFLOAT3 pos = {0.f, 0.f, 0.f};

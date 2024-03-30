@@ -9,7 +9,7 @@ namespace std {
 
 namespace engine
 {
-  struct ENGINE_API timer_instance
+  struct ENGINE_API ftimer_instance
   {
     inline void start(const std::string& name);
     inline uint64_t repeat(const std::string& name, uint32_t count, const std::function<void()>& func);
@@ -21,15 +21,15 @@ namespace engine
     std::string name;
   };
 
-  struct ENGINE_API scope_timer
+  struct ENGINE_API fscope_timer
   {
-    explicit scope_timer(const std::string& name);
-    ~scope_timer();
+    explicit fscope_timer(const std::string& name);
+    ~fscope_timer();
 
-    timer_instance state;
+    ftimer_instance state;
   };  
 
-  static timer_instance static_instance;
+  static ftimer_instance static_instance;
   static void static_start(const std::string& name)
   {
     static_instance.start(name);

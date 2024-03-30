@@ -7,12 +7,12 @@
 
 namespace engine
 {
-  class asset_base;
-  class persistence;
+  class aasset_base;
+  class fpersistence;
   
-  struct ENGINE_API soft_asset_ptr_base
+  struct ENGINE_API fsoft_asset_ptr_base
   {
-    friend class persistence;
+    friend class fpersistence;
     
   protected:
     // Persistent name, or the one used to discovery on the disk
@@ -26,8 +26,8 @@ namespace engine
   // No ref counting, no ownership
   // set_name can be called multiple times with different values, this will invalidate existing pointer and load different asset
   // FIX Using derives_from<asset_base> requires to include T. Forward declare does not work!
-  template<derives_from<asset_base> T>
-  struct ENGINE_API soft_asset_ptr : public soft_asset_ptr_base
+  template<derives_from<aasset_base> T>
+  struct ENGINE_API fsoft_asset_ptr : public fsoft_asset_ptr_base
   {
     void set_name(const std::string& in_name);
 

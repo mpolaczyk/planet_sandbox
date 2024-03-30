@@ -4,12 +4,12 @@
 
 namespace ray_tracer
 {
-  struct window_config;
+  struct fwindow_config;
 
-  class ui_persistence
+  class fui_persistence
   {
   public:
-    static nlohmann::json serialize(const window_config& value);
-    static void deserialize(const nlohmann::json& j, window_config& out_value);
+    static nlohmann::json serialize(const fwindow_config& value);
+    static void deserialize(const nlohmann::json& j, fwindow_config& out_value);
   };
 }

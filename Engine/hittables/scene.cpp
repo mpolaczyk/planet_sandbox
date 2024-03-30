@@ -12,35 +12,35 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(scene, hittable, Scene)
-  OBJECT_DEFINE_SPAWN(scene)
-  OBJECT_DEFINE_VISITOR(scene)
+  OBJECT_DEFINE(hscene, hhittable_base, Scene)
+  OBJECT_DEFINE_SPAWN(hscene)
+  OBJECT_DEFINE_VISITOR(hscene)
   
-  void scene::add(hittable* object)
+  void hscene::add(hhittable_base* object)
   {
     objects.push_back(object);
   }
 
-  void scene::remove(int object_id)
+  void hscene::remove(int object_id)
   {
     delete objects[object_id];
     objects.erase(objects.begin() + object_id);
   }
 
-  void scene::build_boxes()
+  void hscene::build_boxes()
   {
     LOG_TRACE("Scene: build boxes");
 
     assert(objects.size() > 0);
     // World collisions update
-    for (hittable* object : objects)
+    for (hhittable_base* object : objects)
     {
       assert(object != nullptr);
       object->get_bounding_box(object->bounding_box);
     }
   }
 
-  void scene::update_materials()
+  void hscene::update_materials()
   {
     LOG_TRACE("Scene: update materials");
 
@@ -48,20 +48,20 @@ namespace engine
 
     // Trigger resource loading for materials.
     // Soft ptr name change may invalidate it.
-    for (hittable* obj : objects)
+    for (hhittable_base* obj : objects)
     {
       obj->material_asset_ptr.get();
     }
   }
 
-  void scene::query_lights()
+  void hscene::query_lights()
   {
     LOG_TRACE("Scene: query lights");
 
     lights_num = 0;
-    for (hittable* object : objects)
+    for (hhittable_base* object : objects)
     {
-      const material_asset* mat = object->material_asset_ptr.get();
+      const amaterial* mat = object->material_asset_ptr.get();
       if (mat != nullptr && mat->is_light)
       {
         lights[lights_num] = object;
@@ -75,34 +75,34 @@ namespace engine
     }
   }
 
-  hittable* scene::get_random_light()
+  hhittable_base* hscene::get_random_light()
   {
     assert(lights_num < MAX_LIGHTS);
     // Get next light millions of times gives the same distribution as get true random light, but is 5 times cheaper
     static int32_t last_light = 0;
     last_light = (last_light + 1) % lights_num;
-    hittable* light = lights[last_light];
+    hhittable_base* light = lights[last_light];
     assert(light != nullptr);
     return light;
   }
 
 
 
-  bool scene::hit(const ray& in_ray, float t_max, hit_record& out_hit) const
+  bool hscene::hit(const fray& in_ray, float t_max, fhit_record& out_hit) const
   {
-    hit_record temp_rec;
+    fhit_record temp_rec;
     bool hit_anything = false;
     float closest_so_far = t_max;
 
-    for (hittable* object : objects)
+    for (hhittable_base* object : objects)
     {
 #if USE_TLAS
-      if (!object->bounding_box.hit(in_ray, math::t_min, t_max))
+      if (!object->bounding_box.hit(in_ray, fmath::t_min, t_max))
       {
         continue;
       }
 #endif USE_TLAS
-      stats::inc_ray_object_intersection();
+      fstats::inc_ray_object_intersection();
       // FIX use branchless
       if (object->hit(in_ray, closest_so_far, temp_rec))
       {
@@ -116,52 +116,52 @@ namespace engine
     return hit_anything;
   }
 
-  bool scene::get_bounding_box(aabb& out_box) const
+  bool hscene::get_bounding_box(faabb& out_box) const
   {
     if (objects.empty()) return false;
 
-    aabb temp_box;
+    faabb temp_box;
     bool first_box = true;
 
-    for (const hittable* object : objects)
+    for (const hhittable_base* object : objects)
     {
       if (!object->get_bounding_box(temp_box)) return false;
-      out_box = first_box ? temp_box : aabb::merge(out_box, temp_box);
+      out_box = first_box ? temp_box : faabb::merge(out_box, temp_box);
       first_box = false;
     }
 
     return true;
   }
 
-  inline uint32_t scene::get_hash() const
+  inline uint32_t hscene::get_hash() const
   {
     uint32_t a = 0;
-    for (const hittable* obj : objects)
+    for (const hhittable_base* obj : objects)
     {
-      a = hash::combine(a, obj->get_hash());
+      a = fhash::combine(a, obj->get_hash());
     }
     return a;
   }
 
-  scene* scene::clone() const
+  hscene* hscene::clone() const
   {
-    scene* new_scene = REG.copy_shallow<scene>(this);
+    hscene* new_scene = REG.copy_shallow<hscene>(this);
     // Deep copy
-    for (hittable* obj : objects)
+    for (hhittable_base* obj : objects)
     {
-      const class_object* class_o = obj->get_class();
-      hittable* new_obj = nullptr;
-      if (class_o == class_object::get_class_static())
+      const oclass_object* class_o = obj->get_class();
+      hhittable_base* new_obj = nullptr;
+      if (class_o == oclass_object::get_class_static())
       {
-        new_obj = REG.copy_shallow<scene>(static_cast<scene*>(obj));
+        new_obj = REG.copy_shallow<hscene>(static_cast<hscene*>(obj));
       }
-      else if (class_o == sphere::get_class_static())
+      else if (class_o == hsphere::get_class_static())
       {
-        new_obj = REG.copy_shallow<sphere>(static_cast<sphere*>(obj));
+        new_obj = REG.copy_shallow<hsphere>(static_cast<hsphere*>(obj));
       }
-      else if (class_o == static_mesh::get_class_static())
+      else if (class_o == hstatic_mesh::get_class_static())
       {
-        new_obj = REG.copy_shallow<static_mesh>(static_cast<static_mesh*>(obj));
+        new_obj = REG.copy_shallow<hstatic_mesh>(static_cast<hstatic_mesh*>(obj));
       }
       else
       {
@@ -175,11 +175,11 @@ namespace engine
   }
 
 
-  void scene::load_resources()
+  void hscene::load_resources()
   {
     LOG_TRACE("Scene: load resources");
 
-    for (hittable* object : objects)
+    for (hhittable_base* object : objects)
     {
       assert(object != nullptr);
       object->load_resources();
@@ -187,12 +187,12 @@ namespace engine
   }
 
 
-  void scene::pre_render()
+  void hscene::pre_render()
   {
     LOG_TRACE("Scene: pre-render");
 
     assert(objects.size() > 0);
-    for (hittable* object : objects)
+    for (hhittable_base* object : objects)
     {
       assert(object != nullptr);
       object->pre_render();

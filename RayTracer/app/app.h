@@ -22,39 +22,39 @@ namespace ray_tracer
      - holds resources
      - persistent
   */
-  class app_instance final
+  class fapp_instance final
   {
   public:
-    app_instance();
-    ~app_instance();
+    fapp_instance();
+    ~fapp_instance();
 
     // Scene state
-    scene* scene_root = nullptr;
-    camera_config camera_conf;
+    hscene* scene_root = nullptr;
+    fcamera_config camera_conf;
 
     // Rendering state
-    renderer_config renderer_conf;
+    frenderer_config renderer_conf;
   
     // OS window state
-    window_config window_conf;
+    fwindow_config window_conf;
 
     // Imgui window states
-    raytracer_window_model rw_model;
-    output_window_model ow_model;
-    scene_editor_window_model sew_model;
+    fraytracer_window_model rw_model;
+    foutput_window_model ow_model;
+    fscene_editor_window_model sew_model;
 
     // Runtime state
     bool is_running = true;
     int output_width = 0;
     int output_height = 0;
-    renderer_base* renderer = nullptr;
+    rrenderer_base* renderer = nullptr;
   
-    vec3 center_of_scene;
+    fvec3 center_of_scene;
     float distance_to_center_of_scene = 0.0f;
 
     float output_window_lmb_x = -1.0f;
     float output_window_lmb_y = -1.0f;
-    hittable* selected_object = nullptr;
+    hhittable_base* selected_object = nullptr;
     float move_speed = 5.0f;
 
     void load_scene_state();
@@ -68,21 +68,21 @@ namespace ray_tracer
   };
 
   // FIX Move this to app_instance class
-  void draw_camera_panel(camera_panel_model& model, app_instance& state);
-  void draw_renderer_panel(renderer_panel_model& model, app_instance& state);
-  void draw_managed_objects_panel(app_instance& state);
-  void draw_hotkeys_panel(app_instance& state);
-  void draw_raytracer_window(raytracer_window_model& model, app_instance& state);
-  void draw_output_window(output_window_model& model, app_instance& state);
-  void draw_scene_editor_window(scene_editor_window_model& model, app_instance& state);
-  void draw_new_object_panel(new_object_panel_model& model, app_instance& state);
+  void draw_camera_panel(fcamera_panel_model& model, fapp_instance& state);
+  void draw_renderer_panel(frenderer_panel_model& model, fapp_instance& state);
+  void draw_managed_objects_panel(fapp_instance& state);
+  void draw_hotkeys_panel(fapp_instance& state);
+  void draw_raytracer_window(fraytracer_window_model& model, fapp_instance& state);
+  void draw_output_window(foutput_window_model& model, fapp_instance& state);
+  void draw_scene_editor_window(fscene_editor_window_model& model, fapp_instance& state);
+  void draw_new_object_panel(fnew_object_panel_model& model, fapp_instance& state);
 
   template<typename T>
-  void draw_selection_combo(selection_combo_model<T>& model, app_instance& state, const char* name, std::function<bool(const T*)> predicate, const T* default_selected_object = nullptr);
+  void draw_selection_combo(fselection_combo_model<T>& model, fapp_instance& state, const char* name, std::function<bool(const T*)> predicate, const T* default_selected_object = nullptr);
 
-  void draw_delete_object_panel(delete_object_panel_model& model, app_instance& state);
+  void draw_delete_object_panel(fdelete_object_panel_model& model, fapp_instance& state);
 
-  void update_default_spawn_position(app_instance& state);
+  void update_default_spawn_position(fapp_instance& state);
 
-  void handle_input(app_instance& state);
+  void handle_input(fapp_instance& state);
 }

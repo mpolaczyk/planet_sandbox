@@ -18,7 +18,7 @@
 
 namespace ray_tracer
 {
-  void draw_raytracer_window(raytracer_window_model& model, app_instance& state)
+  void draw_raytracer_window(fraytracer_window_model& model, fapp_instance& state)
   {
     ImGui::Begin("RAYTRACER", nullptr);
 
@@ -38,7 +38,7 @@ namespace ray_tracer
     ImGui::End();
   }
 
-  void draw_camera_panel(camera_panel_model& model, app_instance& state)
+  void draw_camera_panel(fcamera_panel_model& model, fapp_instance& state)
   {
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
@@ -59,7 +59,7 @@ namespace ray_tracer
     ImGui::InputFloat("Aperture", &state.camera_conf.aperture, 0.1f, 1.0f, "%.2f");
   }
 
-  void draw_renderer_panel(renderer_panel_model& model, app_instance& state)
+  void draw_renderer_panel(frenderer_panel_model& model, fapp_instance& state)
   {
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
@@ -68,11 +68,11 @@ namespace ray_tracer
   
     // FIX this does not work for class objects!
     // co->is_child_of(renderer_base::get_class_static());
-    model.r_model.objects = REG.find_all<const class_object>([](const class_object* co) -> bool { return co->get_parent_class_name() == cpu_renderer::get_class_static()->get_class_name(); });  
-    model.r_model.objects.push_back(gpu_renderer::get_class_static());
+    model.r_model.objects = REG.find_all<const oclass_object>([](const oclass_object* co) -> bool { return co->get_parent_class_name() == rcpu::get_class_static()->get_class_name(); });  
+    model.r_model.objects.push_back(rgpu::get_class_static());
   
-    draw_selection_combo<class_object>(model.r_model, state, "Renderer class",
-      [=](const class_object* obj) -> bool { return true; }, state.renderer_conf.type);
+    draw_selection_combo<oclass_object>(model.r_model, state, "Renderer class",
+      [=](const oclass_object* obj) -> bool { return true; }, state.renderer_conf.type);
     if(model.r_model.selected_object != state.renderer_conf.type)
     {
       state.renderer_conf.new_type = model.r_model.selected_object;
@@ -107,10 +107,10 @@ namespace ray_tracer
         ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), name);
       }
     
-      cpu_renderer* cpu_r = nullptr;
-      if(state.renderer->is_child_of(cpu_renderer::get_class_static()))
+      rcpu* cpu_r = nullptr;
+      if(state.renderer->is_child_of(rcpu::get_class_static()))
       {
-        cpu_r = static_cast<cpu_renderer*>(state.renderer);
+        cpu_r = static_cast<rcpu*>(state.renderer);
       }
       if(cpu_r)
       {
@@ -130,7 +130,7 @@ namespace ray_tracer
         float froc = static_cast<float>(roc);
         ImGui::Text("Rays: %lld", rc);
         {
-          fpe_disabled_scope fpe;
+          ffpe_disabled_scope fpe;
           ImGui::Text("Ray-triangle: %lld  percentage: %f", rtc, frtc / frc);
           ImGui::Text("Ray-box: %lld percentage: %f", rbc, frbc / frc);
           ImGui::Text("Ray-object: %lld percentage: %f", roc, froc / frc);
@@ -148,15 +148,15 @@ namespace ray_tracer
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MATERIALS");
     ImGui::Separator();
   
-    model.m_model.objects = REG.get_all_by_type<const material_asset>();
-    draw_selection_combo<material_asset>(model.m_model, state, "Material", [=](const material_asset* obj) -> bool { return true; });
+    model.m_model.objects = REG.get_all_by_type<const amaterial>();
+    draw_selection_combo<amaterial>(model.m_model, state, "Material", [=](const amaterial* obj) -> bool { return true; });
     if (model.m_model.selected_object != nullptr)
     {
-      const_cast<material_asset*>(model.m_model.selected_object)->accept(draw_edit_panel());
+      const_cast<amaterial*>(model.m_model.selected_object)->accept(fdraw_edit_panel());
     }
   }
 
-  void draw_hotkeys_panel(app_instance& state)
+  void draw_hotkeys_panel(fapp_instance& state)
   {
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CONTROLS");
@@ -171,7 +171,7 @@ namespace ray_tracer
     ImGui::Text("ZXC + mouse - Object movement");
   }
 
-  void draw_output_window(output_window_model& model, app_instance& state)
+  void draw_output_window(foutput_window_model& model, fapp_instance& state)
   {
     if (state.renderer->output_texture != nullptr)
     {
@@ -194,7 +194,7 @@ namespace ray_tracer
     }
   }
 
-  void draw_scene_editor_window(scene_editor_window_model& model, app_instance& state)
+  void draw_scene_editor_window(fscene_editor_window_model& model, fapp_instance& state)
   {
     ImGui::Begin("SCENE", nullptr);
   
@@ -214,11 +214,11 @@ namespace ray_tracer
     draw_delete_object_panel(model.d_model, state);
 
     int num_objects = (int)state.scene_root->objects.size();
-    if (ImGui::BeginListBox("Objects", ImVec2(-FLT_MIN, math::min1(20, (float)num_objects + 1) * ImGui::GetTextLineHeightWithSpacing())))
+    if (ImGui::BeginListBox("Objects", ImVec2(-FLT_MIN, fmath::min1(20, (float)num_objects + 1) * ImGui::GetTextLineHeightWithSpacing())))
     {
       for (int n = 0; n < num_objects; n++)
       {
-        hittable* obj = state.scene_root->objects[n];
+        hhittable_base* obj = state.scene_root->objects[n];
         if (state.selected_object != nullptr && obj == state.selected_object)
         {
           model.m_model.selected_id = -1;
@@ -245,13 +245,13 @@ namespace ray_tracer
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SELECTED");
       ImGui::Separator();
 
-      hittable* selected_obj = state.scene_root->objects[model.selected_id];
+      hhittable_base* selected_obj = state.scene_root->objects[model.selected_id];
       state.selected_object = selected_obj;
-      selected_obj->accept(draw_edit_panel());
+      selected_obj->accept(fdraw_edit_panel());
 
-      model.m_model.objects = REG.get_all_by_type<const material_asset>();
-      draw_selection_combo<material_asset>(model.m_model, state, "Material",
-        [=](const material_asset* obj) -> bool { return true; },
+      model.m_model.objects = REG.get_all_by_type<const amaterial>();
+      draw_selection_combo<amaterial>(model.m_model, state, "Material",
+        [=](const amaterial* obj) -> bool { return true; },
         selected_obj->material_asset_ptr.get());
     
       if (model.m_model.selected_object != nullptr)
@@ -265,7 +265,7 @@ namespace ray_tracer
     ImGui::End();
   }
 
-  void draw_new_object_panel(new_object_panel_model& model, app_instance& state)
+  void draw_new_object_panel(fnew_object_panel_model& model, fapp_instance& state)
   {
     if (ImGui::Button("Add new"))
     {
@@ -276,13 +276,13 @@ namespace ray_tracer
     if (ImGui::BeginPopupModal("New object?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {
       model.c_model.objects = REG.get_classes();
-      std::string hittable_class_name = hittable::get_class_static()->get_class_name();
+      std::string hittable_class_name = hhittable_base::get_class_static()->get_class_name();
 
-      draw_selection_combo<class_object>(model.c_model, state, "Class", [=](const class_object* obj) -> bool { return obj->get_parent_class_name() == hittable_class_name; });
+      draw_selection_combo<oclass_object>(model.c_model, state, "Class", [=](const oclass_object* obj) -> bool { return obj->get_parent_class_name() == hittable_class_name; });
 
       if (ImGui::Button("Add", ImVec2(120, 0)) && model.c_model.selected_object != nullptr)
       {
-        state.scene_root->add(REG.spawn_from_class<hittable>(model.c_model.selected_object));
+        state.scene_root->add(REG.spawn_from_class<hhittable_base>(model.c_model.selected_object));
         ImGui::CloseCurrentPopup();
       }
       ImGui::SetItemDefaultFocus();
@@ -296,7 +296,7 @@ namespace ray_tracer
   }
 
   template<typename T>
-  void draw_selection_combo(selection_combo_model<T>& model, app_instance& state, const char* name, std::function<bool(const T*)> predicate, const T* default_selected_object)
+  void draw_selection_combo(fselection_combo_model<T>& model, fapp_instance& state, const char* name, std::function<bool(const T*)> predicate, const T* default_selected_object)
   {
     if (model.objects.size() > 0)
     {
@@ -351,7 +351,7 @@ namespace ray_tracer
     }
   }
 
-  void draw_delete_object_panel(delete_object_panel_model& model, app_instance& state)
+  void draw_delete_object_panel(fdelete_object_panel_model& model, fapp_instance& state)
   {
     if (ImGui::Button("Delete selected"))
     {
@@ -361,11 +361,11 @@ namespace ray_tracer
 
     if (ImGui::BeginPopupModal("Delete object?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {
-      hittable* selected_obj = state.scene_root->objects[model.selected_id];
+      hhittable_base* selected_obj = state.scene_root->objects[model.selected_id];
       if (selected_obj != nullptr)
       {
         ImGui::BeginDisabled(true);
-        selected_obj->accept(draw_edit_panel());
+        selected_obj->accept(fdraw_edit_panel());
         ImGui::EndDisabled();
 
         if (ImGui::Button("Delete", ImVec2(120, 0)))
@@ -384,13 +384,13 @@ namespace ray_tracer
     }
   }
 
-  void draw_managed_objects_panel(app_instance& state)
+  void draw_managed_objects_panel(fapp_instance& state)
   {
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MANAGED OBJECTS");
     ImGui::Separator();
 
-    const std::vector<object*>& objects = REG.get_all();
+    const std::vector<oobject*>& objects = REG.get_all();
 
     int num_objects = (int)objects.size();
     if (ImGui::BeginListBox("Assets", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))

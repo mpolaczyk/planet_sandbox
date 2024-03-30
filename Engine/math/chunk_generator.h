@@ -18,7 +18,7 @@ namespace engine
     "Rectangles"
   };
 
-  struct chunk
+  struct fchunk
   {
     int id = 0;
     int x = 0;
@@ -27,11 +27,11 @@ namespace engine
     int size_y = 0;
   };
 
-  struct chunk_generator
+  struct fchunk_generator
   {
-    static void generate_chunks(chunk_strategy_type strategy, uint32_t num, uint32_t image_width, uint32_t image_height, std::vector<chunk>& out_chunks);
+    static void generate_chunks(chunk_strategy_type strategy, uint32_t num, uint32_t image_width, uint32_t image_height, std::vector<fchunk>& out_chunks);
 
   private:
-    static void generate_rectangles(uint32_t num_x, uint32_t num_y, uint32_t image_width, uint32_t image_height, std::vector<chunk>& out_chunks);
+    static void generate_rectangles(uint32_t num_x, uint32_t num_y, uint32_t image_width, uint32_t image_height, std::vector<fchunk>& out_chunks);
   };
 }

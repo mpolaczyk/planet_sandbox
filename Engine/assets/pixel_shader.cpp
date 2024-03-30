@@ -18,20 +18,20 @@
 
 namespace engine
 {
-  OBJECT_DEFINE(pixel_shader_asset, asset_base, Pixel shader asset)
-  OBJECT_DEFINE_SPAWN(pixel_shader_asset)
-  OBJECT_DEFINE_VISITOR(pixel_shader_asset)
+  OBJECT_DEFINE(apixel_shader, aasset_base, Pixel shader asset)
+  OBJECT_DEFINE_SPAWN(apixel_shader)
+  OBJECT_DEFINE_VISITOR(apixel_shader)
   
-  bool pixel_shader_asset::load(pixel_shader_asset* instance, const std::string& name)
+  bool apixel_shader::load(apixel_shader* instance, const std::string& name)
   {
-    asset_base::load(instance, name);
+    aasset_base::load(instance, name);
 
     assert(instance);
     LOG_DEBUG("Loading pixel shader: {0}", name);
 
     std::ostringstream oss;
     oss << name << ".json";
-    const std::string file_path = io::get_shader_file_path(oss.str().c_str());
+    const std::string file_path = fio::get_shader_file_path(oss.str().c_str());
     std::ifstream input_stream(file_path.c_str());
     if (input_stream.fail())
     {
@@ -49,7 +49,7 @@ namespace engine
       return false;
     }
     
-    HRESULT result = dx11::instance().device->CreatePixelShader(instance->shader_blob->GetBufferPointer(), instance->shader_blob->GetBufferSize(), nullptr, &instance->shader);
+    HRESULT result = fdx11::instance().device->CreatePixelShader(instance->shader_blob->GetBufferPointer(), instance->shader_blob->GetBufferSize(), nullptr, &instance->shader);
     if (FAILED(result))
     {
       LOG_ERROR("Unable to create pixel shader: {0}", instance->shader_file_name);

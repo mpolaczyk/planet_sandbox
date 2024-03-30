@@ -5,16 +5,16 @@
 
 namespace engine
 {
-  vec3 onb::local(const vec3& a) const
+  fvec3 fonb::local(const fvec3& a) const
   {
     return a.x * u + a.y * v + a.z * w;
   }
 
-  void onb::build_from_w(const vec3& in_w)
+  void fonb::build_from_w(const fvec3& in_w)
   {
-    w = math::normalize(in_w);
-    vec3 a = (fabs(w.x) > 0.9f) ? vec3(0, 1, 0) : vec3(1, 0, 0);
-    v = math::normalize(math::cross(w, a));
-    u = math::cross(w, v);
+    w = fmath::normalize(in_w);
+    fvec3 a = (fabs(w.x) > 0.9f) ? fvec3(0, 1, 0) : fvec3(1, 0, 0);
+    v = fmath::normalize(fmath::cross(w, a));
+    u = fmath::cross(w, v);
   }
 }

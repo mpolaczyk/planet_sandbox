@@ -9,55 +9,55 @@
 
 namespace engine
 {
-  struct ENGINE_API pdf
+  struct ENGINE_API fpdf
   {
     // Return a random direction weighted by the internal PDF distribution
-    virtual vec3 get_direction() const = 0;
+    virtual fvec3 get_direction() const = 0;
 
     // Return the corresponding PDF distribution value in that direction
-    virtual float get_value(const vec3& direction) const = 0;
+    virtual float get_value(const fvec3& direction) const = 0;
   };
 
 
-  struct ENGINE_API sphere_pdf : public pdf
+  struct ENGINE_API fsphere_pdf : public fpdf
   {
-    sphere_pdf() {}
+    fsphere_pdf() {}
 
-    virtual vec3 get_direction() const override
+    virtual fvec3 get_direction() const override
     {
-      return random_cache::get_vec3();
+      return frandom_cache::get_vec3();
     }
 
-    virtual float get_value(const vec3& direction) const override
+    virtual float get_value(const fvec3& direction) const override
     {
-      return 1.0f / (4.0f * math::pi);
+      return 1.0f / (4.0f * fmath::pi);
     }
   };
 
-  struct ENGINE_API cosine_pdf : public pdf
+  struct ENGINE_API fcosine_pdf : public fpdf
   {
-    cosine_pdf() {}
+    fcosine_pdf() {}
 
-    explicit cosine_pdf(const vec3& w)
+    explicit fcosine_pdf(const fvec3& w)
     {
       uvw.build_from_w(w);
     }
 
-    virtual vec3 get_direction() const override
+    virtual fvec3 get_direction() const override
     {
-      return uvw.local(random_cache::get_cosine_direction());
+      return uvw.local(frandom_cache::get_cosine_direction());
     }
 
-    virtual float get_value(const vec3& direction) const override
+    virtual float get_value(const fvec3& direction) const override
     {
-      float cosine_theta = math::dot(math::normalize(direction), uvw.w);
-      return (cosine_theta <= 0) ? 0 : cosine_theta / math::pi;
+      float cosine_theta = fmath::dot(fmath::normalize(direction), uvw.w);
+      return (cosine_theta <= 0) ? 0 : cosine_theta / fmath::pi;
     }
 
-    onb uvw;
+    fonb uvw;
   };
 
-  //struct ENGINE_API hittable_pdf : public pdf
+  //struct ENGINE_API fhittable_pdf : public pdf
   //{
   //public:
   //  hittable_pdf(const hittable* _objects, const vec3& _origin)
@@ -79,32 +79,32 @@ namespace engine
   //  vec3 origin;
   //};
 
-  class ENGINE_API mixture_pdf : public pdf
+  class ENGINE_API fmixture_pdf : public fpdf
   {
   public:
-    mixture_pdf(pdf* p0, pdf* p1, float ratio)
+    fmixture_pdf(fpdf* p0, fpdf* p1, float ratio)
       : ratio(ratio)
     {
       p[0] = p0;
       p[1] = p1;
     }
 
-    float get_value(const vec3& direction) const override
+    float get_value(const fvec3& direction) const override
     {
       return 0.5f * p[0]->get_value(direction)
         + 0.5f * p[1]->get_value(direction);
     }
 
-    vec3 get_direction() const override
+    fvec3 get_direction() const override
     {
-      if (random_cache::get_float_0_1() > ratio)
+      if (frandom_cache::get_float_0_1() > ratio)
         return p[0]->get_direction();
       else
         return p[1]->get_direction();
     }
 
   public:
-    pdf* p[2];
+    fpdf* p[2];
     float ratio = 0.5f;
   };
 }

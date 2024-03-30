@@ -7,12 +7,12 @@
 
 namespace engine
 {
-  class ENGINE_API texture_asset : public asset_base
+  class ENGINE_API atexture : public aasset_base
   {
   public:
-    OBJECT_DECLARE(texture_asset, asset_base)
-    OBJECT_DECLARE_LOAD(texture_asset)
-    OBJECT_DECLARE_SAVE(texture_asset)
+    OBJECT_DECLARE(atexture, aasset_base)
+    OBJECT_DECLARE_LOAD(atexture)
+    OBJECT_DECLARE_SAVE(atexture)
     OBJECT_DECLARE_VISITOR
 
     // JSON persistent

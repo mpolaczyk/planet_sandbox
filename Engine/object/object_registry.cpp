@@ -6,7 +6,7 @@
 
 namespace engine
 {
-  object_registry::~object_registry()
+  fobject_registry::~fobject_registry()
   {
     for (int i = 0; i < objects.size(); i++)
     {
@@ -18,30 +18,30 @@ namespace engine
     }
   }
 
-  bool object_registry::is_valid(int id) const
+  bool fobject_registry::is_valid(int id) const
   {
     return ((id >= 0 && id < objects.size()) && (objects[id] != nullptr));
   }
 
-  std::string object_registry::get_custom_display_name(int id) const
+  std::string fobject_registry::get_custom_display_name(int id) const
   {
     assert(is_valid(id));
     return object_custom_display_names[id];
   }
 
-  void object_registry::set_custom_display_name(int id, const std::string& name)
+  void fobject_registry::set_custom_display_name(int id, const std::string& name)
   {
     assert(is_valid(id));
     object_custom_display_names[id] = name;
   }
 
-  const class_object* object_registry::get_class(int id) const
+  const oclass_object* fobject_registry::get_class(int id) const
   {
     assert(is_valid(id));
     return object_classes[id];
   }
 
-  void object_registry::destroy(int id)
+  void fobject_registry::destroy(int id)
   {
     assert(is_valid(id));
     delete objects[id];
@@ -50,10 +50,10 @@ namespace engine
     object_classes[id] = nullptr;
   }
 
-  std::vector<object*> object_registry::get_all(bool no_nullptr)
+  std::vector<oobject*> fobject_registry::get_all(bool no_nullptr)
   {
     // Warning, null objects may be filtered, indexes in the return vector will not match the runtime id
-    std::vector<object*> ans;
+    std::vector<oobject*> ans;
     for (int i = 0; i < objects.size(); i++)
     {
       if (no_nullptr && !is_valid(i))
@@ -65,7 +65,7 @@ namespace engine
     return ans;
   }
 
-  std::vector<int> object_registry::get_all_ids(const class_object* type, bool no_nullptr) const
+  std::vector<int> fobject_registry::get_all_ids(const oclass_object* type, bool no_nullptr) const
   {
     std::vector<int> ans;
     for (int i = 0; i < object_classes.size(); i++)
@@ -82,7 +82,7 @@ namespace engine
     return ans;
   }
 
-  const class_object* object_registry::find_class(const std::string& name) const
+  const oclass_object* fobject_registry::find_class(const std::string& name) const
   {
     for (int i = 0; i < class_objects.size(); i++)
     {
@@ -94,14 +94,14 @@ namespace engine
     return nullptr;
   }
 
-  std::vector<const class_object*> object_registry::get_classes() const
+  std::vector<const oclass_object*> fobject_registry::get_classes() const
   {
     return class_objects;
   }
 
-  const class_object* object_registry::register_class(const std::string& class_name, const std::string& parent_class_name, spawn_instance_func_type spawn_func)
+  const oclass_object* fobject_registry::register_class(const std::string& class_name, const std::string& parent_class_name, spawn_instance_func_type spawn_func)
   {
-    class_object* new_class = new class_object();
+    oclass_object* new_class = new oclass_object();
     new_class->class_name = class_name;
     new_class->parent_class_name = parent_class_name;
     new_class->spawn_instance_func = spawn_func;

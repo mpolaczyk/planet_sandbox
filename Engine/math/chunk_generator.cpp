@@ -3,7 +3,7 @@
 
 namespace engine
 {
-  void chunk_generator::generate_chunks(chunk_strategy_type strategy, uint32_t num, uint32_t image_width, uint32_t image_height, std::vector<chunk>& out_chunks)
+  void fchunk_generator::generate_chunks(chunk_strategy_type strategy, uint32_t num, uint32_t image_width, uint32_t image_height, std::vector<fchunk>& out_chunks)
   {
     uint32_t snum = (uint32_t)sqrt(num);
     switch (strategy)
@@ -34,14 +34,14 @@ namespace engine
     }
   }
 
-  void chunk_generator::generate_rectangles(uint32_t num_x, uint32_t num_y, uint32_t image_width, uint32_t image_height, std::vector<chunk>& out_chunks)
+  void fchunk_generator::generate_rectangles(uint32_t num_x, uint32_t num_y, uint32_t image_width, uint32_t image_height, std::vector<fchunk>& out_chunks)
   {
     uint32_t n = 0;
     for (uint32_t ny = 0; ny < num_y; ny++)
     {
       for (uint32_t nx = 0; nx < num_x; nx++)
       {
-        chunk ch;
+        fchunk ch;
         ch.id = n;
         // Divide axis as float, find range between (n, n+1) 
         ch.x = num_x == 1 ? 0 : (int)((float)nx * (float)image_width / (float)num_x);

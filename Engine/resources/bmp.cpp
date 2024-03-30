@@ -9,25 +9,25 @@
 
 namespace engine
 {
-  bmp_pixel::bmp_pixel(const vec3& color)
+  fbmp_pixel::fbmp_pixel(const fvec3& color)
   {
     // Detect NaNs
     assert(!isnan(color.x));
     assert(!isnan(color.y));
     assert(!isnan(color.z));
-    r = static_cast<uint8_t>(math::clamp(color.x * 255.0f, 0.0f, 255.0f));
-    g = static_cast<uint8_t>(math::clamp(color.y * 255.0f, 0.0f, 255.0f));
-    b = static_cast<uint8_t>(math::clamp(color.z * 255.0f, 0.0f, 255.0f));
+    r = static_cast<uint8_t>(fmath::clamp(color.x * 255.0f, 0.0f, 255.0f));
+    g = static_cast<uint8_t>(fmath::clamp(color.y * 255.0f, 0.0f, 255.0f));
+    b = static_cast<uint8_t>(fmath::clamp(color.z * 255.0f, 0.0f, 255.0f));
   }
 
 
-  bmp_image::bmp_image(uint32_t w, uint32_t h)
+  fbmp_image::fbmp_image(uint32_t w, uint32_t h)
     : width(w), height(h)
   {
     buffer = (uint8_t*)malloc(width * height * BYTES_PER_PIXEL * sizeof(uint8_t));
   }
 
-  bmp_image::~bmp_image()
+  fbmp_image::~fbmp_image()
   {
     if (width > 0 && height > 0 && buffer != nullptr)
     {
@@ -35,7 +35,7 @@ namespace engine
     }
   }
 
-  uint8_t* bmp_image::create_file_header(uint32_t height, uint32_t stride) const
+  uint8_t* fbmp_image::create_file_header(uint32_t height, uint32_t stride) const
   {
     uint32_t file_size = FILE_HEADER_SIZE + INFO_HEADER_SIZE + (stride * height);
 
@@ -57,7 +57,7 @@ namespace engine
     return file_header;
   }
 
-  uint8_t* bmp_image::create_info_header(uint32_t height, uint32_t width) const
+  uint8_t* fbmp_image::create_info_header(uint32_t height, uint32_t width) const
   {
     static uint8_t info_header[] = {
         0,0,0,0, /// header size
@@ -88,7 +88,7 @@ namespace engine
     return info_header;
   }
 
-  void bmp_image::draw_pixel(uint32_t x, uint32_t y, const bmp_pixel* p, bmp_format format)
+  void fbmp_image::draw_pixel(uint32_t x, uint32_t y, const fbmp_pixel* p, bmp_format format)
   {
     assert(x < width);
     assert(y < height);
@@ -96,16 +96,16 @@ namespace engine
     uint32_t pixel_addr = y * width * BYTES_PER_PIXEL + x * BYTES_PER_PIXEL;
     if (format == bmp_format::rgba)
     {
-      bmp_pixel p2(p->b, p->g, p->r);
-      memcpy(buffer + pixel_addr, &p2, sizeof(bmp_pixel));
+      fbmp_pixel p2(p->b, p->g, p->r);
+      memcpy(buffer + pixel_addr, &p2, sizeof(fbmp_pixel));
     }
     else if (format == bmp_format::bgra)
     {
-      memcpy(buffer + pixel_addr, p, sizeof(bmp_pixel));
+      memcpy(buffer + pixel_addr, p, sizeof(fbmp_pixel));
     }
   }
 
-  void bmp_image::save_to_file(const char* image_file_name) const
+  void fbmp_image::save_to_file(const char* image_file_name) const
   {
     assert(image_file_name != nullptr);
     const uint8_t padding[3] = { 0, 0, 0 };

@@ -9,15 +9,15 @@
 
 namespace engine
 {
-  class ENGINE_API camera_config
+  class ENGINE_API fcamera_config
   {
   public:
-    camera_config() = default;
-    camera_config(const vec3& look_from, const vec3& look_dir, float field_of_view, float aspect_ratio_w, float aspect_ratio_h, float aperture, float dist_to_focus, float type = 0.0f)
+    fcamera_config() = default;
+    fcamera_config(const fvec3& look_from, const fvec3& look_dir, float field_of_view, float aspect_ratio_w, float aspect_ratio_h, float aperture, float dist_to_focus, float type = 0.0f)
       : look_from(look_from), look_dir(look_dir), field_of_view(field_of_view), aspect_ratio_w(aspect_ratio_w), aspect_ratio_h(aspect_ratio_h), aperture(aperture), dist_to_focus(dist_to_focus), type(type)
     { }
 
-    static camera_config lerp(const camera_config& a, const camera_config& b, float f);
+    static fcamera_config lerp(const fcamera_config& a, const fcamera_config& b, float f);
 
     uint32_t get_hash() const;
 
@@ -31,8 +31,8 @@ namespace engine
     void rotate(float roll, float pitch);
 
     // Persistent members
-    vec3 look_from;
-    vec3 look_dir;
+    fvec3 look_from;
+    fvec3 look_dir;
     float field_of_view = 90.0f;
     float aspect_ratio_h = 9.0f;
     float aspect_ratio_w = 16.0f;
@@ -41,25 +41,25 @@ namespace engine
     float type = 0.0f;           // 0.0f perspective camera, 1.0f orthographic camera
   };
 
-  class ENGINE_API camera
+  class ENGINE_API fcamera
   {
   public:
 
-    void configure(const camera_config& in_camera_config);
+    void configure(const fcamera_config& in_camera_config);
 
-    ray inline get_ray(float uu, float vv) const;
+    fray inline get_ray(float uu, float vv) const;
 
     inline uint32_t get_hash() const;
 
   private:
-    camera_config camera_conf;
+    fcamera_config camera_conf;
     float lens_radius = 0.0f;
     float viewport_height = 2.0f;
     float viewport_width = 3.5f;
-    plane f;  // focus plane at origin
-    plane c;  // camera plane at origin
-    vec3 w;   // back from camera vector
-    vec3 u;   // right vector
-    vec3 v;   // up vector
+    fplane f;  // focus plane at origin
+    fplane c;  // camera plane at origin
+    fvec3 w;   // back from camera vector
+    fvec3 u;   // right vector
+    fvec3 v;   // up vector
   };
 }

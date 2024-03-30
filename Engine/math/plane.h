@@ -6,11 +6,11 @@
 
 namespace engine
 {
-  struct ENGINE_API plane
+  struct ENGINE_API fplane
   {
-    vec3 horizontal;            // size horizontal
-    vec3 vertical;              // size vertical
-    vec3 lower_left_corner;   // world space coordinates
-    vec3 get_point(float u, float v) const;
+    fvec3 horizontal;            // size horizontal
+    fvec3 vertical;              // size vertical
+    fvec3 lower_left_corner;   // world space coordinates
+    fvec3 get_point(float u, float v) const;
   };
 }

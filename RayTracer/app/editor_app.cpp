@@ -20,18 +20,18 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
  
 namespace ray_tracer
 {
-  LRESULT editor_app::wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+  LRESULT feditor_app::wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   {
     if(ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
     {
       return true;
     }
-    return application::wnd_proc(hWnd, msg, wParam, lParam);
+    return fapplication::wnd_proc(hWnd, msg, wParam, lParam);
   }
   
-  void editor_app::init()
+  void feditor_app::init()
   {
-    application::init();
+    fapplication::init();
     
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -39,7 +39,7 @@ namespace ray_tracer
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     {
       // overwrite imgui config file name
-      std::string imgui_ini_filename = engine::io::get_imgui_file_path();
+      std::string imgui_ini_filename = engine::fio::get_imgui_file_path();
       char* buff = new char[imgui_ini_filename.size() + 1];
       strcpy(buff, imgui_ini_filename.c_str());  // returning char* is fucked up
       io.IniFilename = buff;
@@ -55,7 +55,7 @@ namespace ray_tracer
   
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
-    dx11& dx = dx11::instance();
+    fdx11& dx = fdx11::instance();
     ImGui_ImplDX11_Init(dx.device, dx.device_context);
   
     // Load persistent state
@@ -64,7 +64,7 @@ namespace ray_tracer
     app_state.load_assets();
     app_state.load_scene_state();
     app_state.scene_root->load_resources();
-    app_state.renderer = REG.spawn_from_class<renderer_base>(app_state.renderer_conf.type);
+    app_state.renderer = REG.spawn_from_class<rrenderer_base>(app_state.renderer_conf.type);
     ::SetWindowPos(hwnd, NULL, app_state.window_conf.x, app_state.window_conf.y, app_state.window_conf.w, app_state.window_conf.h, NULL);
   
     // Auto render on startup
@@ -73,7 +73,7 @@ namespace ray_tracer
     LOG_INFO("Loading done, starting the main loop");
   }
 
-  void editor_app::run()
+  void feditor_app::run()
   {
     while (app_state.is_running)
     {
@@ -95,7 +95,7 @@ namespace ray_tracer
     }
   }
   
-  void editor_app::cleanup()
+  void feditor_app::cleanup()
   {
     app_state.save_window_state();
   
@@ -103,10 +103,10 @@ namespace ray_tracer
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
     
-    application::cleanup();
+    fapplication::cleanup();
   }
   
-  void editor_app::pump_messages()
+  void feditor_app::pump_messages()
   {
     // Poll and handle messages (inputs, window resize, etc.)
     // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -125,7 +125,7 @@ namespace ray_tracer
     }
   }
   
-  void editor_app::manage_renderer()
+  void feditor_app::manage_renderer()
   {
     // Respawn the renderer if the type needs to be different
     if (app_state.renderer->get_class() != app_state.renderer_conf.new_type && app_state.renderer_conf.new_type != nullptr)
@@ -143,13 +143,13 @@ namespace ray_tracer
   
       // Add new one
       auto new_class = app_state.renderer_conf.new_type;
-      auto new_renderer = REG.spawn_from_class<renderer_base>(new_class);
+      auto new_renderer = REG.spawn_from_class<rrenderer_base>(new_class);
       app_state.renderer_conf.type = new_class;
       app_state.renderer = new_renderer;
     }
   }
   
-  void editor_app::draw_ui()
+  void feditor_app::draw_ui()
   {
     // Start the Dear ImGui frame
     ImGui_ImplDX11_NewFrame();
@@ -168,7 +168,7 @@ namespace ray_tracer
     ImGui::Render(); // Draw, prepare for render
   }
   
-  void editor_app::draw_scene()
+  void feditor_app::draw_scene()
   {
     if (app_state.renderer != nullptr)
     {
@@ -198,9 +198,9 @@ namespace ray_tracer
     }
   }
   
-  void editor_app::present()
+  void feditor_app::present()
   {
-    dx11& dx = dx11::instance();
+    fdx11& dx = fdx11::instance();
     dx.device_context->OMSetRenderTargets(1, &dx.rtv, NULL);
     
     dx.device_context->ClearRenderTargetView(dx.rtv, DirectX::Colors::LightSlateGray);

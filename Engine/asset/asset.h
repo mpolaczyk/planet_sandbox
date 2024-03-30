@@ -10,11 +10,11 @@
 namespace engine
 {
   // Base class for all assets, don't instantiate
-  class ENGINE_API asset_base : public object
+  class ENGINE_API aasset_base : public oobject
   {
   public:
-    OBJECT_DECLARE(asset_base, object)
-    OBJECT_DECLARE_LOAD(asset_base)
+    OBJECT_DECLARE(aasset_base, oobject)
+    OBJECT_DECLARE_LOAD(aasset_base)
     
     // JSON file name
     std::string file_name;

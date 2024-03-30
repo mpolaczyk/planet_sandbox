@@ -6,14 +6,14 @@
 
 namespace engine
 {
-  class ENGINE_API cpu_renderer_faces : public cpu_renderer
+  class ENGINE_API rcpu_faces : public rcpu
   {
   public:
-    OBJECT_DECLARE(cpu_renderer_faces, cpu_renderer)
+    OBJECT_DECLARE(rcpu_faces, rcpu)
   
   private:
     virtual void job_update() override;
 
-    void render_chunk(const chunk& in_chunk);
+    void render_chunk(const fchunk& in_chunk);
   };
 }

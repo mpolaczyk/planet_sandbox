@@ -10,13 +10,13 @@ namespace engine
   // CPU renderer renders to the texture (rgb buffer)
   // It is using a background worker thread so that a caller can continue.
   // Can take multiple seconds/minutes to finish.
-  class ENGINE_API cpu_renderer : public renderer_base
+  class ENGINE_API rcpu : public rrenderer_base
   {
   public: 
-    OBJECT_DECLARE(cpu_renderer, renderer_base)
+    OBJECT_DECLARE(rcpu, rrenderer_base)
  
     // Main thread public interface.
-    virtual void render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config) override;
+    virtual void render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config) override;
     virtual void push_partial_update() override;
     virtual void cancel() override { job_state.requested_stop = true; }
     virtual bool is_async() const override { return true; }
@@ -44,13 +44,13 @@ namespace engine
       int image_height = 0;
       int image_width = 0;
 
-      renderer_config renderer_conf;
-      camera cam;
-      const scene* scene_root = nullptr;
+      frenderer_config renderer_conf;
+      fcamera cam;
+      const hscene* scene_root = nullptr;
       uint32_t scene_root_hash = 0;
 
-      bmp_image* img_bgr = nullptr;
-      bmp_image* img_rgb = nullptr;
+      fbmp_image* img_bgr = nullptr;
+      fbmp_image* img_rgb = nullptr;
 
       uint64_t benchmark_render_time = 0;
       uint64_t benchmark_save_time = 0;
@@ -63,7 +63,7 @@ namespace engine
     // - RW for worker thread
     // - R for main thread while processing, only through const getters
     worker_job_state job_state;
-    void set_job_state(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config);
+    void set_job_state(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config);
 
     // Synchronisation pattern through a semaphore
     std::thread* worker_thread = nullptr;
@@ -73,7 +73,7 @@ namespace engine
     virtual void job_pre_update();
     virtual void job_update() = 0;
     virtual void job_post_update();
-    timer_instance benchmark_render;
+    ftimer_instance benchmark_render;
     
     bool save_output = false; // FIX Expose to a UI setting
     void save(const char* file_name) const;    

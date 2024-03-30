@@ -5,7 +5,7 @@
 
 namespace engine
 {
-  class ENGINE_API logger
+  class ENGINE_API flogger
   {
   public:
     static void init();
@@ -19,9 +19,9 @@ namespace engine
   };
 }
 
-#define LOG_TRACE(...) ::engine::logger::trace(std::format(__VA_ARGS__).c_str())
-#define LOG_DEBUG(...) ::engine::logger::debug(std::format(__VA_ARGS__).c_str())
-#define LOG_INFO(...) ::engine::logger::info(std::format(__VA_ARGS__).c_str())
-#define LOG_WARN(...) ::engine::logger::warn(std::format(__VA_ARGS__).c_str())
-#define LOG_ERROR(...) ::engine::logger::error(std::format(__VA_ARGS__).c_str())
-#define LOG_CRITICAL(...) ::engine::logger::critical(std::format(__VA_ARGS__).c_str())
+#define LOG_TRACE(...) ::engine::flogger::trace(std::format(__VA_ARGS__).c_str())
+#define LOG_DEBUG(...) ::engine::flogger::debug(std::format(__VA_ARGS__).c_str())
+#define LOG_INFO(...) ::engine::flogger::info(std::format(__VA_ARGS__).c_str())
+#define LOG_WARN(...) ::engine::flogger::warn(std::format(__VA_ARGS__).c_str())
+#define LOG_ERROR(...) ::engine::flogger::error(std::format(__VA_ARGS__).c_str())
+#define LOG_CRITICAL(...) ::engine::flogger::critical(std::format(__VA_ARGS__).c_str())

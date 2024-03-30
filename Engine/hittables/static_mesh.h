@@ -14,32 +14,32 @@
 
 namespace engine
 {
-  class ENGINE_API static_mesh : public hittable
+  class ENGINE_API hstatic_mesh : public hhittable_base
   {
   public:
-    OBJECT_DECLARE(static_mesh, hittable)
+    OBJECT_DECLARE(hstatic_mesh, hhittable_base)
     OBJECT_DECLARE_VISITOR
     
-    virtual bool hit(const ray& in_ray, float t_max, hit_record& out_hit) const override;
-    virtual bool get_bounding_box(aabb& out_box) const override;
-    virtual vec3 get_origin() const override { return origin; };
-    virtual vec3 get_extent() const override { return vec3(extent); };
-    virtual void set_origin(const vec3& value) override { origin = value; };
+    virtual bool hit(const fray& in_ray, float t_max, fhit_record& out_hit) const override;
+    virtual bool get_bounding_box(faabb& out_box) const override;
+    virtual fvec3 get_origin() const override { return origin; };
+    virtual fvec3 get_extent() const override { return fvec3(extent); };
+    virtual void set_origin(const fvec3& value) override { origin = value; };
     virtual void set_extent(float value) override { extent = value; };
 
     virtual uint32_t get_hash() const override;
-    virtual static_mesh* clone() const override;
+    virtual hstatic_mesh* clone() const override;
     virtual void load_resources() override;
     virtual void pre_render() override;
 
     // Persistent state
-    vec3 origin = vec3(0, 0, 0);
-    vec3 scale = vec3(1, 1, 1);
-    vec3 rotation = vec3(0, 0, 0);  // degrees
-    soft_asset_ptr<static_mesh_asset> mesh_asset_ptr;
+    fvec3 origin = fvec3(0, 0, 0);
+    fvec3 scale = fvec3(1, 1, 1);
+    fvec3 rotation = fvec3(0, 0, 0);  // degrees
+    fsoft_asset_ptr<astatic_mesh> mesh_asset_ptr;
 
     // Runtime state, only for CPU renderer
-    static_mesh_asset* runtime_asset_ptr;  // Vertices translated to the world coordinates
+    astatic_mesh* runtime_asset_ptr;  // Vertices translated to the world coordinates
 
     mutable float extent = 0.0f;
   };

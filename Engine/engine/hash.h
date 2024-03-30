@@ -6,7 +6,7 @@
 
 namespace engine
 {
-  class ENGINE_API hash
+  class ENGINE_API fhash
   {
   public:
     static uint32_t combine(uint32_t a, uint32_t c);
@@ -18,7 +18,7 @@ namespace engine
     static uint32_t get(bool a);
     static uint32_t get(const void* a);
     static uint32_t get(void* a);
-    static uint32_t get(const vec3& a);
+    static uint32_t get(const fvec3& a);
     static uint32_t get(const char* a);
   };
 }

@@ -16,7 +16,7 @@ struct ID3D11Texture2D;
 
 namespace engine
 {
-  class ENGINE_API renderer_config
+  class ENGINE_API frenderer_config
   {
   public:
     // Anti Aliasing oversampling
@@ -26,8 +26,8 @@ namespace engine
     int ray_bounces = 7;
 
     // How work is processed
-    const class_object* type = nullptr;
-    const class_object* new_type = nullptr;   // For UI
+    const oclass_object* type = nullptr;
+    const oclass_object* new_type = nullptr;   // For UI
     
     // Draw in the same memory - real time update
     bool reuse_buffer = true;
@@ -40,21 +40,21 @@ namespace engine
 
     inline uint32_t get_hash() const
     {
-      return hash::combine(rays_per_pixel, ray_bounces, reuse_buffer, hash::combine(resolution_vertical, resolution_horizontal, hash::get(white_point), 1));
+      return fhash::combine(rays_per_pixel, ray_bounces, reuse_buffer, fhash::combine(resolution_vertical, resolution_horizontal, fhash::get(white_point), 1));
     }
   };
 
   // The responsibility of this class is to render to a texture
-  class ENGINE_API renderer_base : public object
+  class ENGINE_API rrenderer_base : public oobject
   {
   public:
-    OBJECT_DECLARE(renderer_base, object)
+    OBJECT_DECLARE(rrenderer_base, oobject)
 
-    renderer_base() = default;
-    renderer_base(const renderer_base&) = delete;
-    renderer_base& operator=(const renderer_base&) = delete;
-    renderer_base(renderer_base&&) = delete;
-    renderer_base& operator=(renderer_base&&) = delete;
+    rrenderer_base() = default;
+    rrenderer_base(const rrenderer_base&) = delete;
+    rrenderer_base& operator=(const rrenderer_base&) = delete;
+    rrenderer_base(rrenderer_base&&) = delete;
+    rrenderer_base& operator=(rrenderer_base&&) = delete;
 
     virtual void destroy() override;
     
@@ -64,7 +64,7 @@ namespace engine
     ID3D11Texture2D* output_depth_texture = nullptr;
     
     // Main thread public interface.
-    virtual void render_frame(const scene* in_scene, const renderer_config& in_renderer_config, const camera_config& in_camera_config) = 0;
+    virtual void render_frame(const hscene* in_scene, const frenderer_config& in_frenderer_config, const fcamera_config& in_camera_config) = 0;
     virtual void push_partial_update() = 0;
     virtual void cancel() = 0;
     virtual bool is_async() const = 0;

@@ -7,7 +7,7 @@
 
 namespace engine
 {
-  class ENGINE_API io
+  class ENGINE_API fio
   {
   public:
     // Directories

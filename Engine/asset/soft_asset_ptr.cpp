@@ -7,8 +7,8 @@
 
 namespace engine
 {
-  template<derives_from<asset_base> T>
-  void soft_asset_ptr<T>::set_name(const std::string& in_name)
+  template<derives_from<aasset_base> T>
+  void fsoft_asset_ptr<T>::set_name(const std::string& in_name)
   {
     if (in_name != name)
     {
@@ -17,20 +17,20 @@ namespace engine
     }
   }
 
-  template<derives_from<asset_base> T>
-  std::string soft_asset_ptr<T>::get_name() const
+  template<derives_from<aasset_base> T>
+  std::string fsoft_asset_ptr<T>::get_name() const
   {
     return name;
   }
 
-  template<derives_from<asset_base> T>
-  bool soft_asset_ptr<T>::is_loaded() const
+  template<derives_from<aasset_base> T>
+  bool fsoft_asset_ptr<T>::is_loaded() const
   {
     return asset_ptr != nullptr;
   }
 
-  template<derives_from<asset_base> T>
-  const T* soft_asset_ptr<T>::get() const
+  template<derives_from<aasset_base> T>
+  const T* fsoft_asset_ptr<T>::get() const
   {
     if (!is_loaded())
     {

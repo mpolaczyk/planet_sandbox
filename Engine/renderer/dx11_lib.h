@@ -18,12 +18,12 @@ typedef HWND__* HWND;
 
 namespace engine
 {
-  class ENGINE_API dx11 final
+  class ENGINE_API fdx11 final
   {
   public:
-    static dx11& instance()
+    static fdx11& instance()
     {
-      static dx11 singleton;
+      static fdx11 singleton;
       return singleton;
     }
 
