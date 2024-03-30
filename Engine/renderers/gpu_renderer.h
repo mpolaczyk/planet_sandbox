@@ -26,16 +26,16 @@ namespace engine
 {
   class ENGINE_API rgpu : public rrenderer_base
   {
-    struct per_frame_data
+    struct fframe_data
     {
       XMFLOAT4X4 view_projection;
     };
 
-    struct per_object_data
+    struct fobject_data
     {
-      XMFLOAT4X4 world;                    // Used to transform the vertex position from object space to world space
-      XMFLOAT4X4 inverse_transpose_world;  // Used to transform the vertex normal from object space to world space
-      XMFLOAT4X4 world_view_projection;    // Used to transform the vertex position from object space to projected clip space
+      XMFLOAT4X4 model_world;                    // Used to transform the vertex position from object space to world space
+      XMFLOAT4X4 transpose_inverse_model_world;  // Used to transform the vertex normal from object space to world space
+      XMFLOAT4X4 model_world_view_projection;    // Used to transform the vertex position from object space to projected clip space
     };
 
     //struct light_data
@@ -56,7 +56,7 @@ namespace engine
     
     virtual void render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config) override;
     fcamera_config camera;
-    const hscene* scenee = nullptr; // FIX Name is the same as the type, that creates issues :/ Add prefixes to types!
+    const hscene* scene = nullptr;
     virtual void push_partial_update() override {}
     virtual void cancel() override {}
     virtual bool is_async() const override { return false; }
@@ -75,8 +75,8 @@ namespace engine
     ID3D11ShaderResourceView* texture_srv = nullptr;
     ID3D11SamplerState* sampler_state = nullptr;
 
-    ID3D11Buffer* per_frame_constant_buffer = nullptr;
-    ID3D11Buffer* per_object_constant_buffer = nullptr;
+    ID3D11Buffer* frame_constant_buffer = nullptr;
+    ID3D11Buffer* object_constant_buffer = nullptr;
     //ID3D11Buffer* material_constant_buffer = nullptr;
     //ID3D11Buffer* light_constant_buffer = nullptr;
     

@@ -67,9 +67,12 @@ namespace engine
     nlohmann::json jarr = nlohmann::json::array();
     for (hhittable_base* h : object.objects)
     {
-      j["class_name"] = h->get_class()->get_class_name();
-      h->accept(serialize_object(j));
+      nlohmann::json jj;
+      jj["class_name"] = h->get_class()->get_class_name();
+      h->accept(serialize_object(jj));
+      jarr.push_back(jj);
     }
+    j["class_name"] = hscene::get_class_static()->get_class_name();
     j["objects"] = jarr;
   }
   void serialize_object::visit(class hstatic_mesh& object) const

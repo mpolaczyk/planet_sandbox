@@ -18,7 +18,7 @@ namespace engine
         if (in_renderer_config.resolution_vertical == 0 || in_renderer_config.resolution_horizontal == 0) return;
 
         camera = in_camera_config;
-        scenee = in_scene;
+        scene = in_scene;
 
         const bool recreate_output_buffers = output_width != in_renderer_config.resolution_vertical || output_height != in_renderer_config.resolution_horizontal;
         output_width = in_renderer_config.resolution_horizontal;
@@ -124,9 +124,11 @@ namespace engine
             D3D11_INPUT_ELEMENT_DESC input_element_desc[] =
             {
                 // Per-vertex
-                {"POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-                {"TEX", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-                {"NORM", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+                {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+                {"NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+                {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
+                
+                
             };
             const auto blob = vertex_shader_asset.get()->shader_blob;
             HRESULT result = device->CreateInputLayout(input_element_desc, ARRAYSIZE(input_element_desc), blob->GetBufferPointer(), blob->GetBufferSize(), &input_layout);
@@ -134,7 +136,7 @@ namespace engine
         }
 
         // Poke static mesh loading
-        for (const hhittable_base* obj : scenee->objects)
+        for (const hhittable_base* obj : scene->objects)
         {
             if (obj->get_class() == hstatic_mesh::get_class_static())
             {
@@ -208,12 +210,12 @@ namespace engine
             desc.Usage = D3D11_USAGE_DYNAMIC;
             desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-            desc.ByteWidth = sizeof(per_object_data);
-            HRESULT result = device->CreateBuffer(&desc, nullptr, &per_object_constant_buffer);
+            desc.ByteWidth = sizeof(fobject_data);
+            HRESULT result = device->CreateBuffer(&desc, nullptr, &object_constant_buffer);
             assert(SUCCEEDED(result));
 
-            desc.ByteWidth = sizeof(per_frame_data);
-            result = device->CreateBuffer(&desc, nullptr, &per_frame_constant_buffer);
+            desc.ByteWidth = sizeof(fframe_data);
+            result = device->CreateBuffer(&desc, nullptr, &frame_constant_buffer);
             assert(SUCCEEDED(result));
             
             // TODO - remove?
@@ -295,25 +297,25 @@ namespace engine
         dx.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         dx.device_context->IASetInputLayout(input_layout);
         dx.device_context->VSSetShader(vertex_shader_asset.get()->shader, nullptr, 0);
-        dx.device_context->VSSetConstantBuffers(0, 1, &per_frame_constant_buffer);
-        dx.device_context->VSSetConstantBuffers(1, 1, &per_object_constant_buffer);
+        dx.device_context->VSSetConstantBuffers(0, 1, &frame_constant_buffer);
+        dx.device_context->VSSetConstantBuffers(1, 1, &object_constant_buffer);
         dx.device_context->PSSetShader(pixel_shader_asset.get()->shader, nullptr, 0);
         dx.device_context->PSSetShaderResources(0, 1, &texture_srv);
         dx.device_context->PSSetSamplers(0, 1, &sampler_state);
 
         // Update per frame constant buffer
         {
-            per_frame_data pfd;
+            fframe_data pfd;
             XMStoreFloat4x4(&pfd.view_projection, XMMatrixMultiply(view, projection));
             
             D3D11_MAPPED_SUBRESOURCE data;
-            dx.device_context->Map(per_frame_constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
-            *static_cast<per_frame_data*>(data.pData) = pfd;
-            dx.device_context->Unmap(per_frame_constant_buffer, 0);
+            dx.device_context->Map(frame_constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+            *static_cast<fframe_data*>(data.pData) = pfd;
+            dx.device_context->Unmap(frame_constant_buffer, 0);
         }
         
         // Draw the scene
-        for (const hhittable_base* obj : scenee->objects)
+        for (const hhittable_base* obj : scene->objects)
         {
             if (obj->get_class() == hstatic_mesh::get_class_static())
             {
@@ -322,25 +324,24 @@ namespace engine
                 if (sma == nullptr) { continue; }
                 const fstatic_mesh_render_state& smrs = sma->render_state;
 
-                // Model
-                const XMVECTOR model_pos = XMVectorSet(sm->origin.x, sm->origin.y, sm->origin.z, 0.f);
-                const XMVECTOR model_rot = XMVectorSet(sm->rotation.x, sm->rotation.y, sm->rotation.z, 0.f);
-                const XMVECTOR model_scale = XMVectorSet(sm->scale.x, sm->scale.y, sm->scale.z, 0.f);
-                const XMMATRIX model_world = XMMatrixMultiply(XMMatrixScalingFromVector(model_scale), XMMatrixMultiply(XMMatrixTranslationFromVector(model_pos), XMMatrixRotationRollPitchYawFromVector(model_rot)));
-                const XMMATRIX model_inverse_transpose_world = XMMatrixTranspose(XMMatrixInverse(nullptr, model_world));
-                const XMMATRIX model_view_projection = XMMatrixMultiply(XMMatrixMultiply(model_world, view), projection);
-                
-                // Update per object constant buffer
+                // Object const buffer
                 {
-                    per_object_data pod;
-                    XMStoreFloat4x4(&pod.world, model_world);
-                    XMStoreFloat4x4(&pod.inverse_transpose_world, model_inverse_transpose_world);
-                    XMStoreFloat4x4(&pod.world_view_projection, XMMatrixTranspose(model_view_projection)); // Transpose: row vs column
+                    const XMVECTOR model_pos = XMVectorSet(sm->origin.x, sm->origin.y, sm->origin.z, 0.f);
+                    const XMVECTOR model_rot = XMVectorSet(sm->rotation.x, sm->rotation.y, sm->rotation.z, 0.f);
+                    const XMVECTOR model_scale = XMVectorSet(sm->scale.x, sm->scale.y, sm->scale.z, 0.f);
+                    const XMMATRIX model_world = XMMatrixMultiply(XMMatrixScalingFromVector(model_scale), XMMatrixMultiply(XMMatrixTranslationFromVector(model_pos), XMMatrixRotationRollPitchYawFromVector(model_rot)));
+                    const XMMATRIX transpose_inverse_model_world = XMMatrixTranspose(XMMatrixInverse(nullptr, model_world));
+                    const XMMATRIX model_world_view_projection = XMMatrixMultiply(XMMatrixMultiply(model_world, view), projection);
+                
+                    fobject_data pod;
+                    XMStoreFloat4x4(&pod.model_world, model_world);
+                    XMStoreFloat4x4(&pod.transpose_inverse_model_world, transpose_inverse_model_world);
+                    XMStoreFloat4x4(&pod.model_world_view_projection, XMMatrixTranspose(model_world_view_projection)); // Transpose: row vs column
 
                     D3D11_MAPPED_SUBRESOURCE data;
-                    dx.device_context->Map(per_object_constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
-                    *static_cast<per_object_data*>(data.pData) = pod;
-                    dx.device_context->Unmap(per_object_constant_buffer, 0);
+                    dx.device_context->Map(object_constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+                    *static_cast<fobject_data*>(data.pData) = pod;
+                    dx.device_context->Unmap(object_constant_buffer, 0);
                 }
 
                 // Draw mesh
@@ -358,8 +359,8 @@ namespace engine
         DX_RELEASE(input_layout)
         DX_RELEASE(texture_srv)
         DX_RELEASE(sampler_state)
-        DX_RELEASE(per_frame_constant_buffer)
-        DX_RELEASE(per_object_constant_buffer)
+        DX_RELEASE(frame_constant_buffer)
+        DX_RELEASE(object_constant_buffer)
         DX_RELEASE(rasterizer_state)
         DX_RELEASE(depth_stencil_state)
         rrenderer_base::destroy();

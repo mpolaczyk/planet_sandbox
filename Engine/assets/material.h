@@ -37,7 +37,7 @@ namespace engine
     float constant_attenuation  { 1.0f };                     // 4 56
     float linear_attenuation    { 0.0f };                     // 4 60
     float quadratic_attenuation { 0.0f };                     // 4 64  - 4
-    int light_type              { flight_type::point };        // 4 68
+    int light_type              { flight_type::point };       // 4 68
     int enabled                 { 0 };                        // 4 72
     int padding[2];                                           // 8 80  - 5
   };
@@ -49,11 +49,6 @@ namespace engine
     OBJECT_DECLARE_LOAD(amaterial)
     OBJECT_DECLARE_SAVE(amaterial)
     OBJECT_DECLARE_VISITOR
-
-    // FIX Move to this class:
-    // - material from hittable
-    // - shaders from renderer
-    // Use those in the gpu renderer
     
     // JSON persistent - CPU Raytracer
     bool is_light = false;
@@ -66,7 +61,7 @@ namespace engine
     float refraction_probability = 0.0f;
     float refraction_index = 1.0f;
     // JSON persistent - GPU renderer
-    fmaterial_properties material_props;
-    flight_properties light_props;
+    fmaterial_properties material;
+    flight_properties light;
   };
 }
