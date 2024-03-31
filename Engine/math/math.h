@@ -51,6 +51,7 @@ namespace engine
     static fvec3 rotate_yaw(const fvec3& u, float yaw);
     static fvec3 rotate_pitch(const fvec3& u, float pitch);
     static fvec3 rotate_roll(const fvec3& u, float roll);
+    static fvec3 rpy_to_direction(const fvec3& rpy);
     static fvec3 min3(const fvec3& a, const fvec3& b);
     static fvec3 max3(const fvec3& a, const fvec3& b);
     static void get_sphere_uv(const fvec3& p, float& out_u, float& out_v);

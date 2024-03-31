@@ -21,6 +21,8 @@ namespace engine
 
     uint32_t get_hash() const;
 
+    void update();
+    
     // Camera movement
     void move_up(float speed);
     void move_down(float speed);
@@ -30,10 +32,24 @@ namespace engine
     void move_right(float speed);
     void rotate(float roll, float pitch);
 
+    static DirectX::XMVECTOR default_forward;
+    static DirectX::XMVECTOR default_right;
+    static DirectX::XMVECTOR default_up;
+    
+    // Runtime members
+    DirectX::XMVECTOR forward = default_forward;
+    DirectX::XMVECTOR right = default_right;
+    DirectX::XMVECTOR up = default_up;
+    DirectX::XMMATRIX projection;
+    DirectX::XMMATRIX rotation;
+    DirectX::XMMATRIX view;
+    fvec3 look_dir;
+    
     // Persistent members
     fvec3 look_from;
-    fvec3 look_dir;
-    float field_of_view = 90.0f;
+    float pitch;
+    float yaw;
+    float field_of_view = 70.0f;
     float aspect_ratio_h = 9.0f;
     float aspect_ratio_w = 16.0f;
     float aperture = 0.0f;       // defocus blur

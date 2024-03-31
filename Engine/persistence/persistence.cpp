@@ -46,7 +46,8 @@ namespace engine
     j["dist_to_focus"] = value.dist_to_focus;
     j["type"] = value.type;
     j["look_from"] = fpersistence::serialize(value.look_from);
-    j["look_dir"] = fpersistence::serialize(value.look_dir);
+    j["pitch"] = value.pitch;
+    j["yaw"] = value.yaw;
     return j;
   }
   void fpersistence::deserialize(const nlohmann::json& j, fcamera_config& out_value)
@@ -57,10 +58,9 @@ namespace engine
     TRY_PARSE(float, j, "aperture", out_value.aperture);
     TRY_PARSE(float, j, "dist_to_focus", out_value.dist_to_focus);
     TRY_PARSE(float, j, "type", out_value.type);
-
-    nlohmann::json jlook_dir;
-    if (TRY_PARSE(nlohmann::json, j, "look_dir", jlook_dir)) { fpersistence::deserialize(jlook_dir, out_value.look_dir); }
-
+    TRY_PARSE(float, j, "pitch", out_value.pitch);
+    TRY_PARSE(float, j, "yaw", out_value.yaw);
+    
     nlohmann::json jlook_from;
     if (TRY_PARSE(nlohmann::json, j, "look_from", jlook_from)) { fpersistence::deserialize(jlook_from, out_value.look_from); }
   }

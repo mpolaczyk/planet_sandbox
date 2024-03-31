@@ -53,7 +53,8 @@ namespace ray_tracer
     ImGui::Text("0 = Perspective; 1 = Orthografic");
     ImGui::Separator();
     ImGui::InputFloat3("Look from", state.camera_conf.look_from.e, "%.2f");
-    ImGui::InputFloat3("Look direction", state.camera_conf.look_dir.e, "%.2f");
+    ImGui::InputFloat("Pitch", &state.camera_conf.pitch, 0.1f, 1.0f, "%.2f");
+    ImGui::InputFloat("Yaw", &state.camera_conf.yaw, 0.1f, 1.0f, "%.2f");
     ImGui::Separator();
     ImGui::InputFloat("Focus distance", &state.camera_conf.dist_to_focus, 0.0f, 1000.0f, "%.2f");
     ImGui::InputFloat("Aperture", &state.camera_conf.aperture, 0.1f, 1.0f, "%.2f");

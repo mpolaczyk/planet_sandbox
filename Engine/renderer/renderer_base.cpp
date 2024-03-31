@@ -15,6 +15,7 @@ namespace engine
   {
     DX_RELEASE(output_texture)
     DX_RELEASE(output_srv)
+    DX_RELEASE(output_depth_texture)
     oobject::destroy();
   }
  

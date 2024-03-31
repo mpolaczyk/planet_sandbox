@@ -4,18 +4,15 @@
     "aspect_ratio_h": 9.0,
     "aspect_ratio_w": 16.0,
     "dist_to_focus": 1.0,
-    "field_of_view": 90.0,
-    "look_dir": {
-      "x": -0.8083931803703308,
-      "y": -0.011464808136224747,
-      "z": -0.5885124206542969
-    },
+    "field_of_view": 70.0,
     "look_from": {
-      "x": -8.553333282470703,
+      "x": 0.0,
       "y": 0.0,
-      "z": -7.537764072418213
+      "z": 15.0
     },
-    "type": 7.450580596923828e-08
+    "pitch": 0.0,
+    "type": 7.450580596923828e-08,
+    "yaw": 0.0
   },
   "scene": {
     "class_name": "hscene",
@@ -31,9 +28,9 @@
           "name": "light"
         },
         "origin": {
-          "x": 50.0,
+          "x": 62.0,
           "y": 50.0,
-          "z": -25.000999450683594
+          "z": 53.999000549316406
         },
         "radius": 60.0
       },
@@ -47,7 +44,7 @@
           "name": "icosphere2"
         },
         "origin": {
-          "x": 2.0,
+          "x": 0.0,
           "y": 0.0,
           "z": 0.0
         },
@@ -66,15 +63,65 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "Red rock2",
         "material_asset": {
-          "name": "glass_red"
+          "name": "metal_copper"
         },
         "mesh_asset": {
-          "name": "icosphere2"
+          "name": "icosphere3"
         },
         "origin": {
-          "x": -2.0,
+          "x": 6.0,
           "y": 0.0,
           "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Red rock3",
+        "material_asset": {
+          "name": "metal_white"
+        },
+        "mesh_asset": {
+          "name": "cube"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 6.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Red rock4",
+        "material_asset": {
+          "name": "glass_green_matt"
+        },
+        "mesh_asset": {
+          "name": "icosphere1"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 6.0
         },
         "rotation": {
           "x": 0.0,

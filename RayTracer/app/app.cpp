@@ -146,7 +146,7 @@ namespace ray_tracer
       // Check if the mouse has moved
       if (mouse_delta.x != 0.0f || mouse_delta.y != 0.0f)
       {
-        float rotate_speed = 0.001f; // proportion - screen space delta to radians
+        float rotate_speed = 0.003f; // proportion - screen space delta to radians
         state.camera_conf.rotate(mouse_delta.x * rotate_speed, mouse_delta.y * rotate_speed);
       }
     }

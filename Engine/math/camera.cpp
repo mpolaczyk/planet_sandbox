@@ -7,6 +7,10 @@
 
 namespace engine
 {
+  DirectX::XMVECTOR fcamera_config::default_forward = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
+  DirectX::XMVECTOR fcamera_config::default_right = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+  DirectX::XMVECTOR fcamera_config::default_up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+  
   fcamera_config fcamera_config::lerp(const fcamera_config& a, const fcamera_config& b, float f)
   {
     fcamera_config answer = a;
@@ -17,11 +21,57 @@ namespace engine
 
   uint32_t fcamera_config::get_hash() const
   {
-    uint32_t a = fhash::combine(fhash::get(look_from), fhash::get(look_dir), fhash::get(field_of_view), fhash::get(aspect_ratio_h));
+    uint32_t a = fhash::combine(fhash::get(look_from), fhash::get(yaw), fhash::get(pitch), fhash::get(aspect_ratio_h));
     uint32_t b = fhash::combine(fhash::get(aspect_ratio_w), fhash::get(aperture), fhash::get(dist_to_focus), fhash::get(type));
-    return fhash::combine(a, b, a, fhash::get(look_dir));
+    return fhash::combine(a, b, a, fhash::get(field_of_view));
   }
 
+  void fcamera_config::update()
+  {
+    using namespace DirectX;
+    
+    projection = XMMatrixPerspectiveFovLH(field_of_view, aspect_ratio_w / aspect_ratio_h, fmath::t_min, fmath::infinity);
+    rotation = XMMatrixRotationRollPitchYaw(pitch, yaw, 0);
+
+    forward = XMVector3Normalize(XMVector3TransformCoord(default_forward, rotation));
+    right   = XMVector3Normalize(XMVector3TransformCoord(default_right, rotation));
+    //up      = XMVector3Normalize(XMVector3TransformCoord(default_up, rotation));
+     up      = XMVector3Normalize(XMVector3Cross(forward, right)); // this works
+    
+    const XMVECTOR eye_position = XMVectorSet(look_from.x, look_from.y, look_from.z, 0.f);
+    const XMVECTOR focus_position = XMVectorAdd(eye_position, forward);
+
+    view = XMMatrixLookAtLH(eye_position, focus_position, up);
+  
+    XMFLOAT3 forward2;
+    XMStoreFloat3(&forward2, forward);
+    look_dir = fvec3(forward2.x, forward2.y, forward2.z);
+
+    /*
+    cpu renderer - right handed
+      horizontal x positive to the right
+      vertical   y positive up (E key)
+      depth      z positive from the screen
+      pitch		   positive look up
+      yaw        positive look left
+      pitch=0, yaw=0 towards screen
+
+    gpu renderer RH - 
+      horizontal x positive to the left
+      vertical   y positive down (E key)
+      depth      z positive towards the screen
+      pitch		   positive look up
+      yaw        positive look left
+      pitch=0, yaw=0 away from screen
+
+    XMMatrixRotationRollPitchYaw(pitch, yaw, roll)
+    XMMatrixRotationRollPitchYawFromVector([pitch, yaw, roll])
+    roll  around z
+    pitch around y
+    yaw   around x
+    */
+  }
+  
   // Camera movement
   void fcamera_config::move_up(float speed)
   {
@@ -55,12 +105,11 @@ namespace engine
     look_from -= left_dir * speed;
   }
 
-  void fcamera_config::rotate(float roll, float pitch)
+  void fcamera_config::rotate(float delta_yaw, float delta_pitch)
   {
-    look_dir = fmath::rotate_roll(look_dir, roll);  // because x is the vertical axis
-    look_dir = fmath::rotate_pitch(look_dir, pitch);
+    pitch = pitch - delta_pitch;
+    yaw = yaw - delta_yaw;
   }
-
 
   void fcamera::configure(const fcamera_config& in_camera_config)
   {

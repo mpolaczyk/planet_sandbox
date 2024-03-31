@@ -290,6 +290,15 @@ namespace engine
     return fvec3(c * u.x - s * u.z, u.y, s * u.x + c * u.z);
   }
 
+  fvec3 fmath::rpy_to_direction(const fvec3& rpy)
+  {
+    fvec3 direction;
+    direction.x = cosf(rpy.z) * cosf(rpy.x);
+    direction.y = sinf(rpy.z) * cosf(rpy.x);
+    direction.z = sinf(rpy.x);
+    return direction;
+  }
+
   fvec3 fmath::min3(const fvec3& a, const fvec3& b)
   {
     return fvec3(min1(a[0], b[0]), min1(a[1], b[1]), min1(a[2], b[2]));

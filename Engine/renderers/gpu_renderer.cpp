@@ -8,6 +8,8 @@
 #include "engine/log.h"
 #include "hittables/static_mesh.h"
 
+using namespace DirectX;
+
 namespace engine
 {
     OBJECT_DEFINE(rgpu, rrenderer_base, GPU renderer)
@@ -272,17 +274,6 @@ namespace engine
             delta_time = static_cast<float>(current_time - previous_time);
         }
 
-        // Camera and MVP matrix
-        const float field_of_view = XMConvertToRadians(camera.field_of_view);
-        const float aspect_ratio = camera.aspect_ratio_w / camera.aspect_ratio_h;
-        const XMMATRIX projection = XMMatrixPerspectiveFovRH(field_of_view, aspect_ratio, fmath::t_min, fmath::infinity);
-
-        const XMVECTOR camera_pos = XMVectorSet(camera.look_from.x, camera.look_from.y, camera.look_from.z, 0.f);
-        const XMVECTOR camera_rot = XMVector3AngleBetweenVectors(XMVectorSet(0.f, 0.f, -1.f, 0.f), XMVectorSet(camera.look_dir.x, camera.look_dir.y, camera.look_dir.z, 0.f));
-        const XMMATRIX view = XMMatrixMultiply(XMMatrixTranslationFromVector(camera_pos), XMMatrixRotationRollPitchYawFromVector(XMVectorScale(camera_rot, -1.f)));
-        // Negate the rotation to achieve inverse
-        // FIX rotation does not work well this way, test with mouse!
-
         fdx11& dx = fdx11::instance();
 
         dx.device_context->ClearRenderTargetView(output_rtv, Colors::LightSlateGray);
@@ -308,7 +299,7 @@ namespace engine
         // Update per frame constant buffer
         {
             fframe_data pfd;
-            XMStoreFloat4x4(&pfd.view_projection, XMMatrixMultiply(view, projection));
+            XMStoreFloat4x4(&pfd.view_projection, XMMatrixMultiply(camera.view, camera.projection));
             
             D3D11_MAPPED_SUBRESOURCE data;
             dx.device_context->Map(frame_constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
@@ -333,7 +324,7 @@ namespace engine
                     const XMVECTOR model_scale = XMVectorSet(sm->scale.x, sm->scale.y, sm->scale.z, 0.f);
                     const XMMATRIX model_world = XMMatrixMultiply(XMMatrixScalingFromVector(model_scale), XMMatrixMultiply(XMMatrixTranslationFromVector(model_pos), XMMatrixRotationRollPitchYawFromVector(model_rot)));
                     const XMMATRIX transpose_inverse_model_world = XMMatrixTranspose(XMMatrixInverse(nullptr, model_world));
-                    const XMMATRIX model_world_view_projection = XMMatrixMultiply(XMMatrixMultiply(model_world, view), projection);
+                    const XMMATRIX model_world_view_projection = XMMatrixMultiply(XMMatrixMultiply(model_world, camera.view), camera.projection);
                 
                     fobject_data pod;
                     XMStoreFloat4x4(&pod.model_world, model_world);
