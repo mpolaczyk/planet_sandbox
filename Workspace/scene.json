@@ -8,7 +8,7 @@
     "look_from": {
       "x": 0.0,
       "y": 0.0,
-      "z": 15.0
+      "z": 0.0
     },
     "pitch": 0.0,
     "type": 7.450580596923828e-08,
@@ -36,7 +36,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Red rock",
+        "custom_display_name": "Center",
         "material_asset": {
           "name": "glass_red"
         },
@@ -61,7 +61,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Red rock2",
+        "custom_display_name": "Right",
         "material_asset": {
           "name": "metal_copper"
         },
@@ -86,7 +86,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Red rock3",
+        "custom_display_name": "Up",
         "material_asset": {
           "name": "metal_white"
         },
@@ -111,7 +111,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Red rock4",
+        "custom_display_name": "Front",
         "material_asset": {
           "name": "glass_green_matt"
         },

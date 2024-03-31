@@ -7,7 +7,7 @@
 
 namespace engine
 {
-  DirectX::XMVECTOR fcamera_config::default_forward = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
+  DirectX::XMVECTOR fcamera_config::default_forward = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
   DirectX::XMVECTOR fcamera_config::default_right = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
   DirectX::XMVECTOR fcamera_config::default_up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
   
@@ -36,7 +36,7 @@ namespace engine
     forward = XMVector3Normalize(XMVector3TransformCoord(default_forward, rotation));
     right   = XMVector3Normalize(XMVector3TransformCoord(default_right, rotation));
     //up      = XMVector3Normalize(XMVector3TransformCoord(default_up, rotation));
-     up      = XMVector3Normalize(XMVector3Cross(forward, right)); // this works
+    up      = XMVector3Normalize(XMVector3Cross(forward, right)); // this works
     
     const XMVECTOR eye_position = XMVectorSet(look_from.x, look_from.y, look_from.z, 0.f);
     const XMVECTOR focus_position = XMVectorAdd(eye_position, forward);
@@ -85,6 +85,9 @@ namespace engine
 
   void fcamera_config::move_forward(float speed)
   {
+    using namespace DirectX;
+    XMFLOAT3 forward2;
+    XMStoreFloat3(&forward2, forward);
     look_from -= look_dir * speed;
   }
 
