@@ -7,10 +7,6 @@
 
 namespace engine
 {
-  DirectX::XMVECTOR fcamera_config::default_forward = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-  DirectX::XMVECTOR fcamera_config::default_right = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-  DirectX::XMVECTOR fcamera_config::default_up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-  
   fcamera_config fcamera_config::lerp(const fcamera_config& a, const fcamera_config& b, float f)
   {
     fcamera_config answer = a;
@@ -29,89 +25,36 @@ namespace engine
   void fcamera_config::update()
   {
     using namespace DirectX;
+
+    XMVECTOR rotation = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(pitch), XMConvertToRadians(yaw), 0);
+    XMVECTOR translation = XMVectorSet(look_from.x, look_from.y, look_from.z, 1.f);
+
+    float ratio = move_speed * 1/60.0f; // TODO Multiply by time
+    XMVECTOR camera_translate = XMVectorSet( static_cast<float>(input_d - input_a) * ratio, 0.0f, static_cast<float>(input_w - input_s) * ratio, 1.0f * ratio);
+    XMVECTOR camera_pan = XMVectorSet( 0.0f, static_cast<float>(input_e - input_q) * ratio, 0.0f, 1.0f * ratio);
+
+    translation += XMVector3Rotate(camera_translate, rotation);
+    translation += camera_pan;
+    translation = XMVectorSetW(translation, 1.0f);
     
-    projection = XMMatrixPerspectiveFovLH(field_of_view, aspect_ratio_w / aspect_ratio_h, fmath::t_min, fmath::infinity);
-    rotation = XMMatrixRotationRollPitchYaw(pitch, yaw, 0);
-
-    forward = XMVector3Normalize(XMVector3TransformCoord(default_forward, rotation));
-    right   = XMVector3Normalize(XMVector3TransformCoord(default_right, rotation));
-    //up      = XMVector3Normalize(XMVector3TransformCoord(default_up, rotation));
-    up      = XMVector3Normalize(XMVector3Cross(forward, right)); // this works
+    XMMATRIX projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(field_of_view), 1.333f, 0.1, 100);
     
-    const XMVECTOR eye_position = XMVectorSet(look_from.x, look_from.y, look_from.z, 0.f);
-    const XMVECTOR focus_position = XMVectorAdd(eye_position, forward);
+    XMVECTOR neg = XMVectorSet(-1.0f, -1.0f, -1.0f, -1.f);                        // TODO why does -operator not work?
+    XMMATRIX rotation_matrix = XMMatrixTranspose(XMMatrixRotationQuaternion(rotation));
+    XMMATRIX translation_matrix = XMMatrixTranslationFromVector(XMVectorMultiply(neg, translation));
 
-    view = XMMatrixLookAtLH(eye_position, focus_position, up);
-  
-    XMFLOAT3 forward2;
-    XMStoreFloat3(&forward2, forward);
-    look_dir = fvec3(forward2.x, forward2.y, forward2.z);
+    XMMATRIX view = translation_matrix * rotation_matrix;
+    XMStoreFloat4x4(&view_projection, view * projection);
 
-    /*
-    cpu renderer - right handed
-      horizontal x positive to the right
-      vertical   y positive up (E key)
-      depth      z positive from the screen
-      pitch		   positive look up
-      yaw        positive look left
-      pitch=0, yaw=0 towards screen
-
-    gpu renderer RH - 
-      horizontal x positive to the left
-      vertical   y positive down (E key)
-      depth      z positive towards the screen
-      pitch		   positive look up
-      yaw        positive look left
-      pitch=0, yaw=0 away from screen
-
-    XMMatrixRotationRollPitchYaw(pitch, yaw, roll)
-    XMMatrixRotationRollPitchYawFromVector([pitch, yaw, roll])
-    roll  around z
-    pitch around y
-    yaw   around x
-    */
+    XMFLOAT3 tr;                                    
+    XMStoreFloat3(&tr, translation);                    
+    look_from = fvec3(tr.x, tr.y, tr.z); 
   }
   
-  // Camera movement
-  void fcamera_config::move_up(float speed)
-  {
-    look_from += fvec3(0.0f, speed, 0.0f);
-  }
-
-  void fcamera_config::move_down(float speed)
-  {
-    look_from -= fvec3(0.0f, speed, 0.0f);
-  }
-
-  void fcamera_config::move_forward(float speed)
-  {
-    using namespace DirectX;
-    XMFLOAT3 forward2;
-    XMStoreFloat3(&forward2, forward);
-    look_from -= look_dir * speed;
-  }
-
-  void fcamera_config::move_backward(float speed)
-  {
-    look_from += look_dir * speed;
-  }
-
-  void fcamera_config::move_left(float speed)
-  {
-    fvec3 left_dir = fmath::cross(look_dir, fvec3(0.0f, 1.0f, 0.0f));
-    look_from += left_dir * speed;
-  }
-
-  void fcamera_config::move_right(float speed)
-  {
-    fvec3 left_dir = fmath::cross(look_dir, fvec3(0.0f, 1.0f, 0.0f));
-    look_from -= left_dir * speed;
-  }
-
   void fcamera_config::rotate(float delta_yaw, float delta_pitch)
   {
-    pitch = pitch - delta_pitch;
-    yaw = yaw - delta_yaw;
+    yaw -= delta_yaw;
+    pitch -= delta_pitch;
   }
 
   void fcamera::configure(const fcamera_config& in_camera_config)

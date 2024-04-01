@@ -130,9 +130,7 @@ namespace engine
                 // Per-vertex
                 {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
                 {"NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-                {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
-                
-                
+                {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0}
             };
             const auto blob = vertex_shader_asset.get()->shader_blob;
             HRESULT result = device->CreateInputLayout(input_element_desc, ARRAYSIZE(input_element_desc), blob->GetBufferPointer(), blob->GetBufferSize(), &input_layout);
@@ -279,9 +277,7 @@ namespace engine
         dx.device_context->ClearRenderTargetView(output_rtv, Colors::LightSlateGray);
         dx.device_context->ClearDepthStencilView(output_dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-        const D3D11_VIEWPORT viewport = {
-            0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f
-        };
+        const D3D11_VIEWPORT viewport = {0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f};
         dx.device_context->RSSetViewports(1, &viewport);
         dx.device_context->RSSetState(rasterizer_state);
         dx.device_context->OMSetDepthStencilState(depth_stencil_state, 0);
@@ -299,7 +295,7 @@ namespace engine
         // Update per frame constant buffer
         {
             fframe_data pfd;
-            XMStoreFloat4x4(&pfd.view_projection, XMMatrixMultiply(camera.view, camera.projection));
+            pfd.view_projection = camera.view_projection;
             
             D3D11_MAPPED_SUBRESOURCE data;
             dx.device_context->Map(frame_constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
@@ -319,17 +315,22 @@ namespace engine
 
                 // Object const buffer
                 {
-                    const XMVECTOR model_pos = XMVectorSet(sm->origin.x, sm->origin.y, sm->origin.z, 0.f);
-                    const XMVECTOR model_rot = XMVectorSet(sm->rotation.x, sm->rotation.y, sm->rotation.z, 0.f);
-                    const XMVECTOR model_scale = XMVectorSet(sm->scale.x, sm->scale.y, sm->scale.z, 0.f);
-                    const XMMATRIX model_world = XMMatrixMultiply(XMMatrixScalingFromVector(model_scale), XMMatrixMultiply(XMMatrixTranslationFromVector(model_pos), XMMatrixRotationRollPitchYawFromVector(model_rot)));
-                    const XMMATRIX transpose_inverse_model_world = XMMatrixTranspose(XMMatrixInverse(nullptr, model_world));
-                    const XMMATRIX model_world_view_projection = XMMatrixMultiply(XMMatrixMultiply(model_world, camera.view), camera.projection);
+                    const XMVECTOR model_pos = XMVectorSet(sm->origin.x, sm->origin.y, sm->origin.z, 1.f);
+
+                    XMMATRIX translationMatrix = XMMatrixTranslation(sm->origin.x, sm->origin.y, sm->origin.z );
+                    XMMATRIX rotationMatrix = XMMatrixRotationX(XMConvertToRadians(sm->rotation.x))
+                        * XMMatrixRotationY(XMConvertToRadians(sm->rotation.y))
+                        * XMMatrixRotationZ(XMConvertToRadians(sm->rotation.z));
+                    XMMATRIX scaleMatrix = XMMatrixScaling(sm->scale.x, sm->scale.y, sm->scale.z);
+                    XMMATRIX worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
+                    
+                    const XMMATRIX inverse_transpose_model_world = XMMatrixTranspose(XMMatrixInverse(nullptr, worldMatrix));
+                    const XMMATRIX model_world_view_projection = XMMatrixMultiply(worldMatrix, XMLoadFloat4x4(&camera.view_projection));
                 
                     fobject_data pod;
-                    XMStoreFloat4x4(&pod.model_world, model_world);
-                    XMStoreFloat4x4(&pod.transpose_inverse_model_world, transpose_inverse_model_world);
-                    XMStoreFloat4x4(&pod.model_world_view_projection, XMMatrixTranspose(model_world_view_projection)); // Transpose: row vs column
+                    XMStoreFloat4x4(&pod.model_world, worldMatrix);
+                    XMStoreFloat4x4(&pod.inverse_transpose_model_world, inverse_transpose_model_world);
+                    XMStoreFloat4x4(&pod.model_world_view_projection, model_world_view_projection);
 
                     D3D11_MAPPED_SUBRESOURCE data;
                     dx.device_context->Map(object_constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);

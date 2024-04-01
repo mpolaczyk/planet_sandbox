@@ -24,25 +24,13 @@ namespace engine
     void update();
     
     // Camera movement
-    void move_up(float speed);
-    void move_down(float speed);
-    void move_forward(float speed);
-    void move_backward(float speed);
-    void move_left(float speed);
-    void move_right(float speed);
     void rotate(float roll, float pitch);
-
-    static DirectX::XMVECTOR default_forward;
-    static DirectX::XMVECTOR default_right;
-    static DirectX::XMVECTOR default_up;
+    int32_t input_w, input_a, input_s, input_d;
+    int32_t input_q, input_e;
+    float move_speed;
     
     // Runtime members
-    DirectX::XMVECTOR forward = default_forward;
-    DirectX::XMVECTOR right = default_right;
-    DirectX::XMVECTOR up = default_up;
-    DirectX::XMMATRIX projection;
-    DirectX::XMMATRIX rotation;
-    DirectX::XMMATRIX view;
+    DirectX::XMFLOAT4X4 view_projection;
     fvec3 look_dir;
     
     // Persistent members

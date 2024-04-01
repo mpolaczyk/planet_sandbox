@@ -34,7 +34,7 @@ namespace engine
     struct fobject_data
     {
       XMFLOAT4X4 model_world;                    // Used to transform the vertex position from object space to world space
-      XMFLOAT4X4 transpose_inverse_model_world;  // Used to transform the vertex normal from object space to world space
+      XMFLOAT4X4 inverse_transpose_model_world;  // Used to transform the vertex normal from object space to world space
       XMFLOAT4X4 model_world_view_projection;    // Used to transform the vertex position from object space to projected clip space
     };
 

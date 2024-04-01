@@ -4,11 +4,11 @@
     "aspect_ratio_h": 9.0,
     "aspect_ratio_w": 16.0,
     "dist_to_focus": 1.0,
-    "field_of_view": 70.0,
+    "field_of_view": 45.0,
     "look_from": {
       "x": 0.0,
-      "y": 0.0,
-      "z": 0.0
+      "y": 5.0,
+      "z": -20.0
     },
     "pitch": 0.0,
     "type": 7.450580596923828e-08,
@@ -36,32 +36,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Center",
-        "material_asset": {
-          "name": "glass_red"
-        },
-        "mesh_asset": {
-          "name": "icosphere2"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "Right",
+        "custom_display_name": "Right ico3",
         "material_asset": {
           "name": "metal_copper"
         },
@@ -86,7 +61,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Up",
+        "custom_display_name": "Up cube",
         "material_asset": {
           "name": "metal_white"
         },
@@ -111,17 +86,17 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Front",
+        "custom_display_name": "Front suzanne",
         "material_asset": {
           "name": "glass_green_matt"
         },
         "mesh_asset": {
-          "name": "icosphere1"
+          "name": "suzanne"
         },
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 6.0
+          "z": -6.0
         },
         "rotation": {
           "x": 0.0,

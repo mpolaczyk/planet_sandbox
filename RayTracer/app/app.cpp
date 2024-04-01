@@ -107,47 +107,33 @@ namespace ray_tracer
 
     // Handle speed
     float wheel_delta = ImGui::GetIO().MouseWheel;
-    state.move_speed = fmath::max1(0.5f, state.move_speed + wheel_delta / 2.0f);
+    state.move_speed = fmath::max1(10.5f, state.move_speed + wheel_delta / 2.0f);
 
     // Handle camera movement
     if (!io.WantCaptureKeyboard)
     {
-      if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_E)))
-      {
-        state.camera_conf.move_up(state.move_speed);
-      }
-      if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Q)))
-      {
-        state.camera_conf.move_down(state.move_speed);
-      }
-      if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_W)))
-      {
-        state.camera_conf.move_forward(state.move_speed);
-      }
-      if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S)))
-      {
-        state.camera_conf.move_backward(state.move_speed);
-      }
-      if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_A)))
-      {
-        state.camera_conf.move_left(state.move_speed);
-      }
-      if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D)))
-      {
-        state.camera_conf.move_right(state.move_speed);
-      }
+      state.camera_conf.input_e = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_E)) ? 1 : 0;
+      state.camera_conf.input_q = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Q)) ? 1 : 0;
+      state.camera_conf.input_w = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_W)) ? 1 : 0;
+      state.camera_conf.input_s = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S)) ? 1 : 0;
+      state.camera_conf.input_a = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_A)) ? 1 : 0;
+      state.camera_conf.input_d = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D)) ? 1 : 0;
     }
-  
+    state.camera_conf.move_speed = state.move_speed;
+    
     // Handle camera rotation
     if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
     {
       ImVec2 mouse_delta = ImGui::GetIO().MouseDelta;
-
+      mouse_delta.x *= -1;
+      mouse_delta.y *= -1;
+      
       // Check if the mouse has moved
       if (mouse_delta.x != 0.0f || mouse_delta.y != 0.0f)
       {
-        float rotate_speed = 0.003f; // proportion - screen space delta to radians
-        state.camera_conf.rotate(mouse_delta.x * rotate_speed, mouse_delta.y * rotate_speed);
+        float delta_yaw = mouse_delta.x * state.rotate_speed;
+        float delta_pitch = mouse_delta.y * state.rotate_speed;
+        state.camera_conf.rotate(delta_yaw, delta_pitch);
       }
     }
  
