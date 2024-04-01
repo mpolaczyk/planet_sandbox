@@ -166,7 +166,7 @@ namespace ray_tracer
     ImGui::Text("F2 - Use reference renderer");
     ImGui::Text("F5 - Render!");
     ImGui::Text("LMB (on image) - select object");
-    ImGui::Text("Scroll - Camera speed (current speed: %f)", state.move_speed);
+    ImGui::Text("Scroll - Camera speed (current speed: %f)", state.camera_conf.move_speed);
     ImGui::Text("QWEASD - Camera movement");
     ImGui::Text("RMB - Camera rotation");
     ImGui::Text("ZXC + mouse - Object movement");

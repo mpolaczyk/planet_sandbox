@@ -104,37 +104,25 @@ namespace ray_tracer
     {
       state.rw_model.rp_model.render_pressed = true;
     }
-
-    // Handle speed
-    float wheel_delta = ImGui::GetIO().MouseWheel;
-    state.move_speed = fmath::max1(10.5f, state.move_speed + wheel_delta / 2.0f);
-
+    
     // Handle camera movement
     if (!io.WantCaptureKeyboard)
     {
-      state.camera_conf.input_e = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_E)) ? 1 : 0;
-      state.camera_conf.input_q = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Q)) ? 1 : 0;
-      state.camera_conf.input_w = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_W)) ? 1 : 0;
-      state.camera_conf.input_s = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S)) ? 1 : 0;
-      state.camera_conf.input_a = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_A)) ? 1 : 0;
-      state.camera_conf.input_d = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D)) ? 1 : 0;
+      state.camera_conf.move_speed += ImGui::GetIO().MouseWheel;
+      state.camera_conf.input_up = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_E)) ? 1 : 0;
+      state.camera_conf.input_down = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Q)) ? 1 : 0;
+      state.camera_conf.input_forward = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_W)) ? 1 : 0;
+      state.camera_conf.input_backward = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S)) ? 1 : 0;
+      state.camera_conf.input_left = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_A)) ? 1 : 0;
+      state.camera_conf.input_right = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D)) ? 1 : 0;
     }
-    state.camera_conf.move_speed = state.move_speed;
     
     // Handle camera rotation
     if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
     {
       ImVec2 mouse_delta = ImGui::GetIO().MouseDelta;
-      mouse_delta.x *= -1;
-      mouse_delta.y *= -1;
-      
-      // Check if the mouse has moved
-      if (mouse_delta.x != 0.0f || mouse_delta.y != 0.0f)
-      {
-        float delta_yaw = mouse_delta.x * state.rotate_speed;
-        float delta_pitch = mouse_delta.y * state.rotate_speed;
-        state.camera_conf.rotate(delta_yaw, delta_pitch);
-      }
+      state.camera_conf.input_yaw = mouse_delta.x;
+      state.camera_conf.input_pitch = mouse_delta.y;
     }
  
     // Object movement

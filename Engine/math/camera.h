@@ -24,10 +24,12 @@ namespace engine
     void update();
     
     // Camera movement
-    void rotate(float roll, float pitch);
-    int32_t input_w, input_a, input_s, input_d;
-    int32_t input_q, input_e;
-    float move_speed;
+    int32_t input_forward, input_left, input_backward, input_right;
+    int32_t input_down, input_up;
+    float move_speed = 15.f;
+    int32_t input_yaw;
+    int32_t input_pitch;
+    float rotate_speed = 10.f;
     
     // Runtime members
     DirectX::XMFLOAT4X4 view_projection;
@@ -35,7 +37,7 @@ namespace engine
     
     // Persistent members
     fvec3 look_from;
-    float pitch;
+    float pitch;  
     float yaw;
     float field_of_view = 70.0f;
     float aspect_ratio_h = 9.0f;

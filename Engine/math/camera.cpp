@@ -25,23 +25,30 @@ namespace engine
   void fcamera_config::update()
   {
     using namespace DirectX;
-
+    
+    float delta_time = 1.0f/60.0f; // TODO Multiply by real delta time
+    
+    // Handle camera rotation
+    {
+      float rotate_ratio = rotate_speed * delta_time;
+      yaw += static_cast<float>(input_yaw) * rotate_ratio;
+      pitch += static_cast<float>(input_pitch) * rotate_ratio;
+    }
     XMVECTOR rotation = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(pitch), XMConvertToRadians(yaw), 0);
+
+    // Handle camera movement
     XMVECTOR translation = XMVectorSet(look_from.x, look_from.y, look_from.z, 1.f);
-
-    float ratio = move_speed * 1/60.0f; // TODO Multiply by time
-    XMVECTOR camera_translate = XMVectorSet( static_cast<float>(input_d - input_a) * ratio, 0.0f, static_cast<float>(input_w - input_s) * ratio, 1.0f * ratio);
-    XMVECTOR camera_pan = XMVectorSet( 0.0f, static_cast<float>(input_e - input_q) * ratio, 0.0f, 1.0f * ratio);
-
-    translation += XMVector3Rotate(camera_translate, rotation);
-    translation += camera_pan;
-    translation = XMVectorSetW(translation, 1.0f);
-    
-    XMMATRIX projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(field_of_view), 1.333f, 0.1, 100);
-    
-    XMVECTOR neg = XMVectorSet(-1.0f, -1.0f, -1.0f, -1.f);                        // TODO why does -operator not work?
+    {
+      float move_ratio = move_speed * delta_time;
+      XMVECTOR camera_translate = XMVectorSet(static_cast<float>(input_right - input_left) * move_ratio, 0.0f, static_cast<float>(input_forward - input_backward) * move_ratio, 1.0f * move_ratio);
+      XMVECTOR camera_pan = XMVectorSet(0.0f, static_cast<float>(input_up - input_down) * move_ratio, 0.0f, 1.0f * move_ratio);
+      translation += XMVector3Rotate(camera_translate, rotation);
+      translation += camera_pan;
+      translation = XMVectorSetW(translation, 1.0f);
+    }
+    XMMATRIX projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(field_of_view), aspect_ratio_w / aspect_ratio_h, fmath::t_min, fmath::infinity);
     XMMATRIX rotation_matrix = XMMatrixTranspose(XMMatrixRotationQuaternion(rotation));
-    XMMATRIX translation_matrix = XMMatrixTranslationFromVector(XMVectorMultiply(neg, translation));
+    XMMATRIX translation_matrix = XMMatrixTranslationFromVector(XMVectorNegate(translation));
 
     XMMATRIX view = translation_matrix * rotation_matrix;
     XMStoreFloat4x4(&view_projection, view * projection);
@@ -49,12 +56,6 @@ namespace engine
     XMFLOAT3 tr;                                    
     XMStoreFloat3(&tr, translation);                    
     look_from = fvec3(tr.x, tr.y, tr.z); 
-  }
-  
-  void fcamera_config::rotate(float delta_yaw, float delta_pitch)
-  {
-    yaw -= delta_yaw;
-    pitch -= delta_pitch;
   }
 
   void fcamera::configure(const fcamera_config& in_camera_config)
