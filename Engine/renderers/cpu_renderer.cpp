@@ -114,7 +114,7 @@ namespace engine
       fdx11& dx = fdx11::instance();
       DX_RELEASE(output_srv)
       DX_RELEASE(output_texture)
-      bool ret = dx.load_texture_from_buffer(get_img_rgb(), job_state.image_width, job_state.image_height, &output_srv, &output_texture);
+      bool ret = dx.load_texture_from_buffer(get_img_rgb(), job_state.image_width, job_state.image_height, output_srv, output_texture);
       assert(ret);
     
       job_state.can_partial_update = true;

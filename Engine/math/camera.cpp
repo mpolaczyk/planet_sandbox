@@ -55,7 +55,13 @@ namespace engine
 
     XMFLOAT3 tr;                                    
     XMStoreFloat3(&tr, translation);                    
-    look_from = fvec3(tr.x, tr.y, tr.z); 
+    look_from = fvec3(tr.x, tr.y, tr.z);
+
+    XMVECTOR forward = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
+    XMVector3Rotate(forward, rotation);
+    XMFLOAT3 fwd;                                    
+    XMStoreFloat3(&fwd, forward);      
+    look_dir = fvec3(fwd.x, fwd.y, fwd.z);
   }
 
   void fcamera::configure(const fcamera_config& in_camera_config)

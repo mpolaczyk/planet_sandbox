@@ -5,102 +5,83 @@
 
 #include "renderer/dx11_lib.h"
 #include "engine/log.h"
+#include "engine/tools.h"
 
 namespace engine
 {
-  bool fdx11::create_device()
+  void fdx11::create_device()
   {
-    ID3D11Device* base_device;
-    ID3D11DeviceContext* base_device_context;
+    ComPtr<ID3D11Device> base_device;
+    ComPtr<ID3D11DeviceContext> base_device_context;
     const D3D_FEATURE_LEVEL feature_levels[] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
     UINT flags = 0;
 #if BUILD_DEBUG
     flags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
-    HRESULT result = D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE, 
+    if(FAILED(D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE, 
                                           0, flags, 
                                           feature_levels, 2, 
-                                          D3D11_SDK_VERSION, &base_device, 
-                                          0, &base_device_context);
-    if (FAILED(result))
+                                          D3D11_SDK_VERSION, base_device.GetAddressOf(), 
+                                          0, base_device_context.GetAddressOf())))
     {
-      LOG_CRITICAL("D3D11CreateDevice failed.");
-      //const std::string error = win32_error::get_last_error_as_string(); FIX
-      //LOG_CRITICAL("{0}", error);
-      return false;
+      throw std::runtime_error("D3D11CreateDevice failed.");
     }
 
-    result = base_device->QueryInterface(IID_PPV_ARGS(&device));
-    if(FAILED(result))
+    if(FAILED(base_device.As<ID3D11Device1>(&device)))
     {
-      LOG_CRITICAL("ID3D11Device1 query failed.");
-      return false;
+      throw std::runtime_error("ID3D11Device1 query failed.");
     }
-    DX_RELEASE(base_device)
 
-    result = base_device_context->QueryInterface(IID_PPV_ARGS(&device_context));
-    if(FAILED(result))
+    if(FAILED(base_device_context.As<ID3D11DeviceContext1>(&device_context)))
     {
-      LOG_CRITICAL("ID3D11DeviceContext1 query failed.");
-      return false;
+      throw std::runtime_error("ID3D11DeviceContext1 query failed.");
     }
-    DX_RELEASE(base_device_context)
-    return true;
   }
 
-  bool fdx11::create_debug_layer()
+  void fdx11::create_debug_layer() const
   {
 #if BUILD_DEBUG
-    ID3D11Debug *debug = nullptr;
-    device->QueryInterface(IID_PPV_ARGS(&debug));
-    if (debug)
+    ComPtr<ID3D11Debug> debug;
+    if(FAILED(device.As<ID3D11Debug>(&debug)))
     {
-      ID3D11InfoQueue *info_queue = nullptr;
-      if (SUCCEEDED(debug->QueryInterface(IID_PPV_ARGS(&info_queue))))
-      {
-        info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
-        info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
-        info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
-        DX_RELEASE(info_queue)
-      }
-      else
-      {
-        LOG_CRITICAL("ID3D11InfoQueue query failed.");
-        return false;
-      }
-      DX_RELEASE(debug)
+      throw std::runtime_error("ID3D11Debug query failed.");
     }
-    else
+    
+    ComPtr<ID3D11InfoQueue> info_queue;
+    if (FAILED(debug.As<ID3D11InfoQueue>(&info_queue)))
     {
-      LOG_CRITICAL("ID3D11Debug query failed.");
-      return false;
+      throw std::runtime_error("ID3D11InfoQueue query failed.");
     }
+    
+    info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
+    info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
+    info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
 #endif
-    return true;
   }
 
-  bool fdx11::create_swap_chain(HWND hwnd)
+  void fdx11::create_swap_chain(HWND hwnd)
   {
-    IDXGIFactory2* factory;
+    ComPtr<IDXGIDevice1> dxgi_device;
+    if(FAILED(device.As<IDXGIDevice1>(&dxgi_device)))
     {
-      IDXGIDevice1* dxgi_device;
-      HRESULT result = device->QueryInterface(IID_PPV_ARGS(&dxgi_device));
-      assert(SUCCEEDED(result));
+      throw std::runtime_error("IDXGIDevice query failed.");
+    }
 
-      IDXGIAdapter* adapter;
-      result = dxgi_device->GetAdapter(&adapter);
-      assert(SUCCEEDED(result));  
-      DX_RELEASE(dxgi_device)
+    ComPtr<IDXGIAdapter> adapter;
+    if(FAILED(dxgi_device->GetAdapter(&adapter)))
+    {
+      throw std::runtime_error("GetAdapter failed.");
+    }
 
-      DXGI_ADAPTER_DESC adapter_desc;
-      adapter->GetDesc(&adapter_desc);
+    DXGI_ADAPTER_DESC adapter_desc;
+    adapter->GetDesc(&adapter_desc);
+    
+    LOG_INFO("Graphics Device: {0}", ftools::to_utf8(adapter_desc.Description));
 
-      OutputDebugStringA("Graphics Device: ");
-      OutputDebugStringW(adapter_desc.Description);
-      
-      result = adapter->GetParent(IID_PPV_ARGS(&factory));
-      assert(SUCCEEDED(result));
-      DX_RELEASE(adapter)
+    ComPtr<IDXGIFactory2> factory;
+    if(FAILED(adapter->GetParent(IID_PPV_ARGS(factory.GetAddressOf()))))
+    {
+      throw std::runtime_error("GetParent failed.");
     }
 
     DXGI_SWAP_CHAIN_DESC1 swap_chain_desc = {};
@@ -116,22 +97,24 @@ namespace engine
     swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
     swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-    HRESULT result = factory->CreateSwapChainForHwnd(device, hwnd, &swap_chain_desc, 0, 0, &swap_chain);
-    assert(SUCCEEDED(result));
-
-    DX_RELEASE(factory)
-    return true;
+    if(FAILED(factory->CreateSwapChainForHwnd(device.Get(), hwnd, &swap_chain_desc, 0, 0, swap_chain.GetAddressOf())))
+    {
+      throw std::runtime_error("CreateSwapChainForHwnd failed.");
+    }
   }
 
   void fdx11::create_render_target()
   {
-    ID3D11Texture2D* frame_buffer;
-    HRESULT result = swap_chain->GetBuffer(0, IID_PPV_ARGS(&frame_buffer));
-    assert(SUCCEEDED(result));
+    ComPtr<ID3D11Texture2D> frame_buffer;
+    if(FAILED(swap_chain->GetBuffer(0, IID_PPV_ARGS(&frame_buffer))))
+    {
+      throw std::runtime_error("GetBuffer frame buffer failed.");
+    }
     
-    result = device->CreateRenderTargetView(frame_buffer, NULL, &rtv);
-    assert(SUCCEEDED(result));
-    DX_RELEASE(frame_buffer)
+    if(FAILED(device->CreateRenderTargetView(frame_buffer.Get(), nullptr, rtv.GetAddressOf())))
+    {
+      throw std::runtime_error("CreateRenderTargetView failed.");
+    }
   }
 
   void fdx11::cleanup_render_target()
@@ -147,7 +130,7 @@ namespace engine
     DX_RELEASE(device)
   }
 
-  bool fdx11::load_texture_from_buffer(unsigned char* buffer, int width, int height, ID3D11ShaderResourceView** out_srv, ID3D11Texture2D** out_texture)
+  bool fdx11::load_texture_from_buffer(unsigned char* buffer, int width, int height, ComPtr<ID3D11ShaderResourceView>& out_srv, ComPtr<ID3D11Texture2D>& out_texture) const
   {
     if (buffer == nullptr) return false;
 
@@ -163,14 +146,14 @@ namespace engine
     desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-    D3D11_SUBRESOURCE_DATA* sub_resource = new D3D11_SUBRESOURCE_DATA();
-    sub_resource->pSysMem = buffer;
-    sub_resource->SysMemPitch = desc.Width * 4;
-    sub_resource->SysMemSlicePitch = 0;
+    D3D11_SUBRESOURCE_DATA sub_resource;
+    sub_resource.pSysMem = buffer;
+    sub_resource.SysMemPitch = desc.Width * 4;
+    sub_resource.SysMemSlicePitch = 0;
 
-    ID3D11Texture2D* texture = nullptr;
+    ComPtr<ID3D11Texture2D> texture;
     bool success = false;
-    if (SUCCEEDED(device->CreateTexture2D(&desc, sub_resource, &texture)) && texture)
+    if (SUCCEEDED(device->CreateTexture2D(&desc, &sub_resource, texture.GetAddressOf())) && texture)
     {
       D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc;
       ZeroMemory(&srv_desc, sizeof(srv_desc));
@@ -178,22 +161,21 @@ namespace engine
       srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
       srv_desc.Texture2D.MipLevels = desc.MipLevels;
       srv_desc.Texture2D.MostDetailedMip = 0;
-      if (SUCCEEDED(device->CreateShaderResourceView(texture, &srv_desc, out_srv)))
+      if (SUCCEEDED(device->CreateShaderResourceView(texture.Get(), &srv_desc, out_srv.GetAddressOf())))
       {
-        *out_texture = texture;
+        out_texture = texture;
         success = true;
       }
     }
-    delete sub_resource;
     return success;
   }
 
-  bool fdx11::update_texture_buffer(unsigned char* buffer, int width, int height, ID3D11Texture2D* in_texture)
+  bool fdx11::update_texture_buffer(unsigned char* buffer, int width, int height, const ComPtr<ID3D11Texture2D>& in_texture) const
   {
     D3D11_MAPPED_SUBRESOURCE mapped_resource;
     ZeroMemory(&mapped_resource, sizeof(D3D11_MAPPED_SUBRESOURCE));
     int row_span = width * 4; // 4 bytes per px
-    device_context->Map(in_texture, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_resource);
+    device_context->Map(in_texture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_resource);
     BYTE* mapped_data = reinterpret_cast<BYTE*>(mapped_resource.pData);
     for (int i = 0; i < height; ++i)
     {
@@ -201,7 +183,7 @@ namespace engine
       mapped_data += mapped_resource.RowPitch;
       buffer += row_span;
     }
-    device_context->Unmap(in_texture, 0);
+    device_context->Unmap(in_texture.Get(), 0);
     return true;
   }
 }

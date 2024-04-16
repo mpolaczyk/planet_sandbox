@@ -43,17 +43,15 @@ namespace engine
     input_stream >> j;
     instance->accept(deserialize_object(j));
     
-    if(!load_hlsl(instance->shader_file_name, instance->entrypoint, instance->target, &instance->shader_blob))
+    if(!load_hlsl(instance->shader_file_name, instance->entrypoint, instance->target, instance->shader_blob))
     {
-      instance->shader_blob->Release();
+      DX_RELEASE(instance->shader_blob)
       return false;
     }
 
-    HRESULT result = fdx11::instance().device->CreateVertexShader(instance->shader_blob->GetBufferPointer(), instance->shader_blob->GetBufferSize(), nullptr, &instance->shader);
-    if (FAILED(result))
+    if(FAILED(fdx11::instance().device->CreateVertexShader(instance->shader_blob->GetBufferPointer(), instance->shader_blob->GetBufferSize(), nullptr, instance->shader.GetAddressOf())))
     {
       LOG_ERROR("Unable to create vertex shader: {0}", instance->shader_file_name);
-      instance->shader_blob->Release();
       return false;
     }
     return true;

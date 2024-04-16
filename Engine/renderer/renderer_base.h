@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <wrl/client.h>
 
 #include "resources/bmp.h"
 #include "engine/hash.h"
@@ -55,13 +56,11 @@ namespace engine
     rrenderer_base& operator=(const rrenderer_base&) = delete;
     rrenderer_base(rrenderer_base&&) = delete;
     rrenderer_base& operator=(rrenderer_base&&) = delete;
-
-    virtual void destroy() override;
     
     // Output texture
-    ID3D11ShaderResourceView* output_srv = nullptr;
-    ID3D11Texture2D* output_texture = nullptr;
-    ID3D11Texture2D* output_depth_texture = nullptr;
+    ComPtr<ID3D11ShaderResourceView> output_srv;
+    ComPtr<ID3D11Texture2D> output_texture;
+    ComPtr<ID3D11Texture2D> output_depth_texture;
     
     // Main thread public interface.
     virtual void render_frame(const hscene* in_scene, const frenderer_config& in_frenderer_config, const fcamera_config& in_camera_config) = 0;

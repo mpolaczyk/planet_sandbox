@@ -104,6 +104,7 @@
     <ClInclude Include="assets\vertex_shader.h" />
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="core\concepts.h" />
+    <ClInclude Include="engine\tools.h" />
     <ClInclude Include="hittables\hittables.h" />
     <ClInclude Include="hittables\scene.h" />
     <ClInclude Include="hittables\sphere.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="assets\pixel_shader.cpp" />
     <ClCompile Include="assets\vertex_shader.cpp" />
     <ClCompile Include="asset\asset.cpp" />
+    <ClCompile Include="engine\tools.cpp" />
     <ClCompile Include="hittables\hittables.cpp" />
     <ClCompile Include="hittables\scene.cpp" />
     <ClCompile Include="hittables\sphere.cpp" />

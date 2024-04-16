@@ -179,7 +179,7 @@ namespace ray_tracer
       ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
       ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
       ImVec2 size = ImVec2(state.output_width * model.zoom, state.output_height * model.zoom);
-      ImGui::Image((ImTextureID)state.renderer->output_srv, size, ImVec2(0, 0), ImVec2(1, 1));
+      ImGui::Image((ImTextureID)state.renderer->output_srv.Get(), size, ImVec2(0, 0), ImVec2(1, 1));
 
       if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
       {

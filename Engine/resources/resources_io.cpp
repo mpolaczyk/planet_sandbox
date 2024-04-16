@@ -55,7 +55,7 @@ namespace engine
     {
       LOG_WARN("Static mesh: {0} has no texture coords!", file_name); 
     }
-    auto device = fdx11::instance().device;
+    ComPtr<ID3D11Device1> device = fdx11::instance().device;
     // Index buffer
     {
       D3D11_BUFFER_DESC desc = {};
@@ -63,7 +63,7 @@ namespace engine
       desc.Usage     = D3D11_USAGE_IMMUTABLE;
       desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
       D3D11_SUBRESOURCE_DATA data = { obj_reader.indices.data() };
-      HRESULT result = device->CreateBuffer(&desc, &data, &out_static_mesh->render_state.index_buffer);
+      HRESULT result = device->CreateBuffer(&desc, &data, out_static_mesh->render_state.index_buffer.GetAddressOf());
       if(FAILED(result))
       {
         LOG_WARN("Failed to build index buffer for: {0}", file_name);
@@ -83,7 +83,7 @@ namespace engine
       desc.Usage     = D3D11_USAGE_IMMUTABLE;
       desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
       D3D11_SUBRESOURCE_DATA data = { vertex_buffer.data() };
-      HRESULT result = device->CreateBuffer(&desc, &data, &out_static_mesh->render_state.vertex_buffer);
+      HRESULT result = device->CreateBuffer(&desc, &data, out_static_mesh->render_state.vertex_buffer.GetAddressOf());
       if(FAILED(result))
       {
         LOG_WARN("Failed to build vertex buffer for: {0}", file_name);
@@ -148,14 +148,14 @@ namespace engine
     return true;
   }
   
-  bool load_hlsl(const std::string& file_name, const std::string& entrypoint, const std::string& target, ID3D10Blob** out_shader_blob)
+  bool load_hlsl(const std::string& file_name, const std::string& entrypoint, const std::string& target, ComPtr<ID3D10Blob>& out_shader_blob)
   {
     std::string path = fio::get_shader_file_path(file_name.c_str());
     
-    ID3DBlob* shader_compiler_errors_blob = nullptr;
+    ComPtr<ID3DBlob> shader_compiler_errors_blob;
     std::wstring wpath = std::wstring(path.begin(), path.end());
     LPCWSTR sw = wpath.c_str();
-    HRESULT result = D3DCompileFromFile(sw, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, entrypoint.c_str(), target.c_str(), 0, 0, out_shader_blob, &shader_compiler_errors_blob);
+    HRESULT result = D3DCompileFromFile(sw, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, entrypoint.c_str(), target.c_str(), 0, 0, out_shader_blob.GetAddressOf(), shader_compiler_errors_blob.GetAddressOf());
     if (FAILED(result))
     {
       if (result == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
@@ -165,7 +165,6 @@ namespace engine
       else if (shader_compiler_errors_blob)
       {
         LOG_ERROR("Could not copile shader. {0}", static_cast<const char*>(shader_compiler_errors_blob->GetBufferPointer()));
-        shader_compiler_errors_blob->Release();
       }
       else
       {

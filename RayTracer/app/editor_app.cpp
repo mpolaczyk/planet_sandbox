@@ -56,7 +56,7 @@ namespace ray_tracer
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
     fdx11& dx = fdx11::instance();
-    ImGui_ImplDX11_Init(dx.device, dx.device_context);
+    ImGui_ImplDX11_Init(dx.device.Get(), dx.device_context.Get());
   
     // Load persistent state
     app_state.load_window_state();
@@ -203,9 +203,9 @@ namespace ray_tracer
   void feditor_app::present()
   {
     fdx11& dx = fdx11::instance();
-    dx.device_context->OMSetRenderTargets(1, &dx.rtv, NULL);
+    dx.device_context->OMSetRenderTargets(1, dx.rtv.GetAddressOf(), nullptr);
     
-    dx.device_context->ClearRenderTargetView(dx.rtv, DirectX::Colors::LightSlateGray);
+    dx.device_context->ClearRenderTargetView(dx.rtv.Get(), DirectX::Colors::LightSlateGray);
         
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
   

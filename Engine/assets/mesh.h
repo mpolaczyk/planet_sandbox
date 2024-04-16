@@ -1,6 +1,8 @@
 #pragma once
 
+#include <d3d11.h>
 #include <directxcollision.h>
+#include <wrl/client.h>
 #include <vector>
 
 #include "core/core.h"
@@ -9,17 +11,17 @@
 #include "math/vertex_data.h"
 #include "asset/asset.h"
 
-struct ID3D11Buffer;
-
 namespace engine
 {
+  using Microsoft::WRL::ComPtr;
+  
   struct ENGINE_API fstatic_mesh_render_state
   {
     unsigned int num_indices;
     unsigned int stride;
     unsigned int offset;
-    ID3D11Buffer* vertex_buffer;
-    ID3D11Buffer* index_buffer;
+    ComPtr<ID3D11Buffer> vertex_buffer;
+    ComPtr<ID3D11Buffer> index_buffer;
   };
   
   class ENGINE_API astatic_mesh : public aasset_base

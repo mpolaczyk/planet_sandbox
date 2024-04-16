@@ -21,7 +21,7 @@ namespace engine
     float padding[2];             // 8  80  - 4
   };
 
-  enum flight_type
+  enum ENGINE_API flight_type
   {
     directional = 0,
     point,

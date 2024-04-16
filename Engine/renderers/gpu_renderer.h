@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <DirectXMath.h>
+#include <wrl/client.h>
 
 #include "core/core.h"
 #include "renderer/renderer_base.h"
@@ -18,12 +19,14 @@ struct ID3D11SamplerState;
 struct ID3D11RasterizerState;
 struct ID3D11DepthStencilState;
 
-using namespace DirectX;
-
 #define MAX_LIGHTS 8
 
 namespace engine
 {
+  using namespace DirectX;
+
+  using Microsoft::WRL::ComPtr;
+  
   class ENGINE_API rgpu : public rrenderer_base
   {
     struct fframe_data
@@ -65,27 +68,27 @@ namespace engine
     virtual void destroy() override;
         
     // Output texture, renders the scene there
-    ID3D11RenderTargetView* output_rtv = nullptr;
-    ID3D11DepthStencilView* output_dsv = nullptr;
+    ComPtr<ID3D11RenderTargetView> output_rtv;
+    ComPtr<ID3D11DepthStencilView> output_dsv;
     unsigned int output_width = 0;
     unsigned int output_height = 0;
     
-    ID3D11InputLayout* input_layout = nullptr;
+    ComPtr<ID3D11InputLayout> input_layout;
 
-    ID3D11ShaderResourceView* texture_srv = nullptr;
-    ID3D11SamplerState* sampler_state = nullptr;
+    ComPtr<ID3D11ShaderResourceView> texture_srv;
+    ComPtr<ID3D11SamplerState> sampler_state;
 
-    ID3D11Buffer* frame_constant_buffer = nullptr;
-    ID3D11Buffer* object_constant_buffer = nullptr;
-    //ID3D11Buffer* material_constant_buffer = nullptr;
-    //ID3D11Buffer* light_constant_buffer = nullptr;
+    ComPtr<ID3D11Buffer> frame_constant_buffer;
+    ComPtr<ID3D11Buffer> object_constant_buffer;
+    //ComPtr<ID3D11Buffer> material_constant_buffer;
+    //ComPtr<ID3D11Buffer> light_constant_buffer;
     
     int64_t timestamp_start = 0;
     int64_t perf_counter_frequency = 0;
     double current_time = 0.0;  // [s]
 
-    ID3D11RasterizerState* rasterizer_state = nullptr;
-    ID3D11DepthStencilState* depth_stencil_state = nullptr;
+    ComPtr<ID3D11RasterizerState> rasterizer_state;
+    ComPtr<ID3D11DepthStencilState> depth_stencil_state;
 
     bool init_done = false;
     

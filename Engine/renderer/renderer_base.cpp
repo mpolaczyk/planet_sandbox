@@ -9,14 +9,5 @@
 namespace engine
 {
   OBJECT_DEFINE(rrenderer_base, oobject, Renderer base)
-  OBJECT_DEFINE_NOSPAWN(rrenderer_base)
-  
-  void rrenderer_base::destroy()
-  {
-    DX_RELEASE(output_texture)
-    DX_RELEASE(output_srv)
-    DX_RELEASE(output_depth_texture)
-    oobject::destroy();
-  }
- 
+  OBJECT_DEFINE_NOSPAWN(rrenderer_base) 
 }

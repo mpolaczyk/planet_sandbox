@@ -11,7 +11,7 @@
 using namespace DirectX;
 
 namespace engine
-{
+{  
     OBJECT_DEFINE(rgpu, rrenderer_base, GPU renderer)
     OBJECT_DEFINE_SPAWN(rgpu)
 
@@ -62,24 +62,32 @@ namespace engine
             desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
             desc.CPUAccessFlags = 0;
             desc.MiscFlags = 0;
-            HRESULT result = dx.device->CreateTexture2D(&desc, NULL, &output_texture);
-            assert(SUCCEEDED(result));
+            if(FAILED(dx.device->CreateTexture2D(&desc, NULL, &output_texture)))
+            {
+                throw std::runtime_error("CreateTexture2D output texture failed.");
+            }
 
             desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
             desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-            result = dx.device->CreateTexture2D(&desc, NULL, &output_depth_texture);
-            assert(SUCCEEDED(result));
+            if(FAILED(dx.device->CreateTexture2D(&desc, NULL, &output_depth_texture)))
+            {
+                throw std::runtime_error("CreateTexture2D output depth texture failed.");
+            }
         }
         {
             D3D11_RENDER_TARGET_VIEW_DESC desc = {};
             desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
             desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
             desc.Texture2D.MipSlice = 0;
-            HRESULT result = dx.device->CreateRenderTargetView(output_texture, &desc, &output_rtv);
-            assert(SUCCEEDED(result));
+            if(FAILED(dx.device->CreateRenderTargetView(output_texture.Get(), &desc, output_rtv.GetAddressOf())))
+            {
+                throw std::runtime_error("CreateRenderTargetView output texture failed");
+            }
 
-            result = dx.device->CreateDepthStencilView(output_depth_texture, nullptr, &output_dsv);
-            assert(SUCCEEDED(result));
+            if(FAILED(dx.device->CreateDepthStencilView(output_depth_texture.Get(), nullptr, output_dsv.GetAddressOf())))
+            {
+                throw std::runtime_error("CreateDepthStencilView output depth texture failed");
+            }
         }
         {
             D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
@@ -87,8 +95,10 @@ namespace engine
             desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
             desc.Texture2D.MostDetailedMip = 0;
             desc.Texture2D.MipLevels = 1;
-            HRESULT result = dx.device->CreateShaderResourceView(output_texture, &desc, &output_srv);
-            assert(SUCCEEDED(result));
+            if(FAILED(dx.device->CreateShaderResourceView(output_texture.Get(), &desc, output_srv.GetAddressOf())))
+            {
+                throw std::runtime_error("CreateShaderResourceView output texture failed.");
+            }
         }
     }
 
@@ -133,8 +143,10 @@ namespace engine
                 {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0}
             };
             const auto blob = vertex_shader_asset.get()->shader_blob;
-            HRESULT result = device->CreateInputLayout(input_element_desc, ARRAYSIZE(input_element_desc), blob->GetBufferPointer(), blob->GetBufferSize(), &input_layout);
-            assert(SUCCEEDED(result));
+            if(FAILED(device->CreateInputLayout(input_element_desc, ARRAYSIZE(input_element_desc), blob->GetBufferPointer(), blob->GetBufferSize(), &input_layout)))
+            {
+                throw std::runtime_error("CreateInputLayout failed.");
+            }
         }
 
         // Poke static mesh loading
@@ -162,8 +174,10 @@ namespace engine
             desc.BorderColor[3] = 1.0f;
             desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
-            HRESULT result = device->CreateSamplerState(&desc, &sampler_state);
-            assert(SUCCEEDED(result));
+            if(FAILED(device->CreateSamplerState(&desc, &sampler_state)))
+            {
+                throw std::runtime_error("CreateSamplerState failed.");
+            }
         }
 
         // Texture asset
@@ -196,13 +210,16 @@ namespace engine
             texture_subresource_data.SysMemPitch = texture_bytes_per_row;
             texture_subresource_data.pSysMem = texture_bytes;
 
-            ID3D11Texture2D* texture;
-            HRESULT result = device->CreateTexture2D(&texture_desc, &texture_subresource_data, &texture);
-            assert(SUCCEEDED(result));
+            ComPtr<ID3D11Texture2D> texture;
+            if(FAILED(device->CreateTexture2D(&texture_desc, &texture_subresource_data, texture.GetAddressOf())))
+            {
+                throw std::runtime_error("CreateTexture2D texture asset failed.");
+            }
 
-            result = device->CreateShaderResourceView(texture, nullptr, &texture_srv);
-            assert(SUCCEEDED(result));
-            texture->Release();
+            if(FAILED(device->CreateShaderResourceView(texture.Get(), nullptr, texture_srv.GetAddressOf())))
+            {
+                throw std::runtime_error("CreateShaderResourceView texture asset failed.");
+            }
         }
 
         // Constant buffers
@@ -213,12 +230,16 @@ namespace engine
             desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
             desc.ByteWidth = sizeof(fobject_data);
-            HRESULT result = device->CreateBuffer(&desc, nullptr, &object_constant_buffer);
-            assert(SUCCEEDED(result));
+            if(FAILED(device->CreateBuffer(&desc, nullptr, &object_constant_buffer)))
+            {
+                throw std::runtime_error("CreateBuffer object constant buffer failed.");
+            }
 
             desc.ByteWidth = sizeof(fframe_data);
-            result = device->CreateBuffer(&desc, nullptr, &frame_constant_buffer);
-            assert(SUCCEEDED(result));
+            if(FAILED(device->CreateBuffer(&desc, nullptr, &frame_constant_buffer)))
+            {
+                throw std::runtime_error("CreateBuffer frame constant buffer failed.");
+            }
             
             // TODO - remove?
             //desc.ByteWidth      = sizeof(fmaterial_properties);
@@ -243,8 +264,10 @@ namespace engine
             desc.MultisampleEnable = FALSE;
             desc.ScissorEnable = FALSE;
             desc.SlopeScaledDepthBias = 0.0f;
-            HRESULT result = device->CreateRasterizerState(&desc, &rasterizer_state);
-            assert(SUCCEEDED(result));
+            if(FAILED(device->CreateRasterizerState(&desc, &rasterizer_state)))
+            {
+                throw std::runtime_error("CreateRasterizerState failed.");
+            }
         }
 
         // Depth stencil state
@@ -254,8 +277,10 @@ namespace engine
             desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
             desc.DepthFunc = D3D11_COMPARISON_LESS;
             desc.StencilEnable = FALSE;
-            HRESULT result = device->CreateDepthStencilState(&desc, &depth_stencil_state);
-            assert(SUCCEEDED(result));
+            if(FAILED(device->CreateDepthStencilState(&desc, &depth_stencil_state)))
+            {
+                throw std::runtime_error("CreateDepthStencilState failed.");
+            }
         }
     }
 
@@ -274,22 +299,22 @@ namespace engine
 
         fdx11& dx = fdx11::instance();
 
-        dx.device_context->ClearRenderTargetView(output_rtv, Colors::LightSlateGray);
-        dx.device_context->ClearDepthStencilView(output_dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
+        dx.device_context->ClearRenderTargetView(output_rtv.Get(), Colors::LightSlateGray);
+        dx.device_context->ClearDepthStencilView(output_dsv.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
         const D3D11_VIEWPORT viewport = {0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f};
         dx.device_context->RSSetViewports(1, &viewport);
-        dx.device_context->RSSetState(rasterizer_state);
-        dx.device_context->OMSetDepthStencilState(depth_stencil_state, 0);
-        dx.device_context->OMSetRenderTargets(1, &output_rtv, output_dsv);
+        dx.device_context->RSSetState(rasterizer_state.Get());
+        dx.device_context->OMSetDepthStencilState(depth_stencil_state.Get(), 0);
+        dx.device_context->OMSetRenderTargets(1, output_rtv.GetAddressOf(), output_dsv.Get());
 
         dx.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        dx.device_context->IASetInputLayout(input_layout);
-        dx.device_context->VSSetShader(vertex_shader_asset.get()->shader, nullptr, 0);
-        dx.device_context->VSSetConstantBuffers(0, 1, &frame_constant_buffer);
-        dx.device_context->VSSetConstantBuffers(1, 1, &object_constant_buffer);
-        dx.device_context->PSSetShader(pixel_shader_asset.get()->shader, nullptr, 0);
-        dx.device_context->PSSetShaderResources(0, 1, &texture_srv);
+        dx.device_context->IASetInputLayout(input_layout.Get());
+        dx.device_context->VSSetShader(vertex_shader_asset.get()->shader.Get(), nullptr, 0);
+        dx.device_context->VSSetConstantBuffers(0, 1, frame_constant_buffer.GetAddressOf());
+        dx.device_context->VSSetConstantBuffers(1, 1, object_constant_buffer.GetAddressOf());
+        dx.device_context->PSSetShader(pixel_shader_asset.get()->shader.Get(), nullptr, 0);
+        dx.device_context->PSSetShaderResources(0, 1, texture_srv.GetAddressOf());
         dx.device_context->PSSetSamplers(0, 1, &sampler_state);
 
         // Update per frame constant buffer
@@ -298,9 +323,9 @@ namespace engine
             pfd.view_projection = camera.view_projection;
             
             D3D11_MAPPED_SUBRESOURCE data;
-            dx.device_context->Map(frame_constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+            dx.device_context->Map(frame_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
             *static_cast<fframe_data*>(data.pData) = pfd;
-            dx.device_context->Unmap(frame_constant_buffer, 0);
+            dx.device_context->Unmap(frame_constant_buffer.Get(), 0);
         }
         
         // Draw the scene
@@ -312,35 +337,37 @@ namespace engine
                 const astatic_mesh* sma = sm->mesh_asset_ptr.get();
                 if (sma == nullptr) { continue; }
                 const fstatic_mesh_render_state& smrs = sma->render_state;
-
+                const amaterial* ma = sm->material_asset_ptr.get();
+                if (ma == nullptr) { continue; }
+                
                 // Object const buffer
                 {
                     const XMVECTOR model_pos = XMVectorSet(sm->origin.x, sm->origin.y, sm->origin.z, 1.f);
 
-                    XMMATRIX translationMatrix = XMMatrixTranslation(sm->origin.x, sm->origin.y, sm->origin.z );
-                    XMMATRIX rotationMatrix = XMMatrixRotationX(XMConvertToRadians(sm->rotation.x))
+                    XMMATRIX translation_matrix = XMMatrixTranslation(sm->origin.x, sm->origin.y, sm->origin.z );
+                    XMMATRIX rotation_matrix = XMMatrixRotationX(XMConvertToRadians(sm->rotation.x))
                         * XMMatrixRotationY(XMConvertToRadians(sm->rotation.y))
                         * XMMatrixRotationZ(XMConvertToRadians(sm->rotation.z));
-                    XMMATRIX scaleMatrix = XMMatrixScaling(sm->scale.x, sm->scale.y, sm->scale.z);
-                    XMMATRIX worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
+                    XMMATRIX scale_matrix = XMMatrixScaling(sm->scale.x, sm->scale.y, sm->scale.z);
+                    XMMATRIX world_matrix = scale_matrix * rotation_matrix * translation_matrix;
                     
-                    const XMMATRIX inverse_transpose_model_world = XMMatrixTranspose(XMMatrixInverse(nullptr, worldMatrix));
-                    const XMMATRIX model_world_view_projection = XMMatrixMultiply(worldMatrix, XMLoadFloat4x4(&camera.view_projection));
+                    const XMMATRIX inverse_transpose_model_world = XMMatrixTranspose(XMMatrixInverse(nullptr, world_matrix));
+                    const XMMATRIX model_world_view_projection = XMMatrixMultiply(world_matrix, XMLoadFloat4x4(&camera.view_projection));
                 
                     fobject_data pod;
-                    XMStoreFloat4x4(&pod.model_world, worldMatrix);
+                    XMStoreFloat4x4(&pod.model_world, world_matrix);
                     XMStoreFloat4x4(&pod.inverse_transpose_model_world, inverse_transpose_model_world);
                     XMStoreFloat4x4(&pod.model_world_view_projection, model_world_view_projection);
 
                     D3D11_MAPPED_SUBRESOURCE data;
-                    dx.device_context->Map(object_constant_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+                    dx.device_context->Map(object_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
                     *static_cast<fobject_data*>(data.pData) = pod;
-                    dx.device_context->Unmap(object_constant_buffer, 0);
+                    dx.device_context->Unmap(object_constant_buffer.Get(), 0);
                 }
 
                 // Draw mesh
-                dx.device_context->IASetVertexBuffers(0, 1, &smrs.vertex_buffer, &smrs.stride, &smrs.offset);
-                dx.device_context->IASetIndexBuffer(smrs.index_buffer, DXGI_FORMAT_R16_UINT, 0);
+                dx.device_context->IASetVertexBuffers(0, 1, smrs.vertex_buffer.GetAddressOf(), &smrs.stride, &smrs.offset);
+                dx.device_context->IASetIndexBuffer(smrs.index_buffer.Get(), DXGI_FORMAT_R16_UINT, 0);
                 dx.device_context->DrawIndexed(smrs.num_indices, 0, 0);
             }
         }
@@ -348,15 +375,6 @@ namespace engine
 
     void rgpu::destroy()
     {
-        DX_RELEASE(output_rtv)
-        DX_RELEASE(output_dsv)
-        DX_RELEASE(input_layout)
-        DX_RELEASE(texture_srv)
-        DX_RELEASE(sampler_state)
-        DX_RELEASE(frame_constant_buffer)
-        DX_RELEASE(object_constant_buffer)
-        DX_RELEASE(rasterizer_state)
-        DX_RELEASE(depth_stencil_state)
         rrenderer_base::destroy();
     }
 }
