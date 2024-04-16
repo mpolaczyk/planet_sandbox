@@ -30,8 +30,8 @@ namespace engine
     uint64_t get_ray_triangle_intersection_count() const { return job_state.ray_triangle_intersection_count; }
     uint64_t get_ray_box_intersection_count() const { return job_state.ray_box_intersection_count; }
     uint64_t get_ray_object_intersection_count() const { return job_state.ray_object_intersection_count; }
-    uint8_t* get_img_bgr() const { return job_state.img_bgr->get_buffer(); }
-    uint8_t* get_img_rgb() const { return job_state.img_rgb->get_buffer(); }
+    uint8_t* get_job_buffer_bgr() const { return job_state.img_bgr->get_buffer(); }
+    uint8_t* get_job_buffer_rgb() const { return job_state.img_rgb->get_buffer(); }
 
   protected:
     // A copy of the world at the time of a call

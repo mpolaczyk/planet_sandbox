@@ -174,7 +174,7 @@ namespace ray_tracer
 
   void draw_output_window(foutput_window_model& model, fapp_instance& state)
   {
-    if (state.renderer->output_texture != nullptr)
+    if (state.renderer->output_texture)
     {
       ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
       ImGui::InputFloat("Zoom", &model.zoom, 0.1f);

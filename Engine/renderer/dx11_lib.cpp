@@ -130,10 +130,13 @@ namespace engine
     DX_RELEASE(device)
   }
 
-  bool fdx11::load_texture_from_buffer(unsigned char* buffer, int width, int height, ComPtr<ID3D11ShaderResourceView>& out_srv, ComPtr<ID3D11Texture2D>& out_texture) const
+  bool fdx11::create_texture_from_buffer(unsigned char* in_buffer, int width, int height, ComPtr<ID3D11ShaderResourceView>& out_srv, ComPtr<ID3D11Texture2D>& out_texture) const
   {
-    if (buffer == nullptr) return false;
+    if (in_buffer == nullptr) return false;
 
+    ComPtr<ID3D11ShaderResourceView> srv;
+    ComPtr<ID3D11Texture2D> texture;
+    
     D3D11_TEXTURE2D_DESC desc;
     ZeroMemory(&desc, sizeof(desc));
     desc.Width = width;
@@ -147,43 +150,49 @@ namespace engine
     desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
     D3D11_SUBRESOURCE_DATA sub_resource;
-    sub_resource.pSysMem = buffer;
+    sub_resource.pSysMem = in_buffer;
     sub_resource.SysMemPitch = desc.Width * 4;
     sub_resource.SysMemSlicePitch = 0;
-
-    ComPtr<ID3D11Texture2D> texture;
-    bool success = false;
-    if (SUCCEEDED(device->CreateTexture2D(&desc, &sub_resource, texture.GetAddressOf())) && texture)
+    
+    if (FAILED(device->CreateTexture2D(&desc, &sub_resource, texture.GetAddressOf())))
     {
-      D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc;
-      ZeroMemory(&srv_desc, sizeof(srv_desc));
-      srv_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-      srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-      srv_desc.Texture2D.MipLevels = desc.MipLevels;
-      srv_desc.Texture2D.MostDetailedMip = 0;
-      if (SUCCEEDED(device->CreateShaderResourceView(texture.Get(), &srv_desc, out_srv.GetAddressOf())))
-      {
-        out_texture = texture;
-        success = true;
-      }
+      return false;
     }
-    return success;
+    
+    D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc;
+    ZeroMemory(&srv_desc, sizeof(srv_desc));
+    srv_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srv_desc.Texture2D.MipLevels = desc.MipLevels;
+    srv_desc.Texture2D.MostDetailedMip = 0;
+
+    if (FAILED(device->CreateShaderResourceView(texture.Get(), &srv_desc, srv.GetAddressOf())))
+    {
+      return false;
+    }
+
+    out_srv = srv;
+    out_texture = texture;
+    
+    return true;
   }
 
-  bool fdx11::update_texture_buffer(unsigned char* buffer, int width, int height, const ComPtr<ID3D11Texture2D>& in_texture) const
+  bool fdx11::update_texture_from_buffer(unsigned char* in_buffer, int width, int height, ComPtr<ID3D11Texture2D>& out_texture) const
   {
+    if (in_buffer == nullptr) return false;
+    
     D3D11_MAPPED_SUBRESOURCE mapped_resource;
     ZeroMemory(&mapped_resource, sizeof(D3D11_MAPPED_SUBRESOURCE));
     int row_span = width * 4; // 4 bytes per px
-    device_context->Map(in_texture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_resource);
+    device_context->Map(out_texture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_resource);
     BYTE* mapped_data = reinterpret_cast<BYTE*>(mapped_resource.pData);
     for (int i = 0; i < height; ++i)
     {
-      memcpy(mapped_data, buffer, row_span);
+      memcpy(mapped_data, in_buffer, row_span);
       mapped_data += mapped_resource.RowPitch;
-      buffer += row_span;
+      in_buffer += row_span;
     }
-    device_context->Unmap(in_texture.Get(), 0);
+    device_context->Unmap(out_texture.Get(), 0);
     return true;
   }
 }

@@ -47,7 +47,7 @@ namespace engine
     void cleanup_device();
     void cleanup_render_target();
 
-    bool load_texture_from_buffer(unsigned char* buffer, int width, int height, ComPtr<ID3D11ShaderResourceView>& out_srv, ComPtr<ID3D11Texture2D>& out_texture) const;
-    bool update_texture_buffer(unsigned char* buffer, int width, int height, const ComPtr<ID3D11Texture2D>& in_texture) const;
+    bool create_texture_from_buffer(unsigned char* in_buffer, int width, int height, ComPtr<ID3D11ShaderResourceView>& out_srv, ComPtr<ID3D11Texture2D>& out_texture) const;
+    bool update_texture_from_buffer(unsigned char* in_buffer, int width, int height, ComPtr<ID3D11Texture2D>& out_texture) const;
   };
 }

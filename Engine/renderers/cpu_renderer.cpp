@@ -7,6 +7,7 @@
 #include "renderers/cpu_renderer.h"
 
 #include "engine/io.h"
+#include "engine/log.h"
 #include "object/object_registry.h"
 #include "profile/stats.h"
 
@@ -70,25 +71,32 @@ namespace engine
   {
     if (job_state.is_working) return;
     
-    set_job_state(in_scene, in_renderer_config, in_camera_config);
-
-    job_state.is_working = true;
-    if(worker_thread == nullptr)
+    if(in_renderer_config.resolution_vertical != 0 && in_renderer_config.resolution_horizontal != 0)
     {
-      worker_thread = new std::thread(&rcpu::worker_function, this);
-      worker_semaphore = new std::binary_semaphore(0);
+      set_job_state(in_scene, in_renderer_config, in_camera_config);
+      
+      job_state.is_working = true;
+      if(worker_thread == nullptr)
+      {
+        worker_thread = new std::thread(&rcpu::worker_function, this);
+        worker_semaphore = new std::binary_semaphore(0);
+      }
+      worker_semaphore->release();
+      
+      if(!output_texture)
+      {
+        fdx11& dx = fdx11::instance();
+        dx.create_texture_from_buffer(get_job_buffer_rgb(), job_state.image_width, job_state.image_height, output_srv, output_texture);
+      }
     }
-    worker_semaphore->release();
   }
 
   void rcpu::push_partial_update()
   {
-    if(!job_state.can_partial_update) return;
-    
-    fdx11& dx = fdx11::instance();
     if (output_texture)
     {
-      dx.update_texture_buffer(get_img_rgb(), job_state.image_width, job_state.image_height, output_texture);
+      fdx11& dx = fdx11::instance();
+      dx.update_texture_from_buffer(get_job_buffer_rgb(), job_state.image_width, job_state.image_height, output_texture);
     }
   }
 
@@ -108,17 +116,6 @@ namespace engine
   {
     fstats::reset();
     benchmark_render.start("Render");
-
-    if(job_state.image_width != 0 && job_state.image_height != 0)
-    {
-      fdx11& dx = fdx11::instance();
-      DX_RELEASE(output_srv)
-      DX_RELEASE(output_texture)
-      bool ret = dx.load_texture_from_buffer(get_img_rgb(), job_state.image_width, job_state.image_height, output_srv, output_texture);
-      assert(ret);
-    
-      job_state.can_partial_update = true;
-    }
   }
 
   void rcpu::job_post_update()
