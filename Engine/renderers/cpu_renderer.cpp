@@ -27,29 +27,12 @@ namespace engine
     delete job_state.img_bgr;
     rrenderer_base::destroy();
   }
-  
-  void rcpu::set_job_state(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config)
+
+  void rcpu::create_output_texture(bool cleanup)
   {
-    assert(in_scene != nullptr);
-
-    if (job_state.is_working) return;
-    if (in_renderer_config.resolution_vertical == 0|| in_renderer_config.resolution_horizontal == 0) return;
-    
-    const bool force_recreate_buffers = job_state.image_width != in_renderer_config.resolution_horizontal || job_state.image_height != in_renderer_config.resolution_vertical;
-
-    // Copy all objects on purpose
-    // - allows original scene to be edited while this one is rendering
-    // - allows to detect if existing is dirty
-    job_state.image_width = in_renderer_config.resolution_horizontal;
-    job_state.image_height = in_renderer_config.resolution_vertical;
-    job_state.renderer_conf = in_renderer_config;
-    job_state.scene_root = in_scene;
-    job_state.scene_root_hash = in_scene->get_hash();
-    job_state.cam.configure(in_camera_config);
-
     if (job_state.img_rgb != nullptr)
     {
-      if (force_recreate_buffers || !job_state.renderer_conf.reuse_buffer)
+      if (cleanup || !job_state.renderer_conf.reuse_buffer)
       {
         delete job_state.img_rgb;
         delete job_state.img_bgr;
@@ -57,38 +40,38 @@ namespace engine
         job_state.img_bgr = nullptr;
       }
     }
-
-    // Create new buffers if they are missing
-    if (job_state.img_rgb == nullptr)
+    else
     {
-      job_state.img_rgb = new fbmp_image(job_state.image_width, job_state.image_height);
-      job_state.img_bgr = new fbmp_image(job_state.image_width, job_state.image_height);
+      job_state.img_rgb = new fbmp_image(output_width, output_height);
+      job_state.img_bgr = new fbmp_image(output_width, output_height);
     }
-    job_state.can_partial_update = false;
+    
+    fdx11& dx = fdx11::instance();
+    dx.create_texture_from_buffer(get_job_buffer_rgb(), output_width, output_height, output_srv, output_texture);
   }
 
   void rcpu::render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config)
   {
     if (job_state.is_working) return;
+    if (in_renderer_config.resolution_vertical == 0 || in_renderer_config.resolution_horizontal == 0) return;
     
-    if(in_renderer_config.resolution_vertical != 0 && in_renderer_config.resolution_horizontal != 0)
+    rrenderer_base::render_frame(in_scene, in_renderer_config, in_camera_config);
+    
+    // Copy everything on purpose
+    job_state.image_width = output_width;
+    job_state.image_height = output_height;
+    job_state.renderer_conf = in_renderer_config;
+    job_state.scene_root = scene;
+    job_state.scene_root_hash = scene->get_hash();
+    job_state.camera = camera;
+    job_state.is_working = true;
+    
+    if(worker_thread == nullptr)
     {
-      set_job_state(in_scene, in_renderer_config, in_camera_config);
-      
-      job_state.is_working = true;
-      if(worker_thread == nullptr)
-      {
-        worker_thread = new std::thread(&rcpu::worker_function, this);
-        worker_semaphore = new std::binary_semaphore(0);
-      }
-      worker_semaphore->release();
-      
-      if(!output_texture)
-      {
-        fdx11& dx = fdx11::instance();
-        dx.create_texture_from_buffer(get_job_buffer_rgb(), job_state.image_width, job_state.image_height, output_srv, output_texture);
-      }
+      worker_thread = new std::thread(&rcpu::worker_function, this);
+      worker_semaphore = new std::binary_semaphore(0);
     }
+    worker_semaphore->release();
   }
 
   void rcpu::push_partial_update()
@@ -106,23 +89,22 @@ namespace engine
     {
       worker_semaphore->acquire();
       if (job_state.requested_stop) { break; }
-      job_pre_update();
-      job_update();
-      job_post_update();
+      worker_job_pre_update();
+      worker_job_update();
+      worker_job_post_update();
     }
   }
 
-  void rcpu::job_pre_update()
+  void rcpu::worker_job_pre_update()
   {
     fstats::reset();
-    benchmark_render.start("Render");
+    start_frame_timer();
   }
 
-  void rcpu::job_post_update()
+  void rcpu::worker_job_post_update()
   {
-    job_state.benchmark_render_time = benchmark_render.stop();
+    stop_frame_timer();
     job_state.is_working = false;
-    
     job_state.ray_count = fstats::get_ray_count();
     job_state.ray_triangle_intersection_count = fstats::get_ray_triangle_intersection_count();
     job_state.ray_box_intersection_count = fstats::get_ray_box_intersection_count();

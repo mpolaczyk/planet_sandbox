@@ -15,6 +15,7 @@ namespace engine
 {
   void ftimer_instance::start(const std::string& in_name)
   {
+    is_started = true;
 #if USE_PIX
     PIXBeginEvent(PIX_COLOR(155, 112, 0), in_name.c_str());
 #endif
@@ -43,6 +44,7 @@ namespace engine
 
   uint64_t ftimer_instance::stop()
   {
+    is_started = false;
 #if USE_PIX
     PIXEndEvent();
 #endif

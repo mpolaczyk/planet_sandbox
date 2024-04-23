@@ -134,41 +134,41 @@ namespace engine
   {
     if (in_buffer == nullptr) return false;
 
-    ComPtr<ID3D11ShaderResourceView> srv;
+    // Texture
     ComPtr<ID3D11Texture2D> texture;
-    
-    D3D11_TEXTURE2D_DESC desc;
-    ZeroMemory(&desc, sizeof(desc));
-    desc.Width = width;
-    desc.Height = height;
-    desc.MipLevels = 1;
-    desc.ArraySize = 1;
-    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    desc.SampleDesc.Count = 1;
-    desc.Usage = D3D11_USAGE_DYNAMIC;
-    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-    D3D11_SUBRESOURCE_DATA sub_resource;
-    sub_resource.pSysMem = in_buffer;
-    sub_resource.SysMemPitch = desc.Width * 4;
-    sub_resource.SysMemSlicePitch = 0;
-    
-    if (FAILED(device->CreateTexture2D(&desc, &sub_resource, texture.GetAddressOf())))
     {
-      return false;
+      D3D11_TEXTURE2D_DESC desc = {};
+      desc.Width = width;
+      desc.Height = height;
+      desc.MipLevels = 1;
+      desc.ArraySize = 1;
+      desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+      desc.SampleDesc.Count = 1;
+      desc.Usage = D3D11_USAGE_DYNAMIC;
+      desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+      desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+      D3D11_SUBRESOURCE_DATA sub_resource = {};
+      sub_resource.pSysMem = in_buffer;
+      sub_resource.SysMemPitch = desc.Width * 4;
+      sub_resource.SysMemSlicePitch = 0;
+      if (FAILED(device->CreateTexture2D(&desc, &sub_resource, texture.GetAddressOf())))
+      {
+        throw std::runtime_error("CreateTexture2D failed.");
+      }
     }
-    
-    D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc;
-    ZeroMemory(&srv_desc, sizeof(srv_desc));
-    srv_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    srv_desc.Texture2D.MipLevels = desc.MipLevels;
-    srv_desc.Texture2D.MostDetailedMip = 0;
 
-    if (FAILED(device->CreateShaderResourceView(texture.Get(), &srv_desc, srv.GetAddressOf())))
+    // SRV
+    ComPtr<ID3D11ShaderResourceView> srv;
     {
-      return false;
+      D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
+      desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+      desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+      desc.Texture2D.MipLevels = 1;
+      desc.Texture2D.MostDetailedMip = 0;
+      if (FAILED(device->CreateShaderResourceView(texture.Get(), &desc, srv.GetAddressOf())))
+      {
+        throw std::runtime_error("CreateShaderResourceView failed.");
+      }
     }
 
     out_srv = srv;

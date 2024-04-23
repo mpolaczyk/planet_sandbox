@@ -17,7 +17,7 @@ namespace engine
   OBJECT_DEFINE(rcpu_preview, rcpu, CPU renderer preview)
   OBJECT_DEFINE_SPAWN(rcpu_preview)
 
-  void rcpu_preview::job_update()
+  void rcpu_preview::worker_job_update()
   {
     std::vector<fchunk> chunks;
     fchunk_generator::generate_chunks(chunk_strategy_type::vertical_stripes, std::thread::hardware_concurrency() * 32, job_state.image_width, job_state.image_height, chunks);
@@ -52,7 +52,7 @@ namespace engine
 
         float u = float(x) / (job_state.image_width - 1);
         float v = float(y) / (job_state.image_height - 1);
-        fray r = job_state.cam.get_ray(u, v);
+        fray r = job_state.camera.get_ray(u, v);
         fhit_record h;
 
         if (job_state.scene_root->hit(r, fmath::infinity, h))

@@ -11,33 +11,9 @@
 using namespace DirectX;
 
 namespace engine
-{  
+{
     OBJECT_DEFINE(rgpu, rrenderer_base, GPU renderer)
     OBJECT_DEFINE_SPAWN(rgpu)
-
-    void rgpu::render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config)
-    {
-        if (in_renderer_config.resolution_vertical == 0 || in_renderer_config.resolution_horizontal == 0) return;
-
-        camera = in_camera_config;
-        scene = in_scene;
-
-        const bool recreate_output_buffers = output_width != in_renderer_config.resolution_vertical || output_height != in_renderer_config.resolution_horizontal;
-        output_width = in_renderer_config.resolution_horizontal;
-        output_height = in_renderer_config.resolution_vertical;
-        if (recreate_output_buffers)
-        {
-            create_output_texture(true);
-        }
-
-        if (!init_done)
-        {
-            init();
-            init_done = true;
-        }
-
-        update_frame();
-    }
 
     void rgpu::create_output_texture(bool cleanup)
     {
@@ -49,7 +25,10 @@ namespace engine
             DX_RELEASE(output_texture)
             DX_RELEASE(output_depth_texture)
         }
+        
         fdx11& dx = fdx11::instance();
+        
+        // Output and depth texture
         {
             D3D11_TEXTURE2D_DESC desc = {};
             desc.Width = output_width;
@@ -66,7 +45,6 @@ namespace engine
             {
                 throw std::runtime_error("CreateTexture2D output texture failed.");
             }
-
             desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
             desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
             if(FAILED(dx.device->CreateTexture2D(&desc, NULL, &output_depth_texture)))
@@ -74,6 +52,7 @@ namespace engine
                 throw std::runtime_error("CreateTexture2D output depth texture failed.");
             }
         }
+        // RTV
         {
             D3D11_RENDER_TARGET_VIEW_DESC desc = {};
             desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -83,12 +62,8 @@ namespace engine
             {
                 throw std::runtime_error("CreateRenderTargetView output texture failed");
             }
-
-            if(FAILED(dx.device->CreateDepthStencilView(output_depth_texture.Get(), nullptr, output_dsv.GetAddressOf())))
-            {
-                throw std::runtime_error("CreateDepthStencilView output depth texture failed");
-            }
         }
+        // SRV
         {
             D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
             desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -100,10 +75,19 @@ namespace engine
                 throw std::runtime_error("CreateShaderResourceView output texture failed.");
             }
         }
+        // DSV
+        {
+            if(FAILED(dx.device->CreateDepthStencilView(output_depth_texture.Get(), nullptr, output_dsv.GetAddressOf())))
+            {
+                throw std::runtime_error("CreateDepthStencilView output depth texture failed");
+            }
+        }
     }
 
     void rgpu::init()
     {
+        rrenderer_base::init();
+        
         // FIX temporary hack here! It should be properly persistent as part for the scene (not hittable)
         vertex_shader_asset.set_name("gpu_renderer_vs");
         vertex_shader_asset.get();
@@ -114,24 +98,7 @@ namespace engine
         //mesh_asset.set_name("icosphere2");
         //mesh_asset.get();
 
-        create_output_texture();
-
         auto device = fdx11::instance().device;
-
-        // Measuring time
-        {
-            timestamp_start = 0;
-            perf_counter_frequency = 0;
-            {
-                LARGE_INTEGER perf_count;
-                QueryPerformanceCounter(&perf_count);
-                timestamp_start = perf_count.QuadPart;
-                LARGE_INTEGER perf_freq;
-                QueryPerformanceFrequency(&perf_freq);
-                perf_counter_frequency = perf_freq.QuadPart;
-            }
-            current_time = 0.0;
-        }
 
         // Input layout
         {
@@ -284,19 +251,13 @@ namespace engine
         }
     }
 
-    void rgpu::update_frame()
+    void rgpu::render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config)
     {
-        // Time flow
-        float delta_time = 0.0f;
-        {
-            const double previous_time = current_time;
-            LARGE_INTEGER perf_count;
-            QueryPerformanceCounter(&perf_count);
-            const LONGLONG timestamp_now = perf_count.QuadPart;
-            current_time = static_cast<double>(timestamp_now - timestamp_start) / static_cast<double>(perf_counter_frequency);
-            delta_time = static_cast<float>(current_time - previous_time);
-        }
-
+        if (in_renderer_config.resolution_vertical == 0 || in_renderer_config.resolution_horizontal == 0) return;
+        start_frame_timer();
+        
+        rrenderer_base::render_frame(in_scene, in_renderer_config, in_camera_config);
+        
         fdx11& dx = fdx11::instance();
 
         dx.device_context->ClearRenderTargetView(output_rtv.Get(), Colors::LightSlateGray);
@@ -371,10 +332,6 @@ namespace engine
                 dx.device_context->DrawIndexed(smrs.num_indices, 0, 0);
             }
         }
-    }
-
-    void rgpu::destroy()
-    {
-        rrenderer_base::destroy();
+        stop_frame_timer();
     }
 }

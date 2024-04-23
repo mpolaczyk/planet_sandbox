@@ -58,9 +58,7 @@ namespace ray_tracer
       float u = state.output_window_lmb_x / (state.output_width - 1);
       float v = state.output_window_lmb_y / (state.output_height - 1);
       v = 1.0f - v; // because vertical axis is flipped in the output window
-      fcamera cam;
-      cam.configure(state.camera_conf);
-      fray r = cam.get_ray(u, v);
+      fray r = state.camera_conf.get_ray(u, v);
       fhit_record hit;
       if (state.scene_root->hit(r, fmath::infinity, hit))
       {

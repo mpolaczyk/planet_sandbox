@@ -21,7 +21,9 @@ namespace engine
 
     uint32_t get_hash() const;
 
-    void update();
+    void update(float delta_time);
+
+    fray inline get_ray(float uu, float vv) const;
     
     // Camera movement
     int32_t input_forward, input_left, input_backward, input_right;
@@ -31,8 +33,18 @@ namespace engine
     int32_t input_pitch;
     float rotate_speed = 10.f;
     
-    // Runtime members
+    // GPU renderer runtime members
     DirectX::XMFLOAT4X4 view_projection;
+    
+    // CPU renderer runtime members
+    float lens_radius = 0.0f;
+    float viewport_height = 2.0f;
+    float viewport_width = 3.5f;
+    fplane f;  // focus plane at origin
+    fplane c;  // camera plane at origin
+    fvec3 forward;   // forward vector
+    fvec3 right;   // right vector
+    fvec3 up;   // up vector
     fvec3 look_dir;
     
     // Persistent members
@@ -45,27 +57,5 @@ namespace engine
     float aperture = 0.0f;       // defocus blur
     float dist_to_focus = 1.0f;  // distance from camera to the focus object
     float type = 0.0f;           // 0.0f perspective camera, 1.0f orthographic camera
-  };
-
-  class ENGINE_API fcamera
-  {
-  public:
-
-    void configure(const fcamera_config& in_camera_config);
-
-    fray inline get_ray(float uu, float vv) const;
-
-    inline uint32_t get_hash() const;
-
-  private:
-    fcamera_config camera_conf;
-    float lens_radius = 0.0f;
-    float viewport_height = 2.0f;
-    float viewport_width = 3.5f;
-    fplane f;  // focus plane at origin
-    fplane c;  // camera plane at origin
-    fvec3 w;   // back from camera vector
-    fvec3 u;   // right vector
-    fvec3 v;   // up vector
   };
 }

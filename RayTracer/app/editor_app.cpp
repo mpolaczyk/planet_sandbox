@@ -190,10 +190,12 @@ namespace ray_tracer
         app_state.output_width = app_state.renderer_conf.resolution_horizontal;
         app_state.output_height = app_state.renderer_conf.resolution_vertical;
 
-        app_state.camera_conf.update();
+        app_state.camera_conf.update(static_cast<float>(1.0f/60.0f));
         
+
         app_state.renderer->render_frame(app_state.scene_root, app_state.renderer_conf, app_state.camera_conf);
-  
+        // TODO how to measuretime? GPU call is blocking, simple timer isok.
+        // CPU is async, will return after a few executions. Renderer needs to return this internally
         app_state.rw_model.rp_model.render_pressed = false;
       }
       app_state.renderer->push_partial_update();

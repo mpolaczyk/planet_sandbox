@@ -22,11 +22,9 @@ namespace engine
     return fhash::combine(a, b, a, fhash::get(field_of_view));
   }
 
-  void fcamera_config::update()
+  void fcamera_config::update(float delta_time)
   {
     using namespace DirectX;
-    
-    float delta_time = 1.0f/60.0f; // TODO Multiply by real delta time
     
     // Handle camera rotation
     {
@@ -57,64 +55,61 @@ namespace engine
     XMStoreFloat3(&tr, translation);                    
     look_from = fvec3(tr.x, tr.y, tr.z);
 
-    XMVECTOR forward = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
-    XMVector3Rotate(forward, rotation);
-    XMFLOAT3 fwd;                                    
-    XMStoreFloat3(&fwd, forward);      
-    look_dir = fvec3(fwd.x, fwd.y, fwd.z);
-  }
-
-  void fcamera::configure(const fcamera_config& in_camera_config)
-  {
-    camera_conf = in_camera_config;
-
-    float theta = fmath::degrees_to_radians(camera_conf.field_of_view);
+    // End of GPU part
+    // Beginning of the CPU part
+    {
+      XMVECTOR forward = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
+      XMVector3Rotate(forward, rotation);
+      XMFLOAT3 fwd;                                    
+      XMStoreFloat3(&fwd, forward);      
+      look_dir = fvec3(fwd.x, fwd.y, fwd.z);
+    }
+    
+    float theta = fmath::degrees_to_radians(field_of_view);
     float h = (float)tan(theta / 2.0f);
-    viewport_height = 2.0f * h;                       // viewport size at the distance 1
-    viewport_width = camera_conf.aspect_ratio_w / camera_conf.aspect_ratio_h * viewport_height;
+    viewport_height = 2.0f * h;// * camera_conf.dist_to_focus;                       // viewport size at the distance 1
+    viewport_width = (aspect_ratio_w / aspect_ratio_h) * viewport_height;
 
-    const fvec3 view_up(0.0f, 1.0f, 0.0f);
-    w = fmath::normalize(camera_conf.look_dir);
-    u = fmath::normalize(fmath::cross(view_up, w));
-    v = fmath::cross(w, u);
+    const fvec3 view_up(0.0f, -1.0f, 0.0f);
+    forward = fmath::normalize(-look_dir);
+    right = fmath::normalize(fmath::cross(view_up, forward));
+    up = fmath::cross(forward, right);
 
     // Focus plane at origin (size of the frustum at the focus distance)
-    f.horizontal = viewport_width * u * camera_conf.dist_to_focus;
-    f.vertical = viewport_height * v * camera_conf.dist_to_focus;
-    f.lower_left_corner = camera_conf.look_from - f.horizontal / 2.0f - f.vertical / 2.0f;
+    f.horizontal = viewport_width * right * dist_to_focus;
+    f.vertical = viewport_height * up * dist_to_focus;
+    f.lower_left_corner = look_from - f.horizontal / 2.0f - f.vertical / 2.0f;
 
     // Camera plane at origin (proportional to type)
-    c.horizontal = f.horizontal * camera_conf.type;
-    c.vertical = f.vertical * camera_conf.type;
-    c.lower_left_corner = camera_conf.look_from - c.horizontal / 2.0f - c.vertical / 2.0f;
+    c.horizontal = f.horizontal * type;
+    c.vertical = f.vertical * type;
+    c.lower_left_corner = look_from - c.horizontal / 2.0f - c.vertical / 2.0f;
 
-    lens_radius = camera_conf.aperture / 2.0f;
+    lens_radius = aperture / 2.0f;
   }
 
-  fray fcamera::get_ray(float uu, float vv) const
+
+  fray fcamera_config::get_ray(float uu, float vv) const
   {
     fvec3 rd = lens_radius * frandom_cache::in_unit_disk();
-    fvec3 offset = u * rd.x + v * rd.y;
+    fvec3 offset = right * rd.x + up * rd.y;
 
-    if (camera_conf.type == 0.0f)
+    if (type == 0.0f)
     {
       // Shoot rays from the point to the focus plane - perspective camera
-      fvec3 fpo = f.get_point(uu, vv);                     // point on the focus plane at origin
-      fvec3 fpf = fpo - w * camera_conf.dist_to_focus;           // point on the focus plane at the focus distance forward camera
-      return fray(camera_conf.look_from - offset, fmath::normalize(fpf - camera_conf.look_from + offset));
+      fvec3 fpo = f.get_point(uu, vv);                                 // point on the focus plane at origin
+      fvec3 fpf = fpo - forward * dist_to_focus;           // point on the focus plane at the focus distance forward camera
+      fvec3 ro = look_from - offset;
+      fvec3 rd = fmath::normalize(fpf - look_from + offset);  // FIX! rd = 0 ?
+      return fray(ro, rd);
     }
     else
     {
       // Don't shoot rays from the point, shoot from the plane that is proportionally smaller to focus plane
       fvec3 cpo = c.get_point(uu, vv);             // point on the camera plane at origin
       fvec3 fpo = f.get_point(uu, vv);               // point on the focus plane at origin
-      fvec3 fpf = fpo - w * camera_conf.dist_to_focus;     // point on the plane crossing frustum, forward camera
+      fvec3 fpf = fpo - forward * dist_to_focus;     // point on the plane crossing frustum, forward camera
       return fray(cpo - offset, fmath::normalize(fpf - cpo + offset));
     }
-  }
-
-  uint32_t fcamera::get_hash() const
-  {
-    return camera_conf.get_hash();
   }
 }

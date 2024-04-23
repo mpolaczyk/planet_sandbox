@@ -12,7 +12,7 @@ namespace engine
     OBJECT_DECLARE(rcpu_reference, rcpu)
   
   private:
-    virtual void job_update() override;
+    virtual void worker_job_update() override;
 
     void render_chunk(const fchunk& in_chunk);
 

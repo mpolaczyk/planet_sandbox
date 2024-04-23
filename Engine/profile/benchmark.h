@@ -15,10 +15,12 @@ namespace engine
     inline uint64_t repeat(const std::string& name, uint32_t count, const std::function<void()>& func);
     inline uint64_t once(const std::string& name, const std::function<void()>& func);
     inline uint64_t stop();
+    inline bool is_working() const { return is_started; }
 
   private:
     std::chrono::time_point<std::chrono::high_resolution_clock> start_point, end_point;
     std::string name;
+    bool is_started = false;
   };
 
   struct ENGINE_API fscope_timer

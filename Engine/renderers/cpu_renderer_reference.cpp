@@ -20,7 +20,7 @@ namespace engine
   OBJECT_DEFINE(rcpu_reference, rcpu, CPU renderer reference)
   OBJECT_DEFINE_SPAWN(rcpu_reference)
 
-  void rcpu_reference::job_update()
+  void rcpu_reference::worker_job_update()
   {
     std::vector<fchunk> chunks;
     const int chunks_per_thread = 32;
@@ -76,7 +76,7 @@ namespace engine
       float u = (float(x) + frandom_seed::rand_pcg(seed)) / (resolution.x - 1);
       float v = (float(y) + frandom_seed::rand_pcg(seed)) / (resolution.y - 1);
       // Trace the ray
-      fray r = job_state.cam.get_ray(u, v);
+      fray r = job_state.camera.get_ray(u, v);
       sum_colors += trace_ray(r, seed);
     }
 

@@ -56,18 +56,42 @@ namespace engine
     rrenderer_base& operator=(const rrenderer_base&) = delete;
     rrenderer_base(rrenderer_base&&) = delete;
     rrenderer_base& operator=(rrenderer_base&&) = delete;
+
+    fcamera_config camera;
+    const hscene* scene = nullptr;
     
     // Output texture
-    ComPtr<ID3D11ShaderResourceView> output_srv;
     ComPtr<ID3D11Texture2D> output_texture;
+    ComPtr<ID3D11ShaderResourceView> output_srv;
+    ComPtr<ID3D11RenderTargetView> output_rtv;
+    ComPtr<ID3D11DepthStencilView> output_dsv;
     ComPtr<ID3D11Texture2D> output_depth_texture;
+    unsigned int output_width = 0;
+    unsigned int output_height = 0;
     
-    // Main thread public interface.
-    virtual void render_frame(const hscene* in_scene, const frenderer_config& in_frenderer_config, const fcamera_config& in_camera_config) = 0;
-    virtual void push_partial_update() = 0;
-    virtual void cancel() = 0;
-    virtual bool is_async() const = 0;
-    virtual bool is_working() const = 0;
-    virtual bool is_cancelled() const = 0;
+    // Main public interface
+    virtual void render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config);
+    float get_frame_time() const { return static_cast<float>(delta_time); };
+    void start_frame_timer();
+    void stop_frame_timer();
+    
+    // Async worker public interface
+    virtual void push_partial_update() { };
+    virtual void cancel() { };
+    virtual bool is_async() const { return false; };
+    virtual bool is_cancelled() const { return false; };
+    bool is_working() const { return benchmark_renderer.is_working(); };
+
+  protected:
+    virtual void init();
+    virtual void create_output_texture(bool cleanup = false) = 0;
+
+    int64_t timestamp_start = 0;
+    int64_t perf_counter_frequency = 0;
+    double delta_time = 0.0f;    // [s]
+    ftimer_instance benchmark_renderer;
+    
+  private:
+    bool init_done = false;
   };
 }
