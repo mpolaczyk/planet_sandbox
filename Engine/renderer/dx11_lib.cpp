@@ -129,11 +129,34 @@ namespace engine
     DX_RELEASE(device_context)
     DX_RELEASE(device)
   }
+  
+  bool fdx11::create_index_buffer(const std::vector<fface_data>& in_face_list, ComPtr<ID3D11Buffer>& out_index_buffer)
+  {
+    ComPtr<ID3D11Device1> device = fdx11::instance().device;
+    D3D11_BUFFER_DESC desc = {};
+    desc.ByteWidth = in_face_list.size() * sizeof(fface_data);
+    desc.Usage     = D3D11_USAGE_IMMUTABLE;
+    desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    D3D11_SUBRESOURCE_DATA data = { in_face_list.data() };
+    return SUCCEEDED(device->CreateBuffer(&desc, &data, out_index_buffer.GetAddressOf()));
+  }
 
-  bool fdx11::create_texture_from_buffer(unsigned char* in_buffer, int width, int height, ComPtr<ID3D11ShaderResourceView>& out_srv, ComPtr<ID3D11Texture2D>& out_texture) const
+  bool fdx11::create_vertex_buffer(const std::vector<fvertex_data>& in_vertex_list, ComPtr<ID3D11Buffer>& out_vertex_buffer)
+  {
+    ComPtr<ID3D11Device1> device = fdx11::instance().device;
+    D3D11_BUFFER_DESC desc = {};
+    desc.ByteWidth = in_vertex_list.size() * sizeof(fvertex_data);
+    desc.Usage     = D3D11_USAGE_IMMUTABLE;
+    desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    D3D11_SUBRESOURCE_DATA data = { in_vertex_list.data() };
+    return SUCCEEDED(device->CreateBuffer(&desc, &data, out_vertex_buffer.GetAddressOf()));
+  }
+  
+  bool fdx11::create_texture_from_buffer(unsigned char* in_buffer, int width, int height, ComPtr<ID3D11ShaderResourceView>& out_srv, ComPtr<ID3D11Texture2D>& out_texture)
   {
     if (in_buffer == nullptr) return false;
-
+    ComPtr<ID3D11Device1> device = fdx11::instance().device;
+    
     // Texture
     ComPtr<ID3D11Texture2D> texture;
     {
@@ -177,9 +200,10 @@ namespace engine
     return true;
   }
 
-  bool fdx11::update_texture_from_buffer(unsigned char* in_buffer, int width, int height, ComPtr<ID3D11Texture2D>& out_texture) const
+  bool fdx11::update_texture_from_buffer(unsigned char* in_buffer, int width, int height, ComPtr<ID3D11Texture2D>& out_texture)
   {
     if (in_buffer == nullptr) return false;
+    ComPtr<ID3D11DeviceContext1> device_context = fdx11::instance().device_context;
     
     D3D11_MAPPED_SUBRESOURCE mapped_resource;
     ZeroMemory(&mapped_resource, sizeof(D3D11_MAPPED_SUBRESOURCE));

@@ -6,6 +6,6 @@ SamplerState sampler0 : register(s0);
 
 float4 ps_main(VS_Output input) : SV_Target
 {
-    return float4(input.normal_ws, 1);
+    return float4(input.normal_ws * 0.5 + 0.5, 1);
     //return texture0.Sample(sampler0, input.uv);
 }

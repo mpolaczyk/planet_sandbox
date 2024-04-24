@@ -1,8 +1,10 @@
 #pragma once
 
+#include <vector>
 #include <wrl/client.h>
 
 #include "core/core.h"
+#include "math/vertex_data.h"
 
 struct ID3D11Device1;
 struct ID3D11DeviceContext1;
@@ -47,7 +49,10 @@ namespace engine
     void cleanup_device();
     void cleanup_render_target();
 
-    bool create_texture_from_buffer(unsigned char* in_buffer, int width, int height, ComPtr<ID3D11ShaderResourceView>& out_srv, ComPtr<ID3D11Texture2D>& out_texture) const;
-    bool update_texture_from_buffer(unsigned char* in_buffer, int width, int height, ComPtr<ID3D11Texture2D>& out_texture) const;
+    static bool create_index_buffer(const std::vector<fface_data>& in_face_list, ComPtr<ID3D11Buffer>& out_index_buffer);
+    static bool create_vertex_buffer(const std::vector<fvertex_data>& in_vertex_list, ComPtr<ID3D11Buffer>& out_vertex_buffer);
+
+    static bool create_texture_from_buffer(unsigned char* in_buffer, int width, int height, ComPtr<ID3D11ShaderResourceView>& out_srv, ComPtr<ID3D11Texture2D>& out_texture);
+    static bool update_texture_from_buffer(unsigned char* in_buffer, int width, int height, ComPtr<ID3D11Texture2D>& out_texture);
   };
 }

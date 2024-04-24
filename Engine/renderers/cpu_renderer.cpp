@@ -46,8 +46,7 @@ namespace engine
       job_state.img_bgr = new fbmp_image(output_width, output_height);
     }
     
-    fdx11& dx = fdx11::instance();
-    dx.create_texture_from_buffer(get_job_buffer_rgb(), output_width, output_height, output_srv, output_texture);
+    fdx11::create_texture_from_buffer(get_job_buffer_rgb(), output_width, output_height, output_srv, output_texture);
   }
 
   void rcpu::render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config)
@@ -78,8 +77,7 @@ namespace engine
   {
     if (output_texture)
     {
-      fdx11& dx = fdx11::instance();
-      dx.update_texture_from_buffer(get_job_buffer_rgb(), job_state.image_width, job_state.image_height, output_texture);
+      fdx11::update_texture_from_buffer(get_job_buffer_rgb(), job_state.image_width, job_state.image_height, output_texture);
     }
   }
 

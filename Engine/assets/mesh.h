@@ -36,6 +36,10 @@ namespace engine
     std::string obj_file_name;
 
     // Runtime state
+    std::vector<fvertex_data> vertex_list;
+    std::vector<fface_data_type> index_list;
+    std::vector<fface_data> face_list;
+    
     std::vector<ftriangle_face> faces; // for CPU renderers only
     DirectX::BoundingBox bounding_box;
     fstatic_mesh_render_state render_state;
