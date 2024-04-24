@@ -60,6 +60,7 @@
     <ClInclude Include="renderer\renderer_base.h" />
     <ClInclude Include="math\vertex_data.h" />
     <ClInclude Include="third_party\WaveFrontReader.h" />
+    <ClInclude Include="engine\tools.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -111,5 +112,6 @@
     <ClCompile Include="renderer\dx11_lib.cpp" />
     <ClCompile Include="renderers\cpu_renderer.cpp" />
     <ClCompile Include="renderer\renderer_base.cpp" />
+    <ClCompile Include="engine\tools.cpp" />
   </ItemGroup>
 </Project>
