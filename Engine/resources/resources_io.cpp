@@ -37,7 +37,7 @@ namespace engine
 {
   const unsigned int assimp_import_flags = 
     aiProcess_CalcTangentSpace |
-    //aiProcess_MakeLeftHanded |        // Should be Ok for DX, but mesh is inside out!
+    //aiProcess_MakeLeftHanded |
     aiProcess_Triangulate |
     aiProcess_SortByPType |
     aiProcess_PreTransformVertices |

@@ -4,14 +4,14 @@
     "aspect_ratio_h": 9.0,
     "aspect_ratio_w": 16.0,
     "dist_to_focus": 100.0,
-    "field_of_view": 45.0,
+    "field_of_view": 40.0,
     "look_from": {
       "x": 0.0,
-      "y": 1.5,
-      "z": -7.0
+      "y": 0.0,
+      "z": -10.0
     },
     "pitch": 0.0,
-    "type": 0.0,
+    "type": 1.4901161193847656e-08,
     "yaw": 0.0
   },
   "scene": {
@@ -66,7 +66,7 @@
           "name": "metal_white"
         },
         "mesh_asset": {
-          "name": "cube"
+          "name": "torus"
         },
         "origin": {
           "x": 0.0,
@@ -100,7 +100,7 @@
         },
         "rotation": {
           "x": 0.0,
-          "y": 180.0,
+          "y": 0.0,
           "z": 0.0
         },
         "scale": {

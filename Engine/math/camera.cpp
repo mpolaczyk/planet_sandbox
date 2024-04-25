@@ -44,6 +44,7 @@ namespace engine
       translation += camera_pan;
       translation = XMVectorSetW(translation, 1.0f);
     }
+    // Calculate camera
     XMMATRIX projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(field_of_view), aspect_ratio_w / aspect_ratio_h, fmath::t_min, fmath::infinity);
     XMMATRIX rotation_matrix = XMMatrixTranspose(XMMatrixRotationQuaternion(rotation));
     XMMATRIX translation_matrix = XMMatrixTranslationFromVector(XMVectorNegate(translation));
