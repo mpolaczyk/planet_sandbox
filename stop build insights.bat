@@ -1,3 +1,3 @@
 vs2022_cmd_prompt_x64.bat
-vcperf /stop RayTracerBuildInsightsSession BuildInsights.etl
+vcperf /stop PlanetSandboxBuildInsightsSession BuildInsights.etl
 pause

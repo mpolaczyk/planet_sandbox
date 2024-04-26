@@ -14,7 +14,7 @@ namespace engine
   class scene;
 }
 
-namespace ray_tracer
+namespace editor
 {
   /*
      app_state - root structure for the application
@@ -39,7 +39,7 @@ namespace ray_tracer
     fwindow_config window_conf;
 
     // Imgui window states
-    fraytracer_window_model rw_model;
+    feditor_window_model rw_model;
     foutput_window_model ow_model;
     fscene_editor_window_model sew_model;
 
@@ -71,7 +71,7 @@ namespace ray_tracer
   void draw_renderer_panel(frenderer_panel_model& model, fapp_instance& state);
   void draw_managed_objects_panel(fapp_instance& state);
   void draw_hotkeys_panel(fapp_instance& state);
-  void draw_raytracer_window(fraytracer_window_model& model, fapp_instance& state);
+  void draw_editor_window(feditor_window_model& model, fapp_instance& state);
   void draw_output_window(foutput_window_model& model, fapp_instance& state);
   void draw_scene_editor_window(fscene_editor_window_model& model, fapp_instance& state);
   void draw_new_object_panel(fnew_object_panel_model& model, fapp_instance& state);

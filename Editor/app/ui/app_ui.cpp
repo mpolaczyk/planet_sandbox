@@ -16,11 +16,11 @@
 #include "renderers/cpu_renderer.h"
 #include "renderers/gpu_renderer.h"
 
-namespace ray_tracer
+namespace editor
 {
-  void draw_raytracer_window(fraytracer_window_model& model, fapp_instance& state)
+  void draw_editor_window(feditor_window_model& model, fapp_instance& state)
   {
-    ImGui::Begin("RAYTRACER", nullptr);
+    ImGui::Begin("EDITOR", nullptr);
 
     if (ImGui::MenuItem("SAVE STATE"))
     {

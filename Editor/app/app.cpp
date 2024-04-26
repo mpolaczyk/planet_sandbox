@@ -9,7 +9,7 @@
 #include "renderers/cpu_renderer_preview.h"
 #include "renderers/cpu_renderer_reference.h"
 
-namespace ray_tracer
+namespace editor
 {
   fapp_instance::fapp_instance()
   {

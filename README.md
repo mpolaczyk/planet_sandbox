@@ -1,90 +1,9 @@
-## RayTracer
-**CPU Ray Tracer**
+## PlanetSandbox
+**Planet Sandbox**
 
 Author: [planet620]
 
-## Releases
-
-### [2.3]
-- Cornell box scene finalized
-- Static mesh rendering
-    - Backface detection for transparency
-    - No acceleration structude ofr triangles yet
-    - No static mesh assets yet
-- ISPC integrated with the project and used for basic 
-- Better compile times 
-- CppCheck and BuildInsights pass
-- Huge code refactor
-- Better logging with spdlog
-
-![Example output](ExampleOutput3.png)
-
-### [2.2]
-- Full scene editor
-    - Flying camera
-    - Object selection and movement
-    - Material editor
-
-![User interface](Screenshot22.png)
-
-### [2.1]
-- The same set of materials and primitives
-- Renderer interface, with example and reference CPU renderer, easy to hot-swap with another version
-- Simpler algorithm, no PDF in use
-- Refraction with smoothness
-- Coloured refraction
-- Gloss with smoothness
-
-![Example output](ExampleOutput2.png)
-
-### [1.0]
-Based on books: [Ray Tracing in One Weekend] by Peter Shirley
-
-![User interface](Screenshot.png)
-
-- Editor UI
-    - Scene setup: spawn/delete/move/edit object properties
-    - Render parameters
-    - Settings
-    - Real time output update
-    - Save output to BMP file
-- Renderer
-	- Monte Carlo based method, mix of light and surface cosine based probability density functions (PDF)
-	- Multithreading: thread poll, PLL, none
-	- Support for SIMD
-    - DirectX 11 based display
-	- Anti aliasing
-	- No denoising
-    - Starting code for the review: frame_renderer::render() and frame_renderer::ray_color()
-- Renderer variables
-    - Resolution
-    - Work distribution: stripes, chunks
-    - Rays per pixel, ray bounces
-- Camera setup
-    - Projections: Perspective/orthografic/blend
-    - Focus distance
-    - Aperture
-    - Aspect ratio
-- Specular, diffuse, emissive materials:
-    - Metal: copper, gold, silver, steel
-    - Dialectric: glass, sapphire, moissanite, diamond, water
-    - Texture: solid, checker
-    - Lambertian: basic colors
-    - Diffuse light: a few strength types
-- Primitives: 
-    -  Sphere
-    -  XY rectangle
-    -  XZ rectangle
-    -  ZY rectangle
-
-![Example output](ExampleOutput.png)
-
-### Build details
-Project file: Visual Studio 2022
-
-Windows SDK: 10.0
-
-Toolset: v143
+Work in progress
 
 ### Third party dependencies
 DirectX 11
@@ -101,6 +20,8 @@ DirectX 11
 
 [spdlog] v1.x
 
+[assimp] 
+
 [//]: # (links)
 
    [planet620]: <https://mpolaczyk.pl>
@@ -115,4 +36,4 @@ DirectX 11
    [STB Image]: <http://nothings.org/stb>
    [Tiny obj]: <https://github.com/tinyobjloader/tinyobjloader>
    [spdlog]: <https://github.com/gabime/spdlog/tree/v1.x>
-   [Ray Tracing in One Weekend]: <https://raytracing.github.io>
+   [assimp]: <https://github.com/assimp/assimp>

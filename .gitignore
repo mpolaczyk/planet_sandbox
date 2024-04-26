@@ -17,7 +17,7 @@ Archive/*
 Workspace/Renders/*.bmp
 rt-cppcheck-build-dir/*
 Engine/x64
-RayTracer/x64
+Editor/x64
 EngineTests/x64
 x64/Debug
 x64/Release

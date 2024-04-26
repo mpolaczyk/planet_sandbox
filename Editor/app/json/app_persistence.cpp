@@ -10,7 +10,7 @@
 #include "persistence/object_persistence.h"
 #include "persistence/persistence.h"
 
-namespace ray_tracer
+namespace editor
 {
   using namespace engine;
 

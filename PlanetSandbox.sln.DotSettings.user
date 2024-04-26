@@ -5,5 +5,4 @@
 	<s:String x:Key="/Default/CodeInspection/PencilsConfiguration/FiltersState/=SpellingFilter/@EntryIndexedValue">On</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=fobject/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=oclass/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=oobject/@EntryIndexedValue">True</s:Boolean>
-	</wpf:ResourceDictionary>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=oobject/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
