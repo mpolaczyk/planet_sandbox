@@ -99,6 +99,10 @@ copy $(ProjectDir)third_party\assimp\lib\x64\assimp-vc143-mt.dll $(SolutionDir)$
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;$(ProjectDir)third_party\assimp\lib\x64\assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)$(Platform)\$(Configuration)\WinPixEventRuntime.dll
+copy $(ProjectDir)third_party\assimp\lib\x64\assimp-vc143-mt.dll $(SolutionDir)$(Platform)\$(Configuration)\assimp-vc143-mt.dll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="assets\pixel_shader.h" />
