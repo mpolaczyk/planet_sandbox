@@ -9,6 +9,11 @@
 #include "math/hit.h"
 #include "vertex_data.h"
 
+namespace DirectX
+{
+  struct XMFLOAT4;
+}
+
 namespace engine
 {
   class ENGINE_API fmath
@@ -55,5 +60,6 @@ namespace engine
     static fvec3 min3(const fvec3& a, const fvec3& b);
     static fvec3 max3(const fvec3& a, const fvec3& b);
     static void get_sphere_uv(const fvec3& p, float& out_u, float& out_v);
+    static fvec3 to_vec3(const DirectX::XMFLOAT4& a);
   };
 }

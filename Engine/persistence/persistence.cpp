@@ -8,6 +8,9 @@
 #include "nlohmann/json.hpp"
 #include "object/object_registry.h"
 
+#include <DirectXMath.h>
+
+
 namespace engine
 {
   nlohmann::json fpersistence::serialize(const fvec3& value)
@@ -19,6 +22,21 @@ namespace engine
     return j;
   }
   void fpersistence::deserialize(const nlohmann::json& j, fvec3& out_value)
+  {
+    TRY_PARSE(float, j, "x", out_value.x);
+    TRY_PARSE(float, j, "y", out_value.y);
+    TRY_PARSE(float, j, "z", out_value.z);
+  }
+
+  nlohmann::json fpersistence::serialize(const DirectX::XMFLOAT3& value)
+  {
+    nlohmann::json j;
+    j["x"] = value.x;
+    j["y"] = value.y;
+    j["z"] = value.z;
+    return j;
+  }
+  void fpersistence::deserialize(const nlohmann::json& j, DirectX::XMFLOAT3& out_value)
   {
     TRY_PARSE(float, j, "x", out_value.x);
     TRY_PARSE(float, j, "y", out_value.y);
@@ -42,10 +60,7 @@ namespace engine
     j["field_of_view"] = value.field_of_view;
     j["aspect_ratio_h"] = value.aspect_ratio_h;
     j["aspect_ratio_w"] = value.aspect_ratio_w;
-    j["aperture"] = value.aperture;
-    j["dist_to_focus"] = value.dist_to_focus;
-    j["type"] = value.type;
-    j["look_from"] = fpersistence::serialize(value.look_from);
+    j["look_from"] = fpersistence::serialize(value.location);
     j["pitch"] = value.pitch;
     j["yaw"] = value.yaw;
     return j;
@@ -55,14 +70,11 @@ namespace engine
     TRY_PARSE(float, j, "field_of_view", out_value.field_of_view);
     TRY_PARSE(float, j, "aspect_ratio_h", out_value.aspect_ratio_h);
     TRY_PARSE(float, j, "aspect_ratio_w", out_value.aspect_ratio_w);
-    TRY_PARSE(float, j, "aperture", out_value.aperture);
-    TRY_PARSE(float, j, "dist_to_focus", out_value.dist_to_focus);
-    TRY_PARSE(float, j, "type", out_value.type);
     TRY_PARSE(float, j, "pitch", out_value.pitch);
     TRY_PARSE(float, j, "yaw", out_value.yaw);
     
     nlohmann::json jlook_from;
-    if (TRY_PARSE(nlohmann::json, j, "look_from", jlook_from)) { fpersistence::deserialize(jlook_from, out_value.look_from); }
+    if (TRY_PARSE(nlohmann::json, j, "look_from", jlook_from)) { fpersistence::deserialize(jlook_from, out_value.location); }
   }
 
   nlohmann::json fpersistence::serialize(const frenderer_config& value)

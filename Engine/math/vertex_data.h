@@ -8,8 +8,8 @@
 namespace engine
 {
   using namespace DirectX;
-  
-  ALIGN(64) struct ENGINE_API ftriangle_face  // Used by cpu renderers
+
+  ALIGN(64) struct ENGINE_API ftriangle_face
   {
     fvec3 vertices[3];
     fvec3 pad1;
@@ -18,7 +18,7 @@ namespace engine
     fvec3 UVs[3]; //xy
     fvec3 pad3;
   };
-
+  
   struct ENGINE_API fvertex_data
   {
     fvertex_data() = default;

@@ -13,7 +13,6 @@
 #include "hittables/hittables.h"
 #include "hittables/static_mesh.h"
 #include "hittables/scene.h"
-#include "renderers/cpu_renderer.h"
 #include "renderers/gpu_renderer.h"
 
 namespace editor
@@ -43,21 +42,17 @@ namespace editor
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
     ImGui::Separator();
-    float ar[2] = { state.camera_conf.aspect_ratio_w, state.camera_conf.aspect_ratio_h };
+    float ar[2] = { state.camera.aspect_ratio_w, state.camera.aspect_ratio_h };
     ImGui::InputFloat2("Aspect ratio", ar);
-    state.camera_conf.aspect_ratio_w = ar[0];
-    state.camera_conf.aspect_ratio_h = ar[1];
-    ImGui::Text("Aspect ratio = %.3f", state.camera_conf.aspect_ratio_w / state.camera_conf.aspect_ratio_h);
-    ImGui::InputFloat("Field of view", &state.camera_conf.field_of_view, 1.0f, 189.0f, "%.0f");
-    ImGui::InputFloat("Projection", &state.camera_conf.type, 0.1f, 1.0f, "%.2f");
-    ImGui::Text("0 = Perspective; 1 = Orthografic");
+    state.camera.aspect_ratio_w = ar[0];
+    state.camera.aspect_ratio_h = ar[1];
+    ImGui::Text("Aspect ratio = %.3f", state.camera.aspect_ratio_w / state.camera.aspect_ratio_h);
+    ImGui::InputFloat("Field of view", &state.camera.field_of_view, 1.0f, 189.0f, "%.0f");
     ImGui::Separator();
-    ImGui::InputFloat3("Look from", state.camera_conf.look_from.e, "%.2f");
-    ImGui::InputFloat("Pitch", &state.camera_conf.pitch, 0.1f, 1.0f, "%.2f");
-    ImGui::InputFloat("Yaw", &state.camera_conf.yaw, 0.1f, 1.0f, "%.2f");
+    ImGui::InputFloat3("Look from", state.camera.location.e, "%.2f");
+    ImGui::InputFloat("Pitch", &state.camera.pitch, 0.1f, 1.0f, "%.2f");
+    ImGui::InputFloat("Yaw", &state.camera.yaw, 0.1f, 1.0f, "%.2f");
     ImGui::Separator();
-    ImGui::InputFloat("Focus distance", &state.camera_conf.dist_to_focus, 0.0f, 1000.0f, "%.2f");
-    ImGui::InputFloat("Aperture", &state.camera_conf.aperture, 0.1f, 1.0f, "%.2f");
   }
 
   void draw_renderer_panel(frenderer_panel_model& model, fapp_instance& state)
@@ -69,8 +64,7 @@ namespace editor
   
     // FIX this does not work for class objects!
     // co->is_child_of(renderer_base::get_class_static());
-    model.r_model.objects = REG.find_all<const oclass_object>([](const oclass_object* co) -> bool { return co->get_parent_class_name() == rcpu::get_class_static()->get_class_name(); });  
-    model.r_model.objects.push_back(rgpu::get_class_static());
+    model.r_model.objects = REG.find_all<const oclass_object>([](const oclass_object* co) -> bool { return co->get_parent_class_name() == rrenderer_base::get_class_static()->get_class_name(); });  
   
     draw_selection_combo<oclass_object>(model.r_model, state, "Renderer class",
       [=](const oclass_object* obj) -> bool { return true; }, state.renderer_conf.type);
@@ -81,7 +75,7 @@ namespace editor
     ImGui::Separator();
   
     ImGui::InputInt("Resolution v", &state.renderer_conf.resolution_vertical, 1, 2160);
-    state.renderer_conf.resolution_horizontal = (int)((float)state.renderer_conf.resolution_vertical * state.camera_conf.aspect_ratio_w / state.camera_conf.aspect_ratio_h);
+    state.renderer_conf.resolution_horizontal = (int)((float)state.renderer_conf.resolution_vertical * state.camera.aspect_ratio_w / state.camera.aspect_ratio_h);
     ImGui::Text("Resolution h = %d", state.renderer_conf.resolution_horizontal);
 
     ImGui::Separator();
@@ -100,46 +94,10 @@ namespace editor
     }
     if (state.renderer != nullptr)
     {
-      if (state.renderer->is_working())
-      {
-        ImGui::SameLine();
-        char name[50];
-        std::sprintf(name, "Rendering with %s", state.renderer->get_display_name().c_str());
-        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), name);
-      }
-      
-      ImGui::Text("Last render time = %.2f [ms]", state.renderer->get_frame_time());
-      {
-        rcpu* cpu_r = nullptr;
-        if(state.renderer->is_child_of(rcpu::get_class_static()))
-        {
-          cpu_r = static_cast<rcpu*>(state.renderer);
-        }
-        if(cpu_r)
-        {
-          ImGui::Text("Last save time = %lld [ms]",   cpu_r->get_save_time() / 1000);
-        }
-#if USE_STAT
-        if(cpu_r)
-        {
-          uint64_t rc =  cpu_r->get_ray_count();
-          uint64_t rtc = cpu_r->get_ray_triangle_intersection_count();
-          uint64_t rbc = cpu_r->get_ray_box_intersection_count();
-          uint64_t roc = cpu_r->get_ray_object_intersection_count();
-          float frc = static_cast<float>(rc);
-          float frtc = static_cast<float>(rtc);
-          float frbc = static_cast<float>(rbc);
-          float froc = static_cast<float>(roc);
-          ImGui::Text("Rays: %lld", rc);
-          {
-            ffpe_disabled_scope fpe;
-            ImGui::Text("Ray-triangle: %lld  percentage: %f", rtc, frtc / frc);
-            ImGui::Text("Ray-box: %lld percentage: %f", rbc, frbc / frc);
-            ImGui::Text("Ray-object: %lld percentage: %f", roc, froc / frc);
-          }
-        }
-#endif
-      }
+      ImGui::SameLine();
+      char name[50];
+      std::sprintf(name, "Rendering with %s", state.renderer->get_display_name().c_str());
+      ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), name);
     }
     else
     {
@@ -168,7 +126,7 @@ namespace editor
     ImGui::Text("F2 - Use reference renderer");
     ImGui::Text("F5 - Render!");
     ImGui::Text("LMB (on image) - select object");
-    ImGui::Text("Scroll - Camera speed (current speed: %f)", state.camera_conf.move_speed);
+    ImGui::Text("Scroll - Camera speed (current speed: %f)", state.camera.move_speed);
     ImGui::Text("QWEASD - Camera movement");
     ImGui::Text("RMB - Camera rotation");
     ImGui::Text("ZXC + mouse - Object movement");

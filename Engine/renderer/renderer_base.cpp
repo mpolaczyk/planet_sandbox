@@ -13,11 +13,6 @@ namespace engine
     OBJECT_DEFINE(rrenderer_base, oobject, Renderer base)
     OBJECT_DEFINE_NOSPAWN(rrenderer_base) 
 
-    void rrenderer_base::init()
-    {
-
-    }
-
   void rrenderer_base::start_frame_timer()
   {
       timestamp_start = 0;

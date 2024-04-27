@@ -86,36 +86,6 @@ namespace engine
     return light;
   }
 
-
-
-  bool hscene::hit(const fray& in_ray, float t_max, fhit_record& out_hit) const
-  {
-    fhit_record temp_rec;
-    bool hit_anything = false;
-    float closest_so_far = t_max;
-
-    for (hhittable_base* object : objects)
-    {
-#if USE_TLAS
-      if (!object->bounding_box.hit(in_ray, fmath::t_min, t_max))
-      {
-        continue;
-      }
-#endif USE_TLAS
-      fstats::inc_ray_object_intersection();
-      // FIX use branchless
-      if (object->hit(in_ray, closest_so_far, temp_rec))
-      {
-        hit_anything = true;
-        closest_so_far = temp_rec.t;
-        out_hit = temp_rec;
-        out_hit.object = object;
-      }
-    }
-
-    return hit_anything;
-  }
-
   bool hscene::get_bounding_box(faabb& out_box) const
   {
     if (objects.empty()) return false;
@@ -183,19 +153,6 @@ namespace engine
     {
       assert(object != nullptr);
       object->load_resources();
-    }
-  }
-
-
-  void hscene::pre_render()
-  {
-    LOG_TRACE("Scene: pre-render");
-
-    assert(objects.size() > 0);
-    for (hhittable_base* object : objects)
-    {
-      assert(object != nullptr);
-      object->pre_render();
     }
   }
 }

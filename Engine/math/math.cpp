@@ -3,6 +3,7 @@
 #include <corecrt_math.h>
 #include <cassert>
 #include <stdint.h>
+#include <DirectXMath.h>
 
 #include "math/math.h"
 #include "profile/stats.h"
@@ -322,5 +323,10 @@ namespace engine
     float phi = (float)atan2(-pp.z, pp.x) + pi;
     out_u = phi / (2.0f * pi);
     out_v = theta / pi;
+  }
+
+  fvec3 fmath::to_vec3(const DirectX::XMFLOAT4& a)
+  {
+    return fvec3(a.x, a.y, a.z);
   }
 }

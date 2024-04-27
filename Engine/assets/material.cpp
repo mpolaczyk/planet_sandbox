@@ -51,7 +51,7 @@ namespace engine
     object->accept(serialize_object(j));
 
     std::ostringstream oss;
-    oss << object->get_class()->get_class_name() << ".json";
+    oss << object->file_name << ".json";
     std::ofstream o(fio::get_material_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
     if (o.is_open())

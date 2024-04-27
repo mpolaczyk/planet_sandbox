@@ -2,10 +2,15 @@
 
 #include "core/core.h"
 
-#include "math/vec3.h"
+namespace DirectX
+{
+  struct XMFLOAT3;  
+}
 
 namespace engine
 {
+  struct fvec3;
+  
   class ENGINE_API fhash
   {
   public:
@@ -19,6 +24,7 @@ namespace engine
     static uint32_t get(const void* a);
     static uint32_t get(void* a);
     static uint32_t get(const fvec3& a);
+    static uint32_t get(const DirectX::XMFLOAT3& a);
     static uint32_t get(const char* a);
   };
 }

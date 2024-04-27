@@ -83,7 +83,7 @@ namespace engine
     bool is_working() const { return benchmark_renderer.is_working(); };
 
   protected:
-    virtual void init();
+    virtual void init() = 0;
     virtual void create_output_texture(bool cleanup = false) = 0;
 
     int64_t timestamp_start = 0;

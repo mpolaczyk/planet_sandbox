@@ -15,8 +15,8 @@
     "z": 1.0
   },
   "gloss_probability": 0.30000001192092896,
+  "is_light": false,
   "refraction_index": 1.5,
   "refraction_probability": 1.0,
-  "smoothness": 1.0,
-  "is_light": false
+  "smoothness": 1.0
 }

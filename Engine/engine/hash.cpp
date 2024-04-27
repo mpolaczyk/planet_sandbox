@@ -3,6 +3,9 @@
 
 #include "engine/hash.h"
 
+#include "math/vec3.h"
+#include <DirectXMath.h>
+
 namespace engine
 {
   uint32_t fhash::combine(uint32_t a, uint32_t b)
@@ -66,6 +69,11 @@ namespace engine
   uint32_t fhash::get(const fvec3& a)
   {
     return combine(get(a.x), get(a.y), get(a.z), get(a.padding));
+  }
+
+  uint32_t fhash::get(const DirectX::XMFLOAT3& a)
+  {
+    return combine(get(a.x), get(a.y), get(a.z), 1.0f);
   }
 
   uint32_t fhash::get(const char* a)

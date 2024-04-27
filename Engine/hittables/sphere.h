@@ -20,7 +20,6 @@ namespace engine
     OBJECT_DECLARE(hsphere, hhittable_base)
     OBJECT_DECLARE_VISITOR
     
-    virtual bool hit(const fray& in_ray, float t_max, fhit_record& out_hit) const override;
     virtual bool get_bounding_box(faabb& out_box) const override;
     virtual fvec3 get_origin() const override { return origin; };
     virtual fvec3 get_extent() const override { return fvec3(radius); };

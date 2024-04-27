@@ -20,7 +20,6 @@ namespace engine
     OBJECT_DECLARE(hstatic_mesh, hhittable_base)
     OBJECT_DECLARE_VISITOR
     
-    virtual bool hit(const fray& in_ray, float t_max, fhit_record& out_hit) const override;
     virtual bool get_bounding_box(faabb& out_box) const override;
     virtual fvec3 get_origin() const override { return origin; };
     virtual fvec3 get_extent() const override { return fvec3(extent); };
@@ -30,7 +29,6 @@ namespace engine
     virtual uint32_t get_hash() const override;
     virtual hstatic_mesh* clone() const override;
     virtual void load_resources() override;
-    virtual void pre_render() override;
 
     // Persistent state
     fvec3 origin = fvec3(0, 0, 0);

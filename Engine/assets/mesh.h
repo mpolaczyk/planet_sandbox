@@ -17,11 +17,11 @@ namespace engine
   
   struct ENGINE_API fstatic_mesh_render_state
   {
-    unsigned int num_indices;
+    ComPtr<ID3D11Buffer> vertex_buffer;
     unsigned int stride;
     unsigned int offset;
-    ComPtr<ID3D11Buffer> vertex_buffer;
     ComPtr<ID3D11Buffer> index_buffer;
+    unsigned int num_indices;
   };
   
   class ENGINE_API astatic_mesh : public aasset_base
@@ -36,11 +36,6 @@ namespace engine
     std::string obj_file_name;
 
     // Runtime state
-    std::vector<fvertex_data> vertex_list;
-    std::vector<fface_data_type> index_list;
-    std::vector<fface_data> face_list;
-    
-    std::vector<ftriangle_face> faces; // for CPU renderers only
     DirectX::BoundingBox bounding_box;
     fstatic_mesh_render_state render_state;
   };

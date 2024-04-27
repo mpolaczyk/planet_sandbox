@@ -29,7 +29,7 @@ namespace editor
     input_stream >> j;
 
     nlohmann::json jcamera_conf;
-    if (TRY_PARSE(nlohmann::json, j, "camera_config", jcamera_conf)) { fpersistence::deserialize(jcamera_conf, camera_conf); }
+    if (TRY_PARSE(nlohmann::json, j, "camera_config", jcamera_conf)) { fpersistence::deserialize(jcamera_conf, camera); }
    
     nlohmann::json jscene_root;
     if (TRY_PARSE(nlohmann::json, j, "scene", jscene_root)) { scene_root->accept(deserialize_object(jscene_root)); }
@@ -112,7 +112,7 @@ namespace editor
     LOG_INFO("Saving: scene");
 
     nlohmann::json j;
-    j["camera_config"] = fpersistence::serialize(camera_conf);
+    j["camera_config"] = fpersistence::serialize(camera);
     scene_root->accept(serialize_object(j["scene"]));
     std::ofstream o(fio::get_scene_file_path().c_str(), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);

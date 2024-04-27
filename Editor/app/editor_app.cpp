@@ -12,7 +12,6 @@
 #include "imgui_impl_dx11.h"
 
 #include "app/editor_app.h"
-#include "renderers/cpu_renderer.h"
 #include "renderer/dx11_lib.h"
 #include "renderer/renderer_base.h"
 
@@ -180,7 +179,6 @@ namespace editor
       if (!is_working_async && (app_state.rw_model.rp_model.render_pressed || app_state.ow_model.auto_render))
       {
         app_state.scene_root->load_resources();
-        app_state.scene_root->pre_render();
         app_state.scene_root->build_boxes();
         app_state.scene_root->update_materials();
         app_state.scene_root->query_lights();
@@ -190,10 +188,9 @@ namespace editor
         app_state.output_width = app_state.renderer_conf.resolution_horizontal;
         app_state.output_height = app_state.renderer_conf.resolution_vertical;
 
-        app_state.camera_conf.update(static_cast<float>(1.0f/60.0f));
+        app_state.camera.update(static_cast<float>(1.0f/60.0f));
         
-
-        app_state.renderer->render_frame(app_state.scene_root, app_state.renderer_conf, app_state.camera_conf);
+        app_state.renderer->render_frame(app_state.scene_root, app_state.renderer_conf, app_state.camera);
         // TODO how to measuretime? GPU call is blocking, simple timer isok.
         // CPU is async, will return after a few executions. Renderer needs to return this internally
         app_state.rw_model.rp_model.render_pressed = false;

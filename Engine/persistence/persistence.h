@@ -3,6 +3,11 @@
 #include "nlohmann/json_fwd.hpp"
 #include "core/core.h"
 
+namespace DirectX
+{
+  struct XMFLOAT3;  
+}
+
 namespace engine
 {
   class frenderer_config;
@@ -19,6 +24,9 @@ namespace engine
 
     static nlohmann::json serialize(const fvec3& value);
     static void deserialize(const nlohmann::json& j, fvec3& out_value);
+
+    static nlohmann::json serialize(const DirectX::XMFLOAT3& value);
+    static void deserialize(const nlohmann::json& j, DirectX::XMFLOAT3& out_value);
 
     static nlohmann::json serialize(const fcamera_config& value);
     static void deserialize(const nlohmann::json& j, fcamera_config& out_value);

@@ -8,11 +8,6 @@
 #include "assets/vertex_shader.h"
 #include "assets/pixel_shader.h"
 #include "renderer/renderer_base.h"
-#include "renderers/cpu_renderer.h"
-#include "renderers/cpu_renderer_reference.h"
-#include "renderers/cpu_renderer_preview.h"
-#include "renderers/cpu_renderer_faces.h"
-#include "renderers/cpu_renderer_normals.h"
 #include "renderers/gpu_renderer.h"
 #include "hittables/scene.h"
 #include "hittables/sphere.h"
@@ -52,11 +47,6 @@ namespace engine
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(apixel_shader)
   
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rrenderer_base)
-  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rcpu)
-  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rcpu_reference)
-  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rcpu_preview)
-  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rcpu_faces)
-  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rcpu_normals)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rgpu)
   
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(hhittable_base)
@@ -85,11 +75,6 @@ namespace engine
     CLASS_OBJECT_REGISTER(apixel_shader, aasset_base)
     
     CLASS_OBJECT_REGISTER(rrenderer_base, oobject)
-    CLASS_OBJECT_REGISTER(rcpu, rrenderer_base)
-    CLASS_OBJECT_REGISTER(rcpu_preview, rcpu)
-    CLASS_OBJECT_REGISTER(rcpu_normals, rcpu)
-    CLASS_OBJECT_REGISTER(rcpu_faces, rcpu)
-    CLASS_OBJECT_REGISTER(rcpu_reference, rcpu)
     CLASS_OBJECT_REGISTER(rgpu, rrenderer_base)
     
     CLASS_OBJECT_REGISTER(hhittable_base, oobject)

@@ -86,8 +86,6 @@ namespace engine
 
     void rgpu::init()
     {
-        rrenderer_base::init();
-        
         // FIX temporary hack here! It should be properly persistent as part for the scene (not hittable)
         vertex_shader_asset.set_name("gpu_renderer_vs");
         vertex_shader_asset.get();
@@ -95,8 +93,6 @@ namespace engine
         pixel_shader_asset.get();
         texture_asset.set_name("default");
         texture_asset.get();
-        //mesh_asset.set_name("icosphere2");
-        //mesh_asset.get();
 
         auto device = fdx11::instance().device;
 

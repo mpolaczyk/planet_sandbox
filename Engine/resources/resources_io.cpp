@@ -11,7 +11,6 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "third_party/stb_image.h"
-#include "third_party/WaveFrontReader.h"
 
 #include <d3d11_1.h>
 #include <d3dcompiler.h>
@@ -37,7 +36,6 @@ namespace engine
 {
   const unsigned int assimp_import_flags = 
     aiProcess_CalcTangentSpace |
-    //aiProcess_MakeLeftHanded |
     aiProcess_Triangulate |
     aiProcess_SortByPType |
     aiProcess_PreTransformVertices |
@@ -63,87 +61,8 @@ namespace engine
       LOG_ERROR("Assimp: {0}", message);
     }
   };
-  
-  bool load_obj_wavefront(const std::string& file_name, astatic_mesh* out_static_mesh)
-  {
-    assert(out_static_mesh);
-    
-    std::string dir = fio::get_meshes_dir();
-    std::string path = fio::get_mesh_file_path(file_name.c_str());
 
-    // Parse OBJ file
-    WaveFrontReader<uint16_t> obj_reader;
-    {
-      std::wstring widestr = std::wstring(path.begin(), path.end());
-      const wchar_t* widecstr = widestr.c_str();
-      HRESULT result = obj_reader.Load(widecstr);
-      if(FAILED(result))
-      {
-        LOG_ERROR("Unable to load object file: {0}", path);
-        return false;
-      }
-    }
-    // Make sure it has enough data
-    if(!obj_reader.hasNormals)
-    {
-      LOG_WARN("Static mesh: {0} has no normals!", file_name);
-      return false;
-    }
-    if(!obj_reader.hasTexcoords)
-    {
-      LOG_WARN("Static mesh: {0} has no texture coords!", file_name);
-      return false;
-    }
-
-    // Build vertex and index lists
-    out_static_mesh->vertex_list.reserve(obj_reader.vertices.size());
-    for (const auto& vert : obj_reader.vertices)
-    {
-      out_static_mesh->vertex_list.push_back(std::move(fvertex_data(vert.position, vert.normal, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, vert.textureCoordinate)));
-    }
-    //out_static_mesh->index_list = obj_reader.indices;
-
-    // Faces
-    for(int i = 0; i < obj_reader.indices.size()-3; i+=3)
-    {
-      ftriangle_face tf;
-      for(int j = 0; j < 3; j++)
-      {
-        tf.vertices[j].x = obj_reader.vertices[obj_reader.indices[i+j]].position.x;
-        tf.vertices[j].y = obj_reader.vertices[obj_reader.indices[i+j]].position.y;
-        tf.vertices[j].z = obj_reader.vertices[obj_reader.indices[i+j]].position.z;
-        tf.normals[j].x = obj_reader.vertices[obj_reader.indices[i+j]].normal.x;
-        tf.normals[j].y = obj_reader.vertices[obj_reader.indices[i+j]].normal.y;
-        tf.normals[j].z = obj_reader.vertices[obj_reader.indices[i+j]].normal.z;
-        tf.UVs[j].x = obj_reader.vertices[obj_reader.indices[i+j]].textureCoordinate.x;
-        tf.UVs[j].y = obj_reader.vertices[obj_reader.indices[i+j]].textureCoordinate.y;
-      }
-      out_static_mesh->faces.push_back(tf);
-    }
-    // Other fields  
-    out_static_mesh->bounding_box = obj_reader.bounds;
-    
-    // Create vertex and index buffers
-    //if(!fdx11::create_index_buffer(out_static_mesh->index_list, out_static_mesh->render_state.index_buffer))
-    //{
-    //  LOG_WARN("Failed to build index buffer for: {0}", file_name);
-    //  return false;
-    //}
-    if(!fdx11::create_vertex_buffer(out_static_mesh->vertex_list, out_static_mesh->render_state.vertex_buffer))
-    {
-      LOG_WARN("Failed to build vertex buffer for: {0}", file_name);
-      return false;
-    }
-    
-    // Render state, other
-    out_static_mesh->render_state.offset = 0;
-    out_static_mesh->render_state.stride = sizeof(fvertex_data);
-    out_static_mesh->render_state.num_indices = obj_reader.indices.size();
-    
-    return true;
-  }
-
-  bool load_obj_assimp(const std::string& file_name, astatic_mesh* out_static_mesh)
+  bool load_obj(const std::string& file_name, astatic_mesh* out_static_mesh)
   {
     assert(out_static_mesh);
     
@@ -162,33 +81,54 @@ namespace engine
       assert(ai_mesh->HasNormals());
 
       // Vertex list
-      out_static_mesh->vertex_list.reserve(ai_mesh->mNumVertices);
-      for(size_t i=0; i<out_static_mesh->vertex_list.capacity(); ++i)
       {
-        fvertex_data vertex;
-        vertex.position = { ai_mesh->mVertices[i].x, ai_mesh->mVertices[i].y, ai_mesh->mVertices[i].z };
-        vertex.normal   = { ai_mesh->mNormals[i].x,  ai_mesh->mNormals[i].y,  ai_mesh->mNormals[i].z };
-        if(ai_mesh->HasTangentsAndBitangents())
+        std::vector<fvertex_data> vertex_list;
+        vertex_list.reserve(ai_mesh->mNumVertices);
+        for(size_t i=0; i<vertex_list.capacity(); ++i)
         {
-          vertex.tangent    = { ai_mesh->mTangents[i].x,   ai_mesh->mTangents[i].y,   ai_mesh->mTangents[i].z };
-          vertex.bitangent  = { ai_mesh->mBitangents[i].x, ai_mesh->mBitangents[i].y, ai_mesh->mBitangents[i].z };
+          fvertex_data vertex;
+          vertex.position = { ai_mesh->mVertices[i].x, ai_mesh->mVertices[i].y, ai_mesh->mVertices[i].z };
+          vertex.normal   = { ai_mesh->mNormals[i].x,  ai_mesh->mNormals[i].y,  ai_mesh->mNormals[i].z };
+          if(ai_mesh->HasTangentsAndBitangents())
+          {
+            vertex.tangent    = { ai_mesh->mTangents[i].x,   ai_mesh->mTangents[i].y,   ai_mesh->mTangents[i].z };
+            vertex.bitangent  = { ai_mesh->mBitangents[i].x, ai_mesh->mBitangents[i].y, ai_mesh->mBitangents[i].z };
+          }
+          if(ai_mesh->HasTextureCoords(0))
+          {
+            vertex.uv = { ai_mesh->mTextureCoords[0][i].x, ai_mesh->mTextureCoords[0][i].y };
+          }
+          vertex_list.push_back(vertex);
         }
-        if(ai_mesh->HasTextureCoords(0))
+        // Vertex buffer
+        if(!fdx11::create_vertex_buffer(vertex_list, out_static_mesh->render_state.vertex_buffer))
         {
-          vertex.uv = { ai_mesh->mTextureCoords[0][i].x, ai_mesh->mTextureCoords[0][i].y };
+          LOG_WARN("Failed to build vertex buffer for: {0}", file_name);
+          return false;
         }
-        out_static_mesh->vertex_list.push_back(vertex);
+        out_static_mesh->render_state.offset = 0;
+        out_static_mesh->render_state.stride = sizeof(fvertex_data);
       }
 
       // Face list
-      out_static_mesh->face_list.reserve(ai_mesh->mNumFaces);
-      for(size_t i=0; i<out_static_mesh->face_list.capacity(); ++i)
       {
-        assert(ai_mesh->mFaces[i].mNumIndices == 3);
-        const aiFace& ai_face = ai_mesh->mFaces[i];
-        out_static_mesh->face_list.push_back(std::move(fface_data(ai_face.mIndices[0], ai_face.mIndices[1], ai_face.mIndices[2])));
+        std::vector<fface_data> face_list;
+        face_list.reserve(ai_mesh->mNumFaces);
+        for(size_t i=0; i<face_list.capacity(); ++i)
+        {
+          assert(ai_mesh->mFaces[i].mNumIndices == 3);
+          const aiFace& ai_face = ai_mesh->mFaces[i];
+          face_list.push_back(std::move(fface_data(ai_face.mIndices[0], ai_face.mIndices[1], ai_face.mIndices[2])));
+        }
+        // Index buffer
+        if(!fdx11::create_index_buffer(face_list, out_static_mesh->render_state.index_buffer))
+        {
+          LOG_WARN("Failed to build index buffer for: {0}", file_name);
+          return false;
+        }
+        out_static_mesh->render_state.num_indices = face_list.size() * 3;
       }
-
+      
       // Bounding box
       const aiAABB& box = ai_mesh->mAABB;
       const aiVector3D center = (box.mMax + box.mMin) * 0.5f;
@@ -201,24 +141,6 @@ namespace engine
         LOG_WARN("Failed to open scene for: {0}", file_name);
         return false;
     }
-    
-    // Create vertex and index buffers
-    if(!fdx11::create_index_buffer(out_static_mesh->face_list, out_static_mesh->render_state.index_buffer))
-    {
-      LOG_WARN("Failed to build index buffer for: {0}", file_name);
-      return false;
-    }
-    if(!fdx11::create_vertex_buffer(out_static_mesh->vertex_list, out_static_mesh->render_state.vertex_buffer))
-    {
-      LOG_WARN("Failed to build vertex buffer for: {0}", file_name);
-      return false;
-    }
-    
-    // Render state, other
-    out_static_mesh->render_state.offset = 0;
-    out_static_mesh->render_state.stride = sizeof(fvertex_data);
-    out_static_mesh->render_state.num_indices = out_static_mesh->face_list.size() * 3;
-    
     return true;
   }
   
