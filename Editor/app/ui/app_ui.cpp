@@ -13,7 +13,6 @@
 #include "hittables/hittables.h"
 #include "hittables/static_mesh.h"
 #include "hittables/scene.h"
-#include "renderers/gpu_renderer.h"
 
 namespace editor
 {
@@ -28,8 +27,8 @@ namespace editor
     }
     ImGui::Separator();
 
-    ImGuiIO& io = ImGui::GetIO();
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+    ImGui::Text("Application %.3f ms/frame", state.app_delta_time_ms);
+    ImGui::Text("Renderer %.3f ms/frame", state.render_delta_time_ms);
 
     draw_hotkeys_panel(state);
     draw_renderer_panel(model.rp_model, state);
@@ -79,27 +78,8 @@ namespace editor
     ImGui::Text("Resolution h = %d", state.renderer_conf.resolution_horizontal);
 
     ImGui::Separator();
-
-    ImGui::InputInt("Rays per pixel", &state.renderer_conf.rays_per_pixel, 1, 10);
-    ImGui::InputInt("Ray bounces", &state.renderer_conf.ray_bounces, 1);
-  
-    ImGui::Checkbox("Reuse buffers", &state.renderer_conf.reuse_buffer);
-
-    ImGui::Text("Tone mapping - Reinhard extended");
-    ImGui::InputFloat("White point", &state.renderer_conf.white_point, 0.1f);
-
-    if (ImGui::Button("Render"))
-    {
-      model.render_pressed = true;
-    }
-    if (state.renderer != nullptr)
-    {
-      ImGui::SameLine();
-      char name[50];
-      std::sprintf(name, "Rendering with %s", state.renderer->get_display_name().c_str());
-      ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), name);
-    }
-    else
+    
+    if (state.renderer == nullptr)
     {
       ImGui::SameLine();
       ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.5f, 1.0f), "No renderer active");
@@ -122,9 +102,6 @@ namespace editor
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CONTROLS");
     ImGui::Separator();
-    ImGui::Text("F1 - Use preview renderer");
-    ImGui::Text("F2 - Use reference renderer");
-    ImGui::Text("F5 - Render!");
     ImGui::Text("LMB (on image) - select object");
     ImGui::Text("Scroll - Camera speed (current speed: %f)", state.camera.move_speed);
     ImGui::Text("QWEASD - Camera movement");
@@ -148,8 +125,6 @@ namespace editor
         state.output_window_lmb_x = mouse_pos.x - item_min.x;
         state.output_window_lmb_y = mouse_pos.y - item_min.y;
       }
-
-      ImGui::Checkbox("Auto render", &model.auto_render);
 
       ImGui::End();
     }

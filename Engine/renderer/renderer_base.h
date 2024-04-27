@@ -20,28 +20,16 @@ namespace engine
   class ENGINE_API frenderer_config
   {
   public:
-    // Anti Aliasing oversampling
-    int rays_per_pixel = 20;
-
-    // Diffuse reflection
-    int ray_bounces = 7;
-
     // How work is processed
     const oclass_object* type = nullptr;
     const oclass_object* new_type = nullptr;   // For UI
-    
-    // Draw in the same memory - real time update
-    bool reuse_buffer = true;
 
     int resolution_vertical = 0;
     int resolution_horizontal = 0;
 
-    // Manually set the brightest point of an image used for tone mapping
-    float white_point = 1.0f;
-
     inline uint32_t get_hash() const
     {
-      return fhash::combine(rays_per_pixel, ray_bounces, reuse_buffer, fhash::combine(resolution_vertical, resolution_horizontal, fhash::get(white_point), 1));
+      return fhash::combine(resolution_vertical, resolution_horizontal);
     }
   };
 
@@ -70,28 +58,16 @@ namespace engine
     unsigned int output_height = 0;
     
     // Main public interface
-    virtual void render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config);
-    float get_frame_time() const { return static_cast<float>(delta_time); };
-    void start_frame_timer();
-    void stop_frame_timer();
-    
-    // Async worker public interface
-    virtual void push_partial_update() { };
-    virtual void cancel() { };
-    virtual bool is_async() const { return false; };
-    virtual bool is_cancelled() const { return false; };
-    bool is_working() const { return benchmark_renderer.is_working(); };
+    void render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config);
+    double get_render_time_ms() const { return render_time_ms; }
 
   protected:
     virtual void init() = 0;
-    virtual void create_output_texture(bool cleanup = false) = 0;
-
-    int64_t timestamp_start = 0;
-    int64_t perf_counter_frequency = 0;
-    double delta_time = 0.0f;    // [s]
-    ftimer_instance benchmark_renderer;
-    
+    virtual void render_frame_impl() = 0;
+    double render_time_ms = 0.0;
+  
   private:
+    void create_output_texture(bool cleanup = false);
     bool init_done = false;
   };
 }

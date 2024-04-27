@@ -62,13 +62,14 @@ namespace engine
 #endif
   }
   
-  fscope_timer::fscope_timer(const std::string& name)
+  fscope_timer::fscope_timer(const std::string& in_name, uint64_t* out_time)
   {
-    state.start(name);
+    time_ptr = out_time;
+    state.start(in_name);
   }
 
   fscope_timer::~fscope_timer()
   {
-    state.stop();
+    *time_ptr = state.stop();
   }
 }

@@ -99,8 +99,7 @@ namespace editor
 
     nlohmann::json jwindow;
     if (TRY_PARSE(nlohmann::json, j, "window", jwindow)) { fui_persistence::deserialize(jwindow, window_conf); }
-
-    TRY_PARSE(bool, j, "auto_render", ow_model.auto_render);
+    
     TRY_PARSE(float, j, "zoom", ow_model.zoom);
   
     input_stream.close();
@@ -155,7 +154,6 @@ namespace editor
 
     nlohmann::json j;
     j["window"] = fui_persistence::serialize(window_conf);
-    j["auto_render"] = ow_model.auto_render;
     j["zoom"] = ow_model.zoom;
     std::ofstream o(fio::get_window_file_path().c_str(), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);

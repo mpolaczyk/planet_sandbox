@@ -47,7 +47,6 @@ namespace editor
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
   
     // Setup Dear ImGui style
-    //ImGui::StyleColorsDark();
     ImGui::StyleColorsClassic();
     ImGui::GetIO().KeyRepeatDelay = 0.1f;
     //ImGui::GetIO().KeyRepeatRate = 0.01f;
@@ -66,9 +65,6 @@ namespace editor
     app_state.renderer = REG.spawn_from_class<rrenderer_base>(app_state.renderer_conf.type);
     ::SetWindowPos(hwnd, NULL, app_state.window_conf.x, app_state.window_conf.y, app_state.window_conf.w, app_state.window_conf.h, NULL);
   
-    // Auto render on startup
-    app_state.rw_model.rp_model.render_pressed = true;
-  
     LOG_INFO("Loading done, starting the main loop");
   }
 
@@ -78,7 +74,11 @@ namespace editor
     {
       pump_messages();
       if (!app_state.is_running) break;
-  
+
+      ImGuiIO& io = ImGui::GetIO();
+      app_state.app_delta_time_ms = io.DeltaTime * 1000.0f;
+      app_state.render_delta_time_ms = static_cast<float>(app_state.renderer->get_render_time_ms());
+      
       handle_input(app_state);
       manage_renderer();
       draw_scene();
@@ -129,15 +129,6 @@ namespace editor
     // Respawn the renderer if the type needs to be different
     if (app_state.renderer->get_class() != app_state.renderer_conf.new_type && app_state.renderer_conf.new_type != nullptr)
     {
-      // Wait until existing one ends and kill it
-      app_state.renderer->cancel();
-      if(app_state.renderer->is_async())
-      {
-        while(app_state.renderer->is_working())
-        {
-          std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
-      }
       app_state.renderer->destroy();
   
       // Add new one
@@ -171,13 +162,6 @@ namespace editor
   {
     if (app_state.renderer != nullptr)
     {
-      // CPU Rendering to a texture is happening in the separate thread.
-      // Main loop updates UI and the texture output window while it is rendered.
-      // UI framerate is locked to VSync frequency while scene rendering may take longer time.
-      // For now, GPU rendering is blocking the main thread.
-      const bool is_working_async = app_state.renderer->is_async() && app_state.renderer->is_working();
-      if (!is_working_async && (app_state.rw_model.rp_model.render_pressed || app_state.ow_model.auto_render))
-      {
         app_state.scene_root->load_resources();
         app_state.scene_root->build_boxes();
         app_state.scene_root->update_materials();
@@ -188,14 +172,9 @@ namespace editor
         app_state.output_width = app_state.renderer_conf.resolution_horizontal;
         app_state.output_height = app_state.renderer_conf.resolution_vertical;
 
-        app_state.camera.update(static_cast<float>(1.0f/60.0f));
+        app_state.camera.update(app_state.app_delta_time_ms / 1000.0f);
         
         app_state.renderer->render_frame(app_state.scene_root, app_state.renderer_conf, app_state.camera);
-        // TODO how to measuretime? GPU call is blocking, simple timer isok.
-        // CPU is async, will return after a few executions. Renderer needs to return this internally
-        app_state.rw_model.rp_model.render_pressed = false;
-      }
-      app_state.renderer->push_partial_update();
     }
   }
   

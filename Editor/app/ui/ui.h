@@ -62,7 +62,6 @@ namespace editor
 
   struct frenderer_panel_model
   {
-    bool render_pressed = false;
     fselection_combo_model<amaterial> m_model;
     fselection_combo_model<oclass_object> r_model;
   };
@@ -75,7 +74,6 @@ namespace editor
   struct foutput_window_model
   {
     float zoom = 1.0f;
-    bool auto_render = false;
   };
 
   struct fnew_object_panel_model

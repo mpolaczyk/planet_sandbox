@@ -48,7 +48,8 @@ namespace editor
     int output_width = 0;
     int output_height = 0;
     rrenderer_base* renderer = nullptr;
-  
+    float app_delta_time_ms = 0.0f;
+    float render_delta_time_ms = 0.0f;
     fvec3 center_of_scene;
     float distance_to_center_of_scene = 0.0f;
 

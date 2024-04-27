@@ -49,12 +49,10 @@ namespace engine
     fsoft_asset_ptr<avertex_shader> vertex_shader_asset;
     fsoft_asset_ptr<atexture> texture_asset;
     fsoft_asset_ptr<astatic_mesh> mesh_asset;
-
-    virtual void render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config) override;
     
   protected:
     virtual void init() override;
-    virtual void create_output_texture(bool cleanup = false) override;
+    virtual void render_frame_impl() override;
     
   private:
     ComPtr<ID3D11InputLayout> input_layout;
