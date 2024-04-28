@@ -29,12 +29,15 @@ namespace engine
   
   class ENGINE_API rgpu : public rrenderer_base
   {
-    struct fframe_data
+    
+    struct fframe_data  // WARNING - const buffer type
     {
       XMFLOAT4X4 view_projection;
+      XMFLOAT4 ambient_light;     // TODO alignment?
+      flight_properties light;    // TEMP test implementation
     };
 
-    struct fobject_data
+    struct fobject_data // WARNING - const buffer type
     {
       XMFLOAT4X4 model_world;                    // Used to transform the vertex position from object space to world space
       XMFLOAT4X4 inverse_transpose_model_world;  // Used to transform the vertex normal from object space to world space
@@ -58,8 +61,8 @@ namespace engine
     ComPtr<ID3D11InputLayout> input_layout;
     ComPtr<ID3D11ShaderResourceView> texture_srv;
     ComPtr<ID3D11SamplerState> sampler_state;
-    ComPtr<ID3D11Buffer> frame_constant_buffer;
-    ComPtr<ID3D11Buffer> object_constant_buffer;
+    ComPtr<ID3D11Buffer> ps_frame_constant_buffer;
+    ComPtr<ID3D11Buffer> vs_object_constant_buffer;
     ComPtr<ID3D11RasterizerState> rasterizer_state;
     ComPtr<ID3D11DepthStencilState> depth_stencil_state;
   };

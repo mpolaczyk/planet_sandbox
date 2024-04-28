@@ -126,13 +126,13 @@ namespace engine
             desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
             desc.ByteWidth = sizeof(fobject_data);
-            if(FAILED(device->CreateBuffer(&desc, nullptr, &object_constant_buffer)))
+            if(FAILED(device->CreateBuffer(&desc, nullptr, &vs_object_constant_buffer)))
             {
                 throw std::runtime_error("CreateBuffer object constant buffer failed.");
             }
 
             desc.ByteWidth = sizeof(fframe_data);
-            if(FAILED(device->CreateBuffer(&desc, nullptr, &frame_constant_buffer)))
+            if(FAILED(device->CreateBuffer(&desc, nullptr, &ps_frame_constant_buffer)))
             {
                 throw std::runtime_error("CreateBuffer frame constant buffer failed.");
             }
@@ -196,21 +196,24 @@ namespace engine
         dx.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         dx.device_context->IASetInputLayout(input_layout.Get());
         dx.device_context->VSSetShader(vertex_shader_asset.get()->shader.Get(), nullptr, 0);
-        dx.device_context->VSSetConstantBuffers(0, 1, frame_constant_buffer.GetAddressOf());
-        dx.device_context->VSSetConstantBuffers(1, 1, object_constant_buffer.GetAddressOf());
+        dx.device_context->PSSetConstantBuffers(0, 1, ps_frame_constant_buffer.GetAddressOf());
+        dx.device_context->VSSetConstantBuffers(0, 1, vs_object_constant_buffer.GetAddressOf());
         dx.device_context->PSSetShader(pixel_shader_asset.get()->shader.Get(), nullptr, 0);
         dx.device_context->PSSetShaderResources(0, 1, texture_srv.GetAddressOf());
         dx.device_context->PSSetSamplers(0, 1, &sampler_state);
 
-        // Update per frame constant buffer
+        // Update per frame pixel shader constant buffer
         {
             fframe_data pfd;
             pfd.view_projection = camera.view_projection;
-            
+            pfd.ambient_light =  { 0.2, 0.2, 0.2, 1.0 };     // TODO Read from scene
+            pfd.light.color =    { 0.9, 0.2, 0.1, 1.0 };     // TODO Read from object
+            pfd.light.position = { 0.0, 10.0, 0.0, 0.0 };
+
             D3D11_MAPPED_SUBRESOURCE data;
-            dx.device_context->Map(frame_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+            dx.device_context->Map(ps_frame_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
             *static_cast<fframe_data*>(data.pData) = pfd;
-            dx.device_context->Unmap(frame_constant_buffer.Get(), 0);
+            dx.device_context->Unmap(ps_frame_constant_buffer.Get(), 0);
         }
         
         // Draw the scene
@@ -225,7 +228,7 @@ namespace engine
                 const amaterial* ma = sm->material_asset_ptr.get();
                 if (ma == nullptr) { continue; }
                 
-                // Object const buffer
+                // Update per object vertex shader constant buffer
                 {
                     const XMVECTOR model_pos = XMVectorSet(sm->origin.x, sm->origin.y, sm->origin.z, 1.f);
 
@@ -245,9 +248,9 @@ namespace engine
                     XMStoreFloat4x4(&pod.model_world_view_projection, model_world_view_projection);
 
                     D3D11_MAPPED_SUBRESOURCE data;
-                    dx.device_context->Map(object_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+                    dx.device_context->Map(vs_object_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
                     *static_cast<fobject_data*>(data.pData) = pod;
-                    dx.device_context->Unmap(object_constant_buffer.Get(), 0);
+                    dx.device_context->Unmap(vs_object_constant_buffer.Get(), 0);
                 }
 
                 // Draw mesh

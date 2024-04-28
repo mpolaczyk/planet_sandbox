@@ -10,17 +10,24 @@
 
 namespace engine
 {
-  struct ENGINE_API fmaterial_properties
+  using namespace DirectX;
+  
+  struct alignas(16) ENGINE_API fmaterial_properties
   {
-    DirectX::XMFLOAT4 emissive;   // 16 16  - 1
-    DirectX::XMFLOAT4 ambient;    // 16 32  - 2
-    DirectX::XMFLOAT4 diffuse;    // 16 48
-    DirectX::XMFLOAT4 specular;   // 16 64  - 3
-    float specular_power;         // 4  68
-    int use_texture;              // 4  72
-    float padding[2];             // 8  80  - 4
+    XMFLOAT4 emissive;        // 16
+    //
+    XMFLOAT4 ambient;         // 16
+    //
+    XMFLOAT4 diffuse;         // 16
+    //
+    XMFLOAT4 specular;        // 16
+    //
+    float specular_power;     // 4  
+    int use_texture;          // 4  
+    float padding[2];         // 8
   };
-
+  static_assert(sizeof(fmaterial_properties) % 16 == 0);
+  
   enum ENGINE_API flight_type
   {
     directional = 0,
@@ -28,19 +35,24 @@ namespace engine
     spotlight
   };
   
-  struct ENGINE_API flight_properties
+  struct alignas(16) ENGINE_API flight_properties
   {
-    DirectX::XMFLOAT4 position  { 0.0f, 0.0f, 0.0f, 1.0f };   // 16 16  - 1
-    DirectX::XMFLOAT4 direction { 0.0f, 0.0f, 1.0f, 0.0f };   // 16 32  - 2
-    DirectX::XMFLOAT4 color     { 1.0f, 1.0f, 1.0f, 1.0f };   // 16 48  - 3
-    float spot_angle            { DirectX::XM_PIDIV2 };       // 4 52
-    float constant_attenuation  { 1.0f };                     // 4 56
-    float linear_attenuation    { 0.0f };                     // 4 60
-    float quadratic_attenuation { 0.0f };                     // 4 64  - 4
-    int light_type              { flight_type::point };       // 4 68
-    int enabled                 { 0 };                        // 4 72
-    int padding[2];                                           // 8 80  - 5
+    XMFLOAT4 position           { 0.0f, 0.0f, 0.0f, 1.0f };   // 16
+    //
+    XMFLOAT4 direction          { 0.0f, 0.0f, 1.0f, 0.0f };   // 16
+    //
+    XMFLOAT4 color              { 1.0f, 1.0f, 1.0f, 1.0f };   // 16
+    //
+    float spot_angle            { XM_PIDIV2 };                // 4 
+    float constant_attenuation  { 1.0f };                     // 4 
+    float linear_attenuation    { 0.0f };                     // 4 
+    float quadratic_attenuation { 0.0f };                     // 4
+    //
+    int light_type              { flight_type::point };       // 4 
+    int enabled                 { 0 };                        // 4 
+    int padding[2];                                           // 8
   };
+  static_assert(sizeof(flight_properties) % 16 == 0);
   
   class ENGINE_API amaterial : public aasset_base
   {
