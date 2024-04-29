@@ -178,8 +178,7 @@ namespace engine
         std::vector<const hlight*> lights = scene->query_lights();
         if(lights.size() == 0)
         {
-            LOG_ERROR("Scene is missing light");
-            return;
+            throw std::runtime_error("Scene is missing light");
         }
 
         fdx11& dx = fdx11::instance();

@@ -19,7 +19,6 @@ namespace engine
     OBJECT_DECLARE_VISITOR
 
     virtual uint32_t get_hash() const;
-    virtual hhittable_base* clone() const = 0;
     virtual void load_resources();
 
     // Persistent members

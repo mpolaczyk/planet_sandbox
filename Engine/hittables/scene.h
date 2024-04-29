@@ -17,7 +17,6 @@ namespace engine
     OBJECT_DECLARE_VISITOR
 
     virtual uint32_t get_hash() const override;
-    virtual hscene* clone() const override;
     virtual void load_resources() override;
 
     void add(hhittable_base* object);

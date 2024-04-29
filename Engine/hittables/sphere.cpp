@@ -18,12 +18,6 @@ namespace engine
 
   inline uint32_t hsphere::get_hash() const
   {
-    return fhash::combine(hhittable_base::get_hash(), fhash::get(origin), fhash::get(radius));
+    return fhash::combine(hhittable_base::get_hash(), fhash::get(radius));
   }
-  
-  hsphere* hsphere::clone() const
-  {
-    return REG.copy_shallow<hsphere>(this);
-  }
-
 }

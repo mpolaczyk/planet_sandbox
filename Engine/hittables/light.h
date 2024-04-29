@@ -15,7 +15,6 @@ namespace engine
         OBJECT_DECLARE_VISITOR
 
         virtual uint32_t get_hash() const override;
-        virtual hlight* clone() const override;
 
         flight_properties properties;
     };

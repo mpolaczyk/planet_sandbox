@@ -18,7 +18,7 @@ namespace engine
   
   inline uint32_t hhittable_base::get_hash() const
   {
-    return fhash::combine(fhash::get(material_asset_ptr.get_name().c_str()), 0);
+    return fhash::combine(fhash::get(material_asset_ptr.get_name().c_str()), fhash::get(origin), fhash::get(rotation), fhash::get(scale));
   }
 
   void hhittable_base::load_resources()

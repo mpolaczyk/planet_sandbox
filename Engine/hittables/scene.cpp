@@ -1,4 +1,5 @@
 
+
 #include "hittables/scene.h"
 
 #include "light.h"
@@ -65,47 +66,54 @@ namespace engine
     }
     return a;
   }
-
-  hscene* hscene::clone() const
-  {
-    hscene* new_scene = REG.copy_shallow<hscene>(this);
-    // Deep copy
-    for (hhittable_base* obj : objects)
-    {
-      const oclass_object* class_o = obj->get_class();
-      hhittable_base* new_obj = nullptr;
-      if (class_o == oclass_object::get_class_static())
-      {
-        new_obj = REG.copy_shallow<hscene>(static_cast<hscene*>(obj));
-      }
-      else if (class_o == hsphere::get_class_static())
-      {
-        new_obj = REG.copy_shallow<hsphere>(static_cast<hsphere*>(obj));
-      }
-      else if (class_o == hstatic_mesh::get_class_static())
-      {
-        new_obj = REG.copy_shallow<hstatic_mesh>(static_cast<hstatic_mesh*>(obj));
-      }
-      else
-      {
-        LOG_ERROR("Unable to clone a hittable of type: {0}", obj->get_class()->get_class_name());
-        return nullptr;
-      }
-      
-      new_scene->objects.push_back(new_obj);
-    }
-    return new_scene;
-  }
-
-
+  
   void hscene::load_resources()
   {
     LOG_TRACE("Scene: load resources");
-
+    
+    hhittable_base::load_resources();
+    
     for (hhittable_base* object : objects)
     {
       assert(object != nullptr);
       object->load_resources();
     }
   }
+
+  //hscene* hscene::clone() const
+  //{
+  //  throw std::runtime_error("Attempt to clone the scene!"); // Is this still needed?
+  //  
+  //  hscene* new_scene = REG.copy_shallow<hscene>(this);
+  //  // Deep copy
+  //  for (hhittable_base* obj : objects)
+  //  {
+  //    const oclass_object* class_o = obj->get_class();
+  //    hhittable_base* new_obj = nullptr;
+  //    if (class_o == oclass_object::get_class_static())
+  //    {
+  //      new_obj = REG.copy_shallow<hscene>(static_cast<hscene*>(obj));
+  //    }
+  //    else if (class_o == hsphere::get_class_static())
+  //    {
+  //      new_obj = REG.copy_shallow<hsphere>(static_cast<hsphere*>(obj));
+  //    }
+  //    else if (class_o == hstatic_mesh::get_class_static())
+  //    {
+  //      new_obj = REG.copy_shallow<hstatic_mesh>(static_cast<hstatic_mesh*>(obj));
+  //    }
+  //    else if (class_o == hlight::get_class_static())
+  //    {
+  //      new_obj = REG.copy_shallow<hlight>(static_cast<hlight*>(obj));
+  //    }
+  //    else
+  //    {
+  //      LOG_ERROR("Unable to clone a hittable of type: {0}", obj->get_class()->get_class_name());
+  //      return nullptr;
+  //    }
+  //    
+  //    new_scene->objects.push_back(new_obj);
+  //  }
+  //  return new_scene;
+  //}
 }

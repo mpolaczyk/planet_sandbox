@@ -16,7 +16,6 @@ namespace engine
     OBJECT_DECLARE_VISITOR
 
     virtual uint32_t get_hash() const override;
-    virtual hsphere* clone() const override;
 
     // Persistent members
     float radius = 0.0f;
