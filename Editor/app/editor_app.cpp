@@ -59,11 +59,10 @@ namespace editor
   
     // Load persistent state
     app_state.load_window_state();
-    app_state.load_rendering_state();
     app_state.load_assets();
     app_state.load_scene_state();
     app_state.scene_root->load_resources();
-    app_state.renderer = REG.spawn_from_class<rrenderer_base>(app_state.renderer_conf.type);
+    app_state.renderer = REG.spawn_from_class<rrenderer_base>(app_state.scene_root->renderer_config.type);
     ::SetWindowPos(hwnd, NULL, app_state.window_conf.x, app_state.window_conf.y, app_state.window_conf.w, app_state.window_conf.h, NULL);
   
     LOG_INFO("Loading done, starting the main loop");
@@ -128,14 +127,15 @@ namespace editor
   void feditor_app::manage_renderer()
   {
     // Respawn the renderer if the type needs to be different
-    if (app_state.renderer->get_class() != app_state.renderer_conf.new_type && app_state.renderer_conf.new_type != nullptr)
+    frenderer_config& renderer_config = app_state.scene_root->renderer_config;
+    if (app_state.renderer->get_class() != renderer_config.new_type && renderer_config.new_type != nullptr)
     {
       app_state.renderer->destroy();
   
       // Add new one
-      auto new_class = app_state.renderer_conf.new_type;
+      auto new_class = renderer_config.new_type;
       auto new_renderer = REG.spawn_from_class<rrenderer_base>(new_class);
-      app_state.renderer_conf.type = new_class;
+      renderer_config.type = new_class;
       app_state.renderer = new_renderer;
     }
   }
@@ -152,9 +152,9 @@ namespace editor
       if (0) { ImGui::ShowDemoWindow(); }
   #endif
   
-    draw_editor_window(app_state.rw_model, app_state);
-    draw_output_window(app_state.ow_model, app_state);
-    draw_scene_editor_window(app_state.sew_model, app_state);
+    draw_editor_window(app_state.editor_window_model, app_state);
+    draw_output_window(app_state.output_window_model, app_state);
+    draw_scene_window(app_state.scene_window_model, app_state);
   
     ImGui::Render(); // Draw, prepare for render
   }
@@ -164,16 +164,17 @@ namespace editor
     if (app_state.renderer != nullptr)
     {
         app_state.scene_root->load_resources();
-        app_state.scene_root->update_materials();
   
         update_default_spawn_position(app_state);
-  
-        app_state.output_width = app_state.renderer_conf.resolution_horizontal;
-        app_state.output_height = app_state.renderer_conf.resolution_vertical;
 
-        app_state.camera.update(app_state.app_delta_time_ms / 1000.0f);
+        frenderer_config& renderer_config = app_state.scene_root->renderer_config;
+      
+        app_state.output_width = renderer_config.resolution_horizontal;
+        app_state.output_height = renderer_config.resolution_vertical;
+
+        app_state.scene_root->camera_config.update(app_state.app_delta_time_ms / 1000.0f);
         
-        app_state.renderer->render_frame(app_state.scene_root, app_state.renderer_conf, app_state.camera);
+        app_state.renderer->render_frame(app_state.scene_root);
     }
   }
   

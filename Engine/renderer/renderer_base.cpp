@@ -4,6 +4,7 @@
 #include "renderer/dx11_lib.h"
 #include "renderer/renderer_base.h"
 #include "engine/log.h"
+#include "hittables/scene.h"
 #include "object/object_registry.h"
 #include "profile/benchmark.h"
 
@@ -12,16 +13,23 @@ namespace engine
   OBJECT_DEFINE(rrenderer_base, oobject, Renderer base)
   OBJECT_DEFINE_NOSPAWN(rrenderer_base) 
 
-  void rrenderer_base::render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera& in_camera_config)
+  void rrenderer_base::render_frame(const hscene* in_scene)
   {
-    if (in_renderer_config.resolution_vertical == 0 || in_renderer_config.resolution_horizontal == 0) return;
-    camera = in_camera_config;
+    if(in_scene == nullptr)
+    {
+        LOG_ERROR("Can't render. Bad scene.");
+        return;
+    }
+    const frenderer_config& renderer_config = in_scene->renderer_config;
+      
+    if (renderer_config.resolution_vertical == 0 || renderer_config.resolution_horizontal == 0) return;
+    camera = in_scene->camera_config;
     scene = in_scene;
 
-    const bool size_changed = output_width != in_renderer_config.resolution_horizontal
-                          || output_height != in_renderer_config.resolution_vertical;
-    output_width = in_renderer_config.resolution_horizontal;
-    output_height = in_renderer_config.resolution_vertical;
+    const bool size_changed = output_width != renderer_config.resolution_horizontal
+                          || output_height != renderer_config.resolution_vertical;
+    output_width = renderer_config.resolution_horizontal;
+    output_height = renderer_config.resolution_vertical;
     if (size_changed)
     {
       LOG_INFO("Recreating output texture");

@@ -140,11 +140,6 @@ namespace engine
     return get_workspace_file_path("scene.json");
   }
 
-  std::string fio::get_rendering_file_path()
-  {
-    return get_workspace_file_path("rendering.json");
-  }
-
   std::string fio::get_imgui_file_path()
   {
     return get_workspace_file_path("imgui.ini");

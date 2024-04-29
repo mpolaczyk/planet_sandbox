@@ -1,18 +1,22 @@
 {
-  "camera_config": {
-    "aspect_ratio_h": 9.0,
-    "aspect_ratio_w": 16.0,
-    "field_of_view": 40.0,
-    "look_from": {
-      "x": 3.6011803150177,
-      "y": 1.1519479751586914,
-      "z": -8.248616218566895
-    },
-    "pitch": 3.9134466648101807,
-    "yaw": -26.96186637878418
-  },
   "scene": {
-    "class_name": "hscene",
+    "ambient_light_color": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    "camera_config": {
+      "aspect_ratio_h": 9.0,
+      "aspect_ratio_w": 16.0,
+      "field_of_view": 40.0,
+      "look_from": {
+        "x": -1.0415023565292358,
+        "y": 2.313404083251953,
+        "z": -7.7790207862854
+      },
+      "pitch": 6.288536548614502,
+      "yaw": 10.125372886657715
+    },
     "custom_display_name": "",
     "material_asset": {
       "name": ""
@@ -126,6 +130,11 @@
       "x": 0.0,
       "y": 0.0,
       "z": 0.0
+    },
+    "renderer_config": {
+      "resolution_horizontal": 711,
+      "resolution_vertical": 400,
+      "type": "rgpu"
     },
     "rotation": {
       "x": 0.0,

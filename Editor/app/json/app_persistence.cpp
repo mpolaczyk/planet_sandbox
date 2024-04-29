@@ -27,32 +27,11 @@ namespace editor
     }
     nlohmann::json j;
     input_stream >> j;
-
-    nlohmann::json jcamera_conf;
-    if (TRY_PARSE(nlohmann::json, j, "camera_config", jcamera_conf)) { fpersistence::deserialize(jcamera_conf, camera); }
    
     nlohmann::json jscene_root;
     if (TRY_PARSE(nlohmann::json, j, "scene", jscene_root)) { scene_root->accept(deserialize_object(jscene_root)); }
 
     input_stream.close();
-  }
-
-  void fapp_instance::load_rendering_state()
-  {
-    LOG_INFO("Loading: rendering state");
-
-    std::string rendering_file = fio::get_rendering_file_path();
-    std::ifstream input_stream(rendering_file.c_str());
-    if (input_stream.fail())
-    {
-      LOG_ERROR("Unable to open file: {0}", rendering_file);
-      return;
-    }
-    nlohmann::json j;
-    input_stream >> j;
-    nlohmann::json jrenderer_conf;
-    if (TRY_PARSE(nlohmann::json, j, "renderer_config", jrenderer_conf)) { fpersistence::deserialize(jrenderer_conf, renderer_conf); }
-    input_stream.close();  
   }
 
   void fapp_instance::load_assets()
@@ -100,7 +79,7 @@ namespace editor
     nlohmann::json jwindow;
     if (TRY_PARSE(nlohmann::json, j, "window", jwindow)) { fui_persistence::deserialize(jwindow, window_conf); }
     
-    TRY_PARSE(float, j, "zoom", ow_model.zoom);
+    TRY_PARSE(float, j, "zoom", output_window_model.zoom);
   
     input_stream.close();
   }
@@ -111,24 +90,8 @@ namespace editor
     LOG_INFO("Saving: scene");
 
     nlohmann::json j;
-    j["camera_config"] = fpersistence::serialize(camera);
     scene_root->accept(serialize_object(j["scene"]));
     std::ofstream o(fio::get_scene_file_path().c_str(), std::ios_base::out | std::ios::binary);
-    std::string str = j.dump(2);
-    if (o.is_open())
-    {
-      o.write(str.data(), str.length());
-    }
-    o.close();
-  }
-
-  void fapp_instance::save_rendering_state()
-  {
-    LOG_INFO("Saving: rendering state");
-
-    nlohmann::json j;
-    j["renderer_config"] = fpersistence::serialize(renderer_conf);
-    std::ofstream o(fio::get_rendering_file_path().c_str(), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
     if (o.is_open())
     {
@@ -154,7 +117,7 @@ namespace editor
 
     nlohmann::json j;
     j["window"] = fui_persistence::serialize(window_conf);
-    j["zoom"] = ow_model.zoom;
+    j["zoom"] = output_window_model.zoom;
     std::ofstream o(fio::get_window_file_path().c_str(), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
     if (o.is_open())

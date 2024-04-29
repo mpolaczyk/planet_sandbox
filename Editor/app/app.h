@@ -32,16 +32,13 @@ namespace editor
     hscene* scene_root = nullptr;
     fcamera camera;
 
-    // Rendering state
-    frenderer_config renderer_conf;
-  
     // OS window state
     fwindow_config window_conf;
 
     // Imgui window states
-    feditor_window_model rw_model;
-    foutput_window_model ow_model;
-    fscene_editor_window_model sew_model;
+    feditor_window_model editor_window_model;
+    foutput_window_model output_window_model;
+    fscene_window_model scene_window_model;
 
     // Runtime state
     bool is_running = true;
@@ -59,8 +56,6 @@ namespace editor
 
     void load_scene_state();
     void save_scene_state();
-    void load_rendering_state();
-    void save_rendering_state();
     void load_assets();
     void save_materials();
     void load_window_state();
@@ -68,13 +63,23 @@ namespace editor
   };
 
   // FIX Move this to app_instance class
-  void draw_camera_panel(fcamera_panel_model& model, fapp_instance& state);
-  void draw_renderer_panel(frenderer_panel_model& model, fapp_instance& state);
-  void draw_managed_objects_panel(fapp_instance& state);
-  void draw_hotkeys_panel(fapp_instance& state);
+
+  // Editor window
   void draw_editor_window(feditor_window_model& model, fapp_instance& state);
+  void draw_hotkeys_panel(fapp_instance& state);
+  void draw_materials_panel(fmaterials_panel_model& model, fapp_instance& state);
+  void draw_managed_objects_panel(fapp_instance& state);
+
+  // Scene widnow
+  void draw_scene_window(fscene_window_model& model, fapp_instance& state);
+  void draw_renderer_panel(frenderer_panel_model& model, fapp_instance& state);
+  void draw_camera_panel(fcamera_panel_model& model, fapp_instance& state);
+  void draw_objects_panel(fobjects_panel_model& model, fapp_instance& state);
+
+  // Output window
   void draw_output_window(foutput_window_model& model, fapp_instance& state);
-  void draw_scene_editor_window(fscene_editor_window_model& model, fapp_instance& state);
+
+  
   void draw_new_object_panel(fnew_object_panel_model& model, fapp_instance& state);
 
   template<typename T>

@@ -19,63 +19,110 @@ namespace editor
   void draw_editor_window(feditor_window_model& model, fapp_instance& state)
   {
     ImGui::Begin("EDITOR", nullptr);
-
-    if (ImGui::MenuItem("SAVE STATE"))
-    {
-      state.save_rendering_state();
-      state.save_materials();
-    }
     ImGui::Separator();
-
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "STATS");
+    ImGui::Separator();
     ImGui::Text("Application %.3f ms/frame", state.app_delta_time_ms);
     ImGui::Text("Renderer %.3f ms/frame", state.render_delta_time_ms);
-
     draw_hotkeys_panel(state);
-    draw_renderer_panel(model.rp_model, state);
+    draw_materials_panel(model.rp_model, state);
     draw_managed_objects_panel(state);
     ImGui::End();
   }
-
-  void draw_camera_panel(fcamera_panel_model& model, fapp_instance& state)
+  void draw_hotkeys_panel(fapp_instance& state)
   {
     ImGui::Separator();
-    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "HOTKEYS");
     ImGui::Separator();
-    float ar[2] = { state.camera.aspect_ratio_w, state.camera.aspect_ratio_h };
-    ImGui::InputFloat2("Aspect ratio", ar);
-    state.camera.aspect_ratio_w = ar[0];
-    state.camera.aspect_ratio_h = ar[1];
-    ImGui::Text("Aspect ratio = %.3f", state.camera.aspect_ratio_w / state.camera.aspect_ratio_h);
-    ImGui::InputFloat("Field of view", &state.camera.field_of_view, 1.0f, 189.0f, "%.0f");
-    ImGui::Separator();
-    ImGui::InputFloat3("Look from", state.camera.location.e, "%.2f");
-    ImGui::InputFloat("Pitch", &state.camera.pitch, 0.1f, 1.0f, "%.2f");
-    ImGui::InputFloat("Yaw", &state.camera.yaw, 0.1f, 1.0f, "%.2f");
-    ImGui::Separator();
+    ImGui::Text("LMB (on image) - select object");
+    ImGui::Text("Scroll - Camera speed (current speed: %f)", state.scene_root->camera_config.move_speed);
+    ImGui::Text("QWEASD - Camera movement");
+    ImGui::Text("RMB - Camera rotation");
+    ImGui::Text("ZXC + mouse - Object movement");
   }
+  void draw_materials_panel(fmaterials_panel_model& model, fapp_instance& state)
+  {
+    ImGui::Separator();
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MATERIALS");
+    ImGui::Separator();
+    if (ImGui::MenuItem("SAVE STATE"))
+    {
+      state.save_materials();
+      ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SAVED!");
+    }
+    ImGui::Separator();
+    
+    model.m_model.objects = REG.get_all_by_type<const amaterial>();
+    draw_selection_combo<amaterial>(model.m_model, state, "Material", [=](const amaterial* obj) -> bool { return true; });
+    if (model.m_model.selected_object != nullptr)
+    {
+      const_cast<amaterial*>(model.m_model.selected_object)->accept(fdraw_edit_panel());
+    }
+  }
+  void draw_managed_objects_panel(fapp_instance& state)
+  {
+    ImGui::Separator();
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MANAGED OBJECTS");
+    ImGui::Separator();
 
+    const std::vector<oobject*>& objects = REG.get_all();
+
+    int num_objects = (int)objects.size();
+    if (ImGui::BeginListBox("Assets", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
+    {
+      for (int n = 0; n < num_objects; n++)
+      {
+        std::ostringstream oss;
+        oss << "[" << objects[n]->get_runtime_id() << "] " << objects[n]->get_display_name() << " (" << objects[n]->get_class()->get_class_name() << ")";
+        if (ImGui::Selectable(oss.str().c_str()))
+        {
+
+        }
+      }
+      ImGui::EndListBox();
+    }
+  }
+  
+  void draw_scene_window(fscene_window_model& model, fapp_instance& state)
+  {
+    ImGui::Begin("SCENE", nullptr);
+    if (ImGui::MenuItem("SAVE SCENE"))
+    {
+      state.save_scene_state();
+      ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SAVED!");
+    }
+    draw_renderer_panel(model.rp_model, state);
+    draw_camera_panel(model.cp_model, state);
+    draw_objects_panel(model.op_model, state);
+    ImGui::End();
+  }
   void draw_renderer_panel(frenderer_panel_model& model, fapp_instance& state)
   {
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
-  
     ImGui::Separator();
   
     // FIX this does not work for class objects!
     // co->is_child_of(renderer_base::get_class_static());
-    model.r_model.objects = REG.find_all<const oclass_object>([](const oclass_object* co) -> bool { return co->get_parent_class_name() == rrenderer_base::get_class_static()->get_class_name(); });  
-  
-    draw_selection_combo<oclass_object>(model.r_model, state, "Renderer class",
-      [=](const oclass_object* obj) -> bool { return true; }, state.renderer_conf.type);
-    if(model.r_model.selected_object != state.renderer_conf.type)
+    model.r_model.objects = REG.find_all<const oclass_object>([](const oclass_object* co) -> bool
     {
-      state.renderer_conf.new_type = model.r_model.selected_object;
+      return co->get_parent_class_name() == rrenderer_base::get_class_static()->get_class_name();
+    });  
+
+    frenderer_config& renderer_config = state.scene_root->renderer_config;
+    
+    draw_selection_combo<oclass_object>(model.r_model, state, "Renderer class",
+      [=](const oclass_object* obj) -> bool { return true; }, renderer_config.type);
+    if(model.r_model.selected_object != renderer_config.type)
+    {
+      renderer_config.new_type = model.r_model.selected_object;
     }
     ImGui::Separator();
   
-    ImGui::InputInt("Resolution v", &state.renderer_conf.resolution_vertical, 1, 2160);
-    state.renderer_conf.resolution_horizontal = (int)((float)state.renderer_conf.resolution_vertical * state.camera.aspect_ratio_w / state.camera.aspect_ratio_h);
-    ImGui::Text("Resolution h = %d", state.renderer_conf.resolution_horizontal);
+    ImGui::InputInt("Resolution v", &renderer_config.resolution_vertical, 1, 2160);
+    fcamera& camera = state.scene_root->camera_config;
+    renderer_config.resolution_horizontal = (int)((float)renderer_config.resolution_vertical * camera.aspect_ratio_w / camera.aspect_ratio_h);
+    ImGui::Text("Resolution h = %d", renderer_config.resolution_horizontal);
 
     ImGui::Separator();
     
@@ -84,63 +131,27 @@ namespace editor
       ImGui::SameLine();
       ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.5f, 1.0f), "No renderer active");
     }
-
-    ImGui::Separator();
-    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MATERIALS");
-    ImGui::Separator();
-  
-    model.m_model.objects = REG.get_all_by_type<const amaterial>();
-    draw_selection_combo<amaterial>(model.m_model, state, "Material", [=](const amaterial* obj) -> bool { return true; });
-    if (model.m_model.selected_object != nullptr)
-    {
-      const_cast<amaterial*>(model.m_model.selected_object)->accept(fdraw_edit_panel());
-    }
   }
-
-  void draw_hotkeys_panel(fapp_instance& state)
+  void draw_camera_panel(fcamera_panel_model& model, fapp_instance& state)
   {
+    fcamera& camera = state.scene_root->camera_config;
     ImGui::Separator();
-    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CONTROLS");
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
     ImGui::Separator();
-    ImGui::Text("LMB (on image) - select object");
-    ImGui::Text("Scroll - Camera speed (current speed: %f)", state.camera.move_speed);
-    ImGui::Text("QWEASD - Camera movement");
-    ImGui::Text("RMB - Camera rotation");
-    ImGui::Text("ZXC + mouse - Object movement");
+    float ar[2] = { camera.aspect_ratio_w, camera.aspect_ratio_h };
+    ImGui::InputFloat2("Aspect ratio", ar);
+    camera.aspect_ratio_w = ar[0];
+    camera.aspect_ratio_h = ar[1];
+    ImGui::Text("Aspect ratio = %.3f", camera.aspect_ratio_w / camera.aspect_ratio_h);
+    ImGui::InputFloat("Field of view", &camera.field_of_view, 1.0f, 189.0f, "%.0f");
+    ImGui::Separator();
+    ImGui::InputFloat3("Look from", camera.location.e, "%.2f");
+    ImGui::InputFloat("Pitch", &camera.pitch, 0.1f, 1.0f, "%.2f");
+    ImGui::InputFloat("Yaw", &camera.yaw, 0.1f, 1.0f, "%.2f");
+    ImGui::Separator();
   }
-
-  void draw_output_window(foutput_window_model& model, fapp_instance& state)
+  void draw_objects_panel(fobjects_panel_model& model, fapp_instance& state)
   {
-    if (state.renderer->output_texture)
-    {
-      ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-      ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
-      ImVec2 size = ImVec2(state.output_width * model.zoom, state.output_height * model.zoom);
-      ImGui::Image((ImTextureID)state.renderer->output_srv.Get(), size, ImVec2(0, 0), ImVec2(1, 1));
-
-      if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-      {
-        ImVec2 item_min = ImGui::GetItemRectMin();
-        ImVec2 mouse_pos = ImGui::GetMousePos();
-        state.output_window_lmb_x = mouse_pos.x - item_min.x;
-        state.output_window_lmb_y = mouse_pos.y - item_min.y;
-      }
-
-      ImGui::End();
-    }
-  }
-
-  void draw_scene_editor_window(fscene_editor_window_model& model, fapp_instance& state)
-  {
-    ImGui::Begin("SCENE", nullptr);
-  
-    if (ImGui::MenuItem("SAVE STATE"))
-    {
-      state.save_scene_state();
-    }
-
-    draw_camera_panel(model.cp_model, state);
-
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "OBJECTS");
     ImGui::Separator();
@@ -195,12 +206,31 @@ namespace editor
         std::string selected_name = model.m_model.selected_object->file_name;
         selected_obj->material_asset_ptr.set_name(selected_name);
       }
-
       ImGui::Separator();
     }
-    ImGui::End();
   }
 
+  void draw_output_window(foutput_window_model& model, fapp_instance& state)
+  {
+    if (state.renderer->output_texture)
+    {
+      ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+      ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
+      ImVec2 size = ImVec2(state.output_width * model.zoom, state.output_height * model.zoom);
+      ImGui::Image((ImTextureID)state.renderer->output_srv.Get(), size, ImVec2(0, 0), ImVec2(1, 1));
+
+      if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+      {
+        ImVec2 item_min = ImGui::GetItemRectMin();
+        ImVec2 mouse_pos = ImGui::GetMousePos();
+        state.output_window_lmb_x = mouse_pos.x - item_min.x;
+        state.output_window_lmb_y = mouse_pos.y - item_min.y;
+      }
+
+      ImGui::End();
+    }
+  }
+  
   void draw_new_object_panel(fnew_object_panel_model& model, fapp_instance& state)
   {
     if (ImGui::Button("Add new"))
@@ -320,27 +350,5 @@ namespace editor
     }
   }
 
-  void draw_managed_objects_panel(fapp_instance& state)
-  {
-    ImGui::Separator();
-    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MANAGED OBJECTS");
-    ImGui::Separator();
-
-    const std::vector<oobject*>& objects = REG.get_all();
-
-    int num_objects = (int)objects.size();
-    if (ImGui::BeginListBox("Assets", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
-    {
-      for (int n = 0; n < num_objects; n++)
-      {
-        std::ostringstream oss;
-        oss << "[" << objects[n]->get_runtime_id() << "] " << objects[n]->get_display_name() << " (" << objects[n]->get_class()->get_class_name() << ")";
-        if (ImGui::Selectable(oss.str().c_str()))
-        {
-
-        }
-      }
-      ImGui::EndListBox();
-    }
-  }
+  
 }

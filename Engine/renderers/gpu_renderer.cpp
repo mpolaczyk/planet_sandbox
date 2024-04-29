@@ -205,8 +205,8 @@ namespace engine
         {
             fframe_data pfd;
             pfd.view_projection = camera.view_projection;
-            pfd.ambient_light =  { 0.2, 0.2, 0.2, 1.0 };     // TODO Read from scene
-            pfd.light.color =    lights[0]->properties.color;
+            pfd.ambient_light =  scene->ambient_light_color;
+            pfd.light.color =    lights[0]->properties.color;   // TODO Add more lights
             pfd.light.position = fmath::to_xmfloat4(lights[0]->origin);
 
             D3D11_MAPPED_SUBRESOURCE data;

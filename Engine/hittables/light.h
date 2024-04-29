@@ -16,6 +16,7 @@ namespace engine
 
         virtual uint32_t get_hash() const override;
 
+        // Persistent members
         flight_properties properties;
     };
 }

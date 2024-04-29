@@ -18,44 +18,6 @@ namespace engine
   OBJECT_DEFINE(hscene, hhittable_base, Scene)
   OBJECT_DEFINE_SPAWN(hscene)
   OBJECT_DEFINE_VISITOR(hscene)
-  
-  void hscene::add(hhittable_base* object)
-  {
-    objects.push_back(object);
-  }
-
-  void hscene::remove(int object_id)
-  { 
-    objects[object_id]->destroy();
-    objects.erase(objects.begin() + object_id);
-  }
-
-  void hscene::update_materials()
-  {
-    LOG_TRACE("Scene: update materials");
-
-    assert(objects.size() > 0);
-
-    // Trigger resource loading for materials.
-    // Soft ptr name change may invalidate it.
-    for (hhittable_base* obj : objects)
-    {
-      obj->material_asset_ptr.get();
-    }
-  }
-
-  std::vector<const hlight*> hscene::query_lights() const
-  {
-    std::vector<const hlight*> lights;
-    for (const hhittable_base* obj : objects)
-    {
-      if(obj->get_class() == hlight::get_class_static())
-      {
-        lights.push_back(static_cast<const hlight*>(obj));
-      }
-    }
-    return lights;
-  }
 
   inline uint32_t hscene::get_hash() const
   {
@@ -79,6 +41,32 @@ namespace engine
       object->load_resources();
     }
   }
+  
+  void hscene::add(hhittable_base* object)
+  {
+    objects.push_back(object);
+  }
+
+  void hscene::remove(int object_id)
+  { 
+    objects[object_id]->destroy();
+    objects.erase(objects.begin() + object_id);
+  }
+
+  std::vector<const hlight*> hscene::query_lights() const
+  {
+    std::vector<const hlight*> lights;
+    for (const hhittable_base* obj : objects)
+    {
+      if(obj->get_class() == hlight::get_class_static())
+      {
+        lights.push_back(static_cast<const hlight*>(obj));
+      }
+    }
+    return lights;
+  }
+
+ 
 
   //hscene* hscene::clone() const
   //{

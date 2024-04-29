@@ -20,10 +20,4 @@ namespace engine
     {
         return fhash::combine(hhittable_base::get_hash(), fhash::get(properties.color));
     }
-  
-    hlight* hlight::clone() const
-    {
-        return REG.copy_shallow<hlight>(this);
-    }
-
 }

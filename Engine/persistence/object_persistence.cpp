@@ -75,8 +75,10 @@ namespace engine
       h->accept(serialize_object(jj));
       jarr.push_back(jj);
     }
-    j["class_name"] = hscene::get_class_static()->get_class_name();
     j["objects"] = jarr;
+    j["ambient_light_color"] = fpersistence::serialize(object.origin);
+    j["renderer_config"] = fpersistence::serialize(object.renderer_config);
+    j["camera_config"] = fpersistence::serialize(object.camera_config);
   }
   void serialize_object::visit(class hstatic_mesh& object) const
   {
@@ -158,6 +160,15 @@ namespace engine
   void deserialize_object::visit(class hscene& object) const
   {
     object.hhittable_base::accept(deserialize_object(j));
+
+    nlohmann::json jambient_light_color;
+    if (TRY_PARSE(nlohmann::json, j, "ambient_light_color", jambient_light_color)) { fpersistence::deserialize(jambient_light_color, object.ambient_light_color); }
+
+    nlohmann::json jrenderer_config;
+    if (TRY_PARSE(nlohmann::json, j, "renderer_config", jrenderer_config)) { fpersistence::deserialize(jrenderer_config, object.renderer_config); }
+
+    nlohmann::json jcamera_conf;
+    if (TRY_PARSE(nlohmann::json, j, "camera_config", jcamera_conf)) { fpersistence::deserialize(jcamera_conf, object.camera_config); }
     
     nlohmann::json jobjects;
     if (TRY_PARSE(nlohmann::json, j, "objects", jobjects))
@@ -192,7 +203,7 @@ namespace engine
   void deserialize_object::visit(class hlight& object) const
   {
     object.hhittable_base::accept(deserialize_object(j));
-    nlohmann::json jmesh;
-    if (TRY_PARSE(nlohmann::json, j, "color", jmesh)) { fpersistence::deserialize(jmesh, object.properties.color); }
+    nlohmann::json jcolor;
+    if (TRY_PARSE(nlohmann::json, j, "color", jcolor)) { fpersistence::deserialize(jcolor, object.properties.color); }
   }
 }

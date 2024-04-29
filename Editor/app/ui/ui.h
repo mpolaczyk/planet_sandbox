@@ -24,10 +24,6 @@ namespace editor
    - not needed to be shared between multiple panels/widgets
    - not persistent
   */
-  struct fcamera_panel_model
-  {
-  
-  };
 
   template<typename T>
   struct fselection_combo_model
@@ -60,20 +56,9 @@ namespace editor
     int selected_id = 0;
   };
 
-  struct frenderer_panel_model
+  struct fmaterials_panel_model
   {
     fselection_combo_model<amaterial> m_model;
-    fselection_combo_model<oclass_object> r_model;
-  };
-
-  struct feditor_window_model
-  {
-    frenderer_panel_model rp_model;
-  };
-
-  struct foutput_window_model
-  {
-    float zoom = 1.0f;
   };
 
   struct fnew_object_panel_model
@@ -86,12 +71,37 @@ namespace editor
     int selected_id = 0;
   };
 
-  struct fscene_editor_window_model
+  
+  struct frenderer_panel_model
+  {
+    fselection_combo_model<oclass_object> r_model;
+  };
+  struct fcamera_panel_model
+  {
+  
+  };
+  struct fobjects_panel_model
   {
     int selected_id = -1;
-    fcamera_panel_model cp_model;
     fnew_object_panel_model nop_model;
     fdelete_object_panel_model d_model;
     fselection_combo_model<amaterial> m_model;
+  };
+  
+  struct fscene_window_model
+  {
+    frenderer_panel_model rp_model;
+    fcamera_panel_model cp_model;
+    fobjects_panel_model op_model;
+  };
+  
+  struct feditor_window_model
+  {
+    fmaterials_panel_model rp_model;
+  };
+
+  struct foutput_window_model
+  {
+    float zoom = 1.0f;
   };
 }

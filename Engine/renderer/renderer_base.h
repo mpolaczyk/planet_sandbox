@@ -40,7 +40,7 @@ namespace engine
     unsigned int output_height = 0;
     
     // Main public interface
-    void render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera& in_camera_config);
+    void render_frame(const hscene* in_scene);
     double get_render_time_ms() const { return render_time_ms; }
 
   protected:

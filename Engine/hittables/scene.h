@@ -2,9 +2,12 @@
 
 #include <string>
 #include <vector>
+#include <DirectXMath.h>
 
 #include "hittables.h"
+#include "math/camera.h"
 #include "math/vec3.h"
+#include "renderer/renderer_config.h"
 
 namespace engine
 {
@@ -21,11 +24,13 @@ namespace engine
 
     void add(hhittable_base* object);
     void remove(int object_id);
-    
-    void update_materials();
+
     std::vector<const hlight*> query_lights() const;
 
     // Persistent members
     std::vector<hhittable_base*> objects;
+    DirectX::XMFLOAT4 ambient_light_color;
+    frenderer_config renderer_config;
+    fcamera camera_config;
   };
 }

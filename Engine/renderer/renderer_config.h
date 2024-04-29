@@ -11,10 +11,11 @@ namespace engine
     class ENGINE_API frenderer_config
     {
     public:
-        // How work is processed
-        const oclass_object* type = nullptr;
-        const oclass_object* new_type = nullptr;   // For UI
+        // Runtime members
+        const oclass_object* new_type = nullptr;
 
+        // Persistent members
+        const oclass_object* type = nullptr;
         int resolution_vertical = 0;
         int resolution_horizontal = 0;
 

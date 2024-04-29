@@ -29,9 +29,11 @@ namespace editor
 
   void update_default_spawn_position(fapp_instance& state)
   {
+    fcamera& camera = state.scene_root->camera_config;
+    
     // Find center of the scene, new objects scan be spawned there
-    fvec3 look_from = state.camera.location;
-    fvec3 look_dir = fmath::to_vec3(state.camera.forward);
+    fvec3 look_from = camera.location;
+    fvec3 look_dir = fmath::to_vec3(camera.forward);
     float dist_to_focus = 50.0f;
 
     // Ray to the look at position to find non colliding spawn point
@@ -74,7 +76,8 @@ namespace editor
     }
 
     const ImGuiIO& io = ImGui::GetIO();
-
+    fcamera& camera = state.scene_root->camera_config;
+    
     // Handle hotkeys
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
     {
@@ -84,21 +87,21 @@ namespace editor
     // Handle camera movement
     if (!io.WantCaptureKeyboard)
     {
-      state.camera.move_speed += ImGui::GetIO().MouseWheel;
-      state.camera.input_up = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_E)) ? 1 : 0;
-      state.camera.input_down = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Q)) ? 1 : 0;
-      state.camera.input_forward = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_W)) ? 1 : 0;
-      state.camera.input_backward = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S)) ? 1 : 0;
-      state.camera.input_left = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_A)) ? 1 : 0;
-      state.camera.input_right = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D)) ? 1 : 0;
+      camera.move_speed += ImGui::GetIO().MouseWheel;
+      camera.input_up = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_E)) ? 1 : 0;
+      camera.input_down = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Q)) ? 1 : 0;
+      camera.input_forward = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_W)) ? 1 : 0;
+      camera.input_backward = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S)) ? 1 : 0;
+      camera.input_left = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_A)) ? 1 : 0;
+      camera.input_right = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D)) ? 1 : 0;
     }
     
     // Handle camera rotation
     if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
     {
       ImVec2 mouse_delta = ImGui::GetIO().MouseDelta;
-      state.camera.input_yaw = mouse_delta.x;
-      state.camera.input_pitch = mouse_delta.y;
+      camera.input_yaw = mouse_delta.x;
+      camera.input_pitch = mouse_delta.y;
     }
  
     // Object movement
@@ -110,7 +113,7 @@ namespace editor
       {
         object_movement_axis = fvec3(1.0f, 0.0f, 0.0f);
         mouse_delta = ImGui::GetIO().MouseDelta.x;
-        if (state.camera.forward.z < 0.0f)
+        if (camera.forward.z < 0.0f)
         {
           mouse_delta = -mouse_delta;
         }
@@ -124,7 +127,7 @@ namespace editor
       {
         object_movement_axis = fvec3(0.0f, 0.0f, 1.0f);
         mouse_delta = ImGui::GetIO().MouseDelta.x;
-        if (state.camera.forward.x > 0.0f)
+        if (camera.forward.x > 0.0f)
         {
           mouse_delta = -mouse_delta;
         }
