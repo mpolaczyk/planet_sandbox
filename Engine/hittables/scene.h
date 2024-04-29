@@ -30,6 +30,7 @@ namespace engine
     // Persistent members
     std::vector<hhittable_base*> objects;
     DirectX::XMFLOAT4 ambient_light_color;
+    DirectX::XMVECTORF32 clear_color;
     frenderer_config renderer_config;
     fcamera camera_config;
   };

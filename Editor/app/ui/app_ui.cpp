@@ -92,7 +92,8 @@ namespace editor
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SAVED!");
     }
     draw_renderer_panel(model.rp_model, state);
-    draw_camera_panel(model.cp_model, state);
+    draw_camera_panel(state);
+    draw_scene_panel(state);
     draw_objects_panel(model.op_model, state);
     ImGui::End();
   }
@@ -132,7 +133,7 @@ namespace editor
       ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.5f, 1.0f), "No renderer active");
     }
   }
-  void draw_camera_panel(fcamera_panel_model& model, fapp_instance& state)
+  void draw_camera_panel(fapp_instance& state)
   {
     fcamera& camera = state.scene_root->camera_config;
     ImGui::Separator();
@@ -149,6 +150,22 @@ namespace editor
     ImGui::InputFloat("Pitch", &camera.pitch, 0.1f, 1.0f, "%.2f");
     ImGui::InputFloat("Yaw", &camera.yaw, 0.1f, 1.0f, "%.2f");
     ImGui::Separator();
+  }
+  void draw_scene_panel(fapp_instance& state)
+  {
+    ImGui::Separator();
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SCENE");
+    ImGui::Separator();
+    
+    DirectX::XMFLOAT4& temp = state.scene_root->ambient_light_color;
+    float temp_arr[4] = { temp.x, temp.y, temp.z, temp.w };
+    ImGui::ColorEdit4("Ambient", temp_arr, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
+    temp = { temp_arr[0], temp_arr[1], temp_arr[2], temp_arr[3] };
+
+    DirectX::XMVECTORF32& temp1 = state.scene_root->clear_color;
+    float temp_arr1[4] = { temp1.f[0], temp1.f[1], temp1.f[2], temp1.f[3] };
+    ImGui::ColorEdit4("Clear", temp_arr1, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
+    temp1 = { temp_arr1[0], temp_arr1[1], temp_arr1[2], temp_arr1[3] };
   }
   void draw_objects_panel(fobjects_panel_model& model, fapp_instance& state)
   {

@@ -32,9 +32,7 @@ namespace engine
   void hscene::load_resources()
   {
     LOG_TRACE("Scene: load resources");
-    
-    hhittable_base::load_resources();
-    
+
     for (hhittable_base* object : objects)
     {
       assert(object != nullptr);

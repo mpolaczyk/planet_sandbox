@@ -53,12 +53,31 @@ namespace editor
   void fdraw_edit_panel::visit(class hlight& object) const
   {
     object.hhittable_base::accept(fdraw_edit_panel());
-    
-    DirectX::XMFLOAT4& temp = object.properties.color;
-    float temp_arr[4] = { temp.x, temp.y, temp.z, temp.w };
-    ImGui::ColorEdit4("Color", temp_arr, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-    temp = { temp_arr[0], temp_arr[1], temp_arr[2], temp_arr[3] };
-    
+
+    bool enabled = static_cast<bool>(object.properties.enabled);
+    ImGui::Checkbox("Enabled", &enabled);
+    object.properties.enabled = enabled;
+    {
+      DirectX::XMFLOAT4& temp = object.properties.color;
+      float temp_arr[4] = { temp.x, temp.y, temp.z, temp.w };
+      ImGui::ColorEdit4("Color", temp_arr, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
+      temp = { temp_arr[0], temp_arr[1], temp_arr[2], temp_arr[3] };
+    }
+    ImGui::SliderInt("Light type", &object.properties.light_type, 0, 2);
+    ImGui::Text("0 - Point");
+    ImGui::Text("1 - Directional");
+    {
+      DirectX::XMFLOAT4& temp = object.properties.direction;
+      float temp_arr[3] = { temp.x, temp.y, temp.z };
+      ImGui::InputFloat3("Direction", temp_arr);
+      temp = { temp_arr[0], temp_arr[1], temp_arr[2], 1.0f };
+    }
+    ImGui::Text("2 - Spot");
+    ImGui::DragFloat("Angle", &object.properties.spot_angle, 0.01f, 0.0f, 3.15f);
+    ImGui::Text("Attenuation:");
+    ImGui::DragFloat("Constant", &object.properties.constant_attenuation, 0.01f, 0.0f, 1.0f);
+    ImGui::DragFloat("Linear", &object.properties.linear_attenuation, 0.01f, 0.0f, 1.0f);
+    ImGui::DragFloat("Quadratic", &object.properties.quadratic_attenuation, 0.01f, 0.0f, 1.0f);
   }
 
   void fdraw_edit_panel::visit(class amaterial& object) const

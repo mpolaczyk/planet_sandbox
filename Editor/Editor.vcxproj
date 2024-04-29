@@ -306,7 +306,6 @@
     <Content Include="..\Workspace\Content\Textures\test_image.json" />
     <Content Include="..\Workspace\Content\Textures\test_image.png" />
     <Content Include="..\Workspace\imgui.ini" />
-    <Content Include="..\Workspace\rendering.json" />
     <Content Include="..\Workspace\Renders\dummy.txt" />
     <Content Include="..\Workspace\scene.json" />
     <Content Include="..\Workspace\scene_box.json" />

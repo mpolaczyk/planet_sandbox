@@ -28,8 +28,8 @@ namespace engine
   
     enum ENGINE_API flight_type
     {
-        directional = 0,
-        point,
+        point = 0,
+        directional,
         spotlight
     };
   

@@ -10,7 +10,7 @@ namespace engine
 {
   class renderer_base;
   class material_asset;
-  class hittable;
+  class hhittable_base;
   class scene;
 }
 
@@ -73,7 +73,8 @@ namespace editor
   // Scene widnow
   void draw_scene_window(fscene_window_model& model, fapp_instance& state);
   void draw_renderer_panel(frenderer_panel_model& model, fapp_instance& state);
-  void draw_camera_panel(fcamera_panel_model& model, fapp_instance& state);
+  void draw_camera_panel(fapp_instance& state);
+  void draw_scene_panel(fapp_instance& state);
   void draw_objects_panel(fobjects_panel_model& model, fapp_instance& state);
 
   // Output window

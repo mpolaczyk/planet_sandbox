@@ -183,7 +183,7 @@ namespace engine
 
         fdx11& dx = fdx11::instance();
 
-        dx.device_context->ClearRenderTargetView(output_rtv.Get(), Colors::LightSlateGray);
+        dx.device_context->ClearRenderTargetView(output_rtv.Get(), scene->clear_color);
         dx.device_context->ClearDepthStencilView(output_dsv.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
         const D3D11_VIEWPORT viewport = {0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f};
@@ -206,7 +206,7 @@ namespace engine
             fframe_data pfd;
             pfd.view_projection = camera.view_projection;
             pfd.ambient_light =  scene->ambient_light_color;
-            pfd.light.color =    lights[0]->properties.color;   // TODO Add more lights
+            pfd.light = lights[0]->properties;   // TODO Add more lights
             pfd.light.position = fmath::to_xmfloat4(lights[0]->origin);
 
             D3D11_MAPPED_SUBRESOURCE data;

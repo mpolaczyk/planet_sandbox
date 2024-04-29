@@ -10,6 +10,8 @@
 
 #include <DirectXMath.h>
 
+#include "renderer/aligned_structs.h"
+
 
 namespace engine
 {
@@ -59,6 +61,24 @@ namespace engine
     TRY_PARSE(float, j, "y", out_value.y);
     TRY_PARSE(float, j, "z", out_value.z);
     TRY_PARSE(float, j, "w", out_value.w);
+  }
+
+  nlohmann::json fpersistence::serialize(const DirectX::XMVECTORF32& value)
+  {
+    nlohmann::json j;
+    j["x"] = value.f[0];
+    j["y"] = value.f[1];
+    j["z"] = value.f[2];
+    j["w"] = value.f[3];
+    return j;
+  }
+  
+  void fpersistence::deserialize(const nlohmann::json& j, DirectX::XMVECTORF32& out_value)
+  {
+    TRY_PARSE(float, j, "x", out_value.f[0]);
+    TRY_PARSE(float, j, "y", out_value.f[1]);
+    TRY_PARSE(float, j, "z", out_value.f[2]);
+    TRY_PARSE(float, j, "w", out_value.f[3]);
   }
 
   nlohmann::json fpersistence::serialize(const fsoft_asset_ptr_base& value)
@@ -113,5 +133,35 @@ namespace engine
     
     TRY_PARSE(int, j, "resolution_vertical", out_value.resolution_vertical);
     TRY_PARSE(int, j, "resolution_horizontal", out_value.resolution_horizontal);
+  }
+
+  nlohmann::json fpersistence::serialize(const flight_properties& value)
+  {
+    nlohmann::json j;
+    j["direction"] = fpersistence::serialize(value.direction);
+    j["color"] = fpersistence::serialize(value.color);
+    j["spot_angle"] = value.spot_angle;
+    j["constant_attenuation"] = value.constant_attenuation;
+    j["linear_attenuation"] = value.linear_attenuation;
+    j["quadratic_attenuation"] = value.quadratic_attenuation;
+    j["light_type"] = value.light_type;
+    j["enabled"] = value.enabled;
+    return j;
+  }
+
+  void fpersistence::deserialize(const nlohmann::json& j, flight_properties& out_value)
+  {
+    nlohmann::json jdirection;
+    if (TRY_PARSE(nlohmann::json, j, "direction", jdirection)) { fpersistence::deserialize(jdirection, out_value.direction); }
+
+    nlohmann::json jcolor;
+    if (TRY_PARSE(nlohmann::json, j, "color", jcolor)) { fpersistence::deserialize(jcolor, out_value.color); }
+    
+    TRY_PARSE(float, j, "spot_angle", out_value.spot_angle);
+    TRY_PARSE(float, j, "constant_attenuation", out_value.constant_attenuation);
+    TRY_PARSE(float, j, "linear_attenuation", out_value.linear_attenuation);
+    TRY_PARSE(float, j, "quadratic_attenuation", out_value.quadratic_attenuation);
+    TRY_PARSE(int, j, "light_type", out_value.light_type);
+    TRY_PARSE(int, j, "enabled", out_value.enabled);
   }
 }

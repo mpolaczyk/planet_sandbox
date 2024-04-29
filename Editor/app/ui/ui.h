@@ -76,10 +76,6 @@ namespace editor
   {
     fselection_combo_model<oclass_object> r_model;
   };
-  struct fcamera_panel_model
-  {
-  
-  };
   struct fobjects_panel_model
   {
     int selected_id = -1;
@@ -91,7 +87,6 @@ namespace editor
   struct fscene_window_model
   {
     frenderer_panel_model rp_model;
-    fcamera_panel_model cp_model;
     fobjects_panel_model op_model;
   };
   

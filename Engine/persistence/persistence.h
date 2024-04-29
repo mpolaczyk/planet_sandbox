@@ -7,6 +7,7 @@ namespace DirectX
 {
   struct XMFLOAT3;
   struct XMFLOAT4;
+  struct XMVECTORF32;
 }
 
 namespace engine
@@ -15,6 +16,7 @@ namespace engine
   class fcamera;
   struct fsoft_asset_ptr_base;
   struct fvec3;
+  struct flight_properties;
   
   class ENGINE_API fpersistence
   {
@@ -31,12 +33,18 @@ namespace engine
 
     static nlohmann::json serialize(const DirectX::XMFLOAT4& value);
     static void deserialize(const nlohmann::json& j, DirectX::XMFLOAT4& out_value);
+
+    static nlohmann::json serialize(const DirectX::XMVECTORF32& value);
+    static void deserialize(const nlohmann::json& j, DirectX::XMVECTORF32& out_value);
     
     static nlohmann::json serialize(const fcamera& value);
     static void deserialize(const nlohmann::json& j, fcamera& out_value);
 
     static nlohmann::json serialize(const frenderer_config& value);
     static void deserialize(const nlohmann::json& j, frenderer_config& out_value);
+
+    static nlohmann::json serialize(const flight_properties& value);
+    static void deserialize(const nlohmann::json& j, flight_properties& out_value);
     
   };
 }

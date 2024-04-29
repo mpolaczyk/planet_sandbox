@@ -32,7 +32,7 @@ namespace engine
   template<derives_from<aasset_base> T>
   const T* fsoft_asset_ptr<T>::get() const
   {
-    if (!is_loaded())
+    if (!is_loaded() && !name.empty())
     {
       T* asset_ptr_temp = REG.find<T>([=](const T* obj) -> bool { return obj->file_name == name; });
       
