@@ -37,8 +37,7 @@ namespace engine
     nlohmann::json j;
     input_stream >> j;
     instance->accept(deserialize_object(j));
-
-    REG.set_custom_display_name(instance->get_runtime_id(), name);
+    instance->set_display_name(name);
 
     return true;
   }

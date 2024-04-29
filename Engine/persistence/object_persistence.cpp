@@ -62,7 +62,7 @@ namespace engine
     j["scale"] = fpersistence::serialize(object.scale);
     j["rotation"] = fpersistence::serialize(object.rotation);
     j["material_asset"] = fpersistence::serialize(object.material_asset_ptr);
-    j["custom_display_name"] = REG.get_custom_display_name(object.get_runtime_id());
+    j["custom_display_name"] = object.get_display_name();
   }
   void serialize_object::visit(class hscene& object) const
   {
@@ -156,7 +156,7 @@ namespace engine
     if (TRY_PARSE(nlohmann::json, j, "material_asset", jmaterial)) { fpersistence::deserialize(jmaterial, object.material_asset_ptr); }
 
     std::string name;
-    if (TRY_PARSE(std::string, j, "custom_display_name", name)) { REG.set_custom_display_name(object.get_runtime_id(), name); }
+    if (TRY_PARSE(std::string, j, "custom_display_name", name)) { object.set_display_name(name); }
   }
   void deserialize_object::visit(class hscene& object) const
   {

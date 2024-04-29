@@ -206,24 +206,28 @@ namespace editor
     if (model.selected_id >= 0 && model.selected_id < num_objects)
     {
       ImGui::Separator();
-      ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SELECTED");
+      ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SELECTED OBJECT");
       ImGui::Separator();
 
       hhittable_base* selected_obj = state.scene_root->objects[model.selected_id];
       state.selected_object = selected_obj;
+
       selected_obj->accept(fdraw_edit_panel());
 
-      model.m_model.objects = REG.get_all_by_type<const amaterial>();
-      draw_selection_combo<amaterial>(model.m_model, state, "Material",
-        [=](const amaterial* obj) -> bool { return true; },
-        selected_obj->material_asset_ptr.get());
-    
-      if (model.m_model.selected_object != nullptr)
+      // TODO - This should be in fdraw_edit_panel::visit(class hhittable_base& object), but I can't pass the model!
       {
-        std::string selected_name = model.m_model.selected_object->file_name;
-        selected_obj->material_asset_ptr.set_name(selected_name);
+        model.m_model.objects = REG.get_all_by_type<const amaterial>();
+        draw_selection_combo<amaterial>(model.m_model, state, "Material",
+          [=](const amaterial* obj) -> bool { return true; },
+          selected_obj->material_asset_ptr.get());
+    
+        if (model.m_model.selected_object != nullptr)
+        {
+          std::string selected_name = model.m_model.selected_object->file_name;
+          selected_obj->material_asset_ptr.set_name(selected_name);
+        }
+        ImGui::Separator();
       }
-      ImGui::Separator();
     }
   }
 

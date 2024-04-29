@@ -106,7 +106,7 @@
       },
       {
         "class_name": "hlight",
-        "custom_display_name": "",
+        "custom_display_name": "zaroweczka",
         "material_asset": {
           "name": "glass"
         },
@@ -126,11 +126,11 @@
           "direction": {
             "w": 1.0,
             "x": 0.0,
-            "y": 1.0,
-            "z": 1.0
+            "y": 0.0,
+            "z": 0.0
           },
           "enabled": 1,
-          "light_type": 1,
+          "light_type": 0,
           "linear_attenuation": 0.3799999952316284,
           "quadratic_attenuation": 0.4300000071525574,
           "spot_angle": 1.5707963705062866

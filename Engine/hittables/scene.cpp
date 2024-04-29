@@ -58,7 +58,11 @@ namespace engine
     {
       if(obj->get_class() == hlight::get_class_static())
       {
-        lights.push_back(static_cast<const hlight*>(obj));
+        const hlight* light = static_cast<const hlight*>(obj);
+        if(light->properties.enabled)
+        {
+          lights.push_back(light);
+        }
       }
     }
     return lights;

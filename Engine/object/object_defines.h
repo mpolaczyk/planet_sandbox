@@ -15,7 +15,8 @@
   virtual const oclass_object* get_parent_class() const; \
   virtual bool is_child_of(const oclass_object* type) const; \
   static bool is_child_of_static(const oclass_object* type, int depth = MAX_INHERITANCE_DEPTH); \
-  virtual std::string get_display_name() const;
+  virtual std::string get_display_name() const; \
+  virtual void set_display_name(const std::string& name);
 
 #define OBJECT_DECLARE_VISITOR_BASE virtual void accept(class fobject_visitor&& visitor);
 #define OBJECT_DECLARE_VISITOR      virtual void accept(class fobject_visitor&& visitor) override;
@@ -40,7 +41,11 @@
     std::string name = REG.get_custom_display_name(get_runtime_id()); \
     if (name.empty()) { return #DEFAULT_DISPLAY_NAME; } \
     return name; \
-  }
+  } \
+  void CLASS_NAME::set_display_name(const std::string& name) \
+  { \
+    REG.set_custom_display_name(get_runtime_id(), name); \
+  } \
 
 // Put this in the cpp file. Default implementations.
 #define OBJECT_DEFINE_SPAWN(CLASS_NAME) CLASS_NAME* CLASS_NAME::spawn() \

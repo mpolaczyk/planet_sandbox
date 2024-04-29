@@ -14,13 +14,21 @@ namespace editor
 {
   void fdraw_edit_panel::visit(class hhittable_base& object) const
   {
-    std::string hittable_name = object.get_display_name();
-    ImGui::Text("Object: ");
-    ImGui::SameLine();
-    ImGui::Text(hittable_name.c_str());
+    std::string name = object.get_display_name();
+    assert(name.size() <= 256);
+    char* buffer = new char[256];
+    strcpy(buffer, name.c_str());
+    if(ImGui::InputText("Name:", buffer, 256))
+    {
+      object.set_display_name(buffer);
+    }
+    delete[] buffer;
+    
     ImGui::DragFloat3("Origin", object.origin.e);
     ImGui::DragFloat3("Rotation", object.rotation.e);
     ImGui::DragFloat3("Scale", object.scale.e);
+
+    // material pointer is missing, go to: draw_objects_panel()
   }
 
   void fdraw_edit_panel::visit(class hscene& object) const

@@ -175,17 +175,18 @@ namespace engine
 
     void rgpu::render_frame_impl()
     {
-        std::vector<const hlight*> lights = scene->query_lights();
-        if(lights.size() == 0)
-        {
-            throw std::runtime_error("Scene is missing light");
-        }
-
         fdx11& dx = fdx11::instance();
 
         dx.device_context->ClearRenderTargetView(output_rtv.Get(), scene->clear_color);
         dx.device_context->ClearDepthStencilView(output_dsv.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
+        std::vector<const hlight*> lights = scene->query_lights();
+        if(lights.size() == 0)
+        {
+            LOG_ERROR("Scene is missing light");
+            return;
+        }
+        
         const D3D11_VIEWPORT viewport = {0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f};
         dx.device_context->RSSetViewports(1, &viewport);
         dx.device_context->RSSetState(rasterizer_state.Get());
