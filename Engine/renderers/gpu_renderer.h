@@ -9,6 +9,7 @@
 #include "assets/pixel_shader.h"
 #include "assets/vertex_shader.h"
 #include "assets/texture.h"
+#include "assets/mesh.h"
 
 struct ID3D11InputLayout;
 struct ID3D11Buffer;
@@ -24,26 +25,10 @@ struct ID3D11DepthStencilState;
 namespace engine
 {
   using namespace DirectX;
-
   using Microsoft::WRL::ComPtr;
   
   class ENGINE_API rgpu : public rrenderer_base
-  {
-    
-    struct fframe_data  // WARNING - const buffer type
-    {
-      XMFLOAT4X4 view_projection;
-      XMFLOAT4 ambient_light;     // TODO alignment?
-      flight_properties light;    // TEMP test implementation
-    };
-
-    struct fobject_data // WARNING - const buffer type
-    {
-      XMFLOAT4X4 model_world;                    // Used to transform the vertex position from object space to world space
-      XMFLOAT4X4 inverse_transpose_model_world;  // Used to transform the vertex normal from object space to world space
-      XMFLOAT4X4 model_world_view_projection;    // Used to transform the vertex position from object space to projected clip space
-    };
-    
+  {    
   public:
     OBJECT_DECLARE(rgpu, rrenderer_base)
     

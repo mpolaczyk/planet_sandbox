@@ -1,4 +1,6 @@
 
+#include <string>
+
 #include "persistence/persistence_helper.cpp"
 
 namespace engine

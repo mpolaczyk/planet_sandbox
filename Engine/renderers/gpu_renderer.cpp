@@ -6,6 +6,8 @@
 #include "renderers/gpu_renderer.h"
 
 #include "engine/log.h"
+#include "hittables/light.h"
+#include "hittables/scene.h"
 #include "hittables/static_mesh.h"
 
 using namespace DirectX;
@@ -136,15 +138,6 @@ namespace engine
             {
                 throw std::runtime_error("CreateBuffer frame constant buffer failed.");
             }
-            
-            // TODO - remove?
-            //desc.ByteWidth      = sizeof(fmaterial_properties);
-            //result = device->CreateBuffer(&desc, nullptr, &material_constant_buffer);
-            //assert(SUCCEEDED(result));
-            //
-            //desc.ByteWidth      = sizeof(flight_properties);
-            //result = device->CreateBuffer(&desc, nullptr, &light_constant_buffer);
-            //assert(SUCCEEDED(result));
         }
 
         // Rasterizer state
@@ -182,6 +175,13 @@ namespace engine
 
     void rgpu::render_frame_impl()
     {
+        std::vector<const hlight*> lights = scene->query_lights();
+        if(lights.size() == 0)
+        {
+            LOG_ERROR("Scene is missing light");
+            return;
+        }
+
         fdx11& dx = fdx11::instance();
 
         dx.device_context->ClearRenderTargetView(output_rtv.Get(), Colors::LightSlateGray);
@@ -201,14 +201,14 @@ namespace engine
         dx.device_context->PSSetShader(pixel_shader_asset.get()->shader.Get(), nullptr, 0);
         dx.device_context->PSSetShaderResources(0, 1, texture_srv.GetAddressOf());
         dx.device_context->PSSetSamplers(0, 1, &sampler_state);
-
+        
         // Update per frame pixel shader constant buffer
         {
             fframe_data pfd;
             pfd.view_projection = camera.view_projection;
             pfd.ambient_light =  { 0.2, 0.2, 0.2, 1.0 };     // TODO Read from scene
-            pfd.light.color =    { 0.9, 0.2, 0.1, 1.0 };     // TODO Read from object
-            pfd.light.position = { 0.0, 10.0, 0.0, 0.0 };
+            pfd.light.color =    lights[0]->properties.color;
+            pfd.light.position = fmath::to_xmfloat4(lights[0]->origin);
 
             D3D11_MAPPED_SUBRESOURCE data;
             dx.device_context->Map(ps_frame_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);

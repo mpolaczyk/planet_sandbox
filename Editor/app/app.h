@@ -30,7 +30,7 @@ namespace editor
 
     // Scene state
     hscene* scene_root = nullptr;
-    fcamera_config camera;
+    fcamera camera;
 
     // Rendering state
     frenderer_config renderer_conf;

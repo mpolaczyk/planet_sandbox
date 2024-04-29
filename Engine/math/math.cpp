@@ -329,4 +329,9 @@ namespace engine
   {
     return fvec3(a.x, a.y, a.z);
   }
+
+  DirectX::XMFLOAT4 fmath::to_xmfloat4(const fvec3& a)
+  {
+    return DirectX::XMFLOAT4(a.x, a.y, a.z, 1.0f);
+  }
 }

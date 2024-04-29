@@ -4,6 +4,7 @@
 
 #include "core/core.h"
 
+// WARNING! Use only for plain types or ones supported by nlohmann. For custom types use fpersistence::deserialize(...)
 #define TRY_PARSE(t, j, key, out_value) engine::try_parse<t>(j, key, out_value, __FUNCTION__) 
 
 namespace engine

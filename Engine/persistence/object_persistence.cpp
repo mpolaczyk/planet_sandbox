@@ -18,6 +18,7 @@
 #include "hittables/scene.h"
 
 #include "engine/log.h"
+#include "hittables/light.h"
 #include "math/colors.h"
 #include "object/object_registry.h"
 
@@ -28,7 +29,6 @@ namespace engine
     j["color"] = fpersistence::serialize(object.color);
     j["emitted_color"] = fpersistence::serialize(object.emitted_color);
     j["gloss_color"] = fpersistence::serialize(object.gloss_color);
-    j["is_light"] = object.is_light;
     j["smoothness"] = object.smoothness;
     j["gloss_probability"] = object.gloss_probability;
     j["refraction_probability"] = object.refraction_probability;
@@ -58,6 +58,9 @@ namespace engine
   
   void serialize_object::visit(class hhittable_base& object) const
   {
+    j["origin"] = fpersistence::serialize(object.origin);
+    j["scale"] = fpersistence::serialize(object.scale);
+    j["rotation"] = fpersistence::serialize(object.rotation);
     j["material_asset"] = fpersistence::serialize(object.material_asset_ptr);
     j["custom_display_name"] = REG.get_custom_display_name(object.get_runtime_id());
   }
@@ -78,16 +81,17 @@ namespace engine
   void serialize_object::visit(class hstatic_mesh& object) const
   {
     object.hhittable_base::accept(serialize_object(j));
-    j["origin"] = fpersistence::serialize(object.origin);
-    j["scale"] = fpersistence::serialize(object.scale);
-    j["rotation"] = fpersistence::serialize(object.rotation);
     j["mesh_asset"] = fpersistence::serialize(object.mesh_asset_ptr);
   }
   void serialize_object::visit(class hsphere& object) const
   {
     object.hhittable_base::accept(serialize_object(j));
     j["radius"] = object.radius;
-    j["origin"] = fpersistence::serialize(object.origin);
+  }
+  void serialize_object::visit(class hlight& object) const
+  {
+    object.hhittable_base::accept(serialize_object(j));
+    j["color"] = fpersistence::serialize(object.properties.color);
   }
   
   void deserialize_object::visit(class amaterial& object) const
@@ -95,8 +99,6 @@ namespace engine
     nlohmann::json jcolor;
     if (TRY_PARSE(nlohmann::json, j, "color", jcolor)) { fpersistence::deserialize(jcolor, object.color); }
     assert(fcolors::is_valid(object.color));
-
-    TRY_PARSE(bool, j, "is_light", object.is_light);
 
     nlohmann::json jemitted_color;
     if (TRY_PARSE(nlohmann::json, j, "emitted_color", jemitted_color)) { fpersistence::deserialize(jemitted_color, object.emitted_color); }
@@ -141,6 +143,12 @@ namespace engine
   
   void deserialize_object::visit(class hhittable_base& object) const
   {
+    nlohmann::json jorigin;
+    if (TRY_PARSE(nlohmann::json, j, "origin", jorigin)) { fpersistence::deserialize(jorigin, object.origin); }
+    nlohmann::json jscale;
+    if (TRY_PARSE(nlohmann::json, j, "scale", jscale)) { fpersistence::deserialize(jscale, object.scale); }
+    nlohmann::json jrotation;
+    if (TRY_PARSE(nlohmann::json, j, "rotation", jrotation)) { fpersistence::deserialize(jrotation, object.rotation); }
     nlohmann::json jmaterial;
     if (TRY_PARSE(nlohmann::json, j, "material_asset", jmaterial)) { fpersistence::deserialize(jmaterial, object.material_asset_ptr); }
 
@@ -173,12 +181,6 @@ namespace engine
   void deserialize_object::visit(class hstatic_mesh& object) const
   {
     object.hhittable_base::accept(deserialize_object(j));
-    nlohmann::json jorigin;
-    if (TRY_PARSE(nlohmann::json, j, "origin", jorigin)) { fpersistence::deserialize(jorigin, object.origin); }
-    nlohmann::json jscale;
-    if (TRY_PARSE(nlohmann::json, j, "scale", jscale)) { fpersistence::deserialize(jscale, object.scale); }
-    nlohmann::json jrotation;
-    if (TRY_PARSE(nlohmann::json, j, "rotation", jrotation)) { fpersistence::deserialize(jrotation, object.rotation); }
     nlohmann::json jmesh;
     if (TRY_PARSE(nlohmann::json, j, "mesh_asset", jmesh)) { fpersistence::deserialize(jmesh, object.mesh_asset_ptr); }
   }
@@ -186,7 +188,11 @@ namespace engine
   {
     object.hhittable_base::accept(deserialize_object(j));
     TRY_PARSE(float, j, "radius", object.radius);
-    nlohmann::json jorigin;
-    if (TRY_PARSE(nlohmann::json, j, "origin", jorigin)) { fpersistence::deserialize(jorigin, object.origin); }
    }
+  void deserialize_object::visit(class hlight& object) const
+  {
+    object.hhittable_base::accept(deserialize_object(j));
+    nlohmann::json jmesh;
+    if (TRY_PARSE(nlohmann::json, j, "color", jmesh)) { fpersistence::deserialize(jmesh, object.properties.color); }
+  }
 }

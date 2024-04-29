@@ -5,13 +5,14 @@
 
 namespace DirectX
 {
-  struct XMFLOAT3;  
+  struct XMFLOAT3;
+  struct XMFLOAT4;
 }
 
 namespace engine
 {
   class frenderer_config;
-  class fcamera_config;
+  class fcamera;
   struct fsoft_asset_ptr_base;
   struct fvec3;
   
@@ -28,8 +29,11 @@ namespace engine
     static nlohmann::json serialize(const DirectX::XMFLOAT3& value);
     static void deserialize(const nlohmann::json& j, DirectX::XMFLOAT3& out_value);
 
-    static nlohmann::json serialize(const fcamera_config& value);
-    static void deserialize(const nlohmann::json& j, fcamera_config& out_value);
+    static nlohmann::json serialize(const DirectX::XMFLOAT4& value);
+    static void deserialize(const nlohmann::json& j, DirectX::XMFLOAT4& out_value);
+    
+    static nlohmann::json serialize(const fcamera& value);
+    static void deserialize(const nlohmann::json& j, fcamera& out_value);
 
     static nlohmann::json serialize(const frenderer_config& value);
     static void deserialize(const nlohmann::json& j, frenderer_config& out_value);

@@ -111,6 +111,7 @@ copy $(ProjectDir)third_party\assimp\lib\x64\assimp-vc143-mt.dll $(SolutionDir)$
     <ClInclude Include="core\concepts.h" />
     <ClInclude Include="engine\tools.h" />
     <ClInclude Include="hittables\hittables.h" />
+    <ClInclude Include="hittables\light.h" />
     <ClInclude Include="hittables\scene.h" />
     <ClInclude Include="hittables\sphere.h" />
     <ClInclude Include="hittables\static_mesh.h" />
@@ -127,9 +128,11 @@ copy $(ProjectDir)third_party\assimp\lib\x64\assimp-vc143-mt.dll $(SolutionDir)$
     <ClInclude Include="persistence\object_persistence.h" />
     <ClInclude Include="persistence\persistence.h" />
     <ClInclude Include="renderers\gpu_renderer.h" />
+    <ClInclude Include="renderer\aligned_structs.h" />
     <ClInclude Include="renderer\renderer_base.h" />
     <ClInclude Include="math\chunk_generator.h" />
     <ClInclude Include="renderer\dx11_lib.h" />
+    <ClInclude Include="renderer\renderer_config.h" />
     <ClInclude Include="resources\bmp.h" />
     <ClInclude Include="core\exceptions.h" />
     <ClInclude Include="core\windows_minimal.h" />
@@ -167,6 +170,7 @@ copy $(ProjectDir)third_party\assimp\lib\x64\assimp-vc143-mt.dll $(SolutionDir)$
     <ClCompile Include="asset\asset.cpp" />
     <ClCompile Include="engine\tools.cpp" />
     <ClCompile Include="hittables\hittables.cpp" />
+    <ClCompile Include="hittables\light.cpp" />
     <ClCompile Include="hittables\scene.cpp" />
     <ClCompile Include="hittables\sphere.cpp" />
     <ClCompile Include="hittables\static_mesh.cpp" />

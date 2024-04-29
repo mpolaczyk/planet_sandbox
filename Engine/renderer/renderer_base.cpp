@@ -2,18 +2,17 @@
 #include <d3d11_1.h>
 
 #include "renderer/dx11_lib.h"
-
 #include "renderer/renderer_base.h"
-
 #include "engine/log.h"
 #include "object/object_registry.h"
+#include "profile/benchmark.h"
 
 namespace engine
 {
   OBJECT_DEFINE(rrenderer_base, oobject, Renderer base)
   OBJECT_DEFINE_NOSPAWN(rrenderer_base) 
 
-  void rrenderer_base::render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config)
+  void rrenderer_base::render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera& in_camera_config)
   {
     if (in_renderer_config.resolution_vertical == 0 || in_renderer_config.resolution_horizontal == 0) return;
     camera = in_camera_config;

@@ -2,7 +2,6 @@
 
 #include "hittables/hittables.h"
 
-#include "math/aabb.h"
 #include "math/onb.h"
 #include "assets/material.h"
 #include "engine/log.h"

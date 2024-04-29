@@ -16,12 +16,6 @@ namespace engine
   OBJECT_DEFINE_SPAWN(hsphere)
   OBJECT_DEFINE_VISITOR(hsphere)
 
-  bool hsphere::get_bounding_box(faabb& out_box) const
-  {
-    out_box = faabb(origin - radius, origin + radius);
-    return true;
-  }
-
   inline uint32_t hsphere::get_hash() const
   {
     return fhash::combine(hhittable_base::get_hash(), fhash::get(origin), fhash::get(radius));

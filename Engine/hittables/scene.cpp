@@ -1,5 +1,7 @@
 
 #include "hittables/scene.h"
+
+#include "light.h"
 #include "hittables/hittables.h"
 #include "engine/log.h"
 #include "profile/stats.h"
@@ -22,22 +24,9 @@ namespace engine
   }
 
   void hscene::remove(int object_id)
-  {
-    delete objects[object_id];
+  { 
+    objects[object_id]->destroy();
     objects.erase(objects.begin() + object_id);
-  }
-
-  void hscene::build_boxes()
-  {
-    LOG_TRACE("Scene: build boxes");
-
-    assert(objects.size() > 0);
-    // World collisions update
-    for (hhittable_base* object : objects)
-    {
-      assert(object != nullptr);
-      object->get_bounding_box(object->bounding_box);
-    }
   }
 
   void hscene::update_materials()
@@ -54,53 +43,17 @@ namespace engine
     }
   }
 
-  void hscene::query_lights()
+  std::vector<const hlight*> hscene::query_lights() const
   {
-    LOG_TRACE("Scene: query lights");
-
-    lights_num = 0;
-    for (hhittable_base* object : objects)
+    std::vector<const hlight*> lights;
+    for (const hhittable_base* obj : objects)
     {
-      const amaterial* mat = object->material_asset_ptr.get();
-      if (mat != nullptr && mat->is_light)
+      if(obj->get_class() == hlight::get_class_static())
       {
-        lights[lights_num] = object;
-        lights_num++;
-        assert(lights_num < MAX_LIGHTS);
+        lights.push_back(static_cast<const hlight*>(obj));
       }
     }
-    if (lights_num == 0)
-    {
-      LOG_WARN("No lights detected.");
-    }
-  }
-
-  hhittable_base* hscene::get_random_light()
-  {
-    assert(lights_num < MAX_LIGHTS);
-    // Get next light millions of times gives the same distribution as get true random light, but is 5 times cheaper
-    static int32_t last_light = 0;
-    last_light = (last_light + 1) % lights_num;
-    hhittable_base* light = lights[last_light];
-    assert(light != nullptr);
-    return light;
-  }
-
-  bool hscene::get_bounding_box(faabb& out_box) const
-  {
-    if (objects.empty()) return false;
-
-    faabb temp_box;
-    bool first_box = true;
-
-    for (const hhittable_base* object : objects)
-    {
-      if (!object->get_bounding_box(temp_box)) return false;
-      out_box = first_box ? temp_box : faabb::merge(out_box, temp_box);
-      first_box = false;
-    }
-
-    return true;
+    return lights;
   }
 
   inline uint32_t hscene::get_hash() const

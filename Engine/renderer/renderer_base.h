@@ -3,36 +3,18 @@
 #include <string>
 #include <wrl/client.h>
 
+#include "renderer_config.h"
 #include "resources/bmp.h"
-#include "engine/hash.h"
-
 #include "math/camera.h"
-#include "hittables/hittables.h"
-#include "hittables/scene.h"
 #include "object/object.h"
-#include "profile/benchmark.h"
 
 struct ID3D11ShaderResourceView;
 struct ID3D11Texture2D;
 
 namespace engine
 {
-  class ENGINE_API frenderer_config
-  {
-  public:
-    // How work is processed
-    const oclass_object* type = nullptr;
-    const oclass_object* new_type = nullptr;   // For UI
-
-    int resolution_vertical = 0;
-    int resolution_horizontal = 0;
-
-    inline uint32_t get_hash() const
-    {
-      return fhash::combine(resolution_vertical, resolution_horizontal);
-    }
-  };
-
+  class hscene;
+  
   // The responsibility of this class is to render to a texture
   class ENGINE_API rrenderer_base : public oobject
   {
@@ -45,7 +27,7 @@ namespace engine
     rrenderer_base(rrenderer_base&&) = delete;
     rrenderer_base& operator=(rrenderer_base&&) = delete;
 
-    fcamera_config camera;
+    fcamera camera;
     const hscene* scene = nullptr;
     
     // Output texture
@@ -58,7 +40,7 @@ namespace engine
     unsigned int output_height = 0;
     
     // Main public interface
-    void render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera_config& in_camera_config);
+    void render_frame(const hscene* in_scene, const frenderer_config& in_renderer_config, const fcamera& in_camera_config);
     double get_render_time_ms() const { return render_time_ms; }
 
   protected:

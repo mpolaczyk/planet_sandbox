@@ -35,5 +35,6 @@ namespace engine
     virtual void visit(class hscene& object) const { assert(false); }
     virtual void visit(class hstatic_mesh& object) const { assert(false); }
     virtual void visit(class hsphere& object) const { assert(false); }
+    virtual void visit(class hlight& object) const { assert(false); }
   };    
 }

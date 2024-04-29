@@ -4,6 +4,7 @@
 
 #include "app.h"
 #include "hittables/hittables.h"
+#include "hittables/scene.h"
 
 #include "renderer/renderer_base.h"
 
@@ -130,8 +131,8 @@ namespace editor
       }
       if (!fmath::is_zero(object_movement_axis) && mouse_delta != 0.0f && state.selected_object != nullptr)
       {
-        fvec3 selected_origin = state.selected_object->get_origin();
-        state.selected_object->set_origin(selected_origin + object_movement_axis * mouse_delta);
+        fvec3 selected_origin = state.selected_object->origin;
+        state.selected_object->origin = selected_origin + object_movement_axis * mouse_delta;
       }
     }
   }

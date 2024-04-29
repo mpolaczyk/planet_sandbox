@@ -3,7 +3,7 @@
 
 #include "asset/soft_asset_ptr.h"
 #include "math/camera.h"
-#include "renderer/renderer_base.h"
+#include "renderer/renderer_config.h"
 
 #include "nlohmann/json.hpp"
 #include "object/object_registry.h"
@@ -42,6 +42,24 @@ namespace engine
     TRY_PARSE(float, j, "y", out_value.y);
     TRY_PARSE(float, j, "z", out_value.z);
   }
+  
+  nlohmann::json fpersistence::serialize(const DirectX::XMFLOAT4& value)
+  {
+    nlohmann::json j;
+    j["x"] = value.x;
+    j["y"] = value.y;
+    j["z"] = value.z;
+    j["w"] = value.w;
+    return j;
+  }
+  
+  void fpersistence::deserialize(const nlohmann::json& j, DirectX::XMFLOAT4& out_value)
+  {
+    TRY_PARSE(float, j, "x", out_value.x);
+    TRY_PARSE(float, j, "y", out_value.y);
+    TRY_PARSE(float, j, "z", out_value.z);
+    TRY_PARSE(float, j, "w", out_value.w);
+  }
 
   nlohmann::json fpersistence::serialize(const fsoft_asset_ptr_base& value)
   {
@@ -54,7 +72,7 @@ namespace engine
     TRY_PARSE(std::string, j, "name", out_value.name);
   }
 
-  nlohmann::json fpersistence::serialize(const fcamera_config& value)
+  nlohmann::json fpersistence::serialize(const fcamera& value)
   {
     nlohmann::json j;
     j["field_of_view"] = value.field_of_view;
@@ -65,7 +83,7 @@ namespace engine
     j["yaw"] = value.yaw;
     return j;
   }
-  void fpersistence::deserialize(const nlohmann::json& j, fcamera_config& out_value)
+  void fpersistence::deserialize(const nlohmann::json& j, fcamera& out_value)
   {
     TRY_PARSE(float, j, "field_of_view", out_value.field_of_view);
     TRY_PARSE(float, j, "aspect_ratio_h", out_value.aspect_ratio_h);

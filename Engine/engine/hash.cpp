@@ -76,6 +76,11 @@ namespace engine
     return combine(get(a.x), get(a.y), get(a.z), 1.0f);
   }
 
+  uint32_t fhash::get(const DirectX::XMFLOAT4& a)
+  {
+    return combine(get(a.x), get(a.y), get(a.z), get(a.w));
+  }
+
   uint32_t fhash::get(const char* a)
   {
     return static_cast<uint32_t>(std::hash<std::string>{}(a));

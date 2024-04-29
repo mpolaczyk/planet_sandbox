@@ -11,6 +11,7 @@ namespace editor
     virtual void visit(class hscene& object) const override;
     virtual void visit(class hstatic_mesh& object) const override;
     virtual void visit(class hsphere& object) const override;
+    virtual void visit(class hlight& object) const override;
 
     virtual void visit(class amaterial& object) const override;
 

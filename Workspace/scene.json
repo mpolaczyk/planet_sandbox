@@ -4,12 +4,12 @@
     "aspect_ratio_w": 16.0,
     "field_of_view": 40.0,
     "look_from": {
-      "x": 0.0,
-      "y": 1.0,
-      "z": -10.0
+      "x": 3.6011803150177,
+      "y": 1.1519479751586914,
+      "z": -8.248616218566895
     },
-    "pitch": 0.0,
-    "yaw": 0.0
+    "pitch": 3.9134466648101807,
+    "yaw": -26.96186637878418
   },
   "scene": {
     "class_name": "hscene",
@@ -19,23 +19,10 @@
     },
     "objects": [
       {
-        "class_name": "hsphere",
-        "custom_display_name": "Sun",
-        "material_asset": {
-          "name": "light"
-        },
-        "origin": {
-          "x": 62.0,
-          "y": 50.0,
-          "z": 53.999000549316406
-        },
-        "radius": 60.0
-      },
-      {
         "class_name": "hstatic_mesh",
         "custom_display_name": "Right ico3",
         "material_asset": {
-          "name": "metal_copper"
+          "name": "light"
         },
         "mesh_asset": {
           "name": "icosphere3"
@@ -58,7 +45,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Up cube",
+        "custom_display_name": "Up torus",
         "material_asset": {
           "name": "metal_white"
         },
@@ -83,7 +70,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Front suzanne",
+        "custom_display_name": "Back suzanne",
         "material_asset": {
           "name": "glass_green_matt"
         },
@@ -93,6 +80,34 @@
         "origin": {
           "x": 0.0,
           "y": 0.0,
+          "z": 3.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        }
+      },
+      {
+        "class_name": "hlight",
+        "color": {
+          "w": 1.0,
+          "x": 0.9852941036224365,
+          "y": 0.1690455675125122,
+          "z": 0.1690455675125122
+        },
+        "custom_display_name": "",
+        "material_asset": {
+          "name": "glass"
+        },
+        "origin": {
+          "x": -106.0,
+          "y": 107.0,
           "z": 0.0
         },
         "rotation": {
@@ -106,6 +121,21 @@
           "z": 1.0
         }
       }
-    ]
+    ],
+    "origin": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    "rotation": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    "scale": {
+      "x": 1.0,
+      "y": 1.0,
+      "z": 1.0
+    }
   }
 }

@@ -1,10 +1,11 @@
 
 #include <cassert>
 #include <algorithm>
+#include <string>
 
 #include "object/object_registry.h"
 #include "engine/log.h"
-#include <string>
+
 
 // Those definitions are moved away from object_registry.cpp to avoid LNK2005 error, when compiling object_registry_inst.cpp
 // https://stackoverflow.com/questions/77377405/lnk2005-for-non-templated-function-when-explicitly-instantiating-templated-funct

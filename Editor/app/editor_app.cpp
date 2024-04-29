@@ -4,7 +4,6 @@
 
 #include <d3d11_1.h>
 #include <tchar.h>
-#include <thread>
 #include <DirectXColors.h>
 
 #include "imgui.h"
@@ -12,6 +11,8 @@
 #include "imgui_impl_dx11.h"
 
 #include "app/editor_app.h"
+
+#include "hittables/scene.h"
 #include "renderer/dx11_lib.h"
 #include "renderer/renderer_base.h"
 
@@ -163,9 +164,7 @@ namespace editor
     if (app_state.renderer != nullptr)
     {
         app_state.scene_root->load_resources();
-        app_state.scene_root->build_boxes();
         app_state.scene_root->update_materials();
-        app_state.scene_root->query_lights();
   
         update_default_spawn_position(app_state);
   

@@ -6,8 +6,6 @@
 #include "engine/log.h"
 #include "engine/hash.h"
 #include "profile/stats.h"
-#include "math/math.h"
-#include "math/vertex_data.h"
 #include "object/object_registry.h"
 #include "object/object_visitor.h"
 
@@ -16,14 +14,6 @@ namespace engine
   OBJECT_DEFINE(hstatic_mesh, hhittable_base, Static mesh)
   OBJECT_DEFINE_SPAWN(hstatic_mesh)
   OBJECT_DEFINE_VISITOR(hstatic_mesh)
-  
-  bool hstatic_mesh::get_bounding_box(faabb& out_box) const
-  {
-    // TODO rotate mesh asset
-    // mesh_asset_ptr.get()->bounding_box
-    return true;
-  }
-
 
   inline uint32_t hstatic_mesh::get_hash() const
   {

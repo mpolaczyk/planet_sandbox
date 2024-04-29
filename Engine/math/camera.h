@@ -1,18 +1,20 @@
 #pragma once
 
-#include "core/core.h"
-
-#include "math/vec3.h"
-#include "math/math.h"
 #include <stdint.h>
+#include <DirectXMath.h>
+
+#include "core/core.h"
+#include "math/vec3.h"
 
 namespace engine
 {
-  class ENGINE_API fcamera_config
+  using namespace DirectX;
+  
+  class ENGINE_API fcamera
   {
   public:
-    fcamera_config() = default;
-    fcamera_config(const fvec3& look_from, float field_of_view, float aspect_ratio_w, float aspect_ratio_h)
+    fcamera() = default;
+    fcamera(const fvec3& look_from, float field_of_view, float aspect_ratio_w, float aspect_ratio_h)
       : location(look_from), field_of_view(field_of_view), aspect_ratio_w(aspect_ratio_w), aspect_ratio_h(aspect_ratio_h)
     {
     }
@@ -30,10 +32,10 @@ namespace engine
     float rotate_speed = 10.f;
     
     // Runtime members
-    DirectX::XMFLOAT4X4 view_projection;
-    DirectX::XMFLOAT4 forward;
-    DirectX::XMFLOAT4 right;
-    DirectX::XMFLOAT4 up;
+    XMFLOAT4X4 view_projection;
+    XMFLOAT4 forward;
+    XMFLOAT4 right;
+    XMFLOAT4 up;
     
     // Persistent members
     fvec3 location;
