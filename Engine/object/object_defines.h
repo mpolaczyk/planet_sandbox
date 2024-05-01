@@ -18,8 +18,8 @@
   virtual std::string get_display_name() const; \
   virtual void set_display_name(const std::string& name);
 
-#define OBJECT_DECLARE_VISITOR_BASE virtual void accept(class fobject_visitor&& visitor);
-#define OBJECT_DECLARE_VISITOR      virtual void accept(class fobject_visitor&& visitor) override;
+#define OBJECT_DECLARE_VISITOR_BASE virtual void accept(struct vobject_visitor&& visitor);
+#define OBJECT_DECLARE_VISITOR      virtual void accept(struct vobject_visitor&& visitor) override;
 
 // Put this in the cpp file. Mandatory for every type.
 // Requires:
@@ -60,5 +60,5 @@
 
 // Requires:
 // #include "object/object_visitor.h"
-#define OBJECT_DEFINE_VISITOR_BASE(CLASS_NAME) void CLASS_NAME::accept(fobject_visitor&& visitor) { assert(false);}
-#define OBJECT_DEFINE_VISITOR(CLASS_NAME) void CLASS_NAME::accept(fobject_visitor&& visitor) { visitor.visit( *this ); }
+#define OBJECT_DEFINE_VISITOR_BASE(CLASS_NAME) void CLASS_NAME::accept(vobject_visitor&& visitor) { }
+#define OBJECT_DEFINE_VISITOR(CLASS_NAME) void CLASS_NAME::accept(vobject_visitor&& visitor) { visitor.visit(*this); }

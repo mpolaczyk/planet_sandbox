@@ -56,7 +56,7 @@ namespace editor
     draw_selection_combo<amaterial>(model.m_model, state, "Material", [=](const amaterial* obj) -> bool { return true; });
     if (model.m_model.selected_object != nullptr)
     {
-      const_cast<amaterial*>(model.m_model.selected_object)->accept(fdraw_edit_panel());
+      const_cast<amaterial*>(model.m_model.selected_object)->accept(vdraw_edit_panel());
     }
   }
   void draw_managed_objects_panel(fapp_instance& state)
@@ -212,9 +212,9 @@ namespace editor
       hhittable_base* selected_obj = state.scene_root->objects[model.selected_id];
       state.selected_object = selected_obj;
 
-      selected_obj->accept(fdraw_edit_panel());
+      selected_obj->accept(vdraw_edit_panel());
 
-      // TODO - This should be in fdraw_edit_panel::visit(class hhittable_base& object), but I can't pass the model!
+      // TODO - This should be in vdraw_edit_panel::visit(class hhittable_base& object), but I can't pass the model!
       {
         model.m_model.objects = REG.get_all_by_type<const amaterial>();
         draw_selection_combo<amaterial>(model.m_model, state, "Material",
@@ -352,7 +352,7 @@ namespace editor
       if (selected_obj != nullptr)
       {
         ImGui::BeginDisabled(true);
-        selected_obj->accept(fdraw_edit_panel());
+        selected_obj->accept(vdraw_edit_panel());
         ImGui::EndDisabled();
 
         if (ImGui::Button("Delete", ImVec2(120, 0)))

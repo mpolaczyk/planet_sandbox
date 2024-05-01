@@ -14,7 +14,7 @@
  *    to use the visitor pattern based operations on the type.
  * 6. Register class in object_registry::create_class_objects() using CLASS_OBJECT_REGISTER.
  * 7. Instantiate template methods using OBJECT_REGISTRY_EXPLICIT_INSTANTIATE in the same file.
- * 8. Optional: Extend the serialize_object and deserialize_object visitors if you wish to serialize instances.
+ * 8. Optional: Extend the vserialize_object and vdeserialize_object visitors if you wish to serialize instances.
  */
 
 namespace engine
@@ -57,7 +57,7 @@ namespace engine
     
   public:
     OBJECT_DECLARE(oclass_object, oobject)
-
+    
     std::string get_class_name() const { return class_name; }
     std::string get_parent_class_name() const { return parent_class_name; }
     

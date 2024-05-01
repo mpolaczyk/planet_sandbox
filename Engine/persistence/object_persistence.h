@@ -7,21 +7,10 @@
 
 namespace engine
 {
-  class amaterial;
-  class atexture;
-  class astatic_mesh;
-  class avertex_shader;
-  class apixel_shader;
-  class hhittable_base;
-  class hscene;
-  class hstatic_mesh;
-  class hsphere;
-  class hlight;
-  
-  class ENGINE_API serialize_object final : public fobject_visitor
+  struct ENGINE_API vserialize_object final : public vobject_visitor
   {
   public:
-    serialize_object(nlohmann::json& json) : j(json){}
+    vserialize_object(nlohmann::json& json) : j(json){}
     
     virtual void visit(amaterial& object) const override;
     virtual void visit(atexture& object) const override;
@@ -38,10 +27,10 @@ namespace engine
     nlohmann::json& j;
   };
   
-  class ENGINE_API deserialize_object final : public fobject_visitor
+  struct ENGINE_API vdeserialize_object final : public vobject_visitor
   {
   public:
-    deserialize_object(const nlohmann::json& json) : j(json){}
+    vdeserialize_object(const nlohmann::json& json) : j(json){}
     
     virtual void visit(amaterial& object) const override;
     virtual void visit(atexture& object) const override;

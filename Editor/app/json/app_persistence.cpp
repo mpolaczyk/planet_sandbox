@@ -29,7 +29,7 @@ namespace editor
     input_stream >> j;
    
     nlohmann::json jscene_root;
-    if (TRY_PARSE(nlohmann::json, j, "scene", jscene_root)) { scene_root->accept(deserialize_object(jscene_root)); }
+    if (TRY_PARSE(nlohmann::json, j, "scene", jscene_root)) { scene_root->accept(vdeserialize_object(jscene_root)); }
 
     input_stream.close();
   }
@@ -90,7 +90,7 @@ namespace editor
     LOG_INFO("Saving: scene");
 
     nlohmann::json j;
-    scene_root->accept(serialize_object(j["scene"]));
+    scene_root->accept(vserialize_object(j["scene"]));
     std::ofstream o(fio::get_scene_file_path().c_str(), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
     if (o.is_open())

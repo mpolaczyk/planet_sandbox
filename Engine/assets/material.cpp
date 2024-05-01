@@ -36,7 +36,7 @@ namespace engine
 
     nlohmann::json j;
     input_stream >> j;
-    instance->accept(deserialize_object(j));
+    instance->accept(vdeserialize_object(j));
     instance->set_display_name(name);
 
     return true;
@@ -47,7 +47,7 @@ namespace engine
     assert(object != nullptr);
 
     nlohmann::json j;
-    object->accept(serialize_object(j));
+    object->accept(vserialize_object(j));
 
     std::ostringstream oss;
     oss << object->file_name << ".json";

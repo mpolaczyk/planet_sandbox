@@ -37,7 +37,7 @@ namespace engine
 
     nlohmann::json j;
     input_stream >> j;
-    instance->accept(deserialize_object(j));
+    instance->accept(vdeserialize_object(j));
     instance->set_display_name(name);
 
     if (!load_img(instance->img_file_name, instance->desired_channels, instance))

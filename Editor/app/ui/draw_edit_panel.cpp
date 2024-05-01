@@ -12,7 +12,7 @@
 
 namespace editor
 {
-  void fdraw_edit_panel::visit(class hhittable_base& object) const
+  void vdraw_edit_panel::visit(hhittable_base& object) const
   {
     std::string name = object.get_display_name();
     assert(name.size() <= 256);
@@ -31,14 +31,14 @@ namespace editor
     // material pointer is missing, go to: draw_objects_panel()
   }
 
-  void fdraw_edit_panel::visit(class hscene& object) const
+  void vdraw_edit_panel::visit(hscene& object) const
   {
-    object.hhittable_base::accept(fdraw_edit_panel());
+    object.hhittable_base::accept(vdraw_edit_panel());
   }
 
-  void fdraw_edit_panel::visit(class hstatic_mesh& object) const 
+  void vdraw_edit_panel::visit(hstatic_mesh& object) const 
   {
-    object.hhittable_base::accept(fdraw_edit_panel());
+    object.hhittable_base::accept(vdraw_edit_panel());
     {
       std::string name = object.mesh_asset_ptr.get_name();
       assert(name.size() <= 256);
@@ -52,15 +52,15 @@ namespace editor
     }
   }
 
-  void fdraw_edit_panel::visit(class hsphere& object) const
+  void vdraw_edit_panel::visit(hsphere& object) const
   {
-    object.hhittable_base::accept(fdraw_edit_panel());
+    object.hhittable_base::accept(vdraw_edit_panel());
     ImGui::InputFloat("Radius", &object.radius);
   }
 
-  void fdraw_edit_panel::visit(class hlight& object) const
+  void vdraw_edit_panel::visit(hlight& object) const
   {
-    object.hhittable_base::accept(fdraw_edit_panel());
+    object.hhittable_base::accept(vdraw_edit_panel());
 
     bool enabled = static_cast<bool>(object.properties.enabled);
     ImGui::Checkbox("Enabled", &enabled);
@@ -88,7 +88,7 @@ namespace editor
     ImGui::DragFloat("Quadratic", &object.properties.quadratic_attenuation, 0.01f, 0.0f, 1.0f);
   }
 
-  void fdraw_edit_panel::visit(class amaterial& object) const
+  void vdraw_edit_panel::visit(amaterial& object) const
   {
     ImGui::ColorEdit3("Color", object.color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
     ImGui::ColorEdit3("Emitted color", object.emitted_color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);

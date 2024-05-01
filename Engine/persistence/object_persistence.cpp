@@ -24,7 +24,7 @@
 
 namespace engine
 {
-  void serialize_object::visit(class amaterial& object) const
+  void vserialize_object::visit(amaterial& object) const
   {
     j["color"] = fpersistence::serialize(object.color);
     j["emitted_color"] = fpersistence::serialize(object.emitted_color);
@@ -34,29 +34,29 @@ namespace engine
     j["refraction_probability"] = object.refraction_probability;
     j["refraction_index"] = object.refraction_index;
   }
-  void serialize_object::visit(class atexture& object) const
+  void vserialize_object::visit(atexture& object) const
   {
     j["desired_channels"] = object.desired_channels;
     j["img_file_name"] = object.img_file_name;
   }
-  void serialize_object::visit(class astatic_mesh& object) const
+  void vserialize_object::visit(astatic_mesh& object) const
   {
     j["obj_file_name"] = object.obj_file_name;
   }
-  void serialize_object::visit(class avertex_shader& object) const
+  void vserialize_object::visit(avertex_shader& object) const
   {
     j["shader_file_name"] = object.shader_file_name;
     j["entrypoint"] = object.entrypoint;
     j["target"] = object.target;
   }
-  void serialize_object::visit(class apixel_shader& object) const
+  void vserialize_object::visit(apixel_shader& object) const
   {
     j["shader_file_name"] = object.shader_file_name;
     j["entrypoint"] = object.entrypoint;
     j["target"] = object.target;
   }
   
-  void serialize_object::visit(class hhittable_base& object) const
+  void vserialize_object::visit(hhittable_base& object) const
   {
     j["origin"] = fpersistence::serialize(object.origin);
     j["scale"] = fpersistence::serialize(object.scale);
@@ -64,15 +64,15 @@ namespace engine
     j["material_asset"] = fpersistence::serialize(object.material_asset_ptr);
     j["custom_display_name"] = object.get_display_name();
   }
-  void serialize_object::visit(class hscene& object) const
+  void vserialize_object::visit(hscene& object) const
   {
-    object.hhittable_base::accept(serialize_object(j));
+    object.hhittable_base::accept(vserialize_object(j));
     nlohmann::json jarr = nlohmann::json::array();
     for (hhittable_base* h : object.objects)
     {
       nlohmann::json jj;
       jj["class_name"] = h->get_class()->get_class_name();
-      h->accept(serialize_object(jj));
+      h->accept(vserialize_object(jj));
       jarr.push_back(jj);
     }
     j["objects"] = jarr;
@@ -81,23 +81,23 @@ namespace engine
     j["renderer_config"] = fpersistence::serialize(object.renderer_config);
     j["camera_config"] = fpersistence::serialize(object.camera_config);
   }
-  void serialize_object::visit(class hstatic_mesh& object) const
+  void vserialize_object::visit(hstatic_mesh& object) const
   {
-    object.hhittable_base::accept(serialize_object(j));
+    object.hhittable_base::accept(vserialize_object(j));
     j["mesh_asset"] = fpersistence::serialize(object.mesh_asset_ptr);
   }
-  void serialize_object::visit(class hsphere& object) const
+  void vserialize_object::visit(hsphere& object) const
   {
-    object.hhittable_base::accept(serialize_object(j));
+    object.hhittable_base::accept(vserialize_object(j));
     j["radius"] = object.radius;
   }
-  void serialize_object::visit(class hlight& object) const
+  void vserialize_object::visit(hlight& object) const
   {
-    object.hhittable_base::accept(serialize_object(j));
+    object.hhittable_base::accept(vserialize_object(j));
     j["properties"] = fpersistence::serialize(object.properties);
   }
   
-  void deserialize_object::visit(class amaterial& object) const
+  void vdeserialize_object::visit(amaterial& object) const
   {
     nlohmann::json jcolor;
     if (TRY_PARSE(nlohmann::json, j, "color", jcolor)) { fpersistence::deserialize(jcolor, object.color); }
@@ -121,30 +121,30 @@ namespace engine
     assert(object.refraction_probability >= 0.0f && object.refraction_probability <= 1.0f);
     TRY_PARSE(float, j, "refraction_index", object.refraction_index);
   }
-  void deserialize_object::visit(class atexture& object) const
+  void vdeserialize_object::visit(atexture& object) const
   {
     TRY_PARSE(int, j, "desired_channels", object.desired_channels);
 
     TRY_PARSE(std::string, j, "img_file_name", object.img_file_name);
   }
-  void deserialize_object::visit(class astatic_mesh& object) const
+  void vdeserialize_object::visit(astatic_mesh& object) const
   {
     TRY_PARSE(std::string, j, "obj_file_name", object.obj_file_name);
   }
-  void deserialize_object::visit(class avertex_shader& object) const
+  void vdeserialize_object::visit(avertex_shader& object) const
   {
     TRY_PARSE(std::string, j, "shader_file_name", object.shader_file_name);
     TRY_PARSE(std::string, j, "entrypoint", object.entrypoint);
     TRY_PARSE(std::string, j, "target", object.target);
   }
-  void deserialize_object::visit(class apixel_shader& object) const
+  void vdeserialize_object::visit(apixel_shader& object) const
   {
     TRY_PARSE(std::string, j, "shader_file_name", object.shader_file_name);
     TRY_PARSE(std::string, j, "entrypoint", object.entrypoint);
     TRY_PARSE(std::string, j, "target", object.target);
   }
   
-  void deserialize_object::visit(class hhittable_base& object) const
+  void vdeserialize_object::visit(hhittable_base& object) const
   {
     nlohmann::json jorigin;
     if (TRY_PARSE(nlohmann::json, j, "origin", jorigin)) { fpersistence::deserialize(jorigin, object.origin); }
@@ -158,9 +158,9 @@ namespace engine
     std::string name;
     if (TRY_PARSE(std::string, j, "custom_display_name", name)) { object.set_display_name(name); }
   }
-  void deserialize_object::visit(class hscene& object) const
+  void vdeserialize_object::visit(hscene& object) const
   {
-    object.hhittable_base::accept(deserialize_object(j));
+    object.hhittable_base::accept(vdeserialize_object(j));
 
     nlohmann::json jambient_light_color;
     if (TRY_PARSE(nlohmann::json, j, "ambient_light_color", jambient_light_color)) { fpersistence::deserialize(jambient_light_color, object.ambient_light_color); }
@@ -186,27 +186,27 @@ namespace engine
           hhittable_base* obj = REG.spawn_from_class<hhittable_base>(class_o);
           if (obj != nullptr)
           {
-            obj->accept(deserialize_object(jobj));
+            obj->accept(vdeserialize_object(jobj));
             object.objects.push_back(obj);
           }
         }
       }
     }
   }
-  void deserialize_object::visit(class hstatic_mesh& object) const
+  void vdeserialize_object::visit(hstatic_mesh& object) const
   {
-    object.hhittable_base::accept(deserialize_object(j));
+    object.hhittable_base::accept(vdeserialize_object(j));
     nlohmann::json jmesh;
     if (TRY_PARSE(nlohmann::json, j, "mesh_asset", jmesh)) { fpersistence::deserialize(jmesh, object.mesh_asset_ptr); }
   }
-  void deserialize_object::visit(class hsphere& object) const
+  void vdeserialize_object::visit(hsphere& object) const
   {
-    object.hhittable_base::accept(deserialize_object(j));
+    object.hhittable_base::accept(vdeserialize_object(j));
     TRY_PARSE(float, j, "radius", object.radius);
    }
-  void deserialize_object::visit(class hlight& object) const
+  void vdeserialize_object::visit(hlight& object) const
   {
-    object.hhittable_base::accept(deserialize_object(j));
+    object.hhittable_base::accept(vdeserialize_object(j));
     nlohmann::json jproperties;
     if (TRY_PARSE(nlohmann::json, j, "properties", jproperties)) { fpersistence::deserialize(jproperties, object.properties); }
   }

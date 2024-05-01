@@ -36,7 +36,7 @@ namespace engine
 
     nlohmann::json j;
     input_stream >> j;
-    instance->accept(deserialize_object(j));
+    instance->accept(vdeserialize_object(j));
     instance->set_display_name(name);
     
     if (!load_obj(instance->obj_file_name, instance))

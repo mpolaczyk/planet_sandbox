@@ -41,7 +41,7 @@ namespace engine
 
     nlohmann::json j;
     input_stream >> j;
-    instance->accept(deserialize_object(j));
+    instance->accept(vdeserialize_object(j));
     instance->set_display_name(name);
     
     if(!load_hlsl(instance->shader_file_name, instance->entrypoint, instance->target, instance->shader_blob))
