@@ -205,10 +205,10 @@ namespace engine
         // Update per frame pixel shader constant buffer
         {
             fframe_data pfd;
-            pfd.view_projection = camera.view_projection;
+            pfd.camera_position = XMFLOAT4(camera.location.e);
             pfd.ambient_light =  scene->ambient_light_color;
             pfd.light = lights[0]->properties;   // TODO Add more lights
-            pfd.light.position = fmath::to_xmfloat4(lights[0]->origin);
+            pfd.light.position = XMFLOAT4(lights[0]->origin.e);
 
             D3D11_MAPPED_SUBRESOURCE data;
             dx.device_context->Map(ps_frame_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);

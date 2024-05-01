@@ -52,15 +52,15 @@ namespace engine
     };
     ALIGNED_STRUCT_END(flight_properties)
     
-    ALIGNED_STRUCT_BEGIN(fframe_data)  // WARNING - const buffer type
+    ALIGNED_STRUCT_BEGIN(fframe_data)
     {
-        XMFLOAT4X4 view_projection;
-        XMFLOAT4 ambient_light;
-        flight_properties light;
+        XMFLOAT4 camera_position;       // 16
+        XMFLOAT4 ambient_light;         // 16
+        flight_properties light;        // 80
     };
     ALIGNED_STRUCT_END(fframe_data)
 
-    ALIGNED_STRUCT_BEGIN(fobject_data) // WARNING - const buffer type
+    ALIGNED_STRUCT_BEGIN(fobject_data)
     {
         XMFLOAT4X4 model_world;                    // Used to transform the vertex position from object space to world space
         XMFLOAT4X4 inverse_transpose_model_world;  // Used to transform the vertex normal from object space to world space

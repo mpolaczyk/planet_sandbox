@@ -11,12 +11,12 @@
       "aspect_ratio_w": 16.0,
       "field_of_view": 40.0,
       "look_from": {
-        "x": -1.091520071029663,
-        "y": 1.064347267150879,
-        "z": -8.01099681854248
+        "x": -3.188201665878296,
+        "y": 2.835055112838745,
+        "z": -5.778900623321533
       },
-      "pitch": -0.6008349657058716,
-      "yaw": 8.872153282165527
+      "pitch": 10.938669204711914,
+      "yaw": 31.245220184326172
     },
     "clear_color": {
       "w": 1.0,
@@ -24,7 +24,7 @@
       "y": 0.7647058963775635,
       "z": 0.7647058963775635
     },
-    "custom_display_name": "",
+    "custom_display_name": "Scene",
     "material_asset": {
       "name": ""
     },
@@ -111,8 +111,8 @@
           "name": "glass"
         },
         "origin": {
-          "x": -43.0,
-          "y": 107.0,
+          "x": 0.0,
+          "y": 0.0,
           "z": 0.0
         },
         "properties": {
@@ -127,13 +127,13 @@
             "w": 1.0,
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 1.0
           },
           "enabled": 1,
           "light_type": 0,
-          "linear_attenuation": 0.3799999952316284,
-          "quadratic_attenuation": 0.4300000071525574,
-          "spot_angle": 1.5707963705062866
+          "linear_attenuation": 0.0,
+          "quadratic_attenuation": 0.0,
+          "spot_angle": 0.800000011920929
         },
         "rotation": {
           "x": 0.0,
