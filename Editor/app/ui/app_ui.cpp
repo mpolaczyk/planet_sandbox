@@ -45,7 +45,7 @@ namespace editor
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MATERIALS");
     ImGui::Separator();
-    if (ImGui::MenuItem("SAVE STATE"))
+    if (ImGui::MenuItem("SAVE ALL"))
     {
       state.save_materials();
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SAVED!");
@@ -53,7 +53,7 @@ namespace editor
     ImGui::Separator();
     
     model.m_model.objects = REG.get_all_by_type<const amaterial>();
-    draw_selection_combo<amaterial>(model.m_model, state, "Material", [=](const amaterial* obj) -> bool { return true; });
+    fui_helper::draw_selection_combo<amaterial>(model.m_model, "Material", [=](const amaterial* obj) -> bool { return true; }, nullptr);
     if (model.m_model.selected_object != nullptr)
     {
       const_cast<amaterial*>(model.m_model.selected_object)->accept(vdraw_edit_panel());
@@ -112,7 +112,7 @@ namespace editor
 
     frenderer_config& renderer_config = state.scene_root->renderer_config;
     
-    draw_selection_combo<oclass_object>(model.r_model, state, "Renderer class",
+    fui_helper::draw_selection_combo<oclass_object>(model.r_model, "Renderer class",
       [=](const oclass_object* obj) -> bool { return true; }, renderer_config.type);
     if(model.r_model.selected_object != renderer_config.type)
     {
@@ -217,7 +217,7 @@ namespace editor
       // TODO - This should be in vdraw_edit_panel::visit(class hhittable_base& object), but I can't pass the model!
       {
         model.m_model.objects = REG.get_all_by_type<const amaterial>();
-        draw_selection_combo<amaterial>(model.m_model, state, "Material",
+        fui_helper::draw_selection_combo<amaterial>(model.m_model, "Material",
           [=](const amaterial* obj) -> bool { return true; },
           selected_obj->material_asset_ptr.get());
     
@@ -265,7 +265,7 @@ namespace editor
       model.c_model.objects = REG.get_classes();
       std::string hittable_class_name = hhittable_base::get_class_static()->get_class_name();
 
-      draw_selection_combo<oclass_object>(model.c_model, state, "Class", [=](const oclass_object* obj) -> bool { return obj->get_parent_class_name() == hittable_class_name; });
+      fui_helper::draw_selection_combo<oclass_object>(model.c_model, "Class", [=](const oclass_object* obj) -> bool { return obj->get_parent_class_name() == hittable_class_name; }, nullptr);
 
       if (ImGui::Button("Add", ImVec2(120, 0)) && model.c_model.selected_object != nullptr)
       {
@@ -279,62 +279,6 @@ namespace editor
         ImGui::CloseCurrentPopup();
       }
       ImGui::EndPopup();
-    }
-  }
-
-  template<typename T>
-  void draw_selection_combo(fselection_combo_model<T>& model, fapp_instance& state, const char* name, std::function<bool(const T*)> predicate, const T* default_selected_object)
-  {
-    if (model.objects.size() > 0)
-    {
-      if (model.selected_object == nullptr)
-      {
-        if(default_selected_object == nullptr)
-        {
-          model.selected_object = model.objects[0];
-          model.selected_id = 0;
-        }
-        else
-        {
-          for (int i = 0; i < model.objects.size(); ++i)
-          {
-            if(model.objects[i] == default_selected_object)
-            {
-              model.selected_object = default_selected_object;
-              model.selected_id = i;
-              break;
-            }
-          }
-        }
-      }
-      if (ImGui::BeginCombo(name, model.selected_object->get_display_name().c_str()))
-      {
-        for (int i = 0; i < model.objects.size(); ++i)
-        {
-          if (!predicate(model.objects[i]))
-          {
-            continue;
-          }
-
-          const bool is_selected = (model.selected_id == i);
-          std::string iterated_name = model.objects[i]->get_display_name();
-
-          if (ImGui::Selectable(iterated_name.c_str(), is_selected))
-          {
-            model.selected_id = i;
-            model.selected_object = model.objects[i];
-          }
-          if (is_selected)
-          {
-            ImGui::SetItemDefaultFocus();
-          }
-        }
-        ImGui::EndCombo();
-      }
-    }
-    else
-    {
-      ImGui::Text("No materials to choose from");
     }
   }
 

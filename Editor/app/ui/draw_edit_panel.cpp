@@ -12,74 +12,51 @@
 
 namespace editor
 {
-  void vdraw_edit_panel::visit(hhittable_base& object) const
+  void vdraw_edit_panel::visit_hhittable_base(hhittable_base& object) const
   {
-    std::string name = object.get_display_name();
-    assert(name.size() <= 256);
-    char* buffer = new char[256];
-    strcpy(buffer, name.c_str());
-    if(ImGui::InputText("Name:", buffer, 256))
+    std::string display_name = object.get_display_name();
+    if (fui_helper::input_text("Name", display_name))
     {
-      object.set_display_name(buffer);
+      object.set_display_name(display_name);
     }
-    delete[] buffer;
     
     ImGui::DragFloat3("Origin", object.origin.e);
     ImGui::DragFloat3("Rotation", object.rotation.e);
     ImGui::DragFloat3("Scale", object.scale.e);
-
-    // material pointer is missing, go to: draw_objects_panel()
-  }
-
-  void vdraw_edit_panel::visit(hscene& object) const
-  {
-    object.hhittable_base::accept(vdraw_edit_panel());
   }
 
   void vdraw_edit_panel::visit(hstatic_mesh& object) const 
   {
-    object.hhittable_base::accept(vdraw_edit_panel());
+    visit_hhittable_base(object);
     {
-      std::string name = object.mesh_asset_ptr.get_name();
-      assert(name.size() <= 256);
-      char* buffer = new char[256];
-      strcpy(buffer, name.c_str());
-      if (ImGui::InputText("Object file", buffer, 256))
+      std::string object_file = object.mesh_asset_ptr.get_name();
+      if (fui_helper::input_text("Object file", object_file))
       {
-        object.mesh_asset_ptr.set_name(buffer);
+        object.mesh_asset_ptr.set_name(object_file);
       }
-      delete[] buffer;
     }
   }
 
   void vdraw_edit_panel::visit(hsphere& object) const
   {
-    object.hhittable_base::accept(vdraw_edit_panel());
+    visit_hhittable_base(object);
     ImGui::InputFloat("Radius", &object.radius);
   }
 
   void vdraw_edit_panel::visit(hlight& object) const
   {
-    object.hhittable_base::accept(vdraw_edit_panel());
-
-    bool enabled = static_cast<bool>(object.properties.enabled);
-    ImGui::Checkbox("Enabled", &enabled);
-    object.properties.enabled = enabled;
+    std::string display_name = object.get_display_name();
+    if (fui_helper::input_text("Name", display_name))
     {
-      DirectX::XMFLOAT4& temp = object.properties.color;
-      float temp_arr[4] = { temp.x, temp.y, temp.z, temp.w };
-      ImGui::ColorEdit4("Color", temp_arr, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-      temp = { temp_arr[0], temp_arr[1], temp_arr[2], temp_arr[3] };
+      object.set_display_name(display_name);
     }
+    ImGui::DragFloat3("Origin", object.origin.e);
+    fui_helper::check_box("Enabled", object.properties.enabled);
+    fui_helper::color_edit4("Color", object.properties.color);
     ImGui::SliderInt("Light type", &object.properties.light_type, 0, 2);
     ImGui::Text("0 - Point");
     ImGui::Text("1 - Directional");
-    {
-      DirectX::XMFLOAT4& temp = object.properties.direction;
-      float temp_arr[3] = { temp.x, temp.y, temp.z };
-      ImGui::InputFloat3("Direction", temp_arr);
-      temp = { temp_arr[0], temp_arr[1], temp_arr[2], 1.0f };
-    }
+    fui_helper::input_float3("Direction", object.properties.direction);
     ImGui::Text("2 - Spot");
     ImGui::DragFloat("Angle", &object.properties.spot_angle, 0.01f, 0.0f, 3.15f);
     ImGui::Text("Attenuation:");
@@ -88,17 +65,19 @@ namespace editor
     ImGui::DragFloat("Quadratic", &object.properties.quadratic_attenuation, 0.01f, 0.0f, 1.0f);
   }
 
+  void vdraw_edit_panel::visit_aasset_base(aasset_base& object) const
+  {
+    ImGui::Text("File name: %s", object.file_name.c_str());
+  }
+
   void vdraw_edit_panel::visit(amaterial& object) const
   {
-    ImGui::ColorEdit3("Color", object.color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-    ImGui::ColorEdit3("Emitted color", object.emitted_color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-
-    ImGui::DragFloat("Smoothness", &object.smoothness, 0.01f, 0.0f, 1.0f);
-
-    ImGui::DragFloat("Gloss probability", &object.gloss_probability, 0.01f, 0.0f, 1.0f);
-    ImGui::ColorEdit3("Gloss color", object.gloss_color.e, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-
-    ImGui::DragFloat("Refraction probability", &object.refraction_probability, 0.01f, 0.0f, 1.0f);
-    ImGui::DragFloat("Refraction index", &object.refraction_index, 0.01f);
+    visit_aasset_base(object);
+    fui_helper::color_edit4("Emissive", object.properties.emissive);
+    fui_helper::color_edit4("Ambient", object.properties.ambient);
+    fui_helper::color_edit4("Diffuse", object.properties.diffuse);
+    fui_helper::color_edit4("Specular", object.properties.specular);
+    ImGui::DragFloat("Specular power", &object.properties.specular_power, 0.01f, 0.0f, 1000.0f);
+    fui_helper::check_box("Use texture", object.properties.use_texture);
   }
 }

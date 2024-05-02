@@ -26,13 +26,7 @@ namespace engine
 {
   void vserialize_object::visit(amaterial& object) const
   {
-    j["color"] = fpersistence::serialize(object.color);
-    j["emitted_color"] = fpersistence::serialize(object.emitted_color);
-    j["gloss_color"] = fpersistence::serialize(object.gloss_color);
-    j["smoothness"] = object.smoothness;
-    j["gloss_probability"] = object.gloss_probability;
-    j["refraction_probability"] = object.refraction_probability;
-    j["refraction_index"] = object.refraction_index;
+    j["properties"] = fpersistence::serialize(object.properties);
   }
   void vserialize_object::visit(atexture& object) const
   {
@@ -66,7 +60,6 @@ namespace engine
   }
   void vserialize_object::visit(hscene& object) const
   {
-    object.hhittable_base::accept(vserialize_object(j));
     nlohmann::json jarr = nlohmann::json::array();
     for (hhittable_base* h : object.objects)
     {
@@ -93,40 +86,24 @@ namespace engine
   }
   void vserialize_object::visit(hlight& object) const
   {
-    object.hhittable_base::accept(vserialize_object(j));
+    // Only part of hittable
+    j["origin"] = fpersistence::serialize(object.origin);
+    j["custom_display_name"] = object.get_display_name();
+
     j["properties"] = fpersistence::serialize(object.properties);
   }
   
   void vdeserialize_object::visit(amaterial& object) const
   {
-    nlohmann::json jcolor;
-    if (TRY_PARSE(nlohmann::json, j, "color", jcolor)) { fpersistence::deserialize(jcolor, object.color); }
-    assert(fcolors::is_valid(object.color));
-
-    nlohmann::json jemitted_color;
-    if (TRY_PARSE(nlohmann::json, j, "emitted_color", jemitted_color)) { fpersistence::deserialize(jemitted_color, object.emitted_color); }
-    assert(fcolors::is_valid(object.emitted_color));
-
-    TRY_PARSE(float, j, "smoothness", object.smoothness);
-    assert(object.smoothness >= 0.0f && object.smoothness <= 1.0f);
-
-    nlohmann::json jgloss_color;
-    if (TRY_PARSE(nlohmann::json, j, "gloss_color", jgloss_color)) { fpersistence::deserialize(jgloss_color, object.gloss_color); }
-    assert(fcolors::is_valid(object.gloss_color));
-
-    TRY_PARSE(float, j, "gloss_probability", object.gloss_probability);
-    assert(object.gloss_probability >= 0.0f && object.gloss_probability <= 1.0f);
-
-    TRY_PARSE(float, j, "refraction_probability", object.refraction_probability);
-    assert(object.refraction_probability >= 0.0f && object.refraction_probability <= 1.0f);
-    TRY_PARSE(float, j, "refraction_index", object.refraction_index);
+    nlohmann::json jproperties;
+    if (TRY_PARSE(nlohmann::json, j, "properties", jproperties)) { fpersistence::deserialize(jproperties, object.properties); }
   }
   void vdeserialize_object::visit(atexture& object) const
   {
     TRY_PARSE(int, j, "desired_channels", object.desired_channels);
 
     TRY_PARSE(std::string, j, "img_file_name", object.img_file_name);
-  }
+  } 
   void vdeserialize_object::visit(astatic_mesh& object) const
   {
     TRY_PARSE(std::string, j, "obj_file_name", object.obj_file_name);
@@ -160,8 +137,6 @@ namespace engine
   }
   void vdeserialize_object::visit(hscene& object) const
   {
-    object.hhittable_base::accept(vdeserialize_object(j));
-
     nlohmann::json jambient_light_color;
     if (TRY_PARSE(nlohmann::json, j, "ambient_light_color", jambient_light_color)) { fpersistence::deserialize(jambient_light_color, object.ambient_light_color); }
 
@@ -206,7 +181,12 @@ namespace engine
    }
   void vdeserialize_object::visit(hlight& object) const
   {
-    object.hhittable_base::accept(vdeserialize_object(j));
+    // Only part of hittable
+    nlohmann::json jorigin;
+    if (TRY_PARSE(nlohmann::json, j, "origin", jorigin)) { fpersistence::deserialize(jorigin, object.origin); }
+    std::string name;
+    if (TRY_PARSE(std::string, j, "custom_display_name", name)) { object.set_display_name(name); }
+
     nlohmann::json jproperties;
     if (TRY_PARSE(nlohmann::json, j, "properties", jproperties)) { fpersistence::deserialize(jproperties, object.properties); }
   }

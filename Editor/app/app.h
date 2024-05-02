@@ -70,7 +70,7 @@ namespace editor
   void draw_materials_panel(fmaterials_panel_model& model, fapp_instance& state);
   void draw_managed_objects_panel(fapp_instance& state);
 
-  // Scene widnow
+  // Scene window
   void draw_scene_window(fscene_window_model& model, fapp_instance& state);
   void draw_renderer_panel(frenderer_panel_model& model, fapp_instance& state);
   void draw_camera_panel(fapp_instance& state);
@@ -82,9 +82,6 @@ namespace editor
 
   
   void draw_new_object_panel(fnew_object_panel_model& model, fapp_instance& state);
-
-  template<typename T>
-  void draw_selection_combo(fselection_combo_model<T>& model, fapp_instance& state, const char* name, std::function<bool(const T*)> predicate, const T* default_selected_object = nullptr);
 
   void draw_delete_object_panel(fdelete_object_panel_model& model, fapp_instance& state);
 

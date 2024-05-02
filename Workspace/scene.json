@@ -11,12 +11,12 @@
       "aspect_ratio_w": 16.0,
       "field_of_view": 40.0,
       "look_from": {
-        "x": -3.188201665878296,
-        "y": 2.835055112838745,
-        "z": -5.778900623321533
+        "x": -3.092372179031372,
+        "y": 1.8011295795440674,
+        "z": -5.186413764953613
       },
-      "pitch": 10.938669204711914,
-      "yaw": 31.245220184326172
+      "pitch": 4.976343631744385,
+      "yaw": 34.001163482666016
     },
     "clear_color": {
       "w": 1.0,
@@ -24,16 +24,12 @@
       "y": 0.7647058963775635,
       "z": 0.7647058963775635
     },
-    "custom_display_name": "Scene",
-    "material_asset": {
-      "name": ""
-    },
     "objects": [
       {
         "class_name": "hstatic_mesh",
         "custom_display_name": "Right ico3",
         "material_asset": {
-          "name": "light"
+          "name": "red"
         },
         "mesh_asset": {
           "name": "icosphere3"
@@ -58,7 +54,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "Up torus",
         "material_asset": {
-          "name": "metal_white"
+          "name": "green"
         },
         "mesh_asset": {
           "name": "torus"
@@ -83,7 +79,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "Back suzanne",
         "material_asset": {
-          "name": "glass_green_matt"
+          "name": "blue"
         },
         "mesh_asset": {
           "name": "suzanne"
@@ -107,9 +103,6 @@
       {
         "class_name": "hlight",
         "custom_display_name": "zaroweczka",
-        "material_asset": {
-          "name": "glass"
-        },
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -130,42 +123,17 @@
             "z": 1.0
           },
           "enabled": 1,
-          "light_type": 0,
+          "light_type": 1,
           "linear_attenuation": 0.0,
           "quadratic_attenuation": 0.0,
           "spot_angle": 0.800000011920929
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0
         }
       }
     ],
-    "origin": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": 0.0
-    },
     "renderer_config": {
       "resolution_horizontal": 711,
       "resolution_vertical": 400,
       "type": "rgpu"
-    },
-    "rotation": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": 0.0
-    },
-    "scale": {
-      "x": 1.0,
-      "y": 1.0,
-      "z": 1.0
     }
   }
 }

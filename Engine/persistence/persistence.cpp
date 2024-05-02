@@ -164,4 +164,30 @@ namespace engine
     TRY_PARSE(int, j, "light_type", out_value.light_type);
     TRY_PARSE(int, j, "enabled", out_value.enabled);
   }
+
+  nlohmann::json fpersistence::serialize(const fmaterial_properties& value)
+  {
+    nlohmann::json j;
+    j["emissive"] = fpersistence::serialize(value.emissive);
+    j["ambient"] = fpersistence::serialize(value.ambient);
+    j["diffuse"] = fpersistence::serialize(value.diffuse);
+    j["specular"] = fpersistence::serialize(value.specular);
+    j["specular_power"] = value.specular_power;
+    j["use_texture"] = value.use_texture;
+    return j;
+  }
+
+  void fpersistence::deserialize(const nlohmann::json& j, fmaterial_properties& out_value)
+  {
+    nlohmann::json jemissive;
+    if (TRY_PARSE(nlohmann::json, j, "emissive", jemissive)) { fpersistence::deserialize(jemissive, out_value.emissive); }
+    nlohmann::json jambient;
+    if (TRY_PARSE(nlohmann::json, j, "ambient", jambient)) { fpersistence::deserialize(jambient, out_value.ambient); }
+    nlohmann::json jdiffuse;
+    if (TRY_PARSE(nlohmann::json, j, "diffuse", jdiffuse)) { fpersistence::deserialize(jdiffuse, out_value.diffuse); }
+    nlohmann::json jspecular;
+    if (TRY_PARSE(nlohmann::json, j, "specular", jspecular)) { fpersistence::deserialize(jspecular, out_value.specular); }
+    TRY_PARSE(float, j, "specular_power", out_value.specular_power);
+    TRY_PARSE(int, j, "use_texture", out_value.use_texture);
+  }
 }

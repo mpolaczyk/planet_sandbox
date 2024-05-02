@@ -17,6 +17,7 @@ namespace engine
   struct fsoft_asset_ptr_base;
   struct fvec3;
   struct flight_properties;
+  struct fmaterial_properties;
   
   class ENGINE_API fpersistence
   {
@@ -45,6 +46,9 @@ namespace engine
 
     static nlohmann::json serialize(const flight_properties& value);
     static void deserialize(const nlohmann::json& j, flight_properties& out_value);
+
+    static nlohmann::json serialize(const fmaterial_properties& value);
+    static void deserialize(const nlohmann::json& j, fmaterial_properties& out_value);
     
   };
 }

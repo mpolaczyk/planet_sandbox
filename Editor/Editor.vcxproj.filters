@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="app\app.cpp">
       <Filter>app</Filter>
@@ -33,6 +32,9 @@
     <ClCompile Include="app\json\app_persistence.cpp" />
     <ClCompile Include="app\json\ui_persistence.cpp" />
     <ClCompile Include="app\ui\draw_edit_panel.cpp" />
+    <ClCompile Include="app\editor_app.cpp" />
+    <ClCompile Include="editor_main.cpp" />
+    <ClCompile Include="app\ui\ui_helper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -66,6 +68,8 @@
     <ClInclude Include="app\json\ui_persistence.h" />
     <ClInclude Include="app\ui\draw_edit_panel.h" />
     <ClInclude Include="app\ui\ui.h" />
+    <ClInclude Include="app\editor_app.h" />
+    <ClInclude Include="app\ui\ui_helper.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="gfx">
@@ -88,9 +92,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Notes.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\README.md" />
+    <None Include="..\Workspace\Content\Shaders\gpu_renderer_common.hlsl" />
+    <None Include="..\Workspace\Content\Shaders\gpu_renderer_ps.hlsl" />
+    <None Include="..\Workspace\Content\Shaders\gpu_renderer_vs.hlsl" />
   </ItemGroup>
 </Project>

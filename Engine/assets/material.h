@@ -21,16 +21,7 @@ namespace engine
     OBJECT_DECLARE_SAVE(amaterial)
     OBJECT_DECLARE_VISITOR
     
-    // JSON persistent - CPU Raytracer
-    fvec3 color;
-    fvec3 emitted_color;
-    fvec3 gloss_color;
-    fvec3 pad;
-    float smoothness = 0.0f;
-    float gloss_probability = 0.0f;
-    float refraction_probability = 0.0f;
-    float refraction_index = 1.0f;
-    // JSON persistent - GPU renderer
-    fmaterial_properties material;
+    // JSON persistent
+    fmaterial_properties properties;
   };
 }
