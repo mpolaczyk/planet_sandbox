@@ -95,6 +95,15 @@ namespace editor
       camera.input_left = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_A)) ? 1 : 0;
       camera.input_right = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D)) ? 1 : 0;
     }
+    else
+    {
+      camera.input_up = 0;
+      camera.input_down = 0;
+      camera.input_forward = 0;
+      camera.input_backward = 0;
+      camera.input_left = 0;
+      camera.input_right = 0;
+    }
     
     // Handle camera rotation
     if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
@@ -102,6 +111,11 @@ namespace editor
       ImVec2 mouse_delta = ImGui::GetIO().MouseDelta;
       camera.input_yaw = mouse_delta.x;
       camera.input_pitch = mouse_delta.y;
+    }
+    else
+    {
+      camera.input_yaw = 0.0f;
+      camera.input_pitch = 0.0f;
     }
  
     // Object movement
