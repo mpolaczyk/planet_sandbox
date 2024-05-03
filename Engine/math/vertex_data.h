@@ -49,8 +49,8 @@ namespace engine
     fface_data(fface_data_type in_v1, fface_data_type in_v2, fface_data_type in_v3)
       : v1(in_v1), v2(in_v2), v3(in_v3) {}
     
-    fface_data_type v1;
-    fface_data_type v2;
-    fface_data_type v3;
+    fface_data_type v1 = 0;
+    fface_data_type v2 = 0;
+    fface_data_type v3 = 0;
   };
 }

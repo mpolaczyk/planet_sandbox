@@ -66,7 +66,6 @@ namespace engine
   {
     assert(out_static_mesh);
     
-    std::string dir = fio::get_meshes_dir();
     std::string path = fio::get_mesh_file_path(file_name.c_str());
 
     // Parse OBJ file

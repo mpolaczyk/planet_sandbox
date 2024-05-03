@@ -68,7 +68,7 @@ namespace editor
   void draw_editor_window(feditor_window_model& model, fapp_instance& state);
   void draw_hotkeys_panel(fapp_instance& state);
   void draw_materials_panel(fmaterials_panel_model& model, fapp_instance& state);
-  void draw_managed_objects_panel(fapp_instance& state);
+  void draw_managed_objects_panel();
 
   // Scene window
   void draw_scene_window(fscene_window_model& model, fapp_instance& state);

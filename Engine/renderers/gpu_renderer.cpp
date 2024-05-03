@@ -228,8 +228,10 @@ namespace engine
 
         dx.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         dx.device_context->IASetInputLayout(input_layout.Get());
+        
         dx.device_context->VSSetShader(vertex_shader_asset.get()->shader.Get(), nullptr, 0);
         dx.device_context->VSSetConstantBuffers(0, 1, object_constant_buffer.GetAddressOf());
+        
         dx.device_context->PSSetShader(pixel_shader_asset.get()->shader.Get(), nullptr, 0);
         dx.device_context->PSSetConstantBuffers(0, 1, frame_constant_buffer.GetAddressOf());
         dx.device_context->PSSetConstantBuffers(1, 1, object_constant_buffer.GetAddressOf());

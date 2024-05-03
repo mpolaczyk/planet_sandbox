@@ -15,7 +15,7 @@
 *.scor.t0000
 Archive/*
 Workspace/Renders/*.bmp
-rt-cppcheck-build-dir/*
+PlanetSandbox-cppcheck-build-dir/*
 Engine/x64
 Editor/x64
 EngineTests/x64

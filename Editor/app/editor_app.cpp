@@ -75,7 +75,7 @@ namespace editor
       pump_messages();
       if (!app_state.is_running) break;
 
-      ImGuiIO& io = ImGui::GetIO();
+      const ImGuiIO& io = ImGui::GetIO();
       app_state.app_delta_time_ms = io.DeltaTime * 1000.0f;
       app_state.render_delta_time_ms = static_cast<float>(app_state.renderer->get_render_time_ms());
       
@@ -167,7 +167,7 @@ namespace editor
   
         update_default_spawn_position(app_state);
 
-        frenderer_config& renderer_config = app_state.scene_root->renderer_config;
+        const frenderer_config& renderer_config = app_state.scene_root->renderer_config;
       
         app_state.output_width = renderer_config.resolution_horizontal;
         app_state.output_height = renderer_config.resolution_vertical;

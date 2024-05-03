@@ -26,7 +26,7 @@ namespace editor
     ImGui::Text("Renderer %.3f ms/frame", state.render_delta_time_ms);
     draw_hotkeys_panel(state);
     draw_materials_panel(model.rp_model, state);
-    draw_managed_objects_panel(state);
+    draw_managed_objects_panel();
     ImGui::End();
   }
   void draw_hotkeys_panel(fapp_instance& state)
@@ -59,7 +59,7 @@ namespace editor
       const_cast<amaterial*>(model.m_model.selected_object)->accept(vdraw_edit_panel());
     }
   }
-  void draw_managed_objects_panel(fapp_instance& state)
+  void draw_managed_objects_panel()
   {
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MANAGED OBJECTS");
