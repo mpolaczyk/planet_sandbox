@@ -162,14 +162,21 @@ namespace engine
 
     void rgpu::render_frame_impl()
     {
-        // Poke static mesh loading and build materials map
+        fdx11& dx = fdx11::instance();
+        dx.device_context->ClearRenderTargetView(output_rtv.Get(), scene->clear_color);
+        dx.device_context->ClearDepthStencilView(output_dsv.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+        
+        // Poke static mesh loading and build scene caches
         {
             material_map.clear();
             material_map.reserve(MAX_MATERIALS);
-            material_order.clear();
-            material_order.reserve(MAX_MATERIALS);
+            materials.clear();
+            materials.reserve(MAX_MATERIALS);
             next_material_id = 0;
             meshes.clear();
+            lights.clear();
+            lights.reserve(MAX_LIGHTS);
+            next_light_id = 0;
             
             for (const hhittable_base* hittable : scene->objects)
             {
@@ -182,27 +189,35 @@ namespace engine
                     if(material && !material_map.contains(material))
                     {
                         material_map.insert(std::pair<const amaterial*, uint32_t>(material, next_material_id));
-                        material_order.push_back(material);
+                        materials.push_back(material);
                         next_material_id++;
-                        if(next_material_id >= MAX_MATERIALS)
+                        if(next_material_id > MAX_MATERIALS)
                         {
                             LOG_ERROR("Unable to render more materials than MAX_MATERIALS");
                             return;
                         }
                     }    
                 }
+                else if(hittable->get_class() == hlight::get_class_static())
+                {
+                    const hlight* light = static_cast<const hlight*>(hittable);
+                    if(light->properties.enabled)
+                    {
+                        lights.push_back(light);
+                        next_light_id++;
+                        if(next_light_id > MAX_LIGHTS)
+                        {
+                            LOG_ERROR("Unable to render more lights than MAX_LIGHTS");
+                            return;
+                        }
+                    }
+                }
             }
-        }
-
-        fdx11& dx = fdx11::instance();
-        dx.device_context->ClearRenderTargetView(output_rtv.Get(), scene->clear_color);
-        dx.device_context->ClearDepthStencilView(output_dsv.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-        
-        std::vector<const hlight*> lights = scene->query_lights();
-        if(lights.size() == 0)
-        {
-            LOG_ERROR("Scene is missing light");
-            return;
+            if(lights.size() == 0)
+            {
+                LOG_ERROR("Scene is missing light");
+                return;
+            }
         }
 
         const D3D11_VIEWPORT viewport = {0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f};
@@ -226,11 +241,21 @@ namespace engine
             fframe_data pfd;
             pfd.camera_position = XMFLOAT4(camera.location.e);
             pfd.ambient_light =  scene->ambient_light_color;
-            pfd.light = lights[0]->properties;   // TODO Add more lights
-            pfd.light.position = XMFLOAT4(lights[0]->origin.e);
+            for(int i = 0; i < MAX_LIGHTS; i++)
+            {
+                if(i < next_light_id)
+                {
+                    pfd.lights[i] = lights[i]->properties;
+                    pfd.lights[i].position = XMFLOAT4(lights[i]->origin.e);
+                }
+                else
+                {
+                    pfd.lights[i] = flight_properties();
+                }
+            }
             for(int i = 0; i < MAX_MATERIALS; i++)
             {
-                pfd.materials[i] = i < next_material_id ? material_order[i]->properties : fmaterial_properties();
+                pfd.materials[i] = i < next_material_id ? materials[i]->properties : fmaterial_properties();
             }
             D3D11_MAPPED_SUBRESOURCE data;
             dx.device_context->Map(frame_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);

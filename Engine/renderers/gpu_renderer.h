@@ -20,11 +20,10 @@ struct ID3D11SamplerState;
 struct ID3D11RasterizerState;
 struct ID3D11DepthStencilState;
 
-#define MAX_LIGHTS 8
-
 namespace engine
 {
   class hstatic_mesh;
+  class hlight;
   
   using namespace DirectX;
   using Microsoft::WRL::ComPtr;
@@ -61,11 +60,15 @@ namespace engine
     typedef std::unordered_map<const amaterial*, uint32_t> material_map_type;
     material_map_type material_map;
     // Order of materials added to the material_map
-    std::vector<const amaterial*> material_order;
+    std::vector<const amaterial*> materials;
     uint32_t next_material_id = 0;
 
     // All static meshes on the scene
     std::vector<const hstatic_mesh*> meshes;
+
+    // All lights on the scene
+    std::vector<const hlight*> lights;
+    uint32_t next_light_id = 0;
     
     //END
   };

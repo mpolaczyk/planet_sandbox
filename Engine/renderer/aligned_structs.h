@@ -40,12 +40,12 @@ namespace engine
     {
         XMFLOAT4 position           { 0.0f, 0.0f, 0.0f, 1.0f };   // 16
         //
-        XMFLOAT4 direction          { 0.0f, 0.0f, 1.0f, 0.0f };   // 16
+        XMFLOAT4 direction          { 0.0f, 0.0f, 0.0f, 0.0f };   // 16
         //
-        XMFLOAT4 color              { 1.0f, 1.0f, 1.0f, 1.0f };   // 16
+        XMFLOAT4 color              { 0.0f, 0.0f, 0.0f, 1.0f };   // 16
         //
         float spot_angle            { XM_PIDIV2 };                // 4 
-        float constant_attenuation  { 1.0f };                     // 4 
+        float constant_attenuation  { 0.0f };                     // 4 
         float linear_attenuation    { 0.0f };                     // 4 
         float quadratic_attenuation { 0.0f };                     // 4
         //
@@ -59,7 +59,7 @@ namespace engine
     {
         XMFLOAT4 camera_position;                       // 16
         XMFLOAT4 ambient_light;                         // 16
-        flight_properties light;                        // 80
+        flight_properties lights[MAX_LIGHTS];           // 80xN
         fmaterial_properties materials[MAX_MATERIALS];  // 80xN
     };
     ALIGNED_STRUCT_END(fframe_data)

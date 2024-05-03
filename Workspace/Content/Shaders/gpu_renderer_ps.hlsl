@@ -13,7 +13,7 @@ cbuffer fframe_data : register(b0)
     //
     float4 ambient_light;       // 16
     //
-    flight_properties light;    // 80
+    flight_properties lights[MAX_LIGHTS];    // 80xN
 
     fmaterial_properties materials[MAX_MATERIALS];  // 80xN
 };
@@ -119,25 +119,27 @@ flight_components compute_light(float4 P, float3 N)
     flight_components final_light = { {0, 0, 0, 0}, {0, 0, 0, 0} };
 
     [unroll]
-    for( int i = 0; i < 1; ++i )
+    for( int i = 0; i < MAX_LIGHTS; ++i )
     {
-        flight_components delta_light = { {0, 0, 0, 0}, {0, 0, 0, 0} };
+        if(!lights[i].enabled)
+            continue;
         
-        switch(light.light_type)
+        flight_components delta_light = { {0, 0, 0, 0}, {0, 0, 0, 0} };
+        switch(lights[i].light_type)
         {
         case DIRECTIONAL_LIGHT:
             {
-                delta_light = directional_light(light, V, P, N );
+                delta_light = directional_light(lights[i], V, P, N );
             }
             break;
         case POINT_LIGHT: 
             {
-                delta_light = point_light(light, V, P, N );
+                delta_light = point_light(lights[i], V, P, N );
             }
             break;
         case SPOT_LIGHT:
             {
-                delta_light = spot_light(light, V, P, N );
+                delta_light = spot_light(lights[i], V, P, N );
             }
             break;
         }
@@ -154,6 +156,7 @@ flight_components compute_light(float4 P, float3 N)
 
 float4 ps_main(VS_Output input) : SV_Target
 {
+    
     const flight_components light_final = compute_light(input.position_ws, input.normal_ws);
 
     const fmaterial_properties material = materials[material_id];
