@@ -126,7 +126,7 @@ namespace engine
           LOG_WARN("Failed to build index buffer for: {0}", file_name);
           return false;
         }
-        out_static_mesh->render_state.num_indices = face_list.size() * 3;
+        out_static_mesh->render_state.num_indices = static_cast<int32_t>(face_list.size()) * 3;
       }
       
       // Bounding box

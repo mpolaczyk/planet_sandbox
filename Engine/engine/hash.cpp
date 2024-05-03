@@ -73,7 +73,7 @@ namespace engine
 
   uint32_t fhash::get(const DirectX::XMFLOAT3& a)
   {
-    return combine(get(a.x), get(a.y), get(a.z), 1.0f);
+    return combine(get(a.x), get(a.y), get(a.z), 1);
   }
 
   uint32_t fhash::get(const DirectX::XMFLOAT4& a)

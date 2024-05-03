@@ -4,7 +4,7 @@
 
 #include "hittables.h"
 #include "math/vec3.h"
-#include "renderer/aligned_structs.h"
+#include "renderers/aligned_structs.h"
 
 namespace engine
 {

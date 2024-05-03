@@ -241,7 +241,7 @@ namespace engine
             fframe_data pfd;
             pfd.camera_position = XMFLOAT4(camera.location.e);
             pfd.ambient_light =  scene->ambient_light_color;
-            for(int i = 0; i < MAX_LIGHTS; i++)
+            for(uint32_t i = 0; i < MAX_LIGHTS; i++)
             {
                 if(i < next_light_id)
                 {
@@ -253,7 +253,7 @@ namespace engine
                     pfd.lights[i] = flight_properties();
                 }
             }
-            for(int i = 0; i < MAX_MATERIALS; i++)
+            for(uint32_t i = 0; i < MAX_MATERIALS; i++)
             {
                 pfd.materials[i] = i < next_material_id ? materials[i]->properties : fmaterial_properties();
             }

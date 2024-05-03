@@ -109,13 +109,13 @@ namespace editor
     if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
     {
       ImVec2 mouse_delta = ImGui::GetIO().MouseDelta;
-      camera.input_yaw = mouse_delta.x;
-      camera.input_pitch = mouse_delta.y;
+      camera.input_yaw = static_cast<int>(mouse_delta.x);
+      camera.input_pitch = static_cast<int>(mouse_delta.y);
     }
     else
     {
-      camera.input_yaw = 0.0f;
-      camera.input_pitch = 0.0f;
+      camera.input_yaw = 0;
+      camera.input_pitch = 0;
     }
  
     // Object movement

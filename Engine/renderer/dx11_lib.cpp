@@ -134,7 +134,7 @@ namespace engine
   {
     ComPtr<ID3D11Device1> device = fdx11::instance().device;
     D3D11_BUFFER_DESC desc = {};
-    desc.ByteWidth = in_face_list.size() * sizeof(fface_data);
+    desc.ByteWidth = static_cast<int32_t>(in_face_list.size()) * sizeof(fface_data);
     desc.Usage     = D3D11_USAGE_IMMUTABLE;
     desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
     D3D11_SUBRESOURCE_DATA data = { in_face_list.data() };
@@ -145,7 +145,7 @@ namespace engine
   {
     ComPtr<ID3D11Device1> device = fdx11::instance().device;
     D3D11_BUFFER_DESC desc = {};
-    desc.ByteWidth = in_vertex_list.size() * sizeof(fvertex_data);
+    desc.ByteWidth = static_cast<int32_t>(in_vertex_list.size()) * sizeof(fvertex_data);
     desc.Usage     = D3D11_USAGE_IMMUTABLE;
     desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     D3D11_SUBRESOURCE_DATA data = { in_vertex_list.data() };

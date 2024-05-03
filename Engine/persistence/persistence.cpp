@@ -10,7 +10,7 @@
 
 #include <DirectXMath.h>
 
-#include "renderer/aligned_structs.h"
+#include "renderers/aligned_structs.h"
 
 
 namespace engine

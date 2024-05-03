@@ -127,8 +127,8 @@ copy $(ProjectDir)third_party\assimp\lib\x64\assimp-vc143-mt.dll $(SolutionDir)$
     <ClInclude Include="object\object_visitor.h" />
     <ClInclude Include="persistence\object_persistence.h" />
     <ClInclude Include="persistence\persistence.h" />
+    <ClInclude Include="renderers\aligned_structs.h" />
     <ClInclude Include="renderers\gpu_renderer.h" />
-    <ClInclude Include="renderer\aligned_structs.h" />
     <ClInclude Include="renderer\renderer_base.h" />
     <ClInclude Include="math\chunk_generator.h" />
     <ClInclude Include="renderer\dx11_lib.h" />
