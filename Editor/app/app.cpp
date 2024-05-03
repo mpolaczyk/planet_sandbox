@@ -75,8 +75,19 @@ namespace editor
       state.output_window_lmb_y = -1.0f;
     }
 
-    const ImGuiIO& io = ImGui::GetIO();
+    ImGuiIO& io = ImGui::GetIO();
     fcamera& camera = state.scene_root->camera_config;
+
+    if (!io.WantCaptureKeyboard)
+    {
+      io.KeyRepeatDelay = 0.0f;
+      io.KeyRepeatRate = 1.0f/60.0f;
+    }
+    else
+    {
+      io.KeyRepeatDelay = 0.25f;
+      io.KeyRepeatRate = 0.05f;
+    }
     
     // Handle hotkeys
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))

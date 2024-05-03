@@ -276,8 +276,6 @@ namespace engine
             
             // Update per object constant buffer
             {
-                const XMVECTOR model_pos = XMVectorSet(sm->origin.x, sm->origin.y, sm->origin.z, 1.f);
-
                 XMMATRIX translation_matrix = XMMatrixTranslation(sm->origin.x, sm->origin.y, sm->origin.z );
                 XMMATRIX rotation_matrix = XMMatrixRotationX(XMConvertToRadians(sm->rotation.x))
                     * XMMatrixRotationY(XMConvertToRadians(sm->rotation.y))

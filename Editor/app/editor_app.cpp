@@ -49,8 +49,6 @@ namespace editor
   
     // Setup Dear ImGui style
     ImGui::StyleColorsClassic();
-    ImGui::GetIO().KeyRepeatDelay = 0.0f;
-    ImGui::GetIO().KeyRepeatRate = 1.0f/60.0f;
   
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);

@@ -68,7 +68,7 @@ namespace editor
     const std::vector<oobject*>& objects = REG.get_all();
 
     int num_objects = (int)objects.size();
-    if (ImGui::BeginListBox("Assets", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
+    if (ImGui::BeginListBox("Assets", ImVec2(-FLT_MIN, 25 * ImGui::GetTextLineHeightWithSpacing())))
     {
       for (int n = 0; n < num_objects; n++)
       {
