@@ -5,6 +5,7 @@ cbuffer fobject_data : register(b0)
     matrix model_world;
     matrix inverse_transpose_model_world;
     matrix model_world_view_projection;
+    int material_id;
 };
 
 VS_Output vs_main(VS_Input input)

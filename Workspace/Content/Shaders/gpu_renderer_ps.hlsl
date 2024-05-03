@@ -14,6 +14,16 @@ cbuffer fframe_data : register(b0)
     float4 ambient_light;       // 16
     //
     flight_properties light;    // 80
+
+    fmaterial_properties materials[MAX_MATERIALS];  // 80xN
+};
+
+cbuffer fobject_data : register(b1)
+{
+    matrix model_world;
+    matrix inverse_transpose_model_world;
+    matrix model_world_view_projection;
+    int material_id;
 };
 
 struct flight_components
@@ -141,11 +151,16 @@ flight_components compute_light(float4 P, float3 N)
     return final_light;
 }
 
+
 float4 ps_main(VS_Output input) : SV_Target
 {
     const flight_components light_final = compute_light(input.position_ws, input.normal_ws);
-    
-    return ambient_light + light_final.diffuse + light_final.specular;
+
+    const fmaterial_properties material = materials[material_id];
+    return material.emissive
+        + material.ambient * ambient_light
+        + material.diffuse * light_final.diffuse
+        + material.specular * light_final.specular;
     
     // Simple light test
     //const float4 light_dir = light.position - input.position_ws;

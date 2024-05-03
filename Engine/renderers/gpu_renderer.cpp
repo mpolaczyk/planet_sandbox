@@ -1,5 +1,4 @@
 ﻿#include <d3d11_1.h>
-#include <DirectXColors.h>
 #include "renderer/dx11_lib.h"
 
 #include "object/object_registry.h"
@@ -44,18 +43,6 @@ namespace engine
             if(FAILED(device->CreateInputLayout(input_element_desc, ARRAYSIZE(input_element_desc), blob->GetBufferPointer(), blob->GetBufferSize(), &input_layout)))
             {
                 throw std::runtime_error("CreateInputLayout failed.");
-            }
-        }
-
-        // Poke static mesh loading
-        for (const hhittable_base* obj : scene->objects)
-        {
-            if (obj->get_class() == hstatic_mesh::get_class_static())
-            {
-                const hstatic_mesh* sm = static_cast<const hstatic_mesh*>(obj);
-                const astatic_mesh* sma = sm->mesh_asset_ptr.get();
-                assert(sma->render_state.index_buffer);
-                assert(sma->render_state.vertex_buffer);
             }
         }
 
@@ -128,13 +115,13 @@ namespace engine
             desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
             desc.ByteWidth = sizeof(fobject_data);
-            if(FAILED(device->CreateBuffer(&desc, nullptr, &vs_object_constant_buffer)))
+            if(FAILED(device->CreateBuffer(&desc, nullptr, &object_constant_buffer)))
             {
                 throw std::runtime_error("CreateBuffer object constant buffer failed.");
             }
 
             desc.ByteWidth = sizeof(fframe_data);
-            if(FAILED(device->CreateBuffer(&desc, nullptr, &ps_frame_constant_buffer)))
+            if(FAILED(device->CreateBuffer(&desc, nullptr, &frame_constant_buffer)))
             {
                 throw std::runtime_error("CreateBuffer frame constant buffer failed.");
             }
@@ -175,18 +162,48 @@ namespace engine
 
     void rgpu::render_frame_impl()
     {
-        fdx11& dx = fdx11::instance();
+        // Poke static mesh loading and build materials map
+        {
+            material_map.clear();
+            material_map.reserve(MAX_MATERIALS);
+            material_order.clear();
+            material_order.reserve(MAX_MATERIALS);
+            next_material_id = 0;
+            
+            for (const hhittable_base* hittable : scene->objects)
+            {
+                if(hittable->get_class() == hstatic_mesh::get_class_static())
+                {
+                    const hstatic_mesh* mesh = static_cast<const hstatic_mesh*>(hittable);
+                    meshes.push_back(mesh);
+                    volatile const astatic_mesh* mesh_asset = mesh->mesh_asset_ptr.get();
+                    const amaterial* material = mesh->material_asset_ptr.get();
+                    if(material && !material_map.contains(material))
+                    {
+                        material_map.insert(std::pair<const amaterial*, uint32_t>(material, next_material_id));
+                        material_order.push_back(material);
+                        next_material_id++;
+                        if(next_material_id >= MAX_MATERIALS)
+                        {
+                            LOG_ERROR("Unable to render more materials than MAX_MATERIALS");
+                            return;
+                        }
+                    }    
+                }
+            }
+        }
 
+        fdx11& dx = fdx11::instance();
         dx.device_context->ClearRenderTargetView(output_rtv.Get(), scene->clear_color);
         dx.device_context->ClearDepthStencilView(output_dsv.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-
+        
         std::vector<const hlight*> lights = scene->query_lights();
         if(lights.size() == 0)
         {
             LOG_ERROR("Scene is missing light");
             return;
         }
-        
+
         const D3D11_VIEWPORT viewport = {0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f};
         dx.device_context->RSSetViewports(1, &viewport);
         dx.device_context->RSSetState(rasterizer_state.Get());
@@ -196,69 +213,72 @@ namespace engine
         dx.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         dx.device_context->IASetInputLayout(input_layout.Get());
         dx.device_context->VSSetShader(vertex_shader_asset.get()->shader.Get(), nullptr, 0);
-        dx.device_context->PSSetConstantBuffers(0, 1, ps_frame_constant_buffer.GetAddressOf());
-        dx.device_context->VSSetConstantBuffers(0, 1, vs_object_constant_buffer.GetAddressOf());
+        dx.device_context->VSSetConstantBuffers(0, 1, object_constant_buffer.GetAddressOf());
         dx.device_context->PSSetShader(pixel_shader_asset.get()->shader.Get(), nullptr, 0);
+        dx.device_context->PSSetConstantBuffers(0, 1, frame_constant_buffer.GetAddressOf());
+        dx.device_context->PSSetConstantBuffers(1, 1, object_constant_buffer.GetAddressOf());
         dx.device_context->PSSetShaderResources(0, 1, texture_srv.GetAddressOf());
         dx.device_context->PSSetSamplers(0, 1, &sampler_state);
         
-        // Update per frame pixel shader constant buffer
+        // Update per frame constant buffer
         {
             fframe_data pfd;
             pfd.camera_position = XMFLOAT4(camera.location.e);
             pfd.ambient_light =  scene->ambient_light_color;
             pfd.light = lights[0]->properties;   // TODO Add more lights
             pfd.light.position = XMFLOAT4(lights[0]->origin.e);
-
+            for(int i = 0; i < MAX_MATERIALS; i++)
+            {
+                pfd.materials[i] = i < next_material_id ? material_order[i]->properties : fmaterial_properties();
+            }
             D3D11_MAPPED_SUBRESOURCE data;
-            dx.device_context->Map(ps_frame_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+            dx.device_context->Map(frame_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
             *static_cast<fframe_data*>(data.pData) = pfd;
-            dx.device_context->Unmap(ps_frame_constant_buffer.Get(), 0);
+            dx.device_context->Unmap(frame_constant_buffer.Get(), 0);
         }
         
         // Draw the scene
-        for (const hhittable_base* obj : scene->objects)
+        for (const hstatic_mesh* sm : meshes)
         {
-            if (obj->get_class() == hstatic_mesh::get_class_static())
+            const astatic_mesh* sma = sm->mesh_asset_ptr.get();
+            if (sma == nullptr) { continue; }
+            const fstatic_mesh_render_state& smrs = sma->render_state;
+            const amaterial* ma = sm->material_asset_ptr.get();
+            if (ma == nullptr) { continue; }
+            
+            // Update per object constant buffer
             {
-                const hstatic_mesh* sm = static_cast<const hstatic_mesh*>(obj);
-                const astatic_mesh* sma = sm->mesh_asset_ptr.get();
-                if (sma == nullptr) { continue; }
-                const fstatic_mesh_render_state& smrs = sma->render_state;
-                const amaterial* ma = sm->material_asset_ptr.get();
-                if (ma == nullptr) { continue; }
+                const XMVECTOR model_pos = XMVectorSet(sm->origin.x, sm->origin.y, sm->origin.z, 1.f);
+
+                XMMATRIX translation_matrix = XMMatrixTranslation(sm->origin.x, sm->origin.y, sm->origin.z );
+                XMMATRIX rotation_matrix = XMMatrixRotationX(XMConvertToRadians(sm->rotation.x))
+                    * XMMatrixRotationY(XMConvertToRadians(sm->rotation.y))
+                    * XMMatrixRotationZ(XMConvertToRadians(sm->rotation.z));
+                XMMATRIX scale_matrix = XMMatrixScaling(sm->scale.x, sm->scale.y, sm->scale.z);
+                XMMATRIX world_matrix = scale_matrix * rotation_matrix * translation_matrix;
                 
-                // Update per object vertex shader constant buffer
+                const XMMATRIX inverse_transpose_model_world = XMMatrixTranspose(XMMatrixInverse(nullptr, world_matrix));
+                const XMMATRIX model_world_view_projection = XMMatrixMultiply(world_matrix, XMLoadFloat4x4(&camera.view_projection));
+            
+                fobject_data pod;
+                XMStoreFloat4x4(&pod.model_world, world_matrix);
+                XMStoreFloat4x4(&pod.inverse_transpose_model_world, inverse_transpose_model_world);
+                XMStoreFloat4x4(&pod.model_world_view_projection, model_world_view_projection);
+                if(const amaterial* material = sm->material_asset_ptr.get())
                 {
-                    const XMVECTOR model_pos = XMVectorSet(sm->origin.x, sm->origin.y, sm->origin.z, 1.f);
-
-                    XMMATRIX translation_matrix = XMMatrixTranslation(sm->origin.x, sm->origin.y, sm->origin.z );
-                    XMMATRIX rotation_matrix = XMMatrixRotationX(XMConvertToRadians(sm->rotation.x))
-                        * XMMatrixRotationY(XMConvertToRadians(sm->rotation.y))
-                        * XMMatrixRotationZ(XMConvertToRadians(sm->rotation.z));
-                    XMMATRIX scale_matrix = XMMatrixScaling(sm->scale.x, sm->scale.y, sm->scale.z);
-                    XMMATRIX world_matrix = scale_matrix * rotation_matrix * translation_matrix;
-                    
-                    const XMMATRIX inverse_transpose_model_world = XMMatrixTranspose(XMMatrixInverse(nullptr, world_matrix));
-                    const XMMATRIX model_world_view_projection = XMMatrixMultiply(world_matrix, XMLoadFloat4x4(&camera.view_projection));
-                
-                    fobject_data pod;
-                    XMStoreFloat4x4(&pod.model_world, world_matrix);
-                    XMStoreFloat4x4(&pod.inverse_transpose_model_world, inverse_transpose_model_world);
-                    XMStoreFloat4x4(&pod.model_world_view_projection, model_world_view_projection);
-
-                    D3D11_MAPPED_SUBRESOURCE data;
-                    dx.device_context->Map(vs_object_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
-                    *static_cast<fobject_data*>(data.pData) = pod;
-                    dx.device_context->Unmap(vs_object_constant_buffer.Get(), 0);
+                    pod.material_id = material_map[material];
                 }
-
-                // Draw mesh
-                dx.device_context->IASetVertexBuffers(0, 1, smrs.vertex_buffer.GetAddressOf(), &smrs.stride, &smrs.offset);
-                dx.device_context->IASetIndexBuffer(smrs.index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-                static_assert(sizeof(fface_data_type) == sizeof(uint32_t));
-                dx.device_context->DrawIndexed(smrs.num_indices, 0, 0);
+                D3D11_MAPPED_SUBRESOURCE data;
+                dx.device_context->Map(object_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+                *static_cast<fobject_data*>(data.pData) = pod;
+                dx.device_context->Unmap(object_constant_buffer.Get(), 0);
             }
+
+            // Draw mesh
+            dx.device_context->IASetVertexBuffers(0, 1, smrs.vertex_buffer.GetAddressOf(), &smrs.stride, &smrs.offset);
+            dx.device_context->IASetIndexBuffer(smrs.index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+            static_assert(sizeof(fface_data_type) == sizeof(uint32_t));
+            dx.device_context->DrawIndexed(smrs.num_indices, 0, 0);
         }
     }
 }

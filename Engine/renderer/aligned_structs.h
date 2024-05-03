@@ -3,6 +3,9 @@
 #include <DirectXMath.h>
 #include "core/core.h"
 
+#define MAX_MATERIALS 8
+#define MAX_LIGHTS 8
+
 #define ALIGNED_STRUCT_BEGIN(NAME) struct alignas(16) ENGINE_API NAME
 #define ALIGNED_STRUCT_END(NAME) static_assert(sizeof(NAME) % 16 == 0);
 
@@ -54,17 +57,20 @@ namespace engine
     
     ALIGNED_STRUCT_BEGIN(fframe_data)
     {
-        XMFLOAT4 camera_position;       // 16
-        XMFLOAT4 ambient_light;         // 16
-        flight_properties light;        // 80
+        XMFLOAT4 camera_position;                       // 16
+        XMFLOAT4 ambient_light;                         // 16
+        flight_properties light;                        // 80
+        fmaterial_properties materials[MAX_MATERIALS];  // 80xN
     };
     ALIGNED_STRUCT_END(fframe_data)
 
     ALIGNED_STRUCT_BEGIN(fobject_data)
     {
-        XMFLOAT4X4 model_world;                    // Used to transform the vertex position from object space to world space
-        XMFLOAT4X4 inverse_transpose_model_world;  // Used to transform the vertex normal from object space to world space
-        XMFLOAT4X4 model_world_view_projection;    // Used to transform the vertex position from object space to projected clip space
+        XMFLOAT4X4 model_world;                     // 64 Used to transform the vertex position from object space to world space
+        XMFLOAT4X4 inverse_transpose_model_world;   // 64 Used to transform the vertex normal from object space to world space
+        XMFLOAT4X4 model_world_view_projection;     // 64 Used to transform the vertex position from object space to projected clip space
+        int material_id;                            // 4
+        int padding[3];                             // 12
     };
     ALIGNED_STRUCT_END(fobject_data)
 }

@@ -1,4 +1,7 @@
 
+#define MAX_MATERIALS 8
+#define MAX_LIGHTS 8
+
 struct VS_Input
 {
     float3 position  : POSITION;
@@ -32,4 +35,19 @@ struct flight_properties
     int light_type;                 // 4
     int enabled;                    // 4
     int2 padding;                   // 8
+};
+
+struct fmaterial_properties
+{
+    float4 emissive;        // 16
+    //
+    float4 ambient;         // 16
+    //
+    float4 diffuse;         // 16
+    //
+    float4 specular;        // 16
+    //
+    float specular_power;     // 4
+    int use_texture;          // 4
+    int2 padding;         // 8
 };
