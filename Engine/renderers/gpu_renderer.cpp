@@ -169,6 +169,7 @@ namespace engine
             material_order.clear();
             material_order.reserve(MAX_MATERIALS);
             next_material_id = 0;
+            meshes.clear();
             
             for (const hhittable_base* hittable : scene->objects)
             {
