@@ -26,5 +26,8 @@
     },
     "specular_power": 97.0,
     "use_texture": 0
+  },
+  "texture_asset": {
+    "name": ""
   }
 }

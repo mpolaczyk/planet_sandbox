@@ -4,8 +4,8 @@
 #define DIRECTIONAL_LIGHT 1
 #define SPOT_LIGHT 2
 
-Texture2D    texture0 : register(t0);
-SamplerState sampler0 : register(s0);
+Texture2D texture0 : register(t0);
+sampler sampler0 : register(s0);
 
 cbuffer fframe_data : register(b0)
 {
@@ -159,11 +159,19 @@ float4 ps_main(VS_Output input) : SV_Target
     
     const flight_components light_final = compute_light(input.position_ws, input.normal_ws);
 
+    float4 tex_color = { 1, 1, 1, 1 };
+
     const fmaterial_properties material = materials[material_id];
-    return material.emissive
+    
+    if (material.use_texture)
+    {
+        tex_color = texture0.Sample(sampler0, input.uv);
+    }
+
+    return (material.emissive
         + material.ambient * ambient_light
         + material.diffuse * light_final.diffuse
-        + material.specular * light_final.specular;
+        + material.specular * light_final.specular) * tex_color;
     
     // Simple light test
     //const float4 light_dir = light.position - input.position_ws;

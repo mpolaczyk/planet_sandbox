@@ -27,6 +27,7 @@ namespace engine
   void vserialize_object::visit(amaterial& object) const
   {
     j["properties"] = fpersistence::serialize(object.properties);
+    j["texture_asset"] = fpersistence::serialize(object.texture_asset_ptr);
   }
   void vserialize_object::visit(atexture& object) const
   {
@@ -97,6 +98,8 @@ namespace engine
   {
     nlohmann::json jproperties;
     if (TRY_PARSE(nlohmann::json, j, "properties", jproperties)) { fpersistence::deserialize(jproperties, object.properties); }
+    nlohmann::json jtexture;
+    if (TRY_PARSE(nlohmann::json, j, "texture_asset", jtexture)) { fpersistence::deserialize(jtexture, object.texture_asset_ptr); }
   }
   void vdeserialize_object::visit(atexture& object) const
   {

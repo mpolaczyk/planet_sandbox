@@ -8,7 +8,7 @@
 #include "asset/soft_asset_ptr.h"
 #include "assets/pixel_shader.h"
 #include "assets/vertex_shader.h"
-#include "assets/texture.h"
+#include "assets/material.h"
 #include "assets/mesh.h"
 
 struct ID3D11InputLayout;
@@ -36,8 +36,7 @@ namespace engine
     // FIX make them persistent members
     fsoft_asset_ptr<apixel_shader> pixel_shader_asset;
     fsoft_asset_ptr<avertex_shader> vertex_shader_asset;
-    fsoft_asset_ptr<atexture> texture_asset;
-    fsoft_asset_ptr<astatic_mesh> mesh_asset;
+    fsoft_asset_ptr<amaterial> default_material;
     
   protected:
     virtual void init() override;

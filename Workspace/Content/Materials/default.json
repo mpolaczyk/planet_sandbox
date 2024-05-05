@@ -25,9 +25,9 @@
       "z": 1.0
     },
     "specular_power": 1.0,
-    "use_texture": 0
+    "use_texture": 1
   },
   "texture_asset": {
-    "name": ""
+    "name": "default"
   }
 }

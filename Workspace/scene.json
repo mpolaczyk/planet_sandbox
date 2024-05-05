@@ -11,12 +11,12 @@
       "aspect_ratio_w": 4.0,
       "field_of_view": 40.0,
       "look_from": {
-        "x": -1.2940798997879028,
-        "y": 3.4815256595611572,
-        "z": -16.84575843811035
+        "x": -1.9836606979370117,
+        "y": 5.158989429473877,
+        "z": -28.11675262451172
       },
-      "pitch": 15.469671249389648,
-      "yaw": 5.097973823547363
+      "pitch": 7.200506687164307,
+      "yaw": 3.880875587463379
     },
     "clear_color": {
       "w": 1.0,
@@ -262,10 +262,10 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "ico5",
         "material_asset": {
-          "name": "white"
+          "name": "default"
         },
         "mesh_asset": {
-          "name": "icosphere5"
+          "name": "sphere"
         },
         "origin": {
           "x": 0.0,

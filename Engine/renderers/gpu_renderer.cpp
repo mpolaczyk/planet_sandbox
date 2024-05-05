@@ -18,14 +18,25 @@ namespace engine
     
     void rgpu::init()
     {
-        // FIX temporary hack here! It should be properly persistent as part for the scene (not hittable)
+        // FIX temporary hack here! It should be properly persistent as part for the scene
         vertex_shader_asset.set_name("gpu_renderer_vs");
-        vertex_shader_asset.get();
-        pixel_shader_asset.set_name("gpu_renderer_ps");
-        pixel_shader_asset.get();
-        texture_asset.set_name("default");
-        texture_asset.get();
+        if(!vertex_shader_asset.get()) 
+        {
+            throw std::runtime_error("Failed to load vertex shader");
+        }
 
+        pixel_shader_asset.set_name("gpu_renderer_ps");
+        if(!pixel_shader_asset.get())
+        {
+            throw std::runtime_error("Failed to load pixel shader");
+        }
+
+        default_material.set_name("default");
+        if(!default_material.get())
+        {
+            throw std::runtime_error("Failed to load default material");
+        }
+        
         auto device = fdx11::instance().device;
 
         // Input layout
@@ -62,48 +73,6 @@ namespace engine
             if(FAILED(device->CreateSamplerState(&desc, &sampler_state)))
             {
                 throw std::runtime_error("CreateSamplerState failed.");
-            }
-        }
-
-        // Texture asset
-        {
-            const atexture* temp = texture_asset.get();
-            int texture_bytes_per_row = 0;
-            const void* texture_bytes = nullptr;
-            if (temp->is_hdr)
-            {
-                texture_bytes = static_cast<const void*>(temp->data_hdr);
-                texture_bytes_per_row = temp->desired_channels * sizeof(float) * temp->width;
-            }
-            else
-            {
-                texture_bytes = static_cast<const void*>(temp->data_ldr);
-                texture_bytes_per_row = temp->desired_channels * sizeof(uint8_t) * temp->width;
-            }
-
-            D3D11_TEXTURE2D_DESC texture_desc = {};
-            texture_desc.Width = temp->width;
-            texture_desc.Height = temp->height;
-            texture_desc.MipLevels = 1;
-            texture_desc.ArraySize = 1;
-            texture_desc.Format = temp->is_hdr ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
-            texture_desc.SampleDesc.Count = 1;
-            texture_desc.Usage = D3D11_USAGE_IMMUTABLE;
-            texture_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-            D3D11_SUBRESOURCE_DATA texture_subresource_data = {};
-            texture_subresource_data.SysMemPitch = texture_bytes_per_row;
-            texture_subresource_data.pSysMem = texture_bytes;
-
-            ComPtr<ID3D11Texture2D> texture;
-            if(FAILED(device->CreateTexture2D(&texture_desc, &texture_subresource_data, texture.GetAddressOf())))
-            {
-                throw std::runtime_error("CreateTexture2D texture asset failed.");
-            }
-
-            if(FAILED(device->CreateShaderResourceView(texture.Get(), nullptr, texture_srv.GetAddressOf())))
-            {
-                throw std::runtime_error("CreateShaderResourceView texture asset failed.");
             }
         }
 
@@ -163,6 +132,7 @@ namespace engine
     void rgpu::render_frame_impl()
     {
         fdx11& dx = fdx11::instance();
+        
         dx.device_context->ClearRenderTargetView(output_rtv.Get(), scene->clear_color);
         dx.device_context->ClearDepthStencilView(output_dsv.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
         
@@ -236,7 +206,7 @@ namespace engine
         dx.device_context->PSSetConstantBuffers(0, 1, frame_constant_buffer.GetAddressOf());
         dx.device_context->PSSetConstantBuffers(1, 1, object_constant_buffer.GetAddressOf());
         dx.device_context->PSSetShaderResources(0, 1, texture_srv.GetAddressOf());
-        dx.device_context->PSSetSamplers(0, 1, &sampler_state);
+        dx.device_context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
         
         // Update per frame constant buffer
         {
@@ -298,6 +268,53 @@ namespace engine
                 dx.device_context->Map(object_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
                 *static_cast<fobject_data*>(data.pData) = pod;
                 dx.device_context->Unmap(object_constant_buffer.Get(), 0);
+            }
+
+            // Update texture asset
+            if(ma->properties.use_texture)
+            {
+                const atexture* ta = ma->texture_asset_ptr.get();
+                if(!ta)
+                {
+                    ta = default_material.get()->texture_asset_ptr.get();
+                }
+                int texture_bytes_per_row = 0;
+                const void* texture_bytes = nullptr;
+                if (ta->is_hdr)
+                {
+                    texture_bytes = static_cast<const void*>(ta->data_hdr);
+                    texture_bytes_per_row = ta->desired_channels * sizeof(float) * ta->width;
+                }
+                else
+                {
+                    texture_bytes = static_cast<const void*>(ta->data_ldr);
+                    texture_bytes_per_row = ta->desired_channels * sizeof(uint8_t) * ta->width;
+                }
+
+                D3D11_TEXTURE2D_DESC texture_desc = {};
+                texture_desc.Width = ta->width;
+                texture_desc.Height = ta->height;
+                texture_desc.MipLevels = 1;
+                texture_desc.ArraySize = 1;
+                texture_desc.Format = ta->is_hdr ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
+                texture_desc.SampleDesc.Count = 1;
+                texture_desc.Usage = D3D11_USAGE_IMMUTABLE;
+                texture_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+                D3D11_SUBRESOURCE_DATA texture_subresource_data = {};
+                texture_subresource_data.SysMemPitch = texture_bytes_per_row;
+                texture_subresource_data.pSysMem = texture_bytes;
+
+                ComPtr<ID3D11Texture2D> texture;
+                if(FAILED(dx.device->CreateTexture2D(&texture_desc, &texture_subresource_data, texture.GetAddressOf())))
+                {
+                    throw std::runtime_error("CreateTexture2D texture asset failed.");
+                }
+
+                if(FAILED(dx.device->CreateShaderResourceView(texture.Get(), nullptr, texture_srv.GetAddressOf())))
+                {
+                    throw std::runtime_error("CreateShaderResourceView texture asset failed.");
+                }
             }
 
             // Draw mesh

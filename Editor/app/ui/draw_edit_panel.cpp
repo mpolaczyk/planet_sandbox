@@ -6,7 +6,6 @@
 
 #include "hittables/hittables.h"
 #include "hittables/light.h"
-#include "hittables/scene.h"
 #include "hittables/sphere.h"
 #include "hittables/static_mesh.h"
 
@@ -29,10 +28,10 @@ namespace editor
   {
     visit_hhittable_base(object);
     {
-      std::string object_file = object.mesh_asset_ptr.get_name();
-      if (fui_helper::input_text("Object file", object_file))
+      std::string mesh_asset = object.mesh_asset_ptr.get_name();
+      if (fui_helper::input_text("Mesh asset", mesh_asset))
       {
-        object.mesh_asset_ptr.set_name(object_file);
+        object.mesh_asset_ptr.set_name(mesh_asset);
       }
     }
   }
@@ -79,5 +78,12 @@ namespace editor
     fui_helper::color_edit4("Specular", object.properties.specular);
     ImGui::DragFloat("Specular power", &object.properties.specular_power, 0.01f, 0.0f, 1000.0f);
     fui_helper::check_box("Use texture", object.properties.use_texture);
+    {
+      std::string texture_asset = object.texture_asset_ptr.get_name();
+      if (fui_helper::input_text("Texture asset", texture_asset))
+      {
+        object.texture_asset_ptr.set_name(texture_asset);
+      }
+    }
   }
 }
