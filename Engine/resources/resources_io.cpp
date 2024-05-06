@@ -100,11 +100,8 @@ namespace engine
           vertex_list.push_back(vertex);
         }
         // Vertex buffer
-        if(!fdx11::create_vertex_buffer(vertex_list, out_static_mesh->render_state.vertex_buffer))
-        {
-          LOG_WARN("Failed to build vertex buffer for: {0}", file_name);
-          return false;
-        }
+        fdx11::instance().create_vertex_buffer(vertex_list, out_static_mesh->render_state.vertex_buffer);
+        
         out_static_mesh->render_state.offset = 0;
         out_static_mesh->render_state.stride = sizeof(fvertex_data);
       }
@@ -120,11 +117,7 @@ namespace engine
           face_list.push_back(std::move(fface_data(ai_face.mIndices[0], ai_face.mIndices[1], ai_face.mIndices[2])));
         }
         // Index buffer
-        if(!fdx11::create_index_buffer(face_list, out_static_mesh->render_state.index_buffer))
-        {
-          LOG_WARN("Failed to build index buffer for: {0}", file_name);
-          return false;
-        }
+        fdx11::instance().create_index_buffer(face_list, out_static_mesh->render_state.index_buffer);
         out_static_mesh->render_state.num_indices = static_cast<int32_t>(face_list.size()) * 3;
       }
       

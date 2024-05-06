@@ -35,7 +35,7 @@ namespace engine
     ComPtr<ID3D11ShaderResourceView> output_srv;
     ComPtr<ID3D11RenderTargetView> output_rtv;
     ComPtr<ID3D11DepthStencilView> output_dsv;
-    ComPtr<ID3D11Texture2D> output_depth_texture;
+    
     unsigned int output_width = 0;
     unsigned int output_height = 0;
     

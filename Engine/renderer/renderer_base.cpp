@@ -59,64 +59,11 @@ namespace engine
             DX_RELEASE(output_srv)
             DX_RELEASE(output_dsv)
             DX_RELEASE(output_texture)
-            DX_RELEASE(output_depth_texture)
         }
         
         fdx11& dx = fdx11::instance();
-        
-        // Output and depth texture
-        {
-            D3D11_TEXTURE2D_DESC desc = {};
-            desc.Width = output_width;
-            desc.Height = output_height;
-            desc.MipLevels = 1;
-            desc.ArraySize = 1;
-            desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            desc.SampleDesc.Count = 1;
-            desc.Usage = D3D11_USAGE_DEFAULT;
-            desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-            desc.CPUAccessFlags = 0;
-            desc.MiscFlags = 0;
-            if(FAILED(dx.device->CreateTexture2D(&desc, NULL, &output_texture)))
-            {
-                throw std::runtime_error("CreateTexture2D output texture failed.");
-            }
-            desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-            desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-            if(FAILED(dx.device->CreateTexture2D(&desc, NULL, &output_depth_texture)))
-            {
-                throw std::runtime_error("CreateTexture2D output depth texture failed.");
-            }
-        }
-        // RTV
-        {
-            D3D11_RENDER_TARGET_VIEW_DESC desc = {};
-            desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-            desc.Texture2D.MipSlice = 0;
-            if(FAILED(dx.device->CreateRenderTargetView(output_texture.Get(), &desc, output_rtv.GetAddressOf())))
-            {
-                throw std::runtime_error("CreateRenderTargetView output texture failed");
-            }
-        }
-        // SRV
-        {
-            D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
-            desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-            desc.Texture2D.MostDetailedMip = 0;
-            desc.Texture2D.MipLevels = 1;
-            if(FAILED(dx.device->CreateShaderResourceView(output_texture.Get(), &desc, output_srv.GetAddressOf())))
-            {
-                throw std::runtime_error("CreateShaderResourceView output texture failed.");
-            }
-        }
-        // DSV
-        {
-            if(FAILED(dx.device->CreateDepthStencilView(output_depth_texture.Get(), nullptr, output_dsv.GetAddressOf())))
-            {
-                throw std::runtime_error("CreateDepthStencilView output depth texture failed");
-            }
-        }
+        dx.create_render_target_shader_resource_view(output_width, output_height, output_texture, output_srv);
+        dx.create_render_target_view(output_texture, output_rtv);
+        dx.create_depth_stencil_view(output_width, output_height, output_dsv);
     }
 }

@@ -49,12 +49,7 @@ namespace engine
       DX_RELEASE(instance->render_state.shader_blob)
       return false;
     }
-
-    if(FAILED(fdx11::instance().device->CreateVertexShader(instance->render_state.shader_blob->GetBufferPointer(), instance->render_state.shader_blob->GetBufferSize(), nullptr, instance->render_state.shader.GetAddressOf())))
-    {
-      LOG_ERROR("Unable to create vertex shader: {0}", instance->shader_file_name);
-      return false;
-    }
+    fdx11::instance().create_vertex_shader(instance->render_state.shader_blob, instance->render_state.shader);
     return true;
   }
 }

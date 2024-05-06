@@ -117,9 +117,9 @@ namespace engine
     }
   }
 
-  void fdx11::create_input_layout(const D3D11_INPUT_ELEMENT_DESC* input_element_desc, uint32_t input_element_desc_size, ComPtr<ID3D10Blob>& shader_blob, ComPtr<ID3D11InputLayout>& input_layout) const
+  void fdx11::create_input_layout(const D3D11_INPUT_ELEMENT_DESC* input_element_desc, uint32_t input_element_desc_size, const ComPtr<ID3D10Blob>& vertex_shader_blob, ComPtr<ID3D11InputLayout>& input_layout) const
   {
-    if(FAILED(device->CreateInputLayout(input_element_desc, input_element_desc_size, shader_blob->GetBufferPointer(), shader_blob->GetBufferSize(), input_layout.GetAddressOf())))
+    if(FAILED(device->CreateInputLayout(input_element_desc, input_element_desc_size, vertex_shader_blob->GetBufferPointer(), vertex_shader_blob->GetBufferSize(), input_layout.GetAddressOf())))
     {
       throw std::runtime_error("CreateInputLayout failed.");
     }
@@ -187,8 +187,86 @@ namespace engine
       throw std::runtime_error("CreateDepthStencilState failed.");
     }
   }
+  
+  void fdx11::create_vertex_shader(const ComPtr<ID3D10Blob>& shader_blob, ComPtr<ID3D11VertexShader>& out_vertex_shader) const
+  {
+    if(FAILED(device->CreateVertexShader(shader_blob->GetBufferPointer(), shader_blob->GetBufferSize(), nullptr, out_vertex_shader.GetAddressOf())))
+    {
+      throw std::runtime_error("CreateVertexShader failed");
+    }
+  }
 
-  void fdx11::create_shader_resource_view(uint32_t width, uint32_t height, bool is_hdr, uint32_t bytes_per_row, const void* in_bytes, ComPtr<ID3D11ShaderResourceView>& shader_resource_view) const
+  void fdx11::create_pixel_shader(const ComPtr<ID3D10Blob>& shader_blob, ComPtr<ID3D11PixelShader>& out_pixel_shader) const
+  {
+    if(FAILED(device->CreatePixelShader(shader_blob->GetBufferPointer(), shader_blob->GetBufferSize(), nullptr, out_pixel_shader.GetAddressOf())))
+    {
+      throw std::runtime_error("CreatePixelShader failed");
+    }
+  }
+  
+  void fdx11::create_index_buffer(const std::vector<fface_data>& in_face_list, ComPtr<ID3D11Buffer>& out_index_buffer) const
+  {
+    D3D11_BUFFER_DESC desc = {};
+    desc.ByteWidth = static_cast<int32_t>(in_face_list.size()) * sizeof(fface_data);
+    desc.Usage     = D3D11_USAGE_IMMUTABLE;
+    desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    D3D11_SUBRESOURCE_DATA data = { in_face_list.data() };
+    if (FAILED(device->CreateBuffer(&desc, &data, out_index_buffer.GetAddressOf())))
+    {
+      throw std::runtime_error("CreateBuffer index failed.");
+    }
+  }
+
+  void fdx11::create_vertex_buffer(const std::vector<fvertex_data>& in_vertex_list, ComPtr<ID3D11Buffer>& out_vertex_buffer) const
+  {
+    D3D11_BUFFER_DESC desc = {};
+    desc.ByteWidth = static_cast<int32_t>(in_vertex_list.size()) * sizeof(fvertex_data);
+    desc.Usage     = D3D11_USAGE_IMMUTABLE;
+    desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    const D3D11_SUBRESOURCE_DATA data = { in_vertex_list.data() };
+    if (FAILED(device->CreateBuffer(&desc, &data, out_vertex_buffer.GetAddressOf())))
+    {
+      throw std::runtime_error("CreateBuffer vertex failed.");
+    }
+  }
+
+  void fdx11::create_render_target_view(const ComPtr<ID3D11Texture2D>& texture, ComPtr<ID3D11RenderTargetView>& out_render_target_view) const
+  {
+    D3D11_RENDER_TARGET_VIEW_DESC desc = {};
+    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+    desc.Texture2D.MipSlice = 0;
+    if(FAILED(device->CreateRenderTargetView(texture.Get(), &desc, out_render_target_view.GetAddressOf())))
+    {
+      throw std::runtime_error("CreateRenderTargetView output texture failed");
+    }
+  }
+
+  void fdx11::create_depth_stencil_view(uint32_t width, uint32_t height, ComPtr<ID3D11DepthStencilView>& out_depth_stencil_view) const
+  {
+    D3D11_TEXTURE2D_DESC texture_desc = {};
+    texture_desc.Width = width;
+    texture_desc.Height = height;
+    texture_desc.MipLevels = 1;
+    texture_desc.ArraySize = 1;
+    texture_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    texture_desc.SampleDesc.Count = 1;
+    texture_desc.Usage = D3D11_USAGE_DEFAULT;
+    texture_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    texture_desc.CPUAccessFlags = 0;
+    texture_desc.MiscFlags = 0;
+    ComPtr<ID3D11Texture2D> output_depth_texture;
+    if(FAILED(device->CreateTexture2D(&texture_desc, NULL, &output_depth_texture)))
+    {
+      throw std::runtime_error("CreateTexture2D output depth texture failed.");
+    }
+    if(FAILED(device->CreateDepthStencilView(output_depth_texture.Get(), nullptr, out_depth_stencil_view.GetAddressOf())))  // TODO Missing descriptor?
+    {
+      throw std::runtime_error("CreateDepthStencilView output depth texture failed");
+    }
+  }
+  
+  void fdx11::create_shader_resource_view(uint32_t width, uint32_t height, bool is_hdr, uint32_t bytes_per_row, const void* in_bytes, ComPtr<ID3D11ShaderResourceView>& out_shader_resource_view) const
   {
     D3D11_TEXTURE2D_DESC texture_desc = {};
     texture_desc.Width = width;
@@ -210,17 +288,41 @@ namespace engine
       throw std::runtime_error("CreateTexture2D texture asset failed.");
     }
 
-    if(FAILED(device->CreateShaderResourceView(texture.Get(), nullptr, shader_resource_view.GetAddressOf())))
+    if(FAILED(device->CreateShaderResourceView(texture.Get(), nullptr, out_shader_resource_view.GetAddressOf())))
     {
       throw std::runtime_error("CreateShaderResourceView texture asset failed.");
     }
   }
 
-  //void fdx11::update_constant_buffer(void* data, ComPtr<ID3D11Buffer>& out_constant_buffer) const
-  //{
-  //  
-  //}
+  void fdx11::create_render_target_shader_resource_view(uint32_t width, uint32_t height, ComPtr<ID3D11Texture2D>& out_texture, ComPtr<ID3D11ShaderResourceView>& out_shader_resource_view) const
+  {
+    D3D11_TEXTURE2D_DESC texture_desc = {};
+    texture_desc.Width = width;
+    texture_desc.Height = height;
+    texture_desc.MipLevels = 1;
+    texture_desc.ArraySize = 1;
+    texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    texture_desc.SampleDesc.Count = 1;
+    texture_desc.Usage = D3D11_USAGE_DEFAULT;
+    texture_desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    texture_desc.CPUAccessFlags = 0;
+    texture_desc.MiscFlags = 0;
+    if(FAILED(device->CreateTexture2D(&texture_desc, NULL, &out_texture)))
+    {
+      throw std::runtime_error("CreateTexture2D output texture failed.");
+    }
+    D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_desc = {};
+    shader_resource_view_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    shader_resource_view_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    shader_resource_view_desc.Texture2D.MostDetailedMip = 0;
+    shader_resource_view_desc.Texture2D.MipLevels = 1;
+    if(FAILED(device->CreateShaderResourceView(out_texture.Get(), &shader_resource_view_desc, out_shader_resource_view.GetAddressOf())))
+    {
+      throw std::runtime_error("CreateShaderResourceView output texture failed.");
+    }
+  }
 
+  
 
   void fdx11::cleanup_render_target()
   {
@@ -233,95 +335,5 @@ namespace engine
     DX_RELEASE(swap_chain)
     DX_RELEASE(device_context)
     DX_RELEASE(device)
-  }
-  
-  bool fdx11::create_index_buffer(const std::vector<fface_data>& in_face_list, ComPtr<ID3D11Buffer>& out_index_buffer)
-  {
-    ComPtr<ID3D11Device1> device = fdx11::instance().device;
-    D3D11_BUFFER_DESC desc = {};
-    desc.ByteWidth = static_cast<int32_t>(in_face_list.size()) * sizeof(fface_data);
-    desc.Usage     = D3D11_USAGE_IMMUTABLE;
-    desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    D3D11_SUBRESOURCE_DATA data = { in_face_list.data() };
-    return SUCCEEDED(device->CreateBuffer(&desc, &data, out_index_buffer.GetAddressOf()));
-  }
-
-  bool fdx11::create_vertex_buffer(const std::vector<fvertex_data>& in_vertex_list, ComPtr<ID3D11Buffer>& out_vertex_buffer)
-  {
-    ComPtr<ID3D11Device1> device = fdx11::instance().device;
-    D3D11_BUFFER_DESC desc = {};
-    desc.ByteWidth = static_cast<int32_t>(in_vertex_list.size()) * sizeof(fvertex_data);
-    desc.Usage     = D3D11_USAGE_IMMUTABLE;
-    desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    D3D11_SUBRESOURCE_DATA data = { in_vertex_list.data() };
-    return SUCCEEDED(device->CreateBuffer(&desc, &data, out_vertex_buffer.GetAddressOf()));
-  }
-  
-  bool fdx11::create_texture_from_buffer(unsigned char* in_buffer, int width, int height, ComPtr<ID3D11ShaderResourceView>& out_srv, ComPtr<ID3D11Texture2D>& out_texture)
-  {
-    if (in_buffer == nullptr) return false;
-    ComPtr<ID3D11Device1> device = fdx11::instance().device;
-    
-    // Texture
-    ComPtr<ID3D11Texture2D> texture;
-    {
-      D3D11_TEXTURE2D_DESC desc = {};
-      desc.Width = width;
-      desc.Height = height;
-      desc.MipLevels = 1;
-      desc.ArraySize = 1;
-      desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-      desc.SampleDesc.Count = 1;
-      desc.Usage = D3D11_USAGE_DYNAMIC;
-      desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-      desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-      D3D11_SUBRESOURCE_DATA sub_resource = {};
-      sub_resource.pSysMem = in_buffer;
-      sub_resource.SysMemPitch = desc.Width * 4;
-      sub_resource.SysMemSlicePitch = 0;
-      if (FAILED(device->CreateTexture2D(&desc, &sub_resource, texture.GetAddressOf())))
-      {
-        throw std::runtime_error("CreateTexture2D failed.");
-      }
-    }
-
-    // SRV
-    ComPtr<ID3D11ShaderResourceView> srv;
-    {
-      D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
-      desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-      desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-      desc.Texture2D.MipLevels = 1;
-      desc.Texture2D.MostDetailedMip = 0;
-      if (FAILED(device->CreateShaderResourceView(texture.Get(), &desc, srv.GetAddressOf())))
-      {
-        throw std::runtime_error("CreateShaderResourceView failed.");
-      }
-    }
-
-    out_srv = srv;
-    out_texture = texture;
-    
-    return true;
-  }
-
-  bool fdx11::update_texture_from_buffer(unsigned char* in_buffer, int width, int height, ComPtr<ID3D11Texture2D>& out_texture)
-  {
-    if (in_buffer == nullptr) return false;
-    ComPtr<ID3D11DeviceContext1> device_context = fdx11::instance().device_context;
-    
-    D3D11_MAPPED_SUBRESOURCE mapped_resource;
-    ZeroMemory(&mapped_resource, sizeof(D3D11_MAPPED_SUBRESOURCE));
-    int row_span = width * 4; // 4 bytes per px
-    device_context->Map(out_texture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_resource);
-    BYTE* mapped_data = reinterpret_cast<BYTE*>(mapped_resource.pData);
-    for (int i = 0; i < height; ++i)
-    {
-      memcpy(mapped_data, in_buffer, row_span);
-      mapped_data += mapped_resource.RowPitch;
-      in_buffer += row_span;
-    }
-    device_context->Unmap(out_texture.Get(), 0);
-    return true;
   }
 }
