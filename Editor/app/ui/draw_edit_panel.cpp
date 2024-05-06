@@ -94,11 +94,15 @@ namespace editor
     fui_helper::color_edit4("Specular", object.properties.specular);
     ImGui::DragFloat("Specular power", &object.properties.specular_power, 0.01f, 0.0f, 1000.0f);
     fui_helper::check_box("Use texture", object.properties.use_texture);
+    if(object.properties.use_texture)
     {
-      std::string texture_asset = object.texture_asset_ptr.get_name();
-      if (fui_helper::input_text("Texture asset", texture_asset))
+      fselection_combo_model<atexture> model;
+      model.objects = REG.get_all_by_type<const atexture>();
+      fui_helper::draw_selection_combo<atexture>(model, "Texture",[=](const atexture* obj) -> bool { return true; }, object.texture_asset_ptr.get());
+      
+      if (model.selected_object != nullptr)
       {
-        object.texture_asset_ptr.set_name(texture_asset);
+        object.texture_asset_ptr.set_name(model.selected_object->file_name);
       }
     }
   }

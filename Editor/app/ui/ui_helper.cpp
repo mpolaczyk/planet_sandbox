@@ -105,6 +105,7 @@ namespace editor
   }
 
   template void fui_helper::draw_selection_combo<amaterial>(fselection_combo_model<amaterial>& model, const char* name, std::function<bool(const amaterial*)> predicate, const amaterial* default_selected_object);
+  template void fui_helper::draw_selection_combo<atexture>(fselection_combo_model<atexture>& model, const char* name, std::function<bool(const atexture*)> predicate, const atexture* default_selected_object);
   template void fui_helper::draw_selection_combo<astatic_mesh>(fselection_combo_model<astatic_mesh>& model, const char* name, std::function<bool(const astatic_mesh*)> predicate, const astatic_mesh* default_selected_object);
   template void fui_helper::draw_selection_combo<oclass_object>(fselection_combo_model<oclass_object>& model, const char* name, std::function<bool(const oclass_object*)> predicate, const oclass_object* default_selected_object);
 }
