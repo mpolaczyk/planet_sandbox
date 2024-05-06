@@ -1,19 +1,13 @@
 ﻿#pragma once
 
-#include <wrl/client.h>
-
 #include "core/core.h"
 
 #include "object/object.h"
 #include "asset/asset.h"
-
-struct ID3D11VertexShader;
-struct ID3D10Blob;
+#include "renderer/render_state.h"
 
 namespace engine
 {
-  using Microsoft::WRL::ComPtr;
-  
   class ENGINE_API avertex_shader : public aasset_base
   {
   public:
@@ -28,7 +22,6 @@ namespace engine
     std::string target;
     
     // Runtime
-    ComPtr<ID3D11VertexShader> shader;
-    ComPtr<ID3D10Blob> shader_blob;
+    fvertex_shader_render_state render_state;
   };
 }

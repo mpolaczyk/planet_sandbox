@@ -3,7 +3,6 @@
 #include "hittables/hittables.h"
 
 #include "math/onb.h"
-#include "assets/material.h"
 #include "engine/log.h"
 #include "profile/stats.h"
 #include "engine/hash.h"

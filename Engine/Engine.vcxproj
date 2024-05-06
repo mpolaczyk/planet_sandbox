@@ -133,6 +133,7 @@ copy $(ProjectDir)third_party\assimp\lib\x64\assimp-vc143-mt.dll $(SolutionDir)$
     <ClInclude Include="math\chunk_generator.h" />
     <ClInclude Include="renderer\dx11_lib.h" />
     <ClInclude Include="renderer\renderer_config.h" />
+    <ClInclude Include="renderer\render_state.h" />
     <ClInclude Include="resources\bmp.h" />
     <ClInclude Include="core\exceptions.h" />
     <ClInclude Include="core\windows_minimal.h" />

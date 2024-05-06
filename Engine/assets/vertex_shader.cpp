@@ -44,13 +44,13 @@ namespace engine
     instance->accept(vdeserialize_object(j));
     instance->set_display_name(name);
     
-    if(!load_hlsl(instance->shader_file_name, instance->entrypoint, instance->target, instance->shader_blob))
+    if(!load_hlsl(instance->shader_file_name, instance->entrypoint, instance->target, instance->render_state.shader_blob))
     {
-      DX_RELEASE(instance->shader_blob)
+      DX_RELEASE(instance->render_state.shader_blob)
       return false;
     }
 
-    if(FAILED(fdx11::instance().device->CreateVertexShader(instance->shader_blob->GetBufferPointer(), instance->shader_blob->GetBufferSize(), nullptr, instance->shader.GetAddressOf())))
+    if(FAILED(fdx11::instance().device->CreateVertexShader(instance->render_state.shader_blob->GetBufferPointer(), instance->render_state.shader_blob->GetBufferSize(), nullptr, instance->render_state.shader.GetAddressOf())))
     {
       LOG_ERROR("Unable to create vertex shader: {0}", instance->shader_file_name);
       return false;

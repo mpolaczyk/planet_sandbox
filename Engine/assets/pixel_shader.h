@@ -1,19 +1,13 @@
 ﻿#pragma once
 
-#include <wrl/client.h>
-
 #include "core/core.h"
 
 #include "object/object.h"
 #include "asset/asset.h"
-
-struct ID3D11PixelShader;
-struct ID3D10Blob;
+#include "renderer/render_state.h"
 
 namespace engine
 {
-  using Microsoft::WRL::ComPtr;
-  
   class ENGINE_API apixel_shader : public aasset_base
   {
   public:
@@ -28,7 +22,6 @@ namespace engine
     std::string target;
 
     // Runtime
-    ComPtr<ID3D11PixelShader> shader;
-    ComPtr<ID3D10Blob> shader_blob;
+    fpixel_shader_render_state render_state;
   };
 }

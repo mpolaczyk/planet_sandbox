@@ -1,29 +1,14 @@
 #pragma once
 
-#include <d3d11.h>
 #include <directxcollision.h>
-#include <wrl/client.h>
-#include <vector>
 
 #include "core/core.h"
-
 #include "object/object.h"
-#include "math/vertex_data.h"
 #include "asset/asset.h"
+#include "renderer/render_state.h"
 
 namespace engine
 {
-  using Microsoft::WRL::ComPtr;
-  
-  struct ENGINE_API fstatic_mesh_render_state
-  {
-    ComPtr<ID3D11Buffer> vertex_buffer;
-    unsigned int stride;
-    unsigned int offset;
-    ComPtr<ID3D11Buffer> index_buffer;
-    unsigned int num_indices;
-  };
-  
   class ENGINE_API astatic_mesh : public aasset_base
   {
   public:

@@ -148,27 +148,39 @@ namespace engine
     assert(out_texture);
     
     std::string path = fio::get_texture_file_path(file_name.c_str());
-
-    out_texture->is_hdr = static_cast<bool>(stbi_is_hdr(path.c_str()));
     
-    if (out_texture->is_hdr)
+    int num_channels = 0;
+    bool is_hdr = static_cast<bool>(stbi_is_hdr(path.c_str()));
+    uint8_t* data_ldr = nullptr;
+    float* data_hdr = nullptr;
+    int bytes_per_row = 0;
+    const void* buffer = nullptr;
+    
+    if (is_hdr)
     {
-      out_texture->data_hdr = stbi_loadf(path.c_str(), &out_texture->width, &out_texture->height, &out_texture->num_channels, desired_channels);
-      if (out_texture->data_hdr == nullptr)
+      data_hdr = stbi_loadf(path.c_str(), &out_texture->width, &out_texture->height, &num_channels, desired_channels);
+      if (data_hdr == nullptr)
       {
         LOG_ERROR("Texture file: {0} failed to open", path);
         return false;
       }
+      buffer = static_cast<const void*>(data_hdr);
+      bytes_per_row = out_texture->desired_channels * sizeof(float) * out_texture->width;
     }
     else
     {
-      out_texture->data_ldr = stbi_load(path.c_str(), &out_texture->width, &out_texture->height, &out_texture->num_channels, desired_channels);
-      if (out_texture->data_ldr == nullptr)
+      data_ldr = stbi_load(path.c_str(), &out_texture->width, &out_texture->height, &num_channels, desired_channels);
+      if (data_ldr == nullptr)
       {
         LOG_ERROR("Texture file: {0} failed to open", path);
         return false;
       }
+      buffer = static_cast<const void*>(data_ldr);
+      bytes_per_row = out_texture->desired_channels * sizeof(uint8_t) * out_texture->width;
     }
+
+    fdx11::instance().create_shader_resource_view(out_texture->width, out_texture->height, is_hdr, bytes_per_row, buffer, out_texture->render_state.texture_srv);
+    delete buffer;
     return true;
   }
   

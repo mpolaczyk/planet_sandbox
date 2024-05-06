@@ -48,7 +48,7 @@ namespace engine
                 {"BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0},
                 {"TEXCOORD",  0, DXGI_FORMAT_R32G32_FLOAT,    0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0}
             };
-            auto blob = vertex_shader_asset.get()->shader_blob;
+            auto blob = vertex_shader_asset.get()->render_state.shader_blob;
             dx.create_input_layout(input_element_desc, ARRAYSIZE(input_element_desc), blob, input_layout);
         }
         dx.create_sampler_state(sampler_state);
@@ -128,16 +128,16 @@ namespace engine
         dx.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         dx.device_context->IASetInputLayout(input_layout.Get());
         
-        dx.device_context->VSSetShader(vertex_shader_asset.get()->shader.Get(), nullptr, 0);
+        dx.device_context->VSSetShader(vertex_shader_asset.get()->render_state.shader.Get(), nullptr, 0);
         dx.device_context->VSSetConstantBuffers(0, 1, object_constant_buffer.GetAddressOf());
         
-        dx.device_context->PSSetShader(pixel_shader_asset.get()->shader.Get(), nullptr, 0);
+        dx.device_context->PSSetShader(pixel_shader_asset.get()->render_state.shader.Get(), nullptr, 0);
         dx.device_context->PSSetConstantBuffers(0, 1, frame_constant_buffer.GetAddressOf());
         dx.device_context->PSSetConstantBuffers(1, 1, object_constant_buffer.GetAddressOf());
-        dx.device_context->PSSetShaderResources(0, 1, texture_srv.GetAddressOf());
+        
         dx.device_context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
         
-        // Update per frame constant buffer
+        // Update per-frame constant buffer
         {
             fframe_data pfd;
             pfd.camera_position = XMFLOAT4(camera.location.e);
@@ -158,10 +158,7 @@ namespace engine
             {
                 pfd.materials[i] = i < next_material_id ? materials[i]->properties : fmaterial_properties();
             }
-            D3D11_MAPPED_SUBRESOURCE data;
-            dx.device_context->Map(frame_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
-            *static_cast<fframe_data*>(data.pData) = pfd;
-            dx.device_context->Unmap(frame_constant_buffer.Get(), 0);
+            dx.update_constant_buffer<fframe_data>(&pfd, frame_constant_buffer);
         }
         
         // Draw the scene
@@ -172,8 +169,9 @@ namespace engine
             const fstatic_mesh_render_state& smrs = sma->render_state;
             const amaterial* ma = sm->material_asset_ptr.get();
             if (ma == nullptr) { continue; }
+            const atexture* ta = ma->texture_asset_ptr.get();
             
-            // Update per object constant buffer
+            // Update per-object constant buffer
             {
                 XMMATRIX translation_matrix = XMMatrixTranslation(sm->origin.x, sm->origin.y, sm->origin.z );
                 XMMATRIX rotation_matrix = XMMatrixRotationX(XMConvertToRadians(sm->rotation.x))
@@ -193,63 +191,25 @@ namespace engine
                 {
                     pod.material_id = material_map[material];
                 }
-                D3D11_MAPPED_SUBRESOURCE data;
-                dx.device_context->Map(object_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
-                *static_cast<fobject_data*>(data.pData) = pod;
-                dx.device_context->Unmap(object_constant_buffer.Get(), 0);
+                dx.update_constant_buffer<fobject_data>(&pod, object_constant_buffer);
             }
 
-            // Update texture asset
+            // Update texture
             if(ma->properties.use_texture)
             {
-                const atexture* ta = ma->texture_asset_ptr.get();
-                if(!ta)
+                if(ta == nullptr)
                 {
                     ta = default_material.get()->texture_asset_ptr.get();
                 }
-                int texture_bytes_per_row = 0;
-                const void* texture_bytes = nullptr;
-                if (ta->is_hdr)
-                {
-                    texture_bytes = static_cast<const void*>(ta->data_hdr);
-                    texture_bytes_per_row = ta->desired_channels * sizeof(float) * ta->width;
-                }
-                else
-                {
-                    texture_bytes = static_cast<const void*>(ta->data_ldr);
-                    texture_bytes_per_row = ta->desired_channels * sizeof(uint8_t) * ta->width;
-                }
-
-                D3D11_TEXTURE2D_DESC texture_desc = {};
-                texture_desc.Width = ta->width;
-                texture_desc.Height = ta->height;
-                texture_desc.MipLevels = 1;
-                texture_desc.ArraySize = 1;
-                texture_desc.Format = ta->is_hdr ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
-                texture_desc.SampleDesc.Count = 1;
-                texture_desc.Usage = D3D11_USAGE_IMMUTABLE;
-                texture_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-                D3D11_SUBRESOURCE_DATA texture_subresource_data = {};
-                texture_subresource_data.SysMemPitch = texture_bytes_per_row;
-                texture_subresource_data.pSysMem = texture_bytes;
-
-                ComPtr<ID3D11Texture2D> texture;
-                if(FAILED(dx.device->CreateTexture2D(&texture_desc, &texture_subresource_data, texture.GetAddressOf())))
-                {
-                    throw std::runtime_error("CreateTexture2D texture asset failed.");
-                }
-
-                if(FAILED(dx.device->CreateShaderResourceView(texture.Get(), nullptr, texture_srv.GetAddressOf())))
-                {
-                    throw std::runtime_error("CreateShaderResourceView texture asset failed.");
-                }
+                dx.device_context->PSSetShaderResources(0, 1, ta->render_state.texture_srv.GetAddressOf());
             }
-
-            // Draw mesh
+            
+            // Update mesh
             dx.device_context->IASetVertexBuffers(0, 1, smrs.vertex_buffer.GetAddressOf(), &smrs.stride, &smrs.offset);
             dx.device_context->IASetIndexBuffer(smrs.index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
             static_assert(sizeof(fface_data_type) == sizeof(uint32_t));
+
+            // Draw
             dx.device_context->DrawIndexed(smrs.num_indices, 0, 0);
         }
     }

@@ -4,6 +4,7 @@
 
 #include "object/object.h"
 #include "asset/asset.h"
+#include "renderer/render_state.h"
 
 namespace engine
 {
@@ -22,9 +23,6 @@ namespace engine
     // Image file data
     int width;
     int height;
-    int num_channels;
-    bool is_hdr;
-    uint8_t* data_ldr = nullptr;
-    float* data_hdr = nullptr;
+    ftexture_render_state render_state;
   };
 }

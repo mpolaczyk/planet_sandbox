@@ -57,10 +57,22 @@ namespace engine
     void create_constant_buffer(uint32_t size, ComPtr<ID3D11Buffer>& out_constant_buffer) const;
     void create_rasterizer_state(ComPtr<ID3D11RasterizerState>& out_rasterizer_state) const;
     void create_depth_stencil_state(ComPtr<ID3D11DepthStencilState>& out_depth_stencil_state) const;
-        
+
+    void create_shader_resource_view(uint32_t width, uint32_t height, bool is_hdr, uint32_t bytes_per_row, const void* in_bytes, ComPtr<ID3D11ShaderResourceView>& shader_resource_view) const;
+
+    template<typename T>
+    void update_constant_buffer(T* data, ComPtr<ID3D11Buffer>& out_constant_buffer) const
+    {
+      D3D11_MAPPED_SUBRESOURCE mapped_subresource_data;
+      device_context->Map(out_constant_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_subresource_data);
+      *static_cast<T*>(mapped_subresource_data.pData) = *data;
+      device_context->Unmap(out_constant_buffer.Get(), 0);
+    }
+    
     void cleanup_device();
     void cleanup_render_target();
 
+    // TODO make then not static, use the singleton!
     static bool create_index_buffer(const std::vector<fface_data>& in_face_list, ComPtr<ID3D11Buffer>& out_index_buffer);
     static bool create_vertex_buffer(const std::vector<fvertex_data>& in_vertex_list, ComPtr<ID3D11Buffer>& out_vertex_buffer);
 

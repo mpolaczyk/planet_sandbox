@@ -188,6 +188,40 @@ namespace engine
     }
   }
 
+  void fdx11::create_shader_resource_view(uint32_t width, uint32_t height, bool is_hdr, uint32_t bytes_per_row, const void* in_bytes, ComPtr<ID3D11ShaderResourceView>& shader_resource_view) const
+  {
+    D3D11_TEXTURE2D_DESC texture_desc = {};
+    texture_desc.Width = width;
+    texture_desc.Height = height;
+    texture_desc.MipLevels = 1;
+    texture_desc.ArraySize = 1;
+    texture_desc.Format = is_hdr ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
+    texture_desc.SampleDesc.Count = 1;
+    texture_desc.Usage = D3D11_USAGE_IMMUTABLE;
+    texture_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+    D3D11_SUBRESOURCE_DATA texture_subresource_data = {};
+    texture_subresource_data.SysMemPitch = bytes_per_row;
+    texture_subresource_data.pSysMem = in_bytes;
+
+    ComPtr<ID3D11Texture2D> texture;
+    if(FAILED(device->CreateTexture2D(&texture_desc, &texture_subresource_data, texture.GetAddressOf())))
+    {
+      throw std::runtime_error("CreateTexture2D texture asset failed.");
+    }
+
+    if(FAILED(device->CreateShaderResourceView(texture.Get(), nullptr, shader_resource_view.GetAddressOf())))
+    {
+      throw std::runtime_error("CreateShaderResourceView texture asset failed.");
+    }
+  }
+
+  //void fdx11::update_constant_buffer(void* data, ComPtr<ID3D11Buffer>& out_constant_buffer) const
+  //{
+  //  
+  //}
+
+
   void fdx11::cleanup_render_target()
   {
     DX_RELEASE(rtv)

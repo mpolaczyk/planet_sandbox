@@ -44,7 +44,7 @@ namespace engine
     
   private:
     ComPtr<ID3D11InputLayout> input_layout;
-    ComPtr<ID3D11ShaderResourceView> texture_srv;
+    ComPtr<ID3D11ShaderResourceView> texture_srv; //
     ComPtr<ID3D11SamplerState> sampler_state;
     ComPtr<ID3D11Buffer> frame_constant_buffer;
     ComPtr<ID3D11Buffer> object_constant_buffer;
