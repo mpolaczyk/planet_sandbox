@@ -68,10 +68,6 @@ namespace engine
     // Initialize Direct3D
     fdx11& dx = fdx11::instance();
     dx.create_device();
-    //{ // TODO rethrow
-    //  dx.cleanup_device();
-    //  ::UnregisterClass(wc.lpszClassName, wc.hInstance);
-    //}
     dx.create_debug_layer();
     dx.create_swap_chain(hwnd);
     dx.create_render_target();

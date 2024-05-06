@@ -117,6 +117,77 @@ namespace engine
     }
   }
 
+  void fdx11::create_input_layout(const D3D11_INPUT_ELEMENT_DESC* input_element_desc, uint32_t input_element_desc_size, ComPtr<ID3D10Blob>& shader_blob, ComPtr<ID3D11InputLayout>& input_layout) const
+  {
+    if(FAILED(device->CreateInputLayout(input_element_desc, input_element_desc_size, shader_blob->GetBufferPointer(), shader_blob->GetBufferSize(), input_layout.GetAddressOf())))
+    {
+      throw std::runtime_error("CreateInputLayout failed.");
+    }
+  }
+  
+  void fdx11::create_sampler_state(ComPtr<ID3D11SamplerState>& out_sampler_state) const
+  {
+    D3D11_SAMPLER_DESC desc = {};
+    desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+    desc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+    desc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+    desc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+    desc.BorderColor[0] = 1.0f;
+    desc.BorderColor[1] = 1.0f;
+    desc.BorderColor[2] = 1.0f;
+    desc.BorderColor[3] = 1.0f;
+    desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    if(FAILED(device->CreateSamplerState(&desc, &out_sampler_state)))
+    {
+      throw std::runtime_error("CreateSamplerState failed.");
+    }
+  }
+
+  void fdx11::create_constant_buffer(uint32_t size, ComPtr<ID3D11Buffer>& out_constant_buffer) const
+  {
+    D3D11_BUFFER_DESC desc = {};
+    desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    desc.Usage = D3D11_USAGE_DYNAMIC;
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    desc.ByteWidth = size;
+    if(FAILED(device->CreateBuffer(&desc, nullptr, &out_constant_buffer)))
+    {
+      throw std::runtime_error("CreateBuffer failed.");
+    }
+  }
+
+  void fdx11::create_rasterizer_state(ComPtr<ID3D11RasterizerState>& out_rasterizer_state) const
+  {
+    D3D11_RASTERIZER_DESC desc = {};
+    desc.AntialiasedLineEnable = FALSE;
+    desc.CullMode = D3D11_CULL_BACK;
+    desc.DepthBias = 0;
+    desc.DepthBiasClamp = 0.0f;
+    desc.DepthClipEnable = TRUE;
+    desc.FillMode = D3D11_FILL_SOLID;
+    desc.FrontCounterClockwise = FALSE;
+    desc.MultisampleEnable = FALSE;
+    desc.ScissorEnable = FALSE;
+    desc.SlopeScaledDepthBias = 0.0f;
+    if(FAILED(device->CreateRasterizerState(&desc, &out_rasterizer_state)))
+    {
+      throw std::runtime_error("CreateRasterizerState failed.");
+    }
+  }
+  
+  void fdx11::create_depth_stencil_state(ComPtr<ID3D11DepthStencilState>& out_depth_stencil_state) const
+  {
+    D3D11_DEPTH_STENCIL_DESC desc = {};
+    desc.DepthEnable = TRUE;
+    desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    desc.DepthFunc = D3D11_COMPARISON_LESS;
+    desc.StencilEnable = FALSE;
+    if(FAILED(device->CreateDepthStencilState(&desc, &out_depth_stencil_state)))
+    {
+      throw std::runtime_error("CreateDepthStencilState failed.");
+    }
+  }
+
   void fdx11::cleanup_render_target()
   {
     DX_RELEASE(rtv)

@@ -36,10 +36,8 @@ namespace engine
         {
             throw std::runtime_error("Failed to load default material");
         }
-        
-        auto device = fdx11::instance().device;
 
-        // Input layout
+        auto dx = fdx11::instance();
         {
             D3D11_INPUT_ELEMENT_DESC input_element_desc[] =
             {
@@ -50,83 +48,14 @@ namespace engine
                 {"BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0},
                 {"TEXCOORD",  0, DXGI_FORMAT_R32G32_FLOAT,    0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0}
             };
-            const auto blob = vertex_shader_asset.get()->shader_blob;
-            if(FAILED(device->CreateInputLayout(input_element_desc, ARRAYSIZE(input_element_desc), blob->GetBufferPointer(), blob->GetBufferSize(), &input_layout)))
-            {
-                throw std::runtime_error("CreateInputLayout failed.");
-            }
+            auto blob = vertex_shader_asset.get()->shader_blob;
+            dx.create_input_layout(input_element_desc, ARRAYSIZE(input_element_desc), blob, input_layout);
         }
-
-        // Sampler state
-        {
-            D3D11_SAMPLER_DESC desc = {};
-            desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-            desc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-            desc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-            desc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-            desc.BorderColor[0] = 1.0f;
-            desc.BorderColor[1] = 1.0f;
-            desc.BorderColor[2] = 1.0f;
-            desc.BorderColor[3] = 1.0f;
-            desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-
-            if(FAILED(device->CreateSamplerState(&desc, &sampler_state)))
-            {
-                throw std::runtime_error("CreateSamplerState failed.");
-            }
-        }
-
-        // Constant buffers
-        {
-            D3D11_BUFFER_DESC desc = {};
-            desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-            desc.Usage = D3D11_USAGE_DYNAMIC;
-            desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-            desc.ByteWidth = sizeof(fobject_data);
-            if(FAILED(device->CreateBuffer(&desc, nullptr, &object_constant_buffer)))
-            {
-                throw std::runtime_error("CreateBuffer object constant buffer failed.");
-            }
-
-            desc.ByteWidth = sizeof(fframe_data);
-            if(FAILED(device->CreateBuffer(&desc, nullptr, &frame_constant_buffer)))
-            {
-                throw std::runtime_error("CreateBuffer frame constant buffer failed.");
-            }
-        }
-
-        // Rasterizer state
-        {
-            D3D11_RASTERIZER_DESC desc = {};
-            desc.AntialiasedLineEnable = FALSE;
-            desc.CullMode = D3D11_CULL_BACK;
-            desc.DepthBias = 0;
-            desc.DepthBiasClamp = 0.0f;
-            desc.DepthClipEnable = TRUE;
-            desc.FillMode = D3D11_FILL_SOLID;
-            desc.FrontCounterClockwise = FALSE;
-            desc.MultisampleEnable = FALSE;
-            desc.ScissorEnable = FALSE;
-            desc.SlopeScaledDepthBias = 0.0f;
-            if(FAILED(device->CreateRasterizerState(&desc, &rasterizer_state)))
-            {
-                throw std::runtime_error("CreateRasterizerState failed.");
-            }
-        }
-
-        // Depth stencil state
-        {
-            D3D11_DEPTH_STENCIL_DESC desc = {};
-            desc.DepthEnable = TRUE;
-            desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-            desc.DepthFunc = D3D11_COMPARISON_LESS;
-            desc.StencilEnable = FALSE;
-            if(FAILED(device->CreateDepthStencilState(&desc, &depth_stencil_state)))
-            {
-                throw std::runtime_error("CreateDepthStencilState failed.");
-            }
-        }
+        dx.create_sampler_state(sampler_state);
+        dx.create_constant_buffer(sizeof(fobject_data), object_constant_buffer);
+        dx.create_constant_buffer(sizeof(fframe_data), frame_constant_buffer);
+        dx.create_rasterizer_state(rasterizer_state);
+        dx.create_depth_stencil_state(depth_stencil_state);
     }
 
     void rgpu::render_frame_impl()
