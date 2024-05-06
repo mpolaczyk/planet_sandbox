@@ -56,7 +56,6 @@ namespace engine
     j["origin"] = fpersistence::serialize(object.origin);
     j["scale"] = fpersistence::serialize(object.scale);
     j["rotation"] = fpersistence::serialize(object.rotation);
-    j["material_asset"] = fpersistence::serialize(object.material_asset_ptr);
     j["custom_display_name"] = object.get_display_name();
   }
   void vserialize_object::visit(hscene& object) const
@@ -79,6 +78,7 @@ namespace engine
   {
     object.hhittable_base::accept(vserialize_object(j));
     j["mesh_asset"] = fpersistence::serialize(object.mesh_asset_ptr);
+    j["material_asset"] = fpersistence::serialize(object.material_asset_ptr);
   }
   void vserialize_object::visit(hsphere& object) const
   {
@@ -132,8 +132,6 @@ namespace engine
     if (TRY_PARSE(nlohmann::json, j, "scale", jscale)) { fpersistence::deserialize(jscale, object.scale); }
     nlohmann::json jrotation;
     if (TRY_PARSE(nlohmann::json, j, "rotation", jrotation)) { fpersistence::deserialize(jrotation, object.rotation); }
-    nlohmann::json jmaterial;
-    if (TRY_PARSE(nlohmann::json, j, "material_asset", jmaterial)) { fpersistence::deserialize(jmaterial, object.material_asset_ptr); }
 
     std::string name;
     if (TRY_PARSE(std::string, j, "custom_display_name", name)) { object.set_display_name(name); }
@@ -176,6 +174,8 @@ namespace engine
     object.hhittable_base::accept(vdeserialize_object(j));
     nlohmann::json jmesh;
     if (TRY_PARSE(nlohmann::json, j, "mesh_asset", jmesh)) { fpersistence::deserialize(jmesh, object.mesh_asset_ptr); }
+    nlohmann::json jmaterial;
+    if (TRY_PARSE(nlohmann::json, j, "material_asset", jmaterial)) { fpersistence::deserialize(jmaterial, object.material_asset_ptr); }
   }
   void vdeserialize_object::visit(hsphere& object) const
   {

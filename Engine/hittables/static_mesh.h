@@ -3,9 +3,11 @@
 #include <string>
 
 #include "hittables.h"
-#include "math/vec3.h"
+
 #include "asset/soft_asset_ptr.h"
+
 #include "assets/mesh.h"
+#include "assets/material.h"
 
 namespace engine
 {
@@ -20,5 +22,6 @@ namespace engine
 
     // Persistent state
     fsoft_asset_ptr<astatic_mesh> mesh_asset_ptr;
+    fsoft_asset_ptr<amaterial> material_asset_ptr;
   };
 }

@@ -17,12 +17,13 @@ namespace engine
 
   inline uint32_t hstatic_mesh::get_hash() const
   {
-    return fhash::combine(hhittable_base::get_hash(), fhash::get(material_asset_ptr.get_name().c_str()));
+    return fhash::combine(hhittable_base::get_hash(), fhash::get(material_asset_ptr.get_name().c_str()), fhash::get(mesh_asset_ptr.get_name().c_str()));
   }
 
   void hstatic_mesh::load_resources()
   {
     hhittable_base::load_resources();
     mesh_asset_ptr.get();
+    material_asset_ptr.get();
   }
 }

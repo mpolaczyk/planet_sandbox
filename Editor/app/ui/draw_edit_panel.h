@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include "ui.h"
 #include "object/object_visitor.h"
 
 namespace engine
@@ -24,10 +23,6 @@ namespace editor
     virtual void visit(hstatic_mesh& object) const override;
     virtual void visit(hsphere& object) const override;
     virtual void visit(hlight& object) const override;
-        
     virtual void visit(amaterial& object) const override;
-
-  private:
-    fselection_combo_model<amaterial> m_model;  // Used by hittable
   };
 }

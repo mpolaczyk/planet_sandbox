@@ -26,7 +26,7 @@ namespace editor
     ImGui::Text("Renderer %.3f ms/frame", state.render_delta_time_ms);
     draw_hotkeys_panel(state);
     draw_materials_panel(model.rp_model, state);
-    draw_managed_objects_panel();
+    draw_object_registry_panel();
     ImGui::End();
   }
   void draw_hotkeys_panel(fapp_instance& state)
@@ -59,10 +59,10 @@ namespace editor
       const_cast<amaterial*>(model.m_model.selected_object)->accept(vdraw_edit_panel());
     }
   }
-  void draw_managed_objects_panel()
+  void draw_object_registry_panel()
   {
     ImGui::Separator();
-    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MANAGED OBJECTS");
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "OBJECT REGISTRY");
     ImGui::Separator();
 
     const std::vector<oobject*>& objects = REG.get_all();
@@ -73,11 +73,9 @@ namespace editor
       for (int n = 0; n < num_objects; n++)
       {
         std::ostringstream oss;
-        oss << "[" << objects[n]->get_runtime_id() << "] " << objects[n]->get_display_name() << " (" << objects[n]->get_class()->get_class_name() << ")";
-        if (ImGui::Selectable(oss.str().c_str()))
-        {
-
-        }
+        const oobject* obj = objects[n];
+        oss << obj->get_runtime_id() << ":" << obj->get_class()->get_class_name() << "      " << obj->get_display_name();
+        if (ImGui::Selectable(oss.str().c_str())) { }
       }
       ImGui::EndListBox();
     }
@@ -94,7 +92,7 @@ namespace editor
     draw_renderer_panel(model.rp_model, state);
     draw_camera_panel(state);
     draw_scene_panel(state);
-    draw_objects_panel(model.op_model, state);
+    draw_scene_objects_panel(model.op_model, state);
     ImGui::End();
   }
   void draw_renderer_panel(frenderer_panel_model& model, fapp_instance& state)
@@ -167,10 +165,10 @@ namespace editor
     ImGui::ColorEdit4("Clear", temp_arr1, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
     temp1 = { temp_arr1[0], temp_arr1[1], temp_arr1[2], temp_arr1[3] };
   }
-  void draw_objects_panel(fobjects_panel_model& model, fapp_instance& state)
+  void draw_scene_objects_panel(fobjects_panel_model& model, fapp_instance& state)
   {
     ImGui::Separator();
-    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "OBJECTS");
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SCENE OBJECTS");
     ImGui::Separator();
 
     draw_new_object_panel(model.nop_model, state);
@@ -213,21 +211,6 @@ namespace editor
       state.selected_object = selected_obj;
 
       selected_obj->accept(vdraw_edit_panel());
-
-      // TODO - This should be in vdraw_edit_panel::visit(class hhittable_base& object), but I can't pass the model!
-      {
-        model.m_model.objects = REG.get_all_by_type<const amaterial>();
-        fui_helper::draw_selection_combo<amaterial>(model.m_model, "Material",
-          [=](const amaterial* obj) -> bool { return true; },
-          selected_obj->material_asset_ptr.get());
-    
-        if (model.m_model.selected_object != nullptr)
-        {
-          std::string selected_name = model.m_model.selected_object->file_name;
-          selected_obj->material_asset_ptr.set_name(selected_name);
-        }
-        ImGui::Separator();
-      }
     }
   }
 

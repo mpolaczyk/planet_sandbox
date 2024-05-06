@@ -4,6 +4,7 @@
 
 #include "draw_edit_panel.h"
 
+#include "ui_helper.h"
 #include "hittables/hittables.h"
 #include "hittables/light.h"
 #include "hittables/sphere.h"
@@ -27,11 +28,26 @@ namespace editor
   void vdraw_edit_panel::visit(hstatic_mesh& object) const 
   {
     visit_hhittable_base(object);
+
     {
-      std::string mesh_asset = object.mesh_asset_ptr.get_name();
-      if (fui_helper::input_text("Mesh asset", mesh_asset))
+      fselection_combo_model<astatic_mesh> model;
+      model.objects = REG.get_all_by_type<const astatic_mesh>();
+      fui_helper::draw_selection_combo<astatic_mesh>(model, "Mesh",[=](const astatic_mesh* obj) -> bool { return true; }, object.mesh_asset_ptr.get());
+    
+      if (model.selected_object != nullptr)
       {
-        object.mesh_asset_ptr.set_name(mesh_asset);
+        object.mesh_asset_ptr.set_name(model.selected_object->file_name);
+      }
+    }
+
+    {
+      fselection_combo_model<amaterial> model;
+      model.objects = REG.get_all_by_type<const amaterial>();
+      fui_helper::draw_selection_combo<amaterial>(model, "Material",[=](const amaterial* obj) -> bool { return true; }, object.material_asset_ptr.get());
+    
+      if (model.selected_object != nullptr)
+      {
+        object.material_asset_ptr.set_name(model.selected_object->file_name);
       }
     }
   }

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <functional>
-
 #include "math/camera.h"
 #include "renderer/renderer_base.h"
 #include "ui/ui.h"
@@ -68,14 +66,14 @@ namespace editor
   void draw_editor_window(feditor_window_model& model, fapp_instance& state);
   void draw_hotkeys_panel(fapp_instance& state);
   void draw_materials_panel(fmaterials_panel_model& model, fapp_instance& state);
-  void draw_managed_objects_panel();
+  void draw_object_registry_panel();
 
   // Scene window
   void draw_scene_window(fscene_window_model& model, fapp_instance& state);
   void draw_renderer_panel(frenderer_panel_model& model, fapp_instance& state);
   void draw_camera_panel(fapp_instance& state);
   void draw_scene_panel(fapp_instance& state);
-  void draw_objects_panel(fobjects_panel_model& model, fapp_instance& state);
+  void draw_scene_objects_panel(fobjects_panel_model& model, fapp_instance& state);
 
   // Output window
   void draw_output_window(foutput_window_model& model, fapp_instance& state);
