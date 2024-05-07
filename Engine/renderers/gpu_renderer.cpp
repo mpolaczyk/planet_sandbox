@@ -168,7 +168,10 @@ namespace engine
             if (sma == nullptr) { continue; }
             const fstatic_mesh_render_state& smrs = sma->render_state;
             const amaterial* ma = sm->material_asset_ptr.get();
-            if (ma == nullptr) { continue; }
+            if (ma == nullptr)
+            {
+                ma = default_material.get();
+            }
             const atexture* ta = ma->texture_asset_ptr.get();
             
             // Update per-object constant buffer

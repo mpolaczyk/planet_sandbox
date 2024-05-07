@@ -45,7 +45,7 @@ namespace engine
         XMFLOAT4 color              { 0.0f, 0.0f, 0.0f, 1.0f };   // 16
         //
         float spot_angle            { XM_PIDIV2 };                // 4 
-        float constant_attenuation  { 0.0f };                     // 4 
+        float constant_attenuation  { 1.0f };                     // 4 
         float linear_attenuation    { 0.0f };                     // 4 
         float quadratic_attenuation { 0.0f };                     // 4
         //
