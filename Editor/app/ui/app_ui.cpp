@@ -13,6 +13,7 @@
 #include "hittables/hittables.h"
 #include "hittables/static_mesh.h"
 #include "hittables/scene.h"
+#include "resources/ffbx.h"
 
 namespace editor
 {
@@ -88,6 +89,10 @@ namespace editor
     {
       state.save_scene_state();
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SAVED!");
+    }
+    if (ImGui::MenuItem("LOAD FROM FBX"))
+    {
+      engine::ffbx::load_fbx(state.scene_root);
     }
     draw_renderer_panel(model.rp_model, state);
     draw_camera_panel(state);

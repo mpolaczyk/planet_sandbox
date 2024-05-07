@@ -158,9 +158,12 @@ copy $(ProjectDir)third_party\assimp\lib\x64\assimp-vc143-mt.dll $(SolutionDir)$
     <ClInclude Include="profile\stats.h" />
     <ClInclude Include="math\vertex_data.h" />
     <ClInclude Include="math\vec3.h" />
+    <ClInclude Include="resources\ffbx.h" />
     <ClInclude Include="resources\resources_io.h" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json_fwd.hpp" />
+    <ClInclude Include="third_party\libdeflate.h" />
+    <ClInclude Include="third_party\ofbx.h" />
     <ClInclude Include="third_party\stb_image.h" />
     <ClInclude Include="third_party\tiny_obj_loader.h" />
     <ClInclude Include="third_party\WaveFrontReader.h" />
@@ -211,7 +214,10 @@ copy $(ProjectDir)third_party\assimp\lib\x64\assimp-vc143-mt.dll $(SolutionDir)$
     <ClCompile Include="persistence\persistence_helper_inst.cpp" />
     <ClCompile Include="profile\benchmark.cpp" />
     <ClCompile Include="profile\stats.cpp" />
+    <ClCompile Include="resources\ffbx.cpp" />
     <ClCompile Include="resources\resources_io.cpp" />
+    <ClCompile Include="third_party\libdeflate.c" />
+    <ClCompile Include="third_party\ofbx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

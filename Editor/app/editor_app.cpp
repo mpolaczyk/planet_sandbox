@@ -15,6 +15,7 @@
 #include "hittables/scene.h"
 #include "renderer/dx11_lib.h"
 #include "renderer/renderer_base.h"
+#include "resources/ffbx.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
  
@@ -57,12 +58,13 @@ namespace editor
   
     // Load persistent state
     app_state.load_window_state();
+    
     app_state.load_assets();
     app_state.load_scene_state();
     app_state.scene_root->load_resources();
     app_state.renderer = REG.spawn_from_class<rrenderer_base>(app_state.scene_root->renderer_config.type);
     ::SetWindowPos(hwnd, NULL, app_state.window_conf.x, app_state.window_conf.y, app_state.window_conf.w, app_state.window_conf.h, NULL);
-  
+    
     LOG_INFO("Loading done, starting the main loop");
   }
 
