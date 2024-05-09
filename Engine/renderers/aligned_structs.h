@@ -15,17 +15,17 @@ namespace engine
     
     ALIGNED_STRUCT_BEGIN(fmaterial_properties)
     {
-        XMFLOAT4 emissive;        // 16
+        XMFLOAT4 emissive         { 0.0f, 0.0f, 0.0f, 1.0f }; // 16
         //
-        XMFLOAT4 ambient;         // 16
+        XMFLOAT4 ambient          { 0.0f, 0.0f, 0.0f, 1.0f }; // 16
         //
-        XMFLOAT4 diffuse;         // 16
+        XMFLOAT4 diffuse          { 0.0f, 0.0f, 0.0f, 1.0f }; // 16
         //
-        XMFLOAT4 specular;        // 16
+        XMFLOAT4 specular         { 0.0f, 0.0f, 0.0f, 1.0f }; // 16
         //
-        float specular_power;     // 4  
-        int use_texture;          // 4  
-        float padding[2];         // 8
+        float specular_power      { 1.0f };                   // 4  
+        int use_texture           { false };                  // 4  
+        float padding[2];                                     // 8
     };
     ALIGNED_STRUCT_END(fmaterial_properties)
   

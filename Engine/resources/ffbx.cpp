@@ -78,6 +78,22 @@ namespace engine
 		fclose(fp);
 		return true;
 	}
+
+	void ffbx::import_material_from_blender_4_1_principled_brdf(const ofbx::Material* material, fmaterial_properties& out_material_properties)
+    {
+    	// Base Color on the Principled BRDF node is saved in FBX as Specular
+    	// Use it as Specular and Diffuse here
+    	
+    	//ofbx::Color emissive = material->getEmissiveColor();
+    	//ofbx::Color diffuse = material->getDiffuseColor();	
+    	//ofbx::Color ambient = material->getAmbientColor();
+    	ofbx::Color specular = material->getSpecularColor();
+
+    	//out_material_properties.emissive = { emissive.r, emissive.g, emissive.b, 1.0f };
+    	out_material_properties.diffuse = { specular.r, specular.g, specular.b, 1.0f };
+    	//out_material_properties.ambient = { ambient.r, ambient.g, ambient.b, 1.0f };
+    	out_material_properties.specular = { specular.r, specular.g, specular.b, 1.0f };
+    }
 	
     void ffbx::load_fbx(hscene* scene_object)
     {
@@ -107,50 +123,69 @@ namespace engine
     	
         ofbx::IScene*  g_scene = ofbx::load((ofbx::u8*)content, file_size, (ofbx::u16)flags);
 
+    	// a registry of already created asset resources
+    	std::vector<std::string> g_material_assets;
+    	
         for(int i = 0; i < g_scene->getMeshCount(); i++)
         {
+        	// Iterate over scene objects, not geometry assets
+        	// FBX constains one geometry object per mesh, even if they are the same meshes
             const ofbx::Mesh* mesh = g_scene->getMesh(i);
-
-        	// Export obj file
-        	std::ostringstream mesh_obj_file;
-	        {
-		        std::ostringstream mesh_obj_file_path;
-            	mesh_obj_file_path << meshes_dir << mesh->name << ".obj";
-            	mesh_obj_file << mesh->name << ".obj";
-            	save_as_obj(*mesh, mesh_obj_file_path.str().c_str());
-	        }
-        	
-        	// Saving mesh asset JSON TODO move the astatic_mesh::save()
+        	        	
+        	// Get static mesh, export object file and save json
+        	// Mesh assset object will be available in the object registry at the end
 	        {
             	astatic_mesh* mesh_object = astatic_mesh::spawn();
-            	mesh_object->obj_file_name = mesh_obj_file.str();
             	mesh_object->file_name = mesh->name;
-            	nlohmann::json j;
-            	mesh_object->accept(vserialize_object(j));
 
-            	std::ostringstream oss;
-            	oss << mesh_object->file_name << ".json";
-            	std::ofstream o(fio::get_mesh_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
-            	std::string str = j.dump(2);
-            	if (o.is_open())
-            	{
-            		o.write(str.data(), str.length());
-            	}
-            	o.close();
+            	// Export obj file
+            	std::ostringstream mesh_obj_file;
+	            {
+            		std::ostringstream mesh_obj_file_path;
+            		mesh_obj_file_path << meshes_dir << mesh->name << ".obj";
+            		mesh_obj_file << mesh->name << ".obj";
+            		save_as_obj(*mesh, mesh_obj_file_path.str().c_str());
+	            }
+            	mesh_object->obj_file_name = mesh_obj_file.str();
             	
+            	astatic_mesh::save(mesh_object);
             	astatic_mesh::load(mesh_object, mesh->name);
 	        }
 
-        	// Spawning the scene
+        	// Get all materials in a mesh and save json
+        	// Material object will be available in the object registry at the end
+            {
+            	for(int y = 0; y < mesh->getMaterialCount(); y++)
+            	{
+					const ofbx::Material* material = mesh->getMaterial(y);
+            		if(std::find(g_material_assets.begin(), g_material_assets.end(), material->name) != g_material_assets.end())
+            		{
+            			continue;
+            		}
+            		g_material_assets.push_back(material->name);
+            		
+            		amaterial* material_object = amaterial::spawn();
+            		material_object->file_name = material->name;
+
+            		import_material_from_blender_4_1_principled_brdf(material, material_object->properties);
+            		
+            		material_object->properties.use_texture = false;
+            		
+            		amaterial::save(material_object);
+            		amaterial::load(material_object, material->name);
+            	}
+            }
+
+        	// Scene object - spawn it
             {
             	float scale = 0.01f;
             	float flip_z = -1;
             	hstatic_mesh* object = hstatic_mesh::spawn();
-            	std::ostringstream mesh_object_name;
-            	mesh_object_name << mesh->name << i;
-            	object->set_display_name(mesh_object_name.str());
+            	std::ostringstream display_name;
+            	display_name << mesh->name << i;
+            	object->set_display_name(display_name.str());
             	object->mesh_asset_ptr.set_name(mesh->name);
-            	object->material_asset_ptr.set_name("default");
+            	object->material_asset_ptr.set_name(mesh->getMaterial(0)->name);
             	object->origin = fvec3(mesh->getLocalTranslation().x * scale, mesh->getLocalTranslation().y * scale, flip_z * mesh->getLocalTranslation().z* scale);
             	object->rotation = fvec3(mesh->getLocalRotation().x, mesh->getLocalRotation().y, mesh->getLocalRotation().z);
             	object->scale = fvec3(mesh->getLocalScaling().x* scale, mesh->getLocalScaling().y* scale, mesh->getLocalScaling().z* scale);

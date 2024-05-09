@@ -46,4 +46,22 @@ namespace engine
     }
     return true;
   }
+  
+  void astatic_mesh::save(astatic_mesh* object)
+  {
+    assert(object != nullptr);
+
+    nlohmann::json j;
+    object->accept(vserialize_object(j));
+
+    std::ostringstream oss;
+    oss << object->file_name << ".json";
+    std::ofstream o(fio::get_mesh_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
+    std::string str = j.dump(2);
+    if (o.is_open())
+    {
+      o.write(str.data(), str.length());
+    }
+    o.close();
+  }
 }
