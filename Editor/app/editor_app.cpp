@@ -15,7 +15,6 @@
 #include "hittables/scene.h"
 #include "renderer/dx11_lib.h"
 #include "renderer/renderer_base.h"
-#include "resources/ffbx.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
  

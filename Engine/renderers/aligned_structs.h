@@ -3,7 +3,7 @@
 #include <DirectXMath.h>
 #include "core/core.h"
 
-#define MAX_MATERIALS 8
+#define MAX_MATERIALS 256
 #define MAX_LIGHTS 8
 
 #define ALIGNED_STRUCT_BEGIN(NAME) struct alignas(16) ENGINE_API NAME

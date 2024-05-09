@@ -121,7 +121,7 @@ namespace engine
 
     	LOG_ERROR("Opening fbx: {0}", fbx_file.str());
     	
-        ofbx::IScene*  g_scene = ofbx::load((ofbx::u8*)content, file_size, (ofbx::u16)flags);
+        ofbx::IScene* g_scene = ofbx::load((ofbx::u8*)content, file_size, (ofbx::u16)flags);
 
     	// a registry of already created asset resources
     	std::vector<std::string> g_material_assets;
@@ -185,7 +185,10 @@ namespace engine
             	display_name << mesh->name << i;
             	object->set_display_name(display_name.str());
             	object->mesh_asset_ptr.set_name(mesh->name);
-            	object->material_asset_ptr.set_name(mesh->getMaterial(0)->name);
+            	if(mesh->getMaterialCount() > 0)
+            	{
+            		object->material_asset_ptr.set_name(mesh->getMaterial(0)->name);
+            	}
             	object->origin = fvec3(mesh->getLocalTranslation().x * scale, mesh->getLocalTranslation().y * scale, flip_z * mesh->getLocalTranslation().z* scale);
             	object->rotation = fvec3(mesh->getLocalRotation().x, mesh->getLocalRotation().y, mesh->getLocalRotation().z);
             	object->scale = fvec3(mesh->getLocalScaling().x* scale, mesh->getLocalScaling().y* scale, mesh->getLocalScaling().z* scale);
