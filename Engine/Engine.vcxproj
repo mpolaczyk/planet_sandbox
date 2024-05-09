@@ -69,11 +69,11 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;$(ProjectDir)third_party\assimp\lib\x64\assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;$(ProjectDir)third_party\assimp\lib\Debug\assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)$(Platform)\$(Configuration)\WinPixEventRuntime.dll
-copy $(ProjectDir)third_party\assimp\lib\x64\assimp-vc143-mt.dll $(SolutionDir)$(Platform)\$(Configuration)\assimp-vc143-mt.dll</Command>
+copy $(ProjectDir)third_party\assimp\lib\Debug\assimp-vc143-mtd.dll $(SolutionDir)$(Platform)\$(Configuration)\assimp-vc143-mtd.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -97,11 +97,11 @@ copy $(ProjectDir)third_party\assimp\lib\x64\assimp-vc143-mt.dll $(SolutionDir)$
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;$(ProjectDir)third_party\assimp\lib\x64\assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;$(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.dll $(SolutionDir)$(Platform)\$(Configuration)\WinPixEventRuntime.dll
-copy $(ProjectDir)third_party\assimp\lib\x64\assimp-vc143-mt.dll $(SolutionDir)$(Platform)\$(Configuration)\assimp-vc143-mt.dll</Command>
+copy $(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.dll $(SolutionDir)$(Platform)\$(Configuration)\assimp-vc143-mt.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
