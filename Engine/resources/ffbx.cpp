@@ -7,21 +7,106 @@
 
 #include "engine/io.h"
 #include "engine/log.h"
+#include "engine/tools.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
 #include "nlohmann/json.hpp"
 
-#include "nlohmann/json_fwd.hpp"
-#include "persistence/object_persistence.h"
+#include "assimp/DefaultLogger.hpp"
+#include "assimp/Importer.hpp"
+#include "assimp/Exporter.hpp"
+#include "assimp/LogStream.hpp"
+#include "assimp/postprocess.h"
+#include "assimp/scene.h"
 
 #include "third_party/ofbx.h"
 
+/*
+ * Summary after 3 evenings of struggle with FBX importing - Hacky code here!
+ * 
+ * I checked Blender 4.1, Unity 2022.3.27f1 and Unreal Engine 5.3
+ *
+ * CONCLUSION:
+ *  For Unreal and Unity:
+ *  Assimp seems to be good for now. To improve, we need to merge both:
+ *  Recognize the hierarchical structure with ofbx but save object files with assimp.
+ *  This will be good start to begin with autoloding and auto instancing.
+ *  For now meshes are scene wide merged blobs.
+ *  For Blender:
+ *  Assimp is good.
+ *  
+ * A BIT MORE DETAIL:
+ *  - ofbx
+ *  -- recognizes each primitive as a separate mesh
+ *  -- I think it fails to save obj files properly as assimp loader screams with "T8620: OBJ: vertex index out of range" error and fails to load part of generated obj files.
+ *  - assimp
+ *  -- handles saving obj better, so the scene is complete
+ *  -- fails to read hierarchical structure
+ *  -- all meshes of the same type are merged into one geometry
+ *
+ * A LOT OF DETAIL:
+ *  1. Blender (blender-3.5-splash.fbx), exports flat structure
+ *  - ofbx
+ *  -- simple material data like base color can be imported despire using Principled BRDF node
+ *  -- scene is half broken
+ *  - assimp
+ *  -- recognized each primitive as a separate mesh
+ *  -- saved obj files properly so the scene is complete, relatively low amount of warnings
+ *  -- workable scene for future
+ *    
+ *  2. Unity (unity_terminal_scene.fbx), exports hierarchical structure
+ *  - ofbx
+ *  -- scene is half broken
+ *  - assimp
+ *  -- batches primitives together, but also has child elements, I need to investigate them
+ *  -- "T24456: FBX-DOM: unsupported, newer format version, supported are only FBX 2011, FBX 2012 and FBX 2013, trying to read it nevertheless"
+ *  -- mesh names are not preserved scene0, scene1 etc.
+ *  -- workable scene for future
+ *    
+ *  3. Unreal (SunTemple.fbx), exports ? structure
+ *  - ofbx
+ *  -- scene is rotated so floors are walls
+ *  -- some weird UV issues
+ *  -- scene not workable
+ *  - assimp
+ *  -- unreal uses FBX 2013 format!
+ *  -- all meshes of the same type are merged into one geometry
+ *  -- workable scene for future
+ */
+
 namespace engine
 {
-    bool ffbx::save_as_obj(const ofbx::Mesh& mesh, const char* path)
+	const unsigned int assimp_import_flags = 
+   		aiProcess_CalcTangentSpace |
+   		aiProcess_Triangulate |
+   		aiProcess_SortByPType |
+   		aiProcess_PreTransformVertices |
+   		aiProcess_GenNormals |
+   		aiProcess_GenUVCoords |
+   		aiProcess_OptimizeMeshes |
+   		aiProcess_Debone |
+   		aiProcess_GenBoundingBoxes;
+
+	struct assimp_logger : public Assimp::LogStream
+	{
+		static void initialize()
+		{
+			if(Assimp::DefaultLogger::isNullLogger()) {
+				Assimp::DefaultLogger::create("", Assimp::Logger::VERBOSE);
+				Assimp::DefaultLogger::get()->attachStream(new assimp_logger, Assimp::Logger::Err | Assimp::Logger::Warn);
+			}
+		}
+	
+		void write(const char* message) override
+		{
+			LOG_ERROR("Assimp: {0}", message);
+		}
+	};
+
+	void ffbx::save_as_obj_ofbx(const ofbx::Mesh& mesh, const char* path)
 	{
 		FILE* fp = fopen(path, "wb");
-		if (!fp) return false;
+		if (!fp) return;
 		int indices_offset = 0;
 		int mesh_idx = 0;
     	
@@ -76,7 +161,37 @@ namespace engine
 		}
 		
 		fclose(fp);
-		return true;
+	}
+	
+    void ffbx::save_as_obj_assimp(aiMesh* mesh, aiMaterial* material, const char* path)
+	{
+    	// Build fake scene, attach material to it and save as OBJ
+    	aiScene* obj_scene = new aiScene();
+    	obj_scene->mRootNode = new aiNode();
+    				
+    	obj_scene->mMeshes = new aiMesh*[ 1 ];
+    	obj_scene->mMeshes[ 0 ] = nullptr;
+    	obj_scene->mNumMeshes = 1;
+    	obj_scene->mMeshes[ 0 ] = mesh;
+    				
+    	obj_scene->mMaterials = new aiMaterial * [1];
+    	obj_scene->mMaterials[0] = nullptr;
+    	obj_scene->mNumMaterials = 1;
+    	obj_scene->mMaterials[0] = material;
+    				
+    	obj_scene->mRootNode->mMeshes = new unsigned int[ 1 ];
+    	obj_scene->mRootNode->mMeshes[ 0 ] = 0;
+    	obj_scene->mRootNode->mNumMeshes = 1;
+    				
+    	obj_scene->mMeshes[0]->mMaterialIndex = 0;
+    				
+    	Assimp::Exporter exporter;
+    	assimp_logger::initialize();
+    				
+    	if(exporter.Export(obj_scene, "obj", path) == aiReturn_FAILURE)
+    	{
+    		LOG_ERROR("Failed to export OBJ {0}", path);	
+    	}
 	}
 
 	void ffbx::import_material_from_blender_4_1_principled_brdf(const ofbx::Material* material, fmaterial_properties& out_material_properties)
@@ -84,9 +199,9 @@ namespace engine
     	// Base Color on the Principled BRDF node is saved in FBX as Specular
     	// Use it as Specular and Diffuse here
     	
-    	//ofbx::Color emissive = material->getEmissiveColor();
-    	//ofbx::Color diffuse = material->getDiffuseColor();	
-    	//ofbx::Color ambient = material->getAmbientColor();
+    	ofbx::Color emissive = material->getEmissiveColor();
+    	ofbx::Color diffuse = material->getDiffuseColor();	
+    	ofbx::Color ambient = material->getAmbientColor();
     	ofbx::Color specular = material->getSpecularColor();
 
     	//out_material_properties.emissive = { emissive.r, emissive.g, emissive.b, 1.0f };
@@ -94,16 +209,121 @@ namespace engine
     	//out_material_properties.ambient = { ambient.r, ambient.g, ambient.b, 1.0f };
     	out_material_properties.specular = { specular.r, specular.g, specular.b, 1.0f };
     }
+
+	void ffbx::import_material_from_unity_2022_3_urp(const ofbx::Material* material, fmaterial_properties& out_material_properties)
+    {
+    	// Base Color on the URP is saved in FBX as Diffuse
+    	// Use it as Specular and Diffuse here
+    	
+    	ofbx::Color emissive = material->getEmissiveColor();
+    	ofbx::Color diffuse = material->getDiffuseColor();	
+    	ofbx::Color ambient = material->getAmbientColor();
+    	ofbx::Color specular = material->getSpecularColor();
+
+    	//out_material_properties.emissive = { emissive.r, emissive.g, emissive.b, 1.0f };
+    	out_material_properties.diffuse = { diffuse.r, diffuse.g, diffuse.b, 1.0f };
+    	out_material_properties.ambient = { ambient.r, ambient.g, ambient.b, 1.0f };
+    	out_material_properties.specular = { diffuse.r, diffuse.g, diffuse.b, 1.0f };
+    }
+
+	void print_hierarhy(aiNode* node, int level)
+	{
+    	LOG_INFO("level:{0} children:{1}", level, node->mNumChildren);
+    	for(int i= 0; i < node->mNumChildren; i++)
+    	{
+    		aiNode* c = node->mChildren[i];
+    		LOG_INFO("level:{0} meshes:{1}", c->mName.C_Str(), c->mNumMeshes);
+    		print_hierarhy(c, level+1);
+    	}
+    }
+	void ffbx::load_fbx_assimp(const std::string& file_name, hscene* scene_object)
+    {
+    	std::string content_dir = fio::get_content_dir();
+    	std::string meshes_dir = fio::get_meshes_dir();
+    	std::ostringstream fbx_file;
+    	fbx_file << content_dir << file_name;
+
+    	Assimp::Importer importer;
+    	assimp_logger::initialize();
+
+    	const aiScene* ai_scene = importer.ReadFile(fbx_file.str(), assimp_import_flags);
+		if(!ai_scene)
+		{
+    		LOG_ERROR("Unable to find file {0} in the content directory", file_name);
+    		return;
+		}
+		
+    	// a registry of already created asset resources
+    	std::vector<std::string> g_material_assets;
+
+    	print_hierarhy(ai_scene->mRootNode, 0);
+    	
+    	for(int i = 0; i < ai_scene->mNumMeshes; i++)
+    	{
+    		// Iterate over scene objects, not geometry assets
+    		// FBX constains one geometry object per mesh, even if they are the same meshes
+    		aiMesh* mesh = ai_scene->mMeshes[i];
+    		std::string mesh_name = mesh->mName.C_Str();
+    		ftools::replace(mesh_name, "::", "_");
+    		ftools::replace(mesh_name, "|", "_");
+    		std::ostringstream temp;
+    		temp << mesh_name << i;
+        	mesh_name = temp.str();
+    		
+    		// Get static mesh, export object file and save json
+    		// Mesh assset object will be available in the object registry at the end
+    		{
+    			astatic_mesh* mesh_object = astatic_mesh::spawn();
+    			mesh_object->file_name = mesh_name;
+
+    			// Export obj file
+    			std::ostringstream mesh_obj_file;
+    			{
+    				std::ostringstream mesh_obj_file_path;
+    				mesh_obj_file_path << meshes_dir << mesh_name << ".obj";
+    				mesh_obj_file << mesh_name << ".obj";
+    				
+    				save_as_obj_assimp(mesh, ai_scene->mMaterials[mesh->mMaterialIndex], mesh_obj_file_path.str().c_str());
+    			}
+    			mesh_object->obj_file_name = mesh_obj_file.str();
+            	
+    			astatic_mesh::save(mesh_object);
+    			astatic_mesh::load(mesh_object, mesh_name);
+    		}
+
+    		// Scene object - spawn it
+    		{
+    			float scale = 0.01f;
+    			float flip_z = -1;
+    			hstatic_mesh* object = hstatic_mesh::spawn();
+    			std::ostringstream display_name;
+    			display_name << mesh_name << i;
+    			object->set_display_name(display_name.str());
+    			object->mesh_asset_ptr.set_name(mesh_name);
+    			object->material_asset_ptr.set_name("default");
+    			object->origin = fvec3(0,0,0);
+    			object->rotation = fvec3(0,0,0);
+    			object->scale = fvec3(scale,scale,scale);
+    			object->load_resources();
+            	
+    			scene_object->add(object);
+    		}
+    	}
+    }
 	
-    void ffbx::load_fbx(hscene* scene_object)
+    void ffbx::load_fbx_ofbx(const std::string& file_name, hscene* scene_object)
     {
         std::string content_dir = fio::get_content_dir();
     	std::string meshes_dir = fio::get_meshes_dir();
         std::ostringstream fbx_file;
-        fbx_file << content_dir << "fbx_scene_test.fbx";
+        fbx_file << content_dir << file_name;
         
         FILE* fp = fopen(fbx_file.str().c_str(), "rb");
-        if (!fp) return;
+        if (!fp)
+        {
+	        LOG_ERROR("Unable to find file {0} in the content directory", file_name);
+        	return;
+        }
 
         fseek(fp, 0, SEEK_END);
         long file_size = ftell(fp);
@@ -131,25 +351,28 @@ namespace engine
         	// Iterate over scene objects, not geometry assets
         	// FBX constains one geometry object per mesh, even if they are the same meshes
             const ofbx::Mesh* mesh = g_scene->getMesh(i);
-        	        	
+        	std::string mesh_name = mesh->name;
+        	ftools::replace(mesh_name, "::", "_");
+        	ftools::replace(mesh_name, "|", "_");
+        	
         	// Get static mesh, export object file and save json
         	// Mesh assset object will be available in the object registry at the end
 	        {
             	astatic_mesh* mesh_object = astatic_mesh::spawn();
-            	mesh_object->file_name = mesh->name;
+            	mesh_object->file_name = mesh_name;
 
             	// Export obj file
             	std::ostringstream mesh_obj_file;
 	            {
             		std::ostringstream mesh_obj_file_path;
-            		mesh_obj_file_path << meshes_dir << mesh->name << ".obj";
-            		mesh_obj_file << mesh->name << ".obj";
-            		save_as_obj(*mesh, mesh_obj_file_path.str().c_str());
+            		mesh_obj_file_path << meshes_dir << mesh_name << ".obj";
+            		mesh_obj_file << mesh_name << ".obj";
+            		save_as_obj_ofbx(*mesh, mesh_obj_file_path.str().c_str());
 	            }
             	mesh_object->obj_file_name = mesh_obj_file.str();
             	
             	astatic_mesh::save(mesh_object);
-            	astatic_mesh::load(mesh_object, mesh->name);
+            	astatic_mesh::load(mesh_object, mesh_name);
 	        }
 
         	// Get all materials in a mesh and save json
@@ -158,21 +381,25 @@ namespace engine
             	for(int y = 0; y < mesh->getMaterialCount(); y++)
             	{
 					const ofbx::Material* material = mesh->getMaterial(y);
-            		if(std::find(g_material_assets.begin(), g_material_assets.end(), material->name) != g_material_assets.end())
+            		std::string material_name = material->name;
+            		ftools::replace(mesh_name, "::", "_");
+            		ftools::replace(mesh_name, "|", "_");
+            		
+            		if(std::find(g_material_assets.begin(), g_material_assets.end(), material_name) != g_material_assets.end())
             		{
             			continue;
             		}
-            		g_material_assets.push_back(material->name);
+            		g_material_assets.push_back(material_name);
             		
             		amaterial* material_object = amaterial::spawn();
-            		material_object->file_name = material->name;
+            		material_object->file_name = "default";//material_name;
 
-            		import_material_from_blender_4_1_principled_brdf(material, material_object->properties);
+            		import_material_from_unity_2022_3_urp(material, material_object->properties);
             		
             		material_object->properties.use_texture = false;
             		
             		amaterial::save(material_object);
-            		amaterial::load(material_object, material->name);
+            		amaterial::load(material_object, material_name);
             	}
             }
 
@@ -182,12 +409,16 @@ namespace engine
             	float flip_z = -1;
             	hstatic_mesh* object = hstatic_mesh::spawn();
             	std::ostringstream display_name;
-            	display_name << mesh->name << i;
+            	display_name << mesh_name << i;
             	object->set_display_name(display_name.str());
-            	object->mesh_asset_ptr.set_name(mesh->name);
+            	object->mesh_asset_ptr.set_name(mesh_name);
             	if(mesh->getMaterialCount() > 0)
             	{
-            		object->material_asset_ptr.set_name(mesh->getMaterial(0)->name);
+            		//std::string material_name = mesh->getMaterial(0)->name;
+            		//ftools::replace(mesh_name, "::", "_");
+            		//ftools::replace(mesh_name, "|", "_");
+            		//object->material_asset_ptr.set_name(material_name);
+            		object->material_asset_ptr.set_name("default");
             	}
             	object->origin = fvec3(mesh->getLocalTranslation().x * scale, mesh->getLocalTranslation().y * scale, flip_z * mesh->getLocalTranslation().z* scale);
             	object->rotation = fvec3(mesh->getLocalRotation().x, mesh->getLocalRotation().y, mesh->getLocalRotation().z);

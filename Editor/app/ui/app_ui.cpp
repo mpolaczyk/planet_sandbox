@@ -90,10 +90,15 @@ namespace editor
       state.save_scene_state();
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SAVED!");
     }
+    ImGui::Separator();
+    
     if (ImGui::MenuItem("LOAD FROM FBX"))
     {
-      engine::ffbx::load_fbx(state.scene_root);
+      ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Importing!");
+      engine::ffbx::load_fbx_assimp(model.import_file, state.scene_root);
     }
+    fui_helper::input_text("FBX file", model.import_file);
+    
     draw_renderer_panel(model.rp_model, state);
     draw_camera_panel(state);
     draw_scene_panel(state);

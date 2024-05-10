@@ -130,7 +130,7 @@ namespace engine
     }
     else
     {
-        LOG_WARN("Failed to open scene for: {0}", file_name);
+        LOG_WARN("Failed to open object file: {0}", file_name);
         return false;
     }
     return true;

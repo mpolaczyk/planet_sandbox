@@ -72,6 +72,7 @@ namespace editor
   
   struct fscene_window_model
   {
+    std::string import_file;
     frenderer_panel_model rp_model;
     fobjects_panel_model op_model;
   };

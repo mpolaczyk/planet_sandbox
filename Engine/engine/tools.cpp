@@ -20,4 +20,14 @@ namespace engine
         MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, buffer.get(), bufferSize);
         return std::wstring(buffer.get());
     }
+
+    void ftools::replace(std::string& str, const std::string& from, const std::string& to)
+    {
+        size_t start_pos = str.find(from);
+        while(start_pos != std::string::npos)
+        {
+            start_pos = str.find(from);
+            str.replace(start_pos, from.length(), to);
+        }
+    }
 }

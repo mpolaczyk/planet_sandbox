@@ -57,6 +57,10 @@ namespace engine
     {
       o.write(str.data(), str.length());
     }
+    else
+    {
+      LOG_ERROR("Unable to save file {0}", oss.str());
+    }
     o.close();
   }
 

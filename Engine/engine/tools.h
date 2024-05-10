@@ -10,6 +10,8 @@ namespace engine
     {
         static std::string to_utf8(const std::wstring& wstr);
         static std::wstring to_utf16(const std::string& str);
+
+        static void replace(std::string& str, const std::string& from, const std::string& to);
     };
 }
 
