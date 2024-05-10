@@ -2,21 +2,21 @@
   "scene": {
     "ambient_light_color": {
       "w": 1.0,
-      "x": 0.37745094299316406,
-      "y": 0.37745094299316406,
-      "z": 0.37745094299316406
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
     },
     "camera_config": {
       "aspect_ratio_h": 3.0,
       "aspect_ratio_w": 4.0,
       "field_of_view": 40.0,
       "look_from": {
-        "x": 3.6152262687683105,
-        "y": 3.158705234527588,
-        "z": 3.1266825199127197
+        "x": 3.320591688156128,
+        "y": 2.676692247390747,
+        "z": 2.862135410308838
       },
-      "pitch": 18.11013412475586,
-      "yaw": 227.39871215820313
+      "pitch": 11.137443542480469,
+      "yaw": 227.52529907226563
     },
     "clear_color": {
       "w": 1.0,
@@ -36,9 +36,9 @@
         "properties": {
           "color": {
             "w": 1.0,
-            "x": 0.31372547149658203,
-            "y": 0.31372547149658203,
-            "z": 0.31372547149658203
+            "x": 0.5539215803146362,
+            "y": 0.5539215803146362,
+            "z": 0.5539215803146362
           },
           "constant_attenuation": 0.5899999737739563,
           "direction": {
@@ -58,7 +58,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "sprinkles",
         "material_asset": {
-          "name": "default"
+          "name": "pumpkin"
         },
         "mesh_asset": {
           "name": "Icosphere.0230"
@@ -83,7 +83,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "wall",
         "material_asset": {
-          "name": "white"
+          "name": "wall"
         },
         "mesh_asset": {
           "name": "Cube1"
@@ -108,7 +108,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "floor_down",
         "material_asset": {
-          "name": "default"
+          "name": "heavy_wood"
         },
         "mesh_asset": {
           "name": "Cube2"
@@ -133,7 +133,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "roof",
         "material_asset": {
-          "name": "default"
+          "name": "heavy_wood"
         },
         "mesh_asset": {
           "name": "Cube.0033"
@@ -158,7 +158,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "floor_top",
         "material_asset": {
-          "name": "default"
+          "name": "heavy_wood"
         },
         "mesh_asset": {
           "name": "Cube.0024"
@@ -183,7 +183,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "windows",
         "material_asset": {
-          "name": "default"
+          "name": "door_cross"
         },
         "mesh_asset": {
           "name": "Plane.0335"
@@ -233,7 +233,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "window_frames_door",
         "material_asset": {
-          "name": "default"
+          "name": "door_window_frame"
         },
         "mesh_asset": {
           "name": "Plane.0337"
@@ -258,7 +258,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "door_cross",
         "material_asset": {
-          "name": "default"
+          "name": "door_cross"
         },
         "mesh_asset": {
           "name": "Cube.0048"
@@ -283,7 +283,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "shelve_top",
         "material_asset": {
-          "name": "default"
+          "name": "heavy_wood"
         },
         "mesh_asset": {
           "name": "Cube.0059"
@@ -308,7 +308,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "wall_part",
         "material_asset": {
-          "name": "default"
+          "name": "door_window_frame"
         },
         "mesh_asset": {
           "name": "Cube.06610"
@@ -333,7 +333,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "wall_panel",
         "material_asset": {
-          "name": "default"
+          "name": "mint_frame"
         },
         "mesh_asset": {
           "name": "Cube.00611"
@@ -358,7 +358,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "stool_seat",
         "material_asset": {
-          "name": "default"
+          "name": "stool_plate"
         },
         "mesh_asset": {
           "name": "Circle.06212"
@@ -383,7 +383,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "stool_legs",
         "material_asset": {
-          "name": "default"
+          "name": "chair_leg_white"
         },
         "mesh_asset": {
           "name": "Circle.06213"
@@ -408,7 +408,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "table_legs",
         "material_asset": {
-          "name": "default"
+          "name": "chair_leg_brown"
         },
         "mesh_asset": {
           "name": "Plane.05314"
@@ -433,7 +433,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "boards",
         "material_asset": {
-          "name": "default"
+          "name": "heavy_wood"
         },
         "mesh_asset": {
           "name": "Plane.38115"
@@ -458,7 +458,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "stool_legs2",
         "material_asset": {
-          "name": "default"
+          "name": "chair_leg_brown"
         },
         "mesh_asset": {
           "name": "Circle.04816"
@@ -483,7 +483,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "stool_part",
         "material_asset": {
-          "name": "default"
+          "name": "chair_leg_brown"
         },
         "mesh_asset": {
           "name": "Sphere.01717"
@@ -508,7 +508,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "stool_part2",
         "material_asset": {
-          "name": "default"
+          "name": "chair_leg_brown"
         },
         "mesh_asset": {
           "name": "Circle.04818"
@@ -683,7 +683,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "donut",
         "material_asset": {
-          "name": "default"
+          "name": "croissant"
         },
         "mesh_asset": {
           "name": "Mesh.00325"
@@ -758,7 +758,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "cupcake_paper",
         "material_asset": {
-          "name": "default"
+          "name": "paper"
         },
         "mesh_asset": {
           "name": "Mesh.00828"
@@ -808,7 +808,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "spoon",
         "material_asset": {
-          "name": "default"
+          "name": "wood_orange"
         },
         "mesh_asset": {
           "name": "Mesh.00930"
@@ -1033,7 +1033,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "cupcakes_left_paper",
         "material_asset": {
-          "name": "default"
+          "name": "paper"
         },
         "mesh_asset": {
           "name": "Mesh.07139"
@@ -1058,7 +1058,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "cupcakes_left_paper2",
         "material_asset": {
-          "name": "default"
+          "name": "paper"
         },
         "mesh_asset": {
           "name": "Mesh.03841"
@@ -1108,7 +1108,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "bread",
         "material_asset": {
-          "name": "default"
+          "name": "croissant"
         },
         "mesh_asset": {
           "name": "Cube.03644"
@@ -1133,7 +1133,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "bread2",
         "material_asset": {
-          "name": "default"
+          "name": "croissant"
         },
         "mesh_asset": {
           "name": "Mesh.04245"
@@ -1158,7 +1158,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "bread_napkin",
         "material_asset": {
-          "name": "default"
+          "name": "napkin"
         },
         "mesh_asset": {
           "name": "Mesh.04346"
@@ -1183,7 +1183,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "bread_bowl",
         "material_asset": {
-          "name": "default"
+          "name": "wood_orange"
         },
         "mesh_asset": {
           "name": "Mesh.04347"
@@ -1308,7 +1308,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "spoon_wood",
         "material_asset": {
-          "name": "default"
+          "name": "wood_orange"
         },
         "mesh_asset": {
           "name": "Mesh.04752"
@@ -1358,7 +1358,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "jar_paper_cover",
         "material_asset": {
-          "name": "default"
+          "name": "paper"
         },
         "mesh_asset": {
           "name": "Mesh.07354"
@@ -1383,7 +1383,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "jar",
         "material_asset": {
-          "name": "default"
+          "name": "glass_green"
         },
         "mesh_asset": {
           "name": "Mesh.07355"
@@ -1508,7 +1508,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "cake_plate",
         "material_asset": {
-          "name": "default"
+          "name": "wood_orange"
         },
         "mesh_asset": {
           "name": "Mesh.05060"
@@ -1533,7 +1533,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "fruit_bowl",
         "material_asset": {
-          "name": "default"
+          "name": "wood_orange"
         },
         "mesh_asset": {
           "name": "Mesh.05161"
@@ -1558,7 +1558,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "fruit_bowl_napkin",
         "material_asset": {
-          "name": "default"
+          "name": "napkin"
         },
         "mesh_asset": {
           "name": "Mesh.05162"
@@ -1583,7 +1583,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "knife_pad",
         "material_asset": {
-          "name": "default"
+          "name": "wood_orange"
         },
         "mesh_asset": {
           "name": "Mesh.05263"
@@ -1608,7 +1608,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "cupcake_napkin",
         "material_asset": {
-          "name": "default"
+          "name": "napkin"
         },
         "mesh_asset": {
           "name": "Mesh.05264"
@@ -1633,7 +1633,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "cupcake_apple",
         "material_asset": {
-          "name": "default"
+          "name": "strawberry"
         },
         "mesh_asset": {
           "name": "Mesh.05565"
@@ -1683,7 +1683,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "cupcake_apple_dot",
         "material_asset": {
-          "name": "default"
+          "name": "black"
         },
         "mesh_asset": {
           "name": "Mesh.05567"
@@ -1708,7 +1708,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "croisant",
         "material_asset": {
-          "name": "default"
+          "name": "croissant"
         },
         "mesh_asset": {
           "name": "Mesh.05968"
@@ -1733,7 +1733,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "croisant2",
         "material_asset": {
-          "name": "default"
+          "name": "croissant"
         },
         "mesh_asset": {
           "name": "Mesh.05869"
@@ -1758,7 +1758,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "huge_jar_label",
         "material_asset": {
-          "name": "default"
+          "name": "paper"
         },
         "mesh_asset": {
           "name": "Mesh.09270"
@@ -1808,7 +1808,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "jar2",
         "material_asset": {
-          "name": "default"
+          "name": "creme_frame"
         },
         "mesh_asset": {
           "name": "Mesh.06172"
@@ -1833,7 +1833,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "jar3",
         "material_asset": {
-          "name": "default"
+          "name": "mint_frame"
         },
         "mesh_asset": {
           "name": "Mesh.06273"
@@ -1908,7 +1908,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "many_jars",
         "material_asset": {
-          "name": "default"
+          "name": "glass_green"
         },
         "mesh_asset": {
           "name": "Mesh.11177"
@@ -1933,7 +1933,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "coffe_paper_lid",
         "material_asset": {
-          "name": "default"
+          "name": "paper"
         },
         "mesh_asset": {
           "name": "Circle.00378"
@@ -1958,7 +1958,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "bread_holder",
         "material_asset": {
-          "name": "default"
+          "name": "wood_orange"
         },
         "mesh_asset": {
           "name": "Mesh.06679"
@@ -2283,7 +2283,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "knife_board2",
         "material_asset": {
-          "name": "default"
+          "name": "wood_orange"
         },
         "mesh_asset": {
           "name": "Mesh.14295"
@@ -2658,7 +2658,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "plate2",
         "material_asset": {
-          "name": "default"
+          "name": "wood_orange"
         },
         "mesh_asset": {
           "name": "Mesh.116113"
@@ -2733,7 +2733,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "robot_rotor",
         "material_asset": {
-          "name": "default"
+          "name": "creme_frame"
         },
         "mesh_asset": {
           "name": "Mesh.118116"
@@ -2783,7 +2783,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "wood_hand",
         "material_asset": {
-          "name": "default"
+          "name": "wood_orange"
         },
         "mesh_asset": {
           "name": "Mesh.119119"
@@ -2833,7 +2833,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "top_jar2",
         "material_asset": {
-          "name": "default"
+          "name": "glass_green"
         },
         "mesh_asset": {
           "name": "Cube.075121"
@@ -2858,7 +2858,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "top_jar2_cover",
         "material_asset": {
-          "name": "default"
+          "name": "paper"
         },
         "mesh_asset": {
           "name": "Mesh.127122"
@@ -2883,7 +2883,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "top_book",
         "material_asset": {
-          "name": "default"
+          "name": "mint_frame"
         },
         "mesh_asset": {
           "name": "Mesh.132123"
@@ -2908,7 +2908,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "top_book2",
         "material_asset": {
-          "name": "default"
+          "name": "creme_frame"
         },
         "mesh_asset": {
           "name": "Mesh.134124"
@@ -2933,7 +2933,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "top_book3",
         "material_asset": {
-          "name": "default"
+          "name": "brown_frame"
         },
         "mesh_asset": {
           "name": "Mesh.133125"
@@ -2983,7 +2983,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "top_left_jar",
         "material_asset": {
-          "name": "default"
+          "name": "glass_green"
         },
         "mesh_asset": {
           "name": "Mesh.136127"
@@ -3008,7 +3008,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "wood_cylinder",
         "material_asset": {
-          "name": "default"
+          "name": "wood_orange"
         },
         "mesh_asset": {
           "name": "Mesh.137128"
@@ -3133,7 +3133,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "knife_wood4",
         "material_asset": {
-          "name": "default"
+          "name": "wood_orange"
         },
         "mesh_asset": {
           "name": "Mesh.143133"
@@ -3208,7 +3208,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "laptop_screen",
         "material_asset": {
-          "name": "default"
+          "name": "glass_green"
         },
         "mesh_asset": {
           "name": "Mesh.144136"
@@ -3233,7 +3233,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "wood_spoon",
         "material_asset": {
-          "name": "default"
+          "name": "wood_orange"
         },
         "mesh_asset": {
           "name": "Mesh.145137"
@@ -3283,7 +3283,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "tv",
         "material_asset": {
-          "name": "green"
+          "name": "tv_plastic"
         },
         "mesh_asset": {
           "name": "Mesh.147139"
@@ -3333,7 +3333,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "tv_antena",
         "material_asset": {
-          "name": "default"
+          "name": "wood_orange"
         },
         "mesh_asset": {
           "name": "Mesh.147141"
@@ -3533,7 +3533,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "cat_eye",
         "material_asset": {
-          "name": "default"
+          "name": "black"
         },
         "mesh_asset": {
           "name": "Mesh.159149"
@@ -3558,7 +3558,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "cat_nose",
         "material_asset": {
-          "name": "default"
+          "name": "pumpkin"
         },
         "mesh_asset": {
           "name": "Mesh.159150"
@@ -3633,7 +3633,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "left_pumpkin",
         "material_asset": {
-          "name": "default"
+          "name": "pumpkin"
         },
         "mesh_asset": {
           "name": "Mesh.160153"
@@ -3658,7 +3658,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "left_pumpkin2",
         "material_asset": {
-          "name": "default"
+          "name": "pumpkin"
         },
         "mesh_asset": {
           "name": "Mesh.161154"
@@ -3708,7 +3708,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "up_pumpkin",
         "material_asset": {
-          "name": "default"
+          "name": "pumpkin"
         },
         "mesh_asset": {
           "name": "Mesh.164156"
@@ -3833,7 +3833,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "plants",
         "material_asset": {
-          "name": "default"
+          "name": "wood_orange"
         },
         "mesh_asset": {
           "name": "NurbsPath.011161"
@@ -3883,7 +3883,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "flower_pots",
         "material_asset": {
-          "name": "default"
+          "name": "heavy_wood"
         },
         "mesh_asset": {
           "name": "Cube.051163"
@@ -3908,7 +3908,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "flower_pots2",
         "material_asset": {
-          "name": "default"
+          "name": "heavy_wood"
         },
         "mesh_asset": {
           "name": "Mesh.183164"
@@ -3933,7 +3933,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "flower_pot_ropes",
         "material_asset": {
-          "name": "default"
+          "name": "brown_frame"
         },
         "mesh_asset": {
           "name": "Circle.161165"
@@ -3958,7 +3958,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "frame",
         "material_asset": {
-          "name": "default"
+          "name": "creme_frame"
         },
         "mesh_asset": {
           "name": "Plane.032166"
@@ -3983,7 +3983,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "pictures",
         "material_asset": {
-          "name": "default"
+          "name": "wall"
         },
         "mesh_asset": {
           "name": "Plane.036167"
@@ -4008,7 +4008,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "frame2",
         "material_asset": {
-          "name": "default"
+          "name": "brown_frame"
         },
         "mesh_asset": {
           "name": "Plane.036168"
@@ -4033,7 +4033,7 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "frame3",
         "material_asset": {
-          "name": "default"
+          "name": "mint_frame"
         },
         "mesh_asset": {
           "name": "Plane.030169"
