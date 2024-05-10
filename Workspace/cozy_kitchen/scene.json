@@ -11,12 +11,12 @@
       "aspect_ratio_w": 4.0,
       "field_of_view": 40.0,
       "look_from": {
-        "x": 3.508943796157837,
-        "y": 4.032208442687988,
-        "z": 4.046055793762207
+        "x": 3.6152262687683105,
+        "y": 3.158705234527588,
+        "z": 3.1266825199127197
       },
-      "pitch": 24.08199691772461,
-      "yaw": 222.84652709960938
+      "pitch": 18.11013412475586,
+      "yaw": 227.39871215820313
     },
     "clear_color": {
       "w": 1.0,
@@ -27,7 +27,7 @@
     "objects": [
       {
         "class_name": "hlight",
-        "custom_display_name": "sun",
+        "custom_display_name": "SUN",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -36,9 +36,9 @@
         "properties": {
           "color": {
             "w": 1.0,
-            "x": 0.29901963472366333,
-            "y": 0.29901963472366333,
-            "z": 0.29901963472366333
+            "x": 0.31372547149658203,
+            "y": 0.31372547149658203,
+            "z": 0.31372547149658203
           },
           "constant_attenuation": 0.5899999737739563,
           "direction": {
@@ -55,95 +55,8 @@
         }
       },
       {
-        "class_name": "hlight",
-        "custom_display_name": "zaroweczka centrum",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "properties": {
-          "color": {
-            "w": 1.0,
-            "x": 0.3970588445663452,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "constant_attenuation": 0.23999999463558197,
-          "direction": {
-            "w": 0.0,
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0
-          },
-          "enabled": 0,
-          "light_type": 0,
-          "linear_attenuation": 0.09000000357627869,
-          "quadratic_attenuation": 0.009999999776482582,
-          "spot_angle": 1.5707963705062866
-        }
-      },
-      {
-        "class_name": "hlight",
-        "custom_display_name": "zaroweczka lewo",
-        "origin": {
-          "x": -8.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "properties": {
-          "color": {
-            "w": 1.0,
-            "x": 0.015011191368103027,
-            "y": 0.22058820724487305,
-            "z": 0.002162636024877429
-          },
-          "constant_attenuation": 0.44999998807907104,
-          "direction": {
-            "w": 0.0,
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "enabled": 0,
-          "light_type": 0,
-          "linear_attenuation": 0.03999999910593033,
-          "quadratic_attenuation": 0.0,
-          "spot_angle": 1.5707963705062866
-        }
-      },
-      {
-        "class_name": "hlight",
-        "custom_display_name": "zaroweczka prawo",
-        "origin": {
-          "x": 8.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "properties": {
-          "color": {
-            "w": 1.0,
-            "x": 0.002330827061086893,
-            "y": 0.016247514635324478,
-            "z": 0.4754902124404907
-          },
-          "constant_attenuation": 0.17000000178813934,
-          "direction": {
-            "w": 0.0,
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "enabled": 0,
-          "light_type": 0,
-          "linear_attenuation": 0.14000000059604645,
-          "quadratic_attenuation": 0.0,
-          "spot_angle": 1.5707963705062866
-        }
-      },
-      {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Icosphere.02300",
+        "custom_display_name": "sprinkles",
         "material_asset": {
           "name": "default"
         },
@@ -168,9 +81,9 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Cube11",
+        "custom_display_name": "wall",
         "material_asset": {
-          "name": "default"
+          "name": "white"
         },
         "mesh_asset": {
           "name": "Cube1"
@@ -193,7 +106,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Cube22",
+        "custom_display_name": "floor_down",
         "material_asset": {
           "name": "default"
         },
@@ -218,7 +131,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Cube.00333",
+        "custom_display_name": "roof",
         "material_asset": {
           "name": "default"
         },
@@ -243,7 +156,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Cube.00244",
+        "custom_display_name": "floor_top",
         "material_asset": {
           "name": "default"
         },
@@ -268,7 +181,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Plane.03355",
+        "custom_display_name": "windows",
         "material_asset": {
           "name": "default"
         },
@@ -293,7 +206,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.00166",
+        "custom_display_name": "small_table_legs",
         "material_asset": {
           "name": "default"
         },
@@ -318,7 +231,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Plane.03377",
+        "custom_display_name": "window_frames_door",
         "material_asset": {
           "name": "default"
         },
@@ -343,7 +256,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Cube.00488",
+        "custom_display_name": "door_cross",
         "material_asset": {
           "name": "default"
         },
@@ -368,7 +281,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Cube.00599",
+        "custom_display_name": "shelve_top",
         "material_asset": {
           "name": "default"
         },
@@ -393,7 +306,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Cube.0661010",
+        "custom_display_name": "wall_part",
         "material_asset": {
           "name": "default"
         },
@@ -418,7 +331,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Cube.0061111",
+        "custom_display_name": "wall_panel",
         "material_asset": {
           "name": "default"
         },
@@ -443,7 +356,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Circle.0621212",
+        "custom_display_name": "stool_seat",
         "material_asset": {
           "name": "default"
         },
@@ -468,7 +381,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Circle.0621313",
+        "custom_display_name": "stool_legs",
         "material_asset": {
           "name": "default"
         },
@@ -493,7 +406,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Plane.0531414",
+        "custom_display_name": "table_legs",
         "material_asset": {
           "name": "default"
         },
@@ -518,7 +431,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Plane.3811515",
+        "custom_display_name": "boards",
         "material_asset": {
           "name": "default"
         },
@@ -543,7 +456,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Circle.0481616",
+        "custom_display_name": "stool_legs2",
         "material_asset": {
           "name": "default"
         },
@@ -568,7 +481,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Sphere.0171717",
+        "custom_display_name": "stool_part",
         "material_asset": {
           "name": "default"
         },
@@ -593,7 +506,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Circle.0481818",
+        "custom_display_name": "stool_part2",
         "material_asset": {
           "name": "default"
         },
@@ -618,7 +531,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Plane.3811919",
+        "custom_display_name": "closet",
         "material_asset": {
           "name": "default"
         },
@@ -643,7 +556,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh2020",
+        "custom_display_name": "sofa",
         "material_asset": {
           "name": "default"
         },
@@ -668,7 +581,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Sphere.0172121",
+        "custom_display_name": "pillow_lamps",
         "material_asset": {
           "name": "default"
         },
@@ -693,7 +606,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0012222",
+        "custom_display_name": "small_table_bord",
         "material_asset": {
           "name": "default"
         },
@@ -718,7 +631,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0012323",
+        "custom_display_name": "small_table_center",
         "material_asset": {
           "name": "default"
         },
@@ -743,7 +656,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.1232424",
+        "custom_display_name": "cup",
         "material_asset": {
           "name": "default"
         },
@@ -768,7 +681,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0032525",
+        "custom_display_name": "donut",
         "material_asset": {
           "name": "default"
         },
@@ -793,7 +706,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0042626",
+        "custom_display_name": "plate",
         "material_asset": {
           "name": "default"
         },
@@ -818,7 +731,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0052727",
+        "custom_display_name": "cupcake",
         "material_asset": {
           "name": "default"
         },
@@ -843,7 +756,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0082828",
+        "custom_display_name": "cupcake_paper",
         "material_asset": {
           "name": "default"
         },
@@ -868,7 +781,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0072929",
+        "custom_display_name": "cupcake2",
         "material_asset": {
           "name": "default"
         },
@@ -893,7 +806,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0093030",
+        "custom_display_name": "spoon",
         "material_asset": {
           "name": "default"
         },
@@ -918,7 +831,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0103131",
+        "custom_display_name": "coffee2",
         "material_asset": {
           "name": "default"
         },
@@ -943,7 +856,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0113232",
+        "custom_display_name": "mug",
         "material_asset": {
           "name": "default"
         },
@@ -968,7 +881,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0693333",
+        "custom_display_name": "cupcakes_left",
         "material_asset": {
           "name": "default"
         },
@@ -993,7 +906,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0363434",
+        "custom_display_name": "cupcakes_left2",
         "material_asset": {
           "name": "default"
         },
@@ -1018,7 +931,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0833535",
+        "custom_display_name": "egg_shells",
         "material_asset": {
           "name": "default"
         },
@@ -1043,7 +956,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0193636",
+        "custom_display_name": "egg_yellow",
         "material_asset": {
           "name": "default"
         },
@@ -1068,7 +981,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0193737",
+        "custom_display_name": "egg_white",
         "material_asset": {
           "name": "default"
         },
@@ -1093,7 +1006,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0703838",
+        "custom_display_name": "cupcakes_left3",
         "material_asset": {
           "name": "default"
         },
@@ -1118,7 +1031,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0713939",
+        "custom_display_name": "cupcakes_left_paper",
         "material_asset": {
           "name": "default"
         },
@@ -1143,32 +1056,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0374040",
-        "material_asset": {
-          "name": "default"
-        },
-        "mesh_asset": {
-          "name": "Mesh.03740"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 0.009999999776482582,
-          "y": 0.009999999776482582,
-          "z": 0.009999999776482582
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0384141",
+        "custom_display_name": "cupcakes_left_paper2",
         "material_asset": {
           "name": "default"
         },
@@ -1193,7 +1081,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0354242",
+        "custom_display_name": "cupcakes_shelve",
         "material_asset": {
           "name": "default"
         },
@@ -1218,32 +1106,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0404343",
-        "material_asset": {
-          "name": "default"
-        },
-        "mesh_asset": {
-          "name": "Mesh.04043"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 0.009999999776482582,
-          "y": 0.009999999776482582,
-          "z": 0.009999999776482582
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "Cube.0364444",
+        "custom_display_name": "bread",
         "material_asset": {
           "name": "default"
         },
@@ -1268,7 +1131,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0424545",
+        "custom_display_name": "bread2",
         "material_asset": {
           "name": "default"
         },
@@ -1293,7 +1156,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0434646",
+        "custom_display_name": "bread_napkin",
         "material_asset": {
           "name": "default"
         },
@@ -1318,7 +1181,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0434747",
+        "custom_display_name": "bread_bowl",
         "material_asset": {
           "name": "default"
         },
@@ -1343,7 +1206,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0444848",
+        "custom_display_name": "egg_yellow2",
         "material_asset": {
           "name": "default"
         },
@@ -1368,7 +1231,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0444949",
+        "custom_display_name": "egg_white2",
         "material_asset": {
           "name": "default"
         },
@@ -1393,7 +1256,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0455050",
+        "custom_display_name": "doug",
         "material_asset": {
           "name": "default"
         },
@@ -1418,7 +1281,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0465151",
+        "custom_display_name": "bowl2",
         "material_asset": {
           "name": "default"
         },
@@ -1443,7 +1306,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0475252",
+        "custom_display_name": "spoon_wood",
         "material_asset": {
           "name": "default"
         },
@@ -1468,7 +1331,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0735353",
+        "custom_display_name": "egg_yellow3",
         "material_asset": {
           "name": "default"
         },
@@ -1493,7 +1356,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0735454",
+        "custom_display_name": "jar_paper_cover",
         "material_asset": {
           "name": "default"
         },
@@ -1518,7 +1381,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0735555",
+        "custom_display_name": "jar",
         "material_asset": {
           "name": "default"
         },
@@ -1543,7 +1406,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.1075656",
+        "custom_display_name": "spheres",
         "material_asset": {
           "name": "default"
         },
@@ -1568,7 +1431,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0495757",
+        "custom_display_name": "creme",
         "material_asset": {
           "name": "default"
         },
@@ -1593,7 +1456,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0495858",
+        "custom_display_name": "creme2",
         "material_asset": {
           "name": "default"
         },
@@ -1618,7 +1481,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0495959",
+        "custom_display_name": "cake",
         "material_asset": {
           "name": "default"
         },
@@ -1643,7 +1506,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0506060",
+        "custom_display_name": "cake_plate",
         "material_asset": {
           "name": "default"
         },
@@ -1668,7 +1531,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0516161",
+        "custom_display_name": "fruit_bowl",
         "material_asset": {
           "name": "default"
         },
@@ -1693,7 +1556,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0516262",
+        "custom_display_name": "fruit_bowl_napkin",
         "material_asset": {
           "name": "default"
         },
@@ -1718,7 +1581,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0526363",
+        "custom_display_name": "knife_pad",
         "material_asset": {
           "name": "default"
         },
@@ -1743,7 +1606,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0526464",
+        "custom_display_name": "cupcake_napkin",
         "material_asset": {
           "name": "default"
         },
@@ -1768,7 +1631,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0556565",
+        "custom_display_name": "cupcake_apple",
         "material_asset": {
           "name": "default"
         },
@@ -1793,7 +1656,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0556666",
+        "custom_display_name": "cupcake_apple_leaf",
         "material_asset": {
           "name": "default"
         },
@@ -1818,7 +1681,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0556767",
+        "custom_display_name": "cupcake_apple_dot",
         "material_asset": {
           "name": "default"
         },
@@ -1843,7 +1706,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0596868",
+        "custom_display_name": "croisant",
         "material_asset": {
           "name": "default"
         },
@@ -1868,7 +1731,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0586969",
+        "custom_display_name": "croisant2",
         "material_asset": {
           "name": "default"
         },
@@ -1893,7 +1756,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0927070",
+        "custom_display_name": "huge_jar_label",
         "material_asset": {
           "name": "default"
         },
@@ -1918,7 +1781,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0607171",
+        "custom_display_name": "jar1",
         "material_asset": {
           "name": "default"
         },
@@ -1943,7 +1806,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0617272",
+        "custom_display_name": "jar2",
         "material_asset": {
           "name": "default"
         },
@@ -1968,7 +1831,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0627373",
+        "custom_display_name": "jar3",
         "material_asset": {
           "name": "default"
         },
@@ -1993,7 +1856,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0647474",
+        "custom_display_name": "cupcake_left4",
         "material_asset": {
           "name": "default"
         },
@@ -2018,7 +1881,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.1047575",
+        "custom_display_name": "cupcake_left4_creme",
         "material_asset": {
           "name": "default"
         },
@@ -2043,32 +1906,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Circle.0037676",
-        "material_asset": {
-          "name": "default"
-        },
-        "mesh_asset": {
-          "name": "Circle.00376"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 0.009999999776482582,
-          "y": 0.009999999776482582,
-          "z": 0.009999999776482582
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.1117777",
+        "custom_display_name": "many_jars",
         "material_asset": {
           "name": "default"
         },
@@ -2093,7 +1931,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Circle.0037878",
+        "custom_display_name": "coffe_paper_lid",
         "material_asset": {
           "name": "default"
         },
@@ -2118,7 +1956,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0667979",
+        "custom_display_name": "bread_holder",
         "material_asset": {
           "name": "default"
         },
@@ -2143,32 +1981,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0668080",
-        "material_asset": {
-          "name": "default"
-        },
-        "mesh_asset": {
-          "name": "Mesh.06680"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 0.009999999776482582,
-          "y": 0.009999999776482582,
-          "z": 0.009999999776482582
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0688181",
+        "custom_display_name": "croissant3",
         "material_asset": {
           "name": "default"
         },
@@ -2193,7 +2006,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0688282",
+        "custom_display_name": "croissant3_creme",
         "material_asset": {
           "name": "default"
         },
@@ -2218,32 +2031,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0768383",
-        "material_asset": {
-          "name": "default"
-        },
-        "mesh_asset": {
-          "name": "Mesh.07683"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 0.009999999776482582,
-          "y": 0.009999999776482582,
-          "z": 0.009999999776482582
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0768484",
+        "custom_display_name": "top_jar_paper_lid",
         "material_asset": {
           "name": "default"
         },
@@ -2268,7 +2056,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0768585",
+        "custom_display_name": "top_jar",
         "material_asset": {
           "name": "default"
         },
@@ -2293,7 +2081,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0778686",
+        "custom_display_name": "top_egg_holder",
         "material_asset": {
           "name": "default"
         },
@@ -2318,7 +2106,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0818787",
+        "custom_display_name": "top_egg_yellow",
         "material_asset": {
           "name": "default"
         },
@@ -2343,7 +2131,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0818888",
+        "custom_display_name": "top_egg_white",
         "material_asset": {
           "name": "default"
         },
@@ -2368,7 +2156,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0848989",
+        "custom_display_name": "top_cake_creme",
         "material_asset": {
           "name": "default"
         },
@@ -2393,7 +2181,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0859090",
+        "custom_display_name": "top_cake",
         "material_asset": {
           "name": "default"
         },
@@ -2418,7 +2206,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0889191",
+        "custom_display_name": "top_cake_strawberry_dot",
         "material_asset": {
           "name": "default"
         },
@@ -2443,7 +2231,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0889292",
+        "custom_display_name": "top_cake_strawberry",
         "material_asset": {
           "name": "default"
         },
@@ -2468,7 +2256,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0909393",
+        "custom_display_name": "top_bread",
         "material_asset": {
           "name": "default"
         },
@@ -2493,32 +2281,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0929494",
-        "material_asset": {
-          "name": "default"
-        },
-        "mesh_asset": {
-          "name": "Mesh.09294"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 0.009999999776482582,
-          "y": 0.009999999776482582,
-          "z": 0.009999999776482582
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.1429595",
+        "custom_display_name": "knife_board2",
         "material_asset": {
           "name": "default"
         },
@@ -2543,7 +2306,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Cube.1009696",
+        "custom_display_name": "donut",
         "material_asset": {
           "name": "default"
         },
@@ -2568,7 +2331,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0949797",
+        "custom_display_name": "donut_chocolate",
         "material_asset": {
           "name": "default"
         },
@@ -2593,7 +2356,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0989898",
+        "custom_display_name": "donuts",
         "material_asset": {
           "name": "default"
         },
@@ -2618,7 +2381,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.0999999",
+        "custom_display_name": "bowl_donuts",
         "material_asset": {
           "name": "default"
         },
@@ -2643,7 +2406,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.099100100",
+        "custom_display_name": "donut_bowl_stripe",
         "material_asset": {
           "name": "default"
         },
@@ -2668,7 +2431,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.103101101",
+        "custom_display_name": "donut_bowl_napkin",
         "material_asset": {
           "name": "default"
         },
@@ -2693,7 +2456,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.117102102",
+        "custom_display_name": "coffee_cup",
         "material_asset": {
           "name": "default"
         },
@@ -2718,7 +2481,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.102103103",
+        "custom_display_name": "coffee",
         "material_asset": {
           "name": "default"
         },
@@ -2743,7 +2506,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.106104104",
+        "custom_display_name": "coffee3",
         "material_asset": {
           "name": "default"
         },
@@ -2768,7 +2531,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Plane.478105105",
+        "custom_display_name": "jar_behind_tv",
         "material_asset": {
           "name": "default"
         },
@@ -2793,32 +2556,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.111106106",
-        "material_asset": {
-          "name": "default"
-        },
-        "mesh_asset": {
-          "name": "Mesh.111106"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 0.009999999776482582,
-          "y": 0.009999999776482582,
-          "z": 0.009999999776482582
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.111107107",
+        "custom_display_name": "jar_behind_tv_lid",
         "material_asset": {
           "name": "default"
         },
@@ -2843,7 +2581,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.112108108",
+        "custom_display_name": "cake_cover",
         "material_asset": {
           "name": "default"
         },
@@ -2868,57 +2606,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.113109109",
-        "material_asset": {
-          "name": "default"
-        },
-        "mesh_asset": {
-          "name": "Mesh.113109"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 0.009999999776482582,
-          "y": 0.009999999776482582,
-          "z": 0.009999999776482582
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.113110110",
-        "material_asset": {
-          "name": "default"
-        },
-        "mesh_asset": {
-          "name": "Mesh.113110"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 0.009999999776482582,
-          "y": 0.009999999776482582,
-          "z": 0.009999999776482582
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.114111111",
+        "custom_display_name": "cake_holder2",
         "material_asset": {
           "name": "default"
         },
@@ -2943,7 +2631,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.126112112",
+        "custom_display_name": "left_cups_hanging",
         "material_asset": {
           "name": "default"
         },
@@ -2968,7 +2656,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.116113113",
+        "custom_display_name": "plate2",
         "material_asset": {
           "name": "default"
         },
@@ -2993,7 +2681,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.118114114",
+        "custom_display_name": "robot_body",
         "material_asset": {
           "name": "default"
         },
@@ -3018,7 +2706,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.119115115",
+        "custom_display_name": "robot_metal",
         "material_asset": {
           "name": "default"
         },
@@ -3043,7 +2731,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.118116116",
+        "custom_display_name": "robot_rotor",
         "material_asset": {
           "name": "default"
         },
@@ -3068,32 +2756,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.118117117",
-        "material_asset": {
-          "name": "default"
-        },
-        "mesh_asset": {
-          "name": "Mesh.118117"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 0.009999999776482582,
-          "y": 0.009999999776482582,
-          "z": 0.009999999776482582
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.118118118",
+        "custom_display_name": "robot_bowl",
         "material_asset": {
           "name": "default"
         },
@@ -3118,7 +2781,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.119119119",
+        "custom_display_name": "wood_hand",
         "material_asset": {
           "name": "default"
         },
@@ -3143,7 +2806,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.121120120",
+        "custom_display_name": "coffee_cup3",
         "material_asset": {
           "name": "default"
         },
@@ -3168,7 +2831,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Cube.075121121",
+        "custom_display_name": "top_jar2",
         "material_asset": {
           "name": "default"
         },
@@ -3193,7 +2856,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.127122122",
+        "custom_display_name": "top_jar2_cover",
         "material_asset": {
           "name": "default"
         },
@@ -3218,7 +2881,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.132123123",
+        "custom_display_name": "top_book",
         "material_asset": {
           "name": "default"
         },
@@ -3243,7 +2906,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.134124124",
+        "custom_display_name": "top_book2",
         "material_asset": {
           "name": "default"
         },
@@ -3268,7 +2931,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.133125125",
+        "custom_display_name": "top_book3",
         "material_asset": {
           "name": "default"
         },
@@ -3293,7 +2956,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.136126126",
+        "custom_display_name": "top_left_jar_stripe",
         "material_asset": {
           "name": "default"
         },
@@ -3318,7 +2981,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.136127127",
+        "custom_display_name": "top_left_jar",
         "material_asset": {
           "name": "default"
         },
@@ -3343,7 +3006,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.137128128",
+        "custom_display_name": "wood_cylinder",
         "material_asset": {
           "name": "default"
         },
@@ -3368,7 +3031,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.139129129",
+        "custom_display_name": "top_bowl3",
         "material_asset": {
           "name": "default"
         },
@@ -3393,7 +3056,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.139130130",
+        "custom_display_name": "top_bowl3_stripe",
         "material_asset": {
           "name": "default"
         },
@@ -3418,7 +3081,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.141131131",
+        "custom_display_name": "top_jar3_lid",
         "material_asset": {
           "name": "default"
         },
@@ -3443,7 +3106,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.141132132",
+        "custom_display_name": "top_jar3",
         "material_asset": {
           "name": "default"
         },
@@ -3468,7 +3131,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.143133133",
+        "custom_display_name": "knife_wood4",
         "material_asset": {
           "name": "default"
         },
@@ -3493,7 +3156,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.144134134",
+        "custom_display_name": "laptop_kb_mouse",
         "material_asset": {
           "name": "default"
         },
@@ -3518,7 +3181,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.144135135",
+        "custom_display_name": "laptop",
         "material_asset": {
           "name": "default"
         },
@@ -3543,7 +3206,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.144136136",
+        "custom_display_name": "laptop_screen",
         "material_asset": {
           "name": "default"
         },
@@ -3568,7 +3231,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.145137137",
+        "custom_display_name": "wood_spoon",
         "material_asset": {
           "name": "default"
         },
@@ -3593,7 +3256,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.146138138",
+        "custom_display_name": "table_obrus",
         "material_asset": {
           "name": "default"
         },
@@ -3618,9 +3281,9 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.147139139",
+        "custom_display_name": "tv",
         "material_asset": {
-          "name": "default"
+          "name": "green"
         },
         "mesh_asset": {
           "name": "Mesh.147139"
@@ -3643,7 +3306,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.147140140",
+        "custom_display_name": "tv_inside",
         "material_asset": {
           "name": "default"
         },
@@ -3668,7 +3331,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.147141141",
+        "custom_display_name": "tv_antena",
         "material_asset": {
           "name": "default"
         },
@@ -3693,7 +3356,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Circle.211142142",
+        "custom_display_name": "pumpkin_stripe",
         "material_asset": {
           "name": "default"
         },
@@ -3718,7 +3381,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.157143143",
+        "custom_display_name": "bulb_holder",
         "material_asset": {
           "name": "default"
         },
@@ -3743,7 +3406,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.149144144",
+        "custom_display_name": "bulb_holder2",
         "material_asset": {
           "name": "default"
         },
@@ -3768,7 +3431,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.152145145",
+        "custom_display_name": "bulbs",
         "material_asset": {
           "name": "default"
         },
@@ -3793,7 +3456,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.149146146",
+        "custom_display_name": "bulb",
         "material_asset": {
           "name": "default"
         },
@@ -3818,7 +3481,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.155147147",
+        "custom_display_name": "left_cup_hangers",
         "material_asset": {
           "name": "default"
         },
@@ -3843,7 +3506,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.158148148",
+        "custom_display_name": "cat_back",
         "material_asset": {
           "name": "default"
         },
@@ -3868,7 +3531,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.159149149",
+        "custom_display_name": "cat_eye",
         "material_asset": {
           "name": "default"
         },
@@ -3893,7 +3556,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.159150150",
+        "custom_display_name": "cat_nose",
         "material_asset": {
           "name": "default"
         },
@@ -3918,7 +3581,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.159151151",
+        "custom_display_name": "cat_eye_back",
         "material_asset": {
           "name": "default"
         },
@@ -3943,7 +3606,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.159152152",
+        "custom_display_name": "cat_head",
         "material_asset": {
           "name": "default"
         },
@@ -3968,7 +3631,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.160153153",
+        "custom_display_name": "left_pumpkin",
         "material_asset": {
           "name": "default"
         },
@@ -3993,7 +3656,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.161154154",
+        "custom_display_name": "left_pumpkin2",
         "material_asset": {
           "name": "default"
         },
@@ -4018,7 +3681,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.163155155",
+        "custom_display_name": "left_pumpkin_top",
         "material_asset": {
           "name": "default"
         },
@@ -4043,7 +3706,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.164156156",
+        "custom_display_name": "up_pumpkin",
         "material_asset": {
           "name": "default"
         },
@@ -4068,7 +3731,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.165157157",
+        "custom_display_name": "up_pumpkin_top",
         "material_asset": {
           "name": "default"
         },
@@ -4093,7 +3756,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.181158158",
+        "custom_display_name": "flowers",
         "material_asset": {
           "name": "default"
         },
@@ -4118,7 +3781,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Cube.077159159",
+        "custom_display_name": "flower",
         "material_asset": {
           "name": "default"
         },
@@ -4143,7 +3806,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Plane.466160160",
+        "custom_display_name": "leafs",
         "material_asset": {
           "name": "default"
         },
@@ -4168,7 +3831,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "NurbsPath.011161161",
+        "custom_display_name": "plants",
         "material_asset": {
           "name": "default"
         },
@@ -4193,7 +3856,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Plane.026162162",
+        "custom_display_name": "lamp_leafs",
         "material_asset": {
           "name": "default"
         },
@@ -4218,7 +3881,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Cube.051163163",
+        "custom_display_name": "flower_pots",
         "material_asset": {
           "name": "default"
         },
@@ -4243,7 +3906,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Mesh.183164164",
+        "custom_display_name": "flower_pots2",
         "material_asset": {
           "name": "default"
         },
@@ -4268,7 +3931,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Circle.161165165",
+        "custom_display_name": "flower_pot_ropes",
         "material_asset": {
           "name": "default"
         },
@@ -4293,7 +3956,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Plane.032166166",
+        "custom_display_name": "frame",
         "material_asset": {
           "name": "default"
         },
@@ -4318,7 +3981,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Plane.036167167",
+        "custom_display_name": "pictures",
         "material_asset": {
           "name": "default"
         },
@@ -4343,7 +4006,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Plane.036168168",
+        "custom_display_name": "frame2",
         "material_asset": {
           "name": "default"
         },
@@ -4368,7 +4031,7 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "Plane.030169169",
+        "custom_display_name": "frame3",
         "material_asset": {
           "name": "default"
         },
@@ -4393,8 +4056,8 @@
       }
     ],
     "renderer_config": {
-      "resolution_horizontal": 866,
-      "resolution_vertical": 650,
+      "resolution_horizontal": 1262,
+      "resolution_vertical": 947,
       "type": "rgpu"
     }
   }

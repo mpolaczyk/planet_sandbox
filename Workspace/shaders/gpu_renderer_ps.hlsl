@@ -181,7 +181,7 @@ float4 ps_main(VS_Output input) : SV_Target
             tex_color = texture0.Sample(sampler0, input.uv);
         }
     
-        const float4 selection_emissive = { 0.3, 0.3, 0.3, 1 };
+        const float4 selection_emissive = { 0.5, 0.5, 0.5, 1 };
 		float4 emissive = max(material.emissive, is_selected * selection_emissive);
 		float4 ambient = material.ambient * ambient_light;
 		float4 diffuse = material.diffuse * light_final.diffuse;
