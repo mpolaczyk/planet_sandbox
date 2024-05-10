@@ -1,0 +1,4401 @@
+{
+  "scene": {
+    "ambient_light_color": {
+      "w": 1.0,
+      "x": 0.37745094299316406,
+      "y": 0.37745094299316406,
+      "z": 0.37745094299316406
+    },
+    "camera_config": {
+      "aspect_ratio_h": 3.0,
+      "aspect_ratio_w": 4.0,
+      "field_of_view": 40.0,
+      "look_from": {
+        "x": 3.508943796157837,
+        "y": 4.032208442687988,
+        "z": 4.046055793762207
+      },
+      "pitch": 24.08199691772461,
+      "yaw": 222.84652709960938
+    },
+    "clear_color": {
+      "w": 1.0,
+      "x": 0.45098036527633667,
+      "y": 0.358131468296051,
+      "z": 0.358131468296051
+    },
+    "objects": [
+      {
+        "class_name": "hlight",
+        "custom_display_name": "sun",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "properties": {
+          "color": {
+            "w": 1.0,
+            "x": 0.29901963472366333,
+            "y": 0.29901963472366333,
+            "z": 0.29901963472366333
+          },
+          "constant_attenuation": 0.5899999737739563,
+          "direction": {
+            "w": 1.0,
+            "x": -1.0,
+            "y": -1.0,
+            "z": -1.0
+          },
+          "enabled": 1,
+          "light_type": 1,
+          "linear_attenuation": 0.15000000596046448,
+          "quadratic_attenuation": 0.05000000074505806,
+          "spot_angle": 0.800000011920929
+        }
+      },
+      {
+        "class_name": "hlight",
+        "custom_display_name": "zaroweczka centrum",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "properties": {
+          "color": {
+            "w": 1.0,
+            "x": 0.3970588445663452,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "constant_attenuation": 0.23999999463558197,
+          "direction": {
+            "w": 0.0,
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0
+          },
+          "enabled": 0,
+          "light_type": 0,
+          "linear_attenuation": 0.09000000357627869,
+          "quadratic_attenuation": 0.009999999776482582,
+          "spot_angle": 1.5707963705062866
+        }
+      },
+      {
+        "class_name": "hlight",
+        "custom_display_name": "zaroweczka lewo",
+        "origin": {
+          "x": -8.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "properties": {
+          "color": {
+            "w": 1.0,
+            "x": 0.015011191368103027,
+            "y": 0.22058820724487305,
+            "z": 0.002162636024877429
+          },
+          "constant_attenuation": 0.44999998807907104,
+          "direction": {
+            "w": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "enabled": 0,
+          "light_type": 0,
+          "linear_attenuation": 0.03999999910593033,
+          "quadratic_attenuation": 0.0,
+          "spot_angle": 1.5707963705062866
+        }
+      },
+      {
+        "class_name": "hlight",
+        "custom_display_name": "zaroweczka prawo",
+        "origin": {
+          "x": 8.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "properties": {
+          "color": {
+            "w": 1.0,
+            "x": 0.002330827061086893,
+            "y": 0.016247514635324478,
+            "z": 0.4754902124404907
+          },
+          "constant_attenuation": 0.17000000178813934,
+          "direction": {
+            "w": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "enabled": 0,
+          "light_type": 0,
+          "linear_attenuation": 0.14000000059604645,
+          "quadratic_attenuation": 0.0,
+          "spot_angle": 1.5707963705062866
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Icosphere.02300",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Icosphere.0230"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Cube11",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Cube1"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Cube22",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Cube2"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Cube.00333",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Cube.0033"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Cube.00244",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Cube.0024"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Plane.03355",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Plane.0335"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.00166",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.0016"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Plane.03377",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Plane.0337"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Cube.00488",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Cube.0048"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Cube.00599",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Cube.0059"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Cube.0661010",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Cube.06610"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Cube.0061111",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Cube.00611"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Circle.0621212",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Circle.06212"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Circle.0621313",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Circle.06213"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Plane.0531414",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Plane.05314"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Plane.3811515",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Plane.38115"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Circle.0481616",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Circle.04816"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Sphere.0171717",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Sphere.01717"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Circle.0481818",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Circle.04818"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Plane.3811919",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Plane.38119"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh2020",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh20"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Sphere.0172121",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Sphere.01721"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0012222",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.00122"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0012323",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.00123"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.1232424",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.12324"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0032525",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.00325"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0042626",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.00426"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0052727",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.00527"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0082828",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.00828"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0072929",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.00729"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0093030",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.00930"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0103131",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.01031"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0113232",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.01132"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0693333",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.06933"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0363434",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.03634"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0833535",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.08335"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0193636",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.01936"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0193737",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.01937"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0703838",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.07038"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0713939",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.07139"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0374040",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.03740"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0384141",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.03841"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0354242",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.03542"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0404343",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.04043"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Cube.0364444",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Cube.03644"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0424545",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.04245"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0434646",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.04346"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0434747",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.04347"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0444848",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.04448"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0444949",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.04449"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0455050",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.04550"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0465151",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.04651"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0475252",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.04752"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0735353",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.07353"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0735454",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.07354"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0735555",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.07355"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.1075656",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.10756"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0495757",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.04957"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0495858",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.04958"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0495959",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.04959"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0506060",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.05060"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0516161",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.05161"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0516262",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.05162"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0526363",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.05263"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0526464",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.05264"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0556565",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.05565"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0556666",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.05566"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0556767",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.05567"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0596868",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.05968"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0586969",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.05869"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0927070",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.09270"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0607171",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.06071"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0617272",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.06172"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0627373",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.06273"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0647474",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.06474"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.1047575",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.10475"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Circle.0037676",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Circle.00376"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.1117777",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.11177"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Circle.0037878",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Circle.00378"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0667979",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.06679"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0668080",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.06680"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0688181",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.06881"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0688282",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.06882"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0768383",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.07683"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0768484",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.07684"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0768585",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.07685"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0778686",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.07786"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0818787",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.08187"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0818888",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.08188"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0848989",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.08489"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0859090",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.08590"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0889191",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.08891"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0889292",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.08892"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0909393",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.09093"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0929494",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.09294"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.1429595",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.14295"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Cube.1009696",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Cube.10096"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0949797",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.09497"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0989898",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.09898"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.0999999",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.09999"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.099100100",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.099100"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.103101101",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.103101"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.117102102",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.117102"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.102103103",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.102103"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.106104104",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.106104"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Plane.478105105",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Plane.478105"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.111106106",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.111106"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.111107107",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.111107"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.112108108",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.112108"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.113109109",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.113109"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.113110110",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.113110"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.114111111",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.114111"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.126112112",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.126112"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.116113113",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.116113"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.118114114",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.118114"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.119115115",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.119115"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.118116116",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.118116"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.118117117",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.118117"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.118118118",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.118118"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.119119119",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.119119"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.121120120",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.121120"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Cube.075121121",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Cube.075121"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.127122122",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.127122"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.132123123",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.132123"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.134124124",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.134124"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.133125125",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.133125"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.136126126",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.136126"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.136127127",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.136127"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.137128128",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.137128"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.139129129",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.139129"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.139130130",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.139130"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.141131131",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.141131"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.141132132",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.141132"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.143133133",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.143133"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.144134134",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.144134"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.144135135",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.144135"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.144136136",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.144136"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.145137137",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.145137"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.146138138",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.146138"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.147139139",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.147139"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.147140140",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.147140"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.147141141",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.147141"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Circle.211142142",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Circle.211142"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.157143143",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.157143"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.149144144",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.149144"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.152145145",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.152145"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.149146146",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.149146"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.155147147",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.155147"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.158148148",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.158148"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.159149149",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.159149"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.159150150",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.159150"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.159151151",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.159151"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.159152152",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.159152"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.160153153",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.160153"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.161154154",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.161154"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.163155155",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.163155"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.164156156",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.164156"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.165157157",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.165157"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.181158158",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.181158"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Cube.077159159",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Cube.077159"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Plane.466160160",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Plane.466160"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "NurbsPath.011161161",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "NurbsPath.011161"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Plane.026162162",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Plane.026162"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Cube.051163163",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Cube.051163"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Mesh.183164164",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Mesh.183164"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Circle.161165165",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Circle.161165"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Plane.032166166",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Plane.032166"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Plane.036167167",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Plane.036167"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Plane.036168168",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Plane.036168"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "Plane.030169169",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "Plane.030169"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.009999999776482582,
+          "y": 0.009999999776482582,
+          "z": 0.009999999776482582
+        }
+      }
+    ],
+    "renderer_config": {
+      "resolution_horizontal": 866,
+      "resolution_vertical": 650,
+      "type": "rgpu"
+    }
+  }
+}

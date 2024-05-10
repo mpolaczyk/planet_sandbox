@@ -1,0 +1,351 @@
+{
+  "scene": {
+    "ambient_light_color": {
+      "w": 1.0,
+      "x": 0.2745097875595093,
+      "y": 0.2745097875595093,
+      "z": 0.2745097875595093
+    },
+    "camera_config": {
+      "aspect_ratio_h": 3.0,
+      "aspect_ratio_w": 4.0,
+      "field_of_view": 40.0,
+      "look_from": {
+        "x": -3.2336008548736572,
+        "y": 5.279082298278809,
+        "z": -29.817813873291016
+      },
+      "pitch": 5.989735126495361,
+      "yaw": 4.0492634773254395
+    },
+    "clear_color": {
+      "w": 1.0,
+      "x": 0.45098036527633667,
+      "y": 0.358131468296051,
+      "z": 0.358131468296051
+    },
+    "objects": [
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "ico3",
+        "material_asset": {
+          "name": "red"
+        },
+        "mesh_asset": {
+          "name": "icosphere3"
+        },
+        "origin": {
+          "x": 4.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "torus",
+        "material_asset": {
+          "name": "green"
+        },
+        "mesh_asset": {
+          "name": "torus"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 4.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 90.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "suzanne",
+        "material_asset": {
+          "name": "white"
+        },
+        "mesh_asset": {
+          "name": "suzanne"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 250.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 13.0
+        },
+        "scale": {
+          "x": 70.0,
+          "y": 70.0,
+          "z": 70.0
+        }
+      },
+      {
+        "class_name": "hlight",
+        "custom_display_name": "sun",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "properties": {
+          "color": {
+            "w": 1.0,
+            "x": 0.29901963472366333,
+            "y": 0.29901963472366333,
+            "z": 0.29901963472366333
+          },
+          "constant_attenuation": 0.5899999737739563,
+          "direction": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0
+          },
+          "enabled": 1,
+          "light_type": 1,
+          "linear_attenuation": 0.15000000596046448,
+          "quadratic_attenuation": 0.05000000074505806,
+          "spot_angle": 0.800000011920929
+        }
+      },
+      {
+        "class_name": "hlight",
+        "custom_display_name": "zaroweczka centrum",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "properties": {
+          "color": {
+            "w": 1.0,
+            "x": 0.3970588445663452,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "constant_attenuation": 0.23999999463558197,
+          "direction": {
+            "w": 0.0,
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0
+          },
+          "enabled": 1,
+          "light_type": 0,
+          "linear_attenuation": 0.09000000357627869,
+          "quadratic_attenuation": 0.009999999776482582,
+          "spot_angle": 1.5707963705062866
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "ico4",
+        "material_asset": {
+          "name": "blue"
+        },
+        "mesh_asset": {
+          "name": "icosphere4"
+        },
+        "origin": {
+          "x": -4.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "torusknot1",
+        "material_asset": {
+          "name": "white"
+        },
+        "mesh_asset": {
+          "name": "torusknot1"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": -90.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.5,
+          "y": 0.5,
+          "z": 0.5
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "torusknot2",
+        "material_asset": {
+          "name": "white"
+        },
+        "mesh_asset": {
+          "name": "torusknot2"
+        },
+        "origin": {
+          "x": 8.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": -90.0,
+          "y": 0.0,
+          "z": 90.0
+        },
+        "scale": {
+          "x": 0.5,
+          "y": 0.5,
+          "z": 0.5
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "torusknot3",
+        "material_asset": {
+          "name": "white"
+        },
+        "mesh_asset": {
+          "name": "torusknot3"
+        },
+        "origin": {
+          "x": -8.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 90.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.5,
+          "y": 0.5,
+          "z": 0.5
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "ico5",
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "sphere"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": -6.0,
+          "z": 0.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 2.0,
+          "y": 2.0,
+          "z": 2.0
+        }
+      },
+      {
+        "class_name": "hlight",
+        "custom_display_name": "zaroweczka lewo",
+        "origin": {
+          "x": -8.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "properties": {
+          "color": {
+            "w": 1.0,
+            "x": 0.015011191368103027,
+            "y": 0.22058820724487305,
+            "z": 0.002162636024877429
+          },
+          "constant_attenuation": 0.44999998807907104,
+          "direction": {
+            "w": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "enabled": 1,
+          "light_type": 0,
+          "linear_attenuation": 0.03999999910593033,
+          "quadratic_attenuation": 0.0,
+          "spot_angle": 1.5707963705062866
+        }
+      },
+      {
+        "class_name": "hlight",
+        "custom_display_name": "zaroweczka prawo",
+        "origin": {
+          "x": 8.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "properties": {
+          "color": {
+            "w": 1.0,
+            "x": 0.002330827061086893,
+            "y": 0.016247514635324478,
+            "z": 0.4754902124404907
+          },
+          "constant_attenuation": 0.17000000178813934,
+          "direction": {
+            "w": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "enabled": 1,
+          "light_type": 0,
+          "linear_attenuation": 0.14000000059604645,
+          "quadratic_attenuation": 0.0,
+          "spot_angle": 1.5707963705062866
+        }
+      }
+    ],
+    "renderer_config": {
+      "resolution_horizontal": 866,
+      "resolution_vertical": 650,
+      "type": "rgpu"
+    }
+  }
+}
