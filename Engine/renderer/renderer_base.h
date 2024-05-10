@@ -5,7 +5,6 @@
 
 #include "renderer_config.h"
 #include "resources/bmp.h"
-#include "math/camera.h"
 #include "object/object.h"
 
 struct ID3D11ShaderResourceView;

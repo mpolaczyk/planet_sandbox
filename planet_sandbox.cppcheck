@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="1">
-    <builddir>PlanetSandbox-cppcheck-build-dir</builddir>
+    <builddir>planet_sandbox-cppcheck-build-dir</builddir>
     <platform>win64</platform>
-    <importproject>PlanetSandbox.sln</importproject>
+    <importproject>planet_sandbox.sln</importproject>
     <analyze-all-vs-configs>true</analyze-all-vs-configs>
     <check-headers>true</check-headers>
     <check-unused-templates>true</check-unused-templates>
@@ -13,9 +13,8 @@
         <config>Release</config>
     </vs-configurations>
     <exclude>
-        <path name="Engine/third_party/"/>
-        <path name="EngineTests/"/>
-        <path name="Editor/third_party/"/>
+        <path name="engine/third_party/"/>
+        <path name="editor/third_party/"/>
     </exclude>
-    <project-name>Engine</project-name>
+    <project-name>engine</project-name>
 </project>

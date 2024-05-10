@@ -14,9 +14,9 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{432c4e9e-954c-410b-84ab-551bf5bed8ea}</ProjectGuid>
-    <RootNamespace>Editor</RootNamespace>
+    <RootNamespace>editor</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Editor</ProjectName>
+    <ProjectName>editor</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -60,7 +60,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;ImTextureID=ImU64;_UNICODE;UNICODE;PLATFORM_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Engine;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir);$(SolutionDir)Engine\third_party\json-3.10.5\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)engine;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir);$(SolutionDir)engine\third_party\json-3.10.5\include</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -98,7 +98,7 @@
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>$(SolutionDir)Engine;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir);$(SolutionDir)Engine\third_party\json-3.10.5\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)engine;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir);$(SolutionDir)engine\third_party\json-3.10.5\include</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -191,7 +191,7 @@
     <None Include="..\README.md" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Engine\Engine.vcxproj">
+    <ProjectReference Include="..\engine\engine.vcxproj">
       <Project>{b8fe1e9f-e890-496c-84a0-fccaeef9ccb2}</Project>
     </ProjectReference>
   </ItemGroup>
