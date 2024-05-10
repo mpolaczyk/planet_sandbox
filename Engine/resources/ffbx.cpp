@@ -238,10 +238,10 @@ namespace engine
     }
 	void ffbx::load_fbx_assimp(const std::string& file_name, hscene* scene_object)
     {
-    	std::string content_dir = fio::get_content_dir();
+    	std::string project_dir = fio::get_project_dir();
     	std::string meshes_dir = fio::get_meshes_dir();
     	std::ostringstream fbx_file;
-    	fbx_file << content_dir << file_name;
+    	fbx_file << project_dir << file_name;
 
     	Assimp::Importer importer;
     	assimp_logger::initialize();
@@ -313,10 +313,10 @@ namespace engine
 	
     void ffbx::load_fbx_ofbx(const std::string& file_name, hscene* scene_object)
     {
-        std::string content_dir = fio::get_content_dir();
+        std::string project_dir = fio::get_project_dir();
     	std::string meshes_dir = fio::get_meshes_dir();
         std::ostringstream fbx_file;
-        fbx_file << content_dir << file_name;
+        fbx_file << project_dir << file_name;
         
         FILE* fp = fopen(fbx_file.str().c_str(), "rb");
         if (!fp)

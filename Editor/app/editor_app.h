@@ -9,7 +9,7 @@ namespace editor
   public:
     // Parent class: application interface
     virtual LRESULT wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
-    virtual void init() override;
+    virtual void init(const char* project_name) override;
     virtual void run() override;
     virtual void cleanup() override;
     

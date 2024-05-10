@@ -23,9 +23,16 @@ int main(int argc, char** argv)
   }
   try
   {
-    app->init();
-    app->run();
-    app->cleanup();
+    if(argc == 1)
+    {
+      throw new std::runtime_error("Application command line argument required: project name");
+    }
+    else
+    {
+      app->init(argv[1]);
+      app->run();
+      app->cleanup();
+    }
   }
   catch (const std::exception& e)
   {

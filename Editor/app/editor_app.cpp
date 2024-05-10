@@ -29,9 +29,9 @@ namespace editor
     return fapplication::wnd_proc(hWnd, msg, wParam, lParam);
   }
   
-  void feditor_app::init()
+  void feditor_app::init(const char* project_name)
   {
-    fapplication::init();
+    fapplication::init(project_name);
     
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();

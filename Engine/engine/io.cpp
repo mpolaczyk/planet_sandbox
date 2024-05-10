@@ -6,6 +6,18 @@
 
 namespace engine
 {
+  const char* fio::project_name;
+
+  std::string fio::get_project_name()
+  {
+    return project_name;
+  }
+  
+  void fio::init(const char* name)
+  {
+    project_name = name;
+  }
+  
   std::string fio::get_working_dir()
   {
     std::string current_dir = std::filesystem::current_path().string();
@@ -18,55 +30,47 @@ namespace engine
   {
     std::string working_dir = get_working_dir();
     std::ostringstream oss;
-    oss << working_dir << "..\\..\\Workspace\\";
+    oss << working_dir << "..\\..\\workspace\\";
     return oss.str();
   }
 
-  std::string fio::get_content_dir()
+  std::string fio::get_project_dir()
   {
     std::string workspace_dir = get_workspace_dir();
     std::ostringstream oss;
-    oss << workspace_dir << "Content\\";
+    oss << workspace_dir << project_name << "\\";
     return oss.str();
   }
 
   std::string fio::get_materials_dir()
   {
-    std::string content_dir = get_content_dir();
+    std::string project_dir = get_project_dir();
     std::ostringstream oss;
-    oss << content_dir << "Materials\\";
+    oss << project_dir << "Materials\\";
     return oss.str();
   }
 
   std::string fio::get_meshes_dir()
   {
-    std::string content_dir = get_content_dir();
+    std::string project_dir = get_project_dir();
     std::ostringstream oss;
-    oss << content_dir << "Meshes\\";
+    oss << project_dir << "meshes\\";
     return oss.str();
   }
 
   std::string fio::get_textures_dir()
   {
-    std::string content_dir = get_content_dir();
+    std::string project_dir = get_project_dir();
     std::ostringstream oss;
-    oss << content_dir << "Textures\\";
+    oss << project_dir << "textures\\";
     return oss.str();
   }
 
   std::string fio::get_shaders_dir()
   {
-    std::string content_dir = get_content_dir();
-    std::ostringstream oss;
-    oss << content_dir << "Shaders\\";
-    return oss.str();
-  }
-  
-  std::string fio::get_renders_dir()
-  {
     std::string workspace_dir = get_workspace_dir();
     std::ostringstream oss;
-    oss << workspace_dir << "Renders\\";
+    oss << workspace_dir << "shaders\\";
     return oss.str();
   }
 
@@ -89,11 +93,11 @@ namespace engine
     return oss.str();
   }
 
-  std::string fio::get_renders_file_path(const char* file_name)
+  std::string fio::get_project_file_path(const char* file_name)
   {
-    std::string renders_dir = get_renders_dir();
+    std::string project_dir = get_project_dir();
     std::ostringstream oss;
-    oss << renders_dir << file_name;
+    oss << project_dir << file_name;
     return oss.str();
   }
 
@@ -136,20 +140,12 @@ namespace engine
 
   std::string fio::get_scene_file_path()
   {
-    return get_workspace_file_path("scene.json");
+    return get_project_file_path("scene.json");
   }
 
   std::string fio::get_imgui_file_path()
   {
     return get_workspace_file_path("imgui.ini");
-  }
-
-  std::string fio::get_render_output_file_path()
-  {
-    std::time_t t = std::time(nullptr);
-    std::ostringstream oss;
-    oss << "output_" << t << ".bmp";
-    return get_renders_file_path(oss.str().c_str());
   }
 
   std::vector<std::string> fio::discover_files(const std::string& path, const std::string& extension, bool include_extension)

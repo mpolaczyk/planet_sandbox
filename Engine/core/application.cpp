@@ -46,15 +46,18 @@ namespace engine
     return ::DefWindowProc(hWnd, msg, wParam, lParam);
   }
   
-  void fapplication::init()
+  void fapplication::init(const char* project_name)
   {
+    fio::init(project_name);
     flogger::init();
     frandom_cache::init();
     
     REG.create_class_objects();
 
+    LOG_INFO("Project: {0}", fio::get_project_name());
     LOG_INFO("Working dir: {0}", fio::get_working_dir());
     LOG_INFO("Workspace dir: {0}", fio::get_workspace_dir());
+    LOG_INFO("Project dir: {0}", fio::get_project_dir());
     if (!fio::validate_workspace_dir())
     {
       LOG_CRITICAL("Invalid workspace directory!");
