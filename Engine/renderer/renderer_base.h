@@ -26,9 +26,9 @@ namespace engine
     rrenderer_base& operator=(const rrenderer_base&) = delete;
     rrenderer_base(rrenderer_base&&) = delete;
     rrenderer_base& operator=(rrenderer_base&&) = delete;
-
-    fcamera camera;
+    
     const hscene* scene = nullptr;
+    const hhittable_base* selected_object = nullptr;
     
     // Output texture
     ComPtr<ID3D11Texture2D> output_texture;
@@ -40,7 +40,7 @@ namespace engine
     unsigned int output_height = 0;
     
     // Main public interface
-    void render_frame(const hscene* in_scene);
+    void render_frame(const hscene* in_scene, const hhittable_base* in_selected_object = nullptr);
     double get_render_time_ms() const { return render_time_ms; }
 
   protected:

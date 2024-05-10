@@ -173,7 +173,7 @@ namespace editor
 
         app_state.scene_root->camera_config.update(app_state.app_delta_time_ms / 1000.0f);
         
-        app_state.renderer->render_frame(app_state.scene_root);
+        app_state.renderer->render_frame(app_state.scene_root, app_state.selected_object);
     }
   }
   

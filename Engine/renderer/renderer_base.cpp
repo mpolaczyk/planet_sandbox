@@ -13,7 +13,7 @@ namespace engine
   OBJECT_DEFINE(rrenderer_base, oobject, Renderer base)
   OBJECT_DEFINE_NOSPAWN(rrenderer_base) 
 
-  void rrenderer_base::render_frame(const hscene* in_scene)
+  void rrenderer_base::render_frame(const hscene* in_scene, const hhittable_base* in_selected_object)
   {
     if(in_scene == nullptr)
     {
@@ -23,9 +23,9 @@ namespace engine
     const frenderer_config& renderer_config = in_scene->renderer_config;
       
     if (renderer_config.resolution_vertical == 0 || renderer_config.resolution_horizontal == 0) return;
-    camera = in_scene->camera_config;
     scene = in_scene;
-
+    selected_object = in_selected_object;
+      
     const bool size_changed = output_width != renderer_config.resolution_horizontal
                           || output_height != renderer_config.resolution_vertical;
     output_width = renderer_config.resolution_horizontal;

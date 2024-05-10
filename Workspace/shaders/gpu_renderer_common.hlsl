@@ -1,6 +1,6 @@
 
-#define MAX_MATERIALS 8
-#define MAX_LIGHTS 8
+#define MAX_MATERIALS 32
+#define MAX_LIGHTS 16
 
 struct VS_Input
 {

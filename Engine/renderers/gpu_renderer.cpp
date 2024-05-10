@@ -36,7 +36,7 @@ namespace engine
         {
             throw std::runtime_error("Failed to load default material");
         }
-
+        
         auto dx = fdx11::instance();
         {
             D3D11_INPUT_ELEMENT_DESC input_element_desc[] =
@@ -140,7 +140,7 @@ namespace engine
         // Update per-frame constant buffer
         {
             fframe_data pfd;
-            pfd.camera_position = XMFLOAT4(camera.location.e);
+            pfd.camera_position = XMFLOAT4(scene->camera_config.location.e);
             pfd.ambient_light =  scene->ambient_light_color;
             for(uint32_t i = 0; i < MAX_LIGHTS; i++)
             {
@@ -184,7 +184,7 @@ namespace engine
                 XMMATRIX world_matrix = scale_matrix * rotation_matrix * translation_matrix;
                 
                 const XMMATRIX inverse_transpose_model_world = XMMatrixTranspose(XMMatrixInverse(nullptr, world_matrix));
-                const XMMATRIX model_world_view_projection = XMMatrixMultiply(world_matrix, XMLoadFloat4x4(&camera.view_projection));
+                const XMMATRIX model_world_view_projection = XMMatrixMultiply(world_matrix, XMLoadFloat4x4(&scene->camera_config.view_projection));
             
                 fobject_data pod;
                 XMStoreFloat4x4(&pod.model_world, world_matrix);
@@ -194,6 +194,7 @@ namespace engine
                 {
                     pod.material_id = material_map[material];
                 }
+                pod.is_selected = selected_object == sm ? 1 : 0;
                 dx.update_constant_buffer<fobject_data>(&pod, object_constant_buffer);
             }
 
