@@ -92,7 +92,7 @@ namespace editor
     fui_helper::color_edit4("Ambient", object.properties.ambient);
     fui_helper::color_edit4("Diffuse", object.properties.diffuse);
     fui_helper::color_edit4("Specular", object.properties.specular);
-    ImGui::DragFloat("Specular power", &object.properties.specular_power, 0.01f, 0.0f, 1000.0f);
+    ImGui::DragFloat("Specular power", &object.properties.specular_power, 0.1f, 1.0f, 100.0f);
     fui_helper::check_box("Use texture", object.properties.use_texture);
     if(object.properties.use_texture)
     {

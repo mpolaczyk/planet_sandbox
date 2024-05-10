@@ -158,6 +158,11 @@ namespace engine
             {
                 pfd.materials[i] = i < next_material_id ? materials[i]->properties : fmaterial_properties();
             }
+            pfd.show_emissive = scene->renderer_config.show_emissive;
+            pfd.show_ambient = scene->renderer_config.show_ambient;
+            pfd.show_diffuse = scene->renderer_config.show_diffuse;
+            pfd.show_specular = scene->renderer_config.show_specular;
+            pfd.show_normals = scene->renderer_config.show_normals;
             dx.update_constant_buffer<fframe_data>(&pfd, frame_constant_buffer);
         }
         

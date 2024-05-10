@@ -59,6 +59,12 @@ namespace engine
     {
         XMFLOAT4 camera_position;                       // 16
         XMFLOAT4 ambient_light;                         // 16
+        int show_emissive;                              // 4
+        int show_ambient;                               // 4
+        int show_specular;                              // 4
+        int show_diffuse;                               // 4
+        int show_normals;                               // 4
+        int padding[3];                                 // 12
         flight_properties lights[MAX_LIGHTS];           // 80xN
         fmaterial_properties materials[MAX_MATERIALS];  // 80xN
     };

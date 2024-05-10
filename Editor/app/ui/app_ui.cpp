@@ -133,6 +133,12 @@ namespace editor
     renderer_config.resolution_horizontal = (int)((float)renderer_config.resolution_vertical * camera.aspect_ratio_w / camera.aspect_ratio_h);
     ImGui::Text("Resolution h = %d", renderer_config.resolution_horizontal);
 
+    fui_helper::check_box("Show emissive", renderer_config.show_emissive);
+    fui_helper::check_box("Show ambient", renderer_config.show_ambient);
+    fui_helper::check_box("Show diffuse", renderer_config.show_diffuse);
+    fui_helper::check_box("Show specular", renderer_config.show_specular);
+    fui_helper::check_box("Show normals", renderer_config.show_normals);
+    
     ImGui::Separator();
     
     if (state.renderer == nullptr)

@@ -13,7 +13,11 @@ namespace engine
     public:
         // Runtime members
         const oclass_object* new_type = nullptr;
-
+        int show_emissive = 1;
+        int show_ambient = 1;
+        int show_specular = 1;
+        int show_diffuse = 1;
+        int show_normals = 0;
         // Persistent members
         const oclass_object* type = nullptr;
         int resolution_vertical = 0;

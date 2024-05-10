@@ -13,6 +13,15 @@ cbuffer fframe_data : register(b0)
     //
     float4 ambient_light;       // 16
     //
+	int show_emissive;			// 4
+	int show_ambient;			// 4
+	int show_specular;			// 4
+	int show_diffuse; 			// 4
+	//
+	int show_normals;			// 4
+	int2 padding;				// 8
+	int padding2;				// 4
+	//
     flight_properties lights[MAX_LIGHTS];    // 80xN
 
     fmaterial_properties materials[MAX_MATERIALS];  // 80xN
@@ -39,7 +48,7 @@ float4 get_light_diffuse(flight_properties light, float3 L, float3 N)
     return light.color * NdotL;
 }
 
-float4 get_light_specular(flight_properties light, float3 V, float3 L, float3 N)
+float4 get_light_specular(flight_properties light, float3 V, float3 L, float3 N, float specular_power)
 {
     // Phong lighting.
     const float3 R = normalize(reflect(-L, N));
@@ -49,8 +58,7 @@ float4 get_light_specular(flight_properties light, float3 V, float3 L, float3 N)
     const float3 H = normalize(L + V);
     const float NdotH = max(0, dot(N, H));
 
-    const float material_specular_power = 1;
-    return light.color * pow(RdotV, material_specular_power);
+    return light.color * pow(RdotV, specular_power);
 }
 
 float get_light_attenuation(flight_properties light, float d)
@@ -67,7 +75,7 @@ float get_light_cone_intensity(flight_properties light, float3 L)
 }
 
 
-flight_components point_light(flight_properties light, float3 V, float4 P, float3 N)
+flight_components point_light(flight_properties light, float3 V, float4 P, float3 N, float specular_power)
 {
     flight_components result;
 
@@ -78,24 +86,24 @@ flight_components point_light(flight_properties light, float3 V, float4 P, float
     const float attenuation = get_light_attenuation(light, distance);
 
     result.diffuse = get_light_diffuse(light, L, N) * attenuation;
-    result.specular = get_light_specular(light, V, L, N) * attenuation;
+    result.specular = get_light_specular(light, V, L, N, specular_power) * attenuation;
 
     return result;
 }
 
-flight_components directional_light(flight_properties light, float3 V, float4 P, float3 N)
+flight_components directional_light(flight_properties light, float3 V, float4 P, float3 N, float specular_power)
 {
     flight_components result;
 
     const float3 L = -light.direction.xyz;
 
     result.diffuse = get_light_diffuse(light, L, N);
-    result.specular = get_light_specular(light, V, L, N);
+    result.specular = get_light_specular(light, V, L, N, specular_power);
 
     return result;
 }
 
-flight_components spot_light(flight_properties light, float3 V, float4 P, float3 N)
+flight_components spot_light(flight_properties light, float3 V, float4 P, float3 N, float specular_power)
 {
     flight_components result;
 
@@ -107,13 +115,13 @@ flight_components spot_light(flight_properties light, float3 V, float4 P, float3
     const float intensity = get_light_cone_intensity(light, L);
 
     result.diffuse = get_light_diffuse(light, L, N) * attenuation * intensity;
-    result.specular = get_light_specular(light, V, L, N) * attenuation * intensity;
+    result.specular = get_light_specular(light, V, L, N, specular_power) * attenuation * intensity;
 
     return result;
 }
 
 
-flight_components compute_light(float4 P, float3 N)
+flight_components compute_light(float4 P, float3 N, float specular_power)
 {
     const float3 V = normalize(camera_position - P).xyz;
 
@@ -130,17 +138,17 @@ flight_components compute_light(float4 P, float3 N)
         {
         case DIRECTIONAL_LIGHT:
             {
-                delta_light = directional_light(lights[i], V, P, N );
+                delta_light = directional_light(lights[i], V, P, N, specular_power);
             }
             break;
         case POINT_LIGHT: 
             {
-                delta_light = point_light(lights[i], V, P, N );
+                delta_light = point_light(lights[i], V, P, N, specular_power);
             }
             break;
         case SPOT_LIGHT:
             {
-                delta_light = spot_light(lights[i], V, P, N );
+                delta_light = spot_light(lights[i], V, P, N, specular_power);
             }
             break;
         }
@@ -157,30 +165,31 @@ flight_components compute_light(float4 P, float3 N)
 
 float4 ps_main(VS_Output input) : SV_Target
 {
-    const flight_components light_final = compute_light(input.position_ws, input.normal_ws);
-
-    float4 tex_color = { 1, 1, 1, 1 };
-    float4 selection_emissive = { 0.3, 0.3, 0.3, 1 };
-
-    const fmaterial_properties material = materials[material_id];
-    
-    if (material.use_texture)
-    {
-        tex_color = texture0.Sample(sampler0, input.uv);
+	if(show_normals)
+	{
+		return float4(input.normal_ws * 0.5 + 0.5, 1);
     }
+	else
+	{
+		const fmaterial_properties material = materials[material_id];
 
-    return (max(material.emissive, is_selected * selection_emissive)
-        + material.ambient * ambient_light
-        + material.diffuse * light_final.diffuse
-        + material.specular * light_final.specular) * tex_color;
-    
-    // Simple light test
-    //const float4 light_dir = light.position - input.position_ws;
-    //return ambient_light + light.color * saturate(dot(normalize(light_dir), input.normal_ws));
+	    const flight_components light_final = compute_light(input.position_ws, input.normal_ws, material.specular_power);
 
-    // Draw normals
-    //return float4(input.normal_ws * 0.5 + 0.5, 1);
+		float4 tex_color = { 1, 1, 1, 1 };
+        if (material.use_texture)
+        {
+            tex_color = texture0.Sample(sampler0, input.uv);
+        }
     
-    // Sample texture
-    //return texture0.Sample(sampler0, input.uv);
+        const float4 selection_emissive = { 0.3, 0.3, 0.3, 1 };
+		float4 emissive = max(material.emissive, is_selected * selection_emissive);
+		float4 ambient = material.ambient * ambient_light;
+		float4 diffuse = material.diffuse * light_final.diffuse;
+		float4 specular = material.specular * light_final.specular;
+ 
+        return tex_color * (emissive 
+			+ ambient * show_ambient 
+			+ diffuse * show_diffuse
+			+ specular * show_specular);
+	}
 }
