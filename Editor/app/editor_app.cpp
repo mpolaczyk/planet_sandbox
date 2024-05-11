@@ -31,6 +31,8 @@ namespace editor
   
   void feditor_app::init(const char* project_name)
   {
+    ImGui_ImplWin32_EnableDpiAwareness();
+    
     fapplication::init(project_name);
     
     // Setup Dear ImGui context

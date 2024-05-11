@@ -17,7 +17,7 @@ namespace engine
 
   inline uint32_t hstatic_mesh::get_hash() const
   {
-    return fhash::combine(hhittable_base::get_hash(), fhash::get(material_asset_ptr.get_name().c_str()), fhash::get(mesh_asset_ptr.get_name().c_str()));
+    return fhash::combine(hhittable_base::get_hash(), fhash::get(material_asset_ptr.get_name().c_str()), fhash::get(mesh_asset_ptr.get_name().c_str()), fhash::combine(fhash::get(bounding_box.maximum), fhash::get(bounding_box.minimum)));
   }
 
   void hstatic_mesh::load_resources()

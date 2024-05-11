@@ -17,7 +17,7 @@ namespace engine
   
   inline uint32_t hhittable_base::get_hash() const
   {
-    return fhash::combine(fhash::get(origin), fhash::get(rotation), fhash::get(scale));
+    return fhash::combine(oobject::get_hash(), fhash::get(origin), fhash::get(rotation), fhash::get(scale));
   }
 
 }

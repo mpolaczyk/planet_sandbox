@@ -13,14 +13,14 @@ cbuffer fframe_data : register(b0)
     //
     float4 ambient_light;       // 16
     //
-	int show_emissive;			// 4
+	int show_emissive;			// 4        // TODO bit flags
 	int show_ambient;			// 4
 	int show_specular;			// 4
 	int show_diffuse; 			// 4
 	//
 	int show_normals;			// 4
+    int show_object_id;         // 4
 	int2 padding;				// 8
-	int padding2;				// 4
 	//
     flight_properties lights[MAX_LIGHTS];    // 80xN
 
@@ -32,7 +32,8 @@ cbuffer fobject_data : register(b1)
     matrix model_world;
     matrix inverse_transpose_model_world;
     matrix model_world_view_projection;
-    int material_id;
+    float4 object_id;    
+    uint material_id;
     int is_selected;
 };
 
@@ -168,6 +169,10 @@ float4 ps_main(VS_Output input) : SV_Target
 	if(show_normals)
 	{
 		return float4(input.normal_ws * 0.5 + 0.5, 1);
+    }
+    else if(show_object_id)
+    {
+        return object_id;
     }
 	else
 	{

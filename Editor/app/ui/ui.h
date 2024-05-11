@@ -68,6 +68,7 @@ namespace editor
     fnew_object_panel_model nop_model;
     fdelete_object_panel_model d_model;
     fselection_combo_model<amaterial> m_model;
+    std::string object_name_filter;
   };
   
   struct fscene_window_model

@@ -30,4 +30,9 @@ namespace engine
             str.replace(start_pos, from.length(), to);
         }
     }
+
+    bool ftools::contains(const std::string& str, const std::string& pattern)
+    {
+        return str.find(pattern) != std::string::npos;
+    }
 }

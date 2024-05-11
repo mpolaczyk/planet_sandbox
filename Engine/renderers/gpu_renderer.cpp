@@ -61,7 +61,7 @@ namespace engine
     void rgpu::render_frame_impl()
     {
         fdx11& dx = fdx11::instance();
-        
+
         dx.device_context->ClearRenderTargetView(output_rtv.Get(), scene->clear_color);
         dx.device_context->ClearDepthStencilView(output_dsv.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
         
@@ -158,11 +158,13 @@ namespace engine
             {
                 pfd.materials[i] = i < next_material_id ? materials[i]->properties : fmaterial_properties();
             }
-            pfd.show_emissive = scene->renderer_config.show_emissive;
-            pfd.show_ambient = scene->renderer_config.show_ambient;
-            pfd.show_diffuse = scene->renderer_config.show_diffuse;
-            pfd.show_specular = scene->renderer_config.show_specular;
-            pfd.show_normals = scene->renderer_config.show_normals;
+            const frenderer_config& rc = scene->renderer_config;
+            pfd.show_emissive = rc.show_emissive;
+            pfd.show_ambient = rc.show_ambient;
+            pfd.show_diffuse = rc.show_diffuse;
+            pfd.show_specular = rc.show_specular;
+            pfd.show_normals = rc.show_normals;
+            pfd.show_object_id = rc.show_object_id;
             dx.update_constant_buffer<fframe_data>(&pfd, frame_constant_buffer);
         }
         
@@ -200,6 +202,7 @@ namespace engine
                     pod.material_id = material_map[material];
                 }
                 pod.is_selected = selected_object == sm ? 1 : 0;
+                pod.object_id = fmath::uint32_to_colorf(sm->get_hash());
                 dx.update_constant_buffer<fobject_data>(&pod, object_constant_buffer);
             }
 

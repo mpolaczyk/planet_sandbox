@@ -3,6 +3,8 @@
 #include <cassert>
 
 #include "object/object.h"
+
+#include "engine/hash.h"
 #include "object/object_registry.h"
 
 namespace engine
@@ -25,6 +27,11 @@ namespace engine
   int oobject::get_runtime_id() const
   {
     return runtime_id;
+  }
+
+  inline uint32_t oobject::get_hash() const
+  {
+    return fhash::get(static_cast<int64_t>(runtime_id));
   }
 
   void oobject::destroy()

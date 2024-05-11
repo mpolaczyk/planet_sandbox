@@ -28,8 +28,8 @@ namespace engine
     int32_t input_down, input_up;
     int32_t input_yaw;
     int32_t input_pitch;
-    float move_speed = 10.f;
-    float rotate_speed = 10.f;
+    float move_speed = 5.f;
+    float rotate_speed = 5.f;
     
     // Runtime members
     XMFLOAT4X4 view_projection;

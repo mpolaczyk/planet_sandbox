@@ -47,9 +47,10 @@ namespace editor
     float render_delta_time_ms = 0.0f;
     fvec3 center_of_scene;
     float distance_to_center_of_scene = 0.0f;
-
-    float output_window_lmb_x = -1.0f;
-    float output_window_lmb_y = -1.0f;
+    
+    bool output_window_is_clicked = false;
+    bool output_window_is_hovered = false;
+    uint8_t output_window_cursor_color[3];
     hhittable_base* selected_object = nullptr;
 
     void load_scene_state();

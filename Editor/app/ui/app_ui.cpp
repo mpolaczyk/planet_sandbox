@@ -1,5 +1,8 @@
 #include "stdafx.h"
 
+#include <stdio.h>
+#include "core/windows_minimal.h"
+
 #include "draw_edit_panel.h"
 #include "imgui.h"
 
@@ -10,6 +13,7 @@
 
 #include "core/core.h"
 #include "engine.h"
+#include "engine/tools.h"
 #include "hittables/hittables.h"
 #include "hittables/static_mesh.h"
 #include "hittables/scene.h"
@@ -138,6 +142,7 @@ namespace editor
     fui_helper::check_box("Show diffuse", renderer_config.show_diffuse);
     fui_helper::check_box("Show specular", renderer_config.show_specular);
     fui_helper::check_box("Show normals", renderer_config.show_normals);
+    fui_helper::check_box("Show object id", renderer_config.show_object_id);
     
     ImGui::Separator();
     
@@ -191,6 +196,8 @@ namespace editor
     ImGui::SameLine();
     draw_delete_object_panel(model.d_model, state);
 
+    fui_helper::input_text("Name filter", model.object_name_filter);
+    
     int num_objects = (int)state.scene_root->objects.size();
     if (ImGui::BeginListBox("Objects", ImVec2(-FLT_MIN, fmath::min1(20, (float)num_objects + 1) * ImGui::GetTextLineHeightWithSpacing())))
     {
@@ -206,6 +213,10 @@ namespace editor
         std::string obj_name = obj->get_display_name();
         std::ostringstream oss;
         oss << obj_name;
+        if(!model.object_name_filter.empty() && !ftools::contains(obj_name, model.object_name_filter))
+        {
+          continue;
+        }
         if (ImGui::Selectable(oss.str().c_str(), model.selected_id == n))
         {
           model.m_model.reset();
@@ -230,6 +241,28 @@ namespace editor
     }
   }
 
+  void get_color_under_cursor(uint8_t& out_r, uint8_t& out_g, uint8_t& out_b)
+  {
+    out_r = 0; 
+    out_g = 0; 
+    out_b = 0; 
+    if (HDC hDC = GetDC(nullptr))
+    {
+      POINT point;    
+      if (GetCursorPos(&point))
+      {
+        COLORREF color = GetPixel(hDC, point.x, point.y);
+        if (color != CLR_INVALID)
+        {
+          ReleaseDC(GetDesktopWindow(), hDC);
+          out_r = static_cast<uint8_t>(GetRValue(color));
+          out_g = static_cast<uint8_t>(GetGValue(color));
+          out_b = static_cast<uint8_t>(GetBValue(color));
+        }
+      }
+    }
+  }
+
   void draw_output_window(foutput_window_model& model, fapp_instance& state)
   {
     if (state.renderer->output_texture)
@@ -239,14 +272,10 @@ namespace editor
       ImVec2 size = ImVec2(state.output_width * model.zoom, state.output_height * model.zoom);
       ImGui::Image((ImTextureID)state.renderer->output_srv.Get(), size, ImVec2(0, 0), ImVec2(1, 1));
 
-      if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-      {
-        ImVec2 item_min = ImGui::GetItemRectMin();
-        ImVec2 mouse_pos = ImGui::GetMousePos();
-        state.output_window_lmb_x = mouse_pos.x - item_min.x;
-        state.output_window_lmb_y = mouse_pos.y - item_min.y;
-      }
-
+      state.output_window_is_clicked = ImGui::IsItemClicked(ImGuiMouseButton_Left);
+      state.output_window_is_hovered = ImGui::IsItemHovered();
+      get_color_under_cursor(state.output_window_cursor_color[0], state.output_window_cursor_color[1], state.output_window_cursor_color[2]);
+      
       ImGui::End();
     }
   }

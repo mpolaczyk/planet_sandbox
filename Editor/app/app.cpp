@@ -5,6 +5,7 @@
 #include "app.h"
 #include "hittables/hittables.h"
 #include "hittables/scene.h"
+#include "hittables/static_mesh.h"
 
 #include "renderer/renderer_base.h"
 
@@ -54,25 +55,40 @@ namespace editor
 
   void handle_input(fapp_instance& state)
   {
-    // Handle clicks on the output window - select the object under the cursor
-    if (state.output_window_lmb_x > 0.0f && state.output_window_lmb_y > 0.0f)
+    // Object selection
+    // Hover the mouse over the input window and click to select.
+    // User will hold LMB until the next frame is rendered. Renderer will output the object id texture.
+    // Color under cursor will determine which hittable is hitted on the scene.
+    // I do it this way because imported mesh data is bonkers. Mesh instances are merged together across the whole scene.
+    // All of them have origin 0,0,0.
+    // Line-box hit detection will not work properly. Line-mesh - no time for that.
+    if(state.output_window_is_hovered &&ImGui::IsMouseDown(ImGuiMouseButton_Left))
     {
-      float u = state.output_window_lmb_x / (state.output_width - 1);
-      float v = state.output_window_lmb_y / (state.output_height - 1);
-      v = 1.0f - v; // because vertical axis is flipped in the output window
-
-      LOG_ERROR("Selecting not implemented");
+      state.scene_root->renderer_config.show_object_id = 1;
       
-      // TODO FIX
-      // fray r = state.camera.get_ray(u, v);
-      // fhit_record hit;
-      // if (state.scene_root->hit(r, fmath::infinity, hit))
-      // {
-      //   state.selected_object = hit.object;
-      // }
-
-      state.output_window_lmb_x = -1.0f;
-      state.output_window_lmb_y = -1.0f;
+      std::vector<hstatic_mesh*> meshes = REG.get_all_by_type<hstatic_mesh>();
+      bool found = false;
+      for (hstatic_mesh* m : meshes)
+      {
+        XMUINT4 hash = fmath::uint32_to_colori(m->get_hash());
+          
+        if(state.output_window_cursor_color[0] == hash.x
+          && state.output_window_cursor_color[1] == hash.y
+          && state.output_window_cursor_color[2] == hash.z)
+        {
+          state.selected_object = m;
+          found = true;
+          break;
+        }
+      }
+      if(!found)
+      {
+        state.selected_object = nullptr;
+      }
+    }
+    else
+    {
+      state.scene_root->renderer_config.show_object_id = 0;
     }
 
     ImGuiIO& io = ImGui::GetIO();

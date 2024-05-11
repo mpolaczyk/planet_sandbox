@@ -15,7 +15,7 @@ namespace engine
     OBJECT_DECLARE(hhittable_base, oobject)
     OBJECT_DECLARE_VISITOR
 
-    virtual uint32_t get_hash() const;
+    virtual uint32_t get_hash() const override;
     virtual void load_resources() {};
 
     // Persistent members

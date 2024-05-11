@@ -40,12 +40,13 @@ namespace engine
 
     int get_runtime_id() const;
 
+    virtual uint32_t get_hash() const;
     virtual void destroy();
 
   private:
     // Runtime id can be set only once by the registry. Can't change at runtime.
     void set_runtime_id(int id);
-    int runtime_id = -1;
+    int runtime_id = -1;    // TODO uint32_t
   };
 
   typedef oobject*(*spawn_instance_func_type)();

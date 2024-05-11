@@ -5,7 +5,8 @@ cbuffer fobject_data : register(b0)
     matrix model_world;
     matrix inverse_transpose_model_world;
     matrix model_world_view_projection;
-    int material_id;
+    float4 object_id;
+    uint material_id;
     int is_selected;
 };
 

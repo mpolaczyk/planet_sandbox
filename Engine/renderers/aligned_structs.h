@@ -24,7 +24,7 @@ namespace engine
         XMFLOAT4 specular         { 0.0f, 0.0f, 0.0f, 1.0f }; // 16
         //
         float specular_power      { 1.0f };                   // 4  
-        int use_texture           { false };                  // 4  
+        int32_t use_texture           { false };                  // 4  
         float padding[2];                                     // 8
     };
     ALIGNED_STRUCT_END(fmaterial_properties)
@@ -49,9 +49,9 @@ namespace engine
         float linear_attenuation    { 0.0f };                     // 4 
         float quadratic_attenuation { 0.0f };                     // 4
         //
-        int light_type              { flight_type::point };       // 4 
-        int enabled                 { 0 };                        // 4 
-        int padding[2];                                           // 8
+        int32_t light_type              { flight_type::point };       // 4 
+        int32_t enabled                 { 0 };                        // 4 
+        int32_t padding[2];                                           // 8
     };
     ALIGNED_STRUCT_END(flight_properties)
     
@@ -59,12 +59,13 @@ namespace engine
     {
         XMFLOAT4 camera_position;                       // 16
         XMFLOAT4 ambient_light;                         // 16
-        int show_emissive;                              // 4
-        int show_ambient;                               // 4
-        int show_specular;                              // 4
-        int show_diffuse;                               // 4
-        int show_normals;                               // 4
-        int padding[3];                                 // 12
+        int32_t show_emissive;                          // 4    // TODO pack bits
+        int32_t show_ambient;                           // 4
+        int32_t show_specular;                          // 4
+        int32_t show_diffuse;                           // 4
+        int32_t show_normals;                           // 4
+        int32_t show_object_id;                         // 4
+        int32_t padding[2];                             // 8
         flight_properties lights[MAX_LIGHTS];           // 80xN
         fmaterial_properties materials[MAX_MATERIALS];  // 80xN
     };
@@ -75,9 +76,10 @@ namespace engine
         XMFLOAT4X4 model_world;                     // 64 Used to transform the vertex position from object space to world space
         XMFLOAT4X4 inverse_transpose_model_world;   // 64 Used to transform the vertex normal from object space to world space
         XMFLOAT4X4 model_world_view_projection;     // 64 Used to transform the vertex position from object space to projected clip space
-        int material_id;                            // 4
-        int is_selected;                            // 4
-        int padding[2];                             // 8
+        XMFLOAT4 object_id;                         // 16
+        uint32_t material_id;                       // 4
+        int32_t is_selected;                        // 4
+        int32_t padding[2];                         // 8
     };
     ALIGNED_STRUCT_END(fobject_data)
 }
