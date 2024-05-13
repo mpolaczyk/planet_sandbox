@@ -8,6 +8,7 @@ All CPU rendering functionality has been removed.
 The goal is to achieve the same result but with DX12 and DXR (long way to go).
 
 Features added so far:
+
 - Engine and editor separated to a DLL and EXE
 - DX11 support for simple scene rendering, forward renderer, Phong lighting model
 - Custom RTTI and memory menegament for resources like scene objects, assets, shaders etc.
@@ -22,7 +23,6 @@ Features added so far:
 
 Example scene: [Cozy Kitchen] imported from Blender.
 ![Example output](screen.jpg)
-
 
 ### Third party dependencies
 DirectX 11
