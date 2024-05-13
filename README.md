@@ -1,5 +1,5 @@
-## PlanetSandbox
-**Planet Sandbox**
+## Planet sandbox
+**GPU Rendering sandbox**
 
 Author: planet620
 
@@ -15,11 +15,11 @@ Features added so far:
 - Persistent soft asset pointers
 - FBX Import
 - Improved UI
-  - Material editor
-  - Managed objects list
-  - Scene editor
-  - Object selection and highlight
-  - Combo list for managed objects
+    - Material editor
+    - Managed objects list
+    - Scene editor
+    - Object selection and highlight
+    - Combo list for managed objects
 
 Example scene: [Cozy Kitchen] imported from Blender.
 ![Example output](screen.jpg)
