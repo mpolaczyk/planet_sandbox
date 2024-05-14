@@ -13,7 +13,8 @@ Features added so far:
 - DX11 support for simple scene rendering, forward renderer, Phong lighting model
 - Custom RTTI and memory menegament for resources like scene objects, assets, shaders etc.
 - Persistent soft asset pointers
-- FBX Import
+- FBX scene import
+- Support to multiple project folders
 - Improved UI
     - Material editor
     - Managed objects list
