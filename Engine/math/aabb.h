@@ -12,9 +12,11 @@ namespace engine
   {
   public:
     faabb() = default;
+
     faabb(const fvec3& in_minimum, const fvec3& in_maximum)
       : minimum(in_minimum), maximum(in_maximum)
-    { }
+    {
+    }
 
     bool hit(const fray& in_ray, float t_min, float t_max) const;
     bool hit2(const fray& in_ray, float t_min, float t_max) const;

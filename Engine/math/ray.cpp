@@ -3,7 +3,7 @@
 namespace engine
 {
   fray::fray(const fvec3& origin, const fvec3& direction)
-        : origin(origin), direction(direction)
+    : origin(origin), direction(direction)
   {
   }
 

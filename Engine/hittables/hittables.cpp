@@ -14,10 +14,9 @@ namespace engine
   OBJECT_DEFINE(hhittable_base, oobject, Hittable)
   OBJECT_DEFINE_NOSPAWN(hhittable_base)
   OBJECT_DEFINE_VISITOR(hhittable_base)
-  
+
   inline uint32_t hhittable_base::get_hash() const
   {
     return fhash::combine(oobject::get_hash(), fhash::get(origin), fhash::get(rotation), fhash::get(scale));
   }
-
 }

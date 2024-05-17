@@ -11,7 +11,7 @@ namespace DirectX
 namespace engine
 {
   struct fvec3;
-  
+
   class ENGINE_API fhash
   {
   public:

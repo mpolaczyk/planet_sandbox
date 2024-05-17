@@ -18,28 +18,29 @@
 #include "renderers/gpu_forward_sync.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
- 
+
 namespace editor
 {
   LRESULT feditor_app::wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   {
-    if(ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
     {
       return true;
     }
     return fapplication::wnd_proc(hWnd, msg, wParam, lParam);
   }
-  
+
   void feditor_app::init(const char* project_name)
   {
     ImGui_ImplWin32_EnableDpiAwareness();
-    
+
     fapplication::init(project_name);
-    
+
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
     {
       // overwrite imgui config file name
       std::string imgui_ini_filename = engine::fio::get_imgui_file_path();
@@ -49,23 +50,23 @@ namespace editor
     }
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-  
+
     // Setup Dear ImGui style
     ImGui::StyleColorsClassic();
-  
+
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
     fdx11& dx = fdx11::instance();
     ImGui_ImplDX11_Init(dx.device.Get(), dx.device_context.Get());
-  
+
     // Load persistent state
     app_state.load_window_state();
-    
+
     app_state.load_assets();
     app_state.load_scene_state();
     app_state.scene_root->load_resources();
     ::SetWindowPos(hwnd, NULL, app_state.window_conf.x, app_state.window_conf.y, app_state.window_conf.w, app_state.window_conf.h, NULL);
-    
+
     LOG_INFO("Loading done, starting the main loop");
   }
 
@@ -79,13 +80,13 @@ namespace editor
       const ImGuiIO& io = ImGui::GetIO();
       app_state.app_delta_time_ms = io.DeltaTime * 1000.0f;
       app_state.render_delta_time_ms = static_cast<float>(app_state.scene_root->renderer->get_render_time_ms());
-      
+
       handle_input(app_state);
       manage_renderer();
       draw_scene();
       draw_ui();
       present();
-      
+
       RECT rect;
       ::GetWindowRect(hwnd, &rect);
       app_state.window_conf.x = rect.left;
@@ -94,18 +95,18 @@ namespace editor
       app_state.window_conf.h = rect.bottom - rect.top;
     }
   }
-  
+
   void feditor_app::cleanup()
   {
     app_state.save_window_state();
-  
+
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
-    
+
     fapplication::cleanup();
   }
-  
+
   void feditor_app::pump_messages()
   {
     // Poll and handle messages (inputs, window resize, etc.)
@@ -124,14 +125,14 @@ namespace editor
       ::DispatchMessage(&msg);
     }
   }
-  
+
   void feditor_app::manage_renderer()
   {
     // Respawn the renderer if the type needs to be different
 
 
     // TODO Fix this
-    
+
     //frenderer_config& renderer_config = app_state.scene_root->renderer_config;
     //if (app_state.renderer->get_class() != renderer_config.new_type && renderer_config.new_type != nullptr)
     //{
@@ -144,54 +145,54 @@ namespace editor
     //  app_state.renderer = new_renderer;
     //}
   }
-  
+
   void feditor_app::draw_ui()
   {
     // Start the Dear ImGui frame
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
-  
+
   #ifndef IMGUI_DISABLE_DEMO_WINDOWS
       // Debug UI only in debug mode
       if (0) { ImGui::ShowDemoWindow(); }
   #endif
-  
+
     draw_editor_window(app_state.editor_window_model, app_state);
     draw_output_window(app_state.output_window_model, app_state);
     draw_scene_window(app_state.scene_window_model, app_state);
-  
+
     ImGui::Render(); // Draw, prepare for render
   }
-  
+
   void feditor_app::draw_scene()
   {
     hscene* scene = app_state.scene_root;
-    if(scene != nullptr)
+    if (scene != nullptr)
     {
       rrenderer_base* renderer = scene->renderer;
       if (renderer != nullptr)
       {
         scene->load_resources();
-  
+
         update_default_spawn_position(app_state);
-      
+
         scene->camera_config.update(app_state.app_delta_time_ms / 1000.0f, renderer->output_width, renderer->output_height);
-        
+
         renderer->render_frame(scene, app_state.selected_object);
       }
     }
   }
-  
+
   void feditor_app::present()
   {
     fdx11& dx = fdx11::instance();
     dx.device_context->OMSetRenderTargets(1, dx.rtv.GetAddressOf(), nullptr);
-    
+
     dx.device_context->ClearRenderTargetView(dx.rtv.Get(), DirectX::Colors::LightSlateGray);
-        
+
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-  
+
     dx.swap_chain->Present(1, 0); // Present with vsync
   }
 }

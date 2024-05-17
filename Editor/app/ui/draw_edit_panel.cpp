@@ -21,21 +21,21 @@ namespace editor
     {
       object.set_display_name(display_name);
     }
-    
+
     ImGui::DragFloat3("Origin", object.origin.e);
     ImGui::DragFloat3("Rotation", object.rotation.e);
     ImGui::DragFloat3("Scale", object.scale.e);
   }
 
-  void vdraw_edit_panel::visit(hstatic_mesh& object) const 
+  void vdraw_edit_panel::visit(hstatic_mesh& object) const
   {
     visit_hhittable_base(object);
 
     {
       fselection_combo_model<astatic_mesh> model;
       model.objects = REG.get_all_by_type<const astatic_mesh>();
-      fui_helper::draw_selection_combo<astatic_mesh>(model, "Mesh",[=](const astatic_mesh* obj) -> bool { return true; }, object.mesh_asset_ptr.get());
-    
+      fui_helper::draw_selection_combo<astatic_mesh>(model, "Mesh", [=](const astatic_mesh* obj) -> bool{ return true; }, object.mesh_asset_ptr.get());
+
       if (model.selected_object != nullptr)
       {
         object.mesh_asset_ptr.set_name(model.selected_object->file_name);
@@ -45,8 +45,8 @@ namespace editor
     {
       fselection_combo_model<amaterial> model;
       model.objects = REG.get_all_by_type<const amaterial>();
-      fui_helper::draw_selection_combo<amaterial>(model, "Material",[=](const amaterial* obj) -> bool { return true; }, object.material_asset_ptr.get());
-    
+      fui_helper::draw_selection_combo<amaterial>(model, "Material", [=](const amaterial* obj) -> bool{ return true; }, object.material_asset_ptr.get());
+
       if (model.selected_object != nullptr)
       {
         object.material_asset_ptr.set_name(model.selected_object->file_name);
@@ -86,7 +86,7 @@ namespace editor
   {
     ImGui::Text("File name: %s", object.file_name.c_str());
   }
-  
+
   void vdraw_edit_panel::visit_rrenderer_base(rrenderer_base& object) const
   {
     ImGui::InputInt("Resolution h", &object.output_width);
@@ -94,8 +94,8 @@ namespace editor
     {
       fselection_combo_model<amaterial> model;
       model.objects = REG.get_all_by_type<const amaterial>();
-      fui_helper::draw_selection_combo<amaterial>(model, "Default material",[=](const amaterial* obj) -> bool { return true; }, object.default_material_asset.get());
-        
+      fui_helper::draw_selection_combo<amaterial>(model, "Default material", [=](const amaterial* obj) -> bool{ return true; }, object.default_material_asset.get());
+
       if (model.selected_object != nullptr)
       {
         object.default_material_asset.set_name(model.selected_object->file_name);
@@ -112,27 +112,27 @@ namespace editor
     fui_helper::color_edit4("Specular", object.properties.specular);
     ImGui::DragFloat("Specular power", &object.properties.specular_power, 0.1f, 1.0f, 100.0f);
     fui_helper::check_box("Use texture", object.properties.use_texture);
-    if(object.properties.use_texture)
+    if (object.properties.use_texture)
     {
       fselection_combo_model<atexture> model;
       model.objects = REG.get_all_by_type<const atexture>();
-      fui_helper::draw_selection_combo<atexture>(model, "Texture",[=](const atexture* obj) -> bool { return true; }, object.texture_asset_ptr.get());
-      
+      fui_helper::draw_selection_combo<atexture>(model, "Texture", [=](const atexture* obj) -> bool{ return true; }, object.texture_asset_ptr.get());
+
       if (model.selected_object != nullptr)
       {
         object.texture_asset_ptr.set_name(model.selected_object->file_name);
       }
     }
   }
-  
+
   void vdraw_edit_panel::visit(rgpu_forward_sync& object) const
   {
     visit_rrenderer_base(object);
     {
       fselection_combo_model<apixel_shader> model;
       model.objects = REG.get_all_by_type<const apixel_shader>();
-      fui_helper::draw_selection_combo<apixel_shader>(model, "Pixel shader",[=](const apixel_shader* obj) -> bool { return true; }, object.pixel_shader_asset.get());
-        
+      fui_helper::draw_selection_combo<apixel_shader>(model, "Pixel shader", [=](const apixel_shader* obj) -> bool{ return true; }, object.pixel_shader_asset.get());
+
       if (model.selected_object != nullptr)
       {
         object.pixel_shader_asset.set_name(model.selected_object->file_name);
@@ -141,8 +141,8 @@ namespace editor
     {
       fselection_combo_model<avertex_shader> model;
       model.objects = REG.get_all_by_type<const avertex_shader>();
-      fui_helper::draw_selection_combo<avertex_shader>(model, "Vertex shader",[=](const avertex_shader* obj) -> bool { return true; }, object.vertex_shader_asset.get());
-        
+      fui_helper::draw_selection_combo<avertex_shader>(model, "Vertex shader", [=](const avertex_shader* obj) -> bool{ return true; }, object.vertex_shader_asset.get());
+
       if (model.selected_object != nullptr)
       {
         object.vertex_shader_asset.set_name(model.selected_object->file_name);

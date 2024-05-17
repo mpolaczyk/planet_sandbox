@@ -1,4 +1,3 @@
-
 #include <fstream>
 #include <sstream>
 
@@ -16,7 +15,7 @@ namespace engine
   OBJECT_DEFINE(amaterial, aasset_base, Material asset)
   OBJECT_DEFINE_SPAWN(amaterial)
   OBJECT_DEFINE_VISITOR(amaterial)
-  
+
   bool amaterial::load(amaterial* instance, const std::string& name)
   {
     aasset_base::load(instance, name);
@@ -28,7 +27,7 @@ namespace engine
     oss << name << ".json";
     const std::string file_path = fio::get_material_file_path(oss.str().c_str());
     std::ifstream input_stream(file_path.c_str());
-    if (input_stream.fail())
+    if(input_stream.fail())
     {
       LOG_ERROR("Unable to open material asset: {0}", file_path);
       return false;
@@ -53,7 +52,7 @@ namespace engine
     oss << object->file_name << ".json";
     std::ofstream o(fio::get_material_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
-    if (o.is_open())
+    if(o.is_open())
     {
       o.write(str.data(), str.length());
     }
@@ -63,5 +62,4 @@ namespace engine
     }
     o.close();
   }
-
 }

@@ -11,22 +11,22 @@ namespace engine
   float frandom_seed::rand_iqint1(uint32_t seed)
   {
     static uint32_t last = 0;
-    uint32_t state = seed + last;   // Seed can be the same for multiple calls, we need to rotate it
+    uint32_t state = seed + last; // Seed can be the same for multiple calls, we need to rotate it
     state = (state << 13U) ^ state;
     state = state * (state * state * 15731U + 789221U) + 1376312589U;
     last = state;
-    return (float)state / (float)UINT_MAX;   // [0.0f, 1.0f]
+    return (float)state / (float)UINT_MAX; // [0.0f, 1.0f]
   }
 
   float frandom_seed::rand_pcg(uint32_t seed)
   {
     static uint32_t last = 0;
-    uint32_t state = seed + last;   // Seed can be the same for multiple calls, we need to rotate it
+    uint32_t state = seed + last; // Seed can be the same for multiple calls, we need to rotate it
     state = state * 747796405U + 2891336453U;
     uint32_t word = ((state >> ((state >> 28U) + 4U)) ^ state) * 277803737U;
     uint32_t result = ((word >> 22U) ^ word);
     last = result;
-    return (float)result / (float)UINT_MAX;   // [0.0f, 1.0f]
+    return (float)result / (float)UINT_MAX; // [0.0f, 1.0f]
   }
 
   fvec3 frandom_seed::direction(uint32_t seed)
@@ -42,7 +42,7 @@ namespace engine
     float theta = 2.0f * fmath::pi * RAND_SEED_FUNC(seed);
     float rho = sqrt(-2.0f * log(RAND_SEED_FUNC(seed)));
     assert(isfinite(rho));
-    return rho * cos(theta);  // [-1.0f, 1.0f]
+    return rho * cos(theta); // [-1.0f, 1.0f]
   }
 
   fvec3 frandom_seed::cosine_direction(uint32_t seed)
@@ -64,6 +64,7 @@ namespace engine
     fvec3 dir = fmath::normalize(fvec3(RAND_SEED_FUNC(seed)));
     return dir * RAND_SEED_FUNC(seed);
   }
+
   fvec3 frandom_seed::unit_in_hemisphere(const fvec3& normal, uint32_t seed)
   {
     fvec3 dir = direction(seed);
@@ -73,7 +74,7 @@ namespace engine
 
 namespace engine
 {
-  template<typename T, int N>
+  template <typename T, int N>
   struct cache
   {
     T get()
@@ -107,13 +108,13 @@ namespace engine
     std::uniform_real_distribution<float> distribution;
     distribution = std::uniform_real_distribution<float>(-1.0f, 1.0f);
     std::mt19937 generator(static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count()));
-    for (int s = 0; s < float_cache.len(); s++)
+    for(int s = 0; s < float_cache.len(); s++)
     {
       float_cache.add(distribution(generator));
     }
 
     // Fill cosine direction cache
-    for (int s = 0; s < cosine_direction_cache.len(); s++)
+    for(int s = 0; s < cosine_direction_cache.len(); s++)
     {
       cosine_direction_cache.add(cosine_direction());
     }
@@ -136,7 +137,7 @@ namespace engine
 
   float frandom_cache::get_float_M_N(float M, float N)
   {
-    if (M < N)
+    if(M < N)
     {
       return M + fabs(float_cache.get()) * (N - M);
     }
@@ -203,7 +204,7 @@ namespace engine
     float theta = 2.0f * fmath::pi * get_float_0_1();
     float rho = sqrt(-2.0f * log(get_float_0_1()));
     assert(isfinite(rho));
-    return rho * cos(theta);  // [-1.0f, 1.0f]
+    return rho * cos(theta); // [-1.0f, 1.0f]
   }
 
   fvec3 frandom_cache::in_unit_disk()

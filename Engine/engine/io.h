@@ -10,11 +10,11 @@ namespace engine
   class ENGINE_API fio
   {
     static const char* project_name;
-    
+
   public:
     static std::string get_project_name();
     static void init(const char* name);
-    
+
     // Directories
     static std::string get_working_dir();
     static std::string get_workspace_dir();

@@ -15,16 +15,16 @@ namespace editor
 {
   void fui_helper::input_float3(const char* caption, DirectX::XMFLOAT4& value)
   {
-    float temp_arr[4] = { value.x, value.y, value.z, value.w };
+    float temp_arr[4] = { value.x,value.y,value.z,value.w };
     ImGui::InputFloat3(caption, temp_arr);
-    value = { temp_arr[0], temp_arr[1], temp_arr[2], temp_arr[3] };
+    value = { temp_arr[0],temp_arr[1],temp_arr[2],temp_arr[3] };
   }
 
   void fui_helper::color_edit4(const char* caption, DirectX::XMFLOAT4& value)
   {
-    float temp_arr[4] = { value.x, value.y, value.z, value.w };
+    float temp_arr[4] = { value.x,value.y,value.z,value.w };
     ImGui::ColorEdit4(caption, temp_arr, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-    value = { temp_arr[0], temp_arr[1], temp_arr[2], temp_arr[3] };
+    value = { temp_arr[0],temp_arr[1],temp_arr[2],temp_arr[3] };
   }
 
   void fui_helper::check_box(const char* caption, int& value)

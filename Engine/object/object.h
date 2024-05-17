@@ -21,22 +21,22 @@ namespace engine
 {
   class fobject_registry;
   class oclass_object;
-  
+
   // Managed object class
   // Base class for all objects, use like abstract
   class ENGINE_API oobject
   {
     friend fobject_registry;
-    
+
   public:
     OBJECT_DECLARE(oobject, oobject)
     OBJECT_DECLARE_VISITOR_BASE
-    
+
     oobject() = default;
     oobject(const oobject&) = default;
     oobject& operator=(const oobject&) = default;
-	  oobject(oobject&&) = delete;
-	  oobject& operator=(oobject&&) = delete;
+    oobject(oobject&&) = delete;
+    oobject& operator=(oobject&&) = delete;
 
     int get_runtime_id() const;
 
@@ -46,22 +46,22 @@ namespace engine
   private:
     // Runtime id can be set only once by the registry. Can't change at runtime.
     void set_runtime_id(int id);
-    int runtime_id = -1;    // TODO uint32_t
+    int runtime_id = -1; // TODO uint32_t
   };
 
   typedef oobject*(*spawn_instance_func_type)();
-  
+
   // Base class for all class types. Each registered object has object class instance in the registry.
   class ENGINE_API oclass_object : public oobject
   {
     friend fobject_registry;
-    
+
   public:
     OBJECT_DECLARE(oclass_object, oobject)
-    
+
     std::string get_class_name() const { return class_name; }
     std::string get_parent_class_name() const { return parent_class_name; }
-    
+
   private:
     spawn_instance_func_type spawn_instance_func;
     std::string class_name;

@@ -11,7 +11,7 @@
 namespace engine
 {
   using namespace DirectX;
-  
+
   class ENGINE_API amaterial : public aasset_base
   {
   public:
@@ -19,7 +19,7 @@ namespace engine
     OBJECT_DECLARE_LOAD(amaterial)
     OBJECT_DECLARE_SAVE(amaterial)
     OBJECT_DECLARE_VISITOR
-    
+
     // JSON persistent
     fmaterial_properties properties;
     fsoft_asset_ptr<atexture> texture_asset_ptr;

@@ -45,5 +45,3 @@ namespace engine
     ffpe_disabled_scope& operator=(const ffpe_disabled_scope&);
   };
 }
-
-

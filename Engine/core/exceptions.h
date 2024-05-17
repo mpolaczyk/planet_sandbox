@@ -25,8 +25,14 @@ namespace engine
     fseh_exception() = default;
 
   public:
-    explicit fseh_exception(fseh_exception& e) : exception_code(e.exception_code) {}
-    explicit fseh_exception(unsigned int in_exception_code) : exception_code(in_exception_code) {}
+    explicit fseh_exception(fseh_exception& e) : exception_code(e.exception_code)
+    {
+    }
+
+    explicit fseh_exception(unsigned int in_exception_code) : exception_code(in_exception_code)
+    {
+    }
+
     ~fseh_exception() = default;
 
     virtual char const* what() const override;

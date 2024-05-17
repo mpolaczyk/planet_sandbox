@@ -15,7 +15,7 @@ namespace engine
   public:
     OBJECT_DECLARE(aasset_base, oobject)
     OBJECT_DECLARE_LOAD(aasset_base)
-    
+
     // JSON file name
     std::string file_name;
   };

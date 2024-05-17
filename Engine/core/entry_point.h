@@ -15,8 +15,8 @@ int main(int argc, char** argv)
 {
   fapplication* app = create_application();
   fapplication::app_weak_ptr = app;
-  
-  if (!IsDebuggerPresent())
+
+  if(!IsDebuggerPresent())
   {
     // Register SEH exception catching when no debugger is present
     _set_se_translator(fseh_exception::handler);
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
       app->cleanup();
     }
   }
-  catch (const std::exception& e)
+  catch(const std::exception& e)
   {
     LOG_CRITICAL("Exception handler:");
     LOG_CRITICAL("{0}", e.what());

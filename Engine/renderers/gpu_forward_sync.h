@@ -23,16 +23,16 @@ namespace engine
 {
   class hstatic_mesh;
   class hlight;
-  
+
   using namespace DirectX;
   using Microsoft::WRL::ComPtr;
-  
+
   class ENGINE_API rgpu_forward_sync : public rrenderer_base
-  {    
+  {
   public:
     OBJECT_DECLARE(rgpu_forward_sync, rrenderer_base)
     OBJECT_DECLARE_VISITOR
-    
+
     // Persistent members
     fsoft_asset_ptr<apixel_shader> pixel_shader_asset;
     fsoft_asset_ptr<avertex_shader> vertex_shader_asset;
@@ -43,11 +43,11 @@ namespace engine
     int show_specular = 1;
     int show_diffuse = 1;
     int show_normals = 0;
-    
+
   protected:
     virtual void init() override;
     virtual void render_frame_impl() override;
-    
+
   private:
     ComPtr<ID3D11InputLayout> input_layout;
     ComPtr<ID3D11ShaderResourceView> texture_srv;
@@ -58,7 +58,7 @@ namespace engine
     ComPtr<ID3D11DepthStencilState> depth_stencil_state;
 
     // BEGIN - Rebuilt every frame based on hstatic_mesh objects placed on the scene
-    
+
     // Map material pointer to material id (sent to gpu)
     // Needs to be quick to search
     typedef std::unordered_map<const amaterial*, uint32_t> material_map_type;
@@ -73,7 +73,7 @@ namespace engine
     // All lights on the scene
     std::vector<const hlight*> lights;
     uint32_t next_light_id = 0;
-    
+
     //END
   };
 }

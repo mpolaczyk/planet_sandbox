@@ -27,7 +27,7 @@ namespace editor
     }
     nlohmann::json j;
     input_stream >> j;
-   
+
     nlohmann::json jscene_root;
     if (TRY_PARSE(nlohmann::json, j, "scene", jscene_root)) { scene_root->accept(vdeserialize_object(jscene_root)); }
 
@@ -78,9 +78,9 @@ namespace editor
 
     nlohmann::json jwindow;
     if (TRY_PARSE(nlohmann::json, j, "window", jwindow)) { fui_persistence::deserialize(jwindow, window_conf); }
-    
+
     TRY_PARSE(float, j, "zoom", output_window_model.zoom);
-  
+
     input_stream.close();
   }
 

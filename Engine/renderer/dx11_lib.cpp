@@ -1,4 +1,3 @@
-
 #include <d3d11_1.h>
 #include <winerror.h>
 #include <cassert>
@@ -13,16 +12,16 @@ namespace engine
   {
     ComPtr<ID3D11Device> base_device;
     ComPtr<ID3D11DeviceContext> base_device_context;
-    const D3D_FEATURE_LEVEL feature_levels[] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
+    const D3D_FEATURE_LEVEL feature_levels[] = {D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0,};
     UINT flags = 0;
 #if BUILD_DEBUG
     flags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
-    if(FAILED(D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE, 
-                                          0, flags, 
-                                          feature_levels, 2, 
-                                          D3D11_SDK_VERSION, base_device.GetAddressOf(), 
-                                          0, base_device_context.GetAddressOf())))
+    if(FAILED(D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE,
+      0, flags,
+      feature_levels, 2,
+      D3D11_SDK_VERSION, base_device.GetAddressOf(),
+      0, base_device_context.GetAddressOf())))
     {
       throw std::runtime_error("D3D11CreateDevice failed.");
     }
@@ -75,7 +74,7 @@ namespace engine
 
     DXGI_ADAPTER_DESC adapter_desc;
     adapter->GetDesc(&adapter_desc);
-    
+
     LOG_INFO("Graphics Device: {0}", ftools::to_utf8(adapter_desc.Description));
 
     ComPtr<IDXGIFactory2> factory;
@@ -110,7 +109,7 @@ namespace engine
     {
       throw std::runtime_error("GetBuffer frame buffer failed.");
     }
-    
+
     if(FAILED(device->CreateRenderTargetView(frame_buffer.Get(), nullptr, rtv.GetAddressOf())))
     {
       throw std::runtime_error("CreateRenderTargetView failed.");
@@ -124,7 +123,7 @@ namespace engine
       throw std::runtime_error("CreateInputLayout failed.");
     }
   }
-  
+
   void fdx11::create_sampler_state(ComPtr<ID3D11SamplerState>& out_sampler_state) const
   {
     D3D11_SAMPLER_DESC desc = {};
@@ -174,7 +173,7 @@ namespace engine
       throw std::runtime_error("CreateRasterizerState failed.");
     }
   }
-  
+
   void fdx11::create_depth_stencil_state(ComPtr<ID3D11DepthStencilState>& out_depth_stencil_state) const
   {
     D3D11_DEPTH_STENCIL_DESC desc = {};
@@ -187,7 +186,7 @@ namespace engine
       throw std::runtime_error("CreateDepthStencilState failed.");
     }
   }
-  
+
   void fdx11::create_vertex_shader(const ComPtr<ID3D10Blob>& shader_blob, ComPtr<ID3D11VertexShader>& out_vertex_shader) const
   {
     if(FAILED(device->CreateVertexShader(shader_blob->GetBufferPointer(), shader_blob->GetBufferSize(), nullptr, out_vertex_shader.GetAddressOf())))
@@ -203,15 +202,15 @@ namespace engine
       throw std::runtime_error("CreatePixelShader failed");
     }
   }
-  
+
   void fdx11::create_index_buffer(const std::vector<fface_data>& in_face_list, ComPtr<ID3D11Buffer>& out_index_buffer) const
   {
     D3D11_BUFFER_DESC desc = {};
     desc.ByteWidth = static_cast<int32_t>(in_face_list.size()) * sizeof(fface_data);
-    desc.Usage     = D3D11_USAGE_IMMUTABLE;
+    desc.Usage = D3D11_USAGE_IMMUTABLE;
     desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    D3D11_SUBRESOURCE_DATA data = { in_face_list.data() };
-    if (FAILED(device->CreateBuffer(&desc, &data, out_index_buffer.GetAddressOf())))
+    D3D11_SUBRESOURCE_DATA data = {in_face_list.data()};
+    if(FAILED(device->CreateBuffer(&desc, &data, out_index_buffer.GetAddressOf())))
     {
       throw std::runtime_error("CreateBuffer index failed.");
     }
@@ -221,10 +220,10 @@ namespace engine
   {
     D3D11_BUFFER_DESC desc = {};
     desc.ByteWidth = static_cast<int32_t>(in_vertex_list.size()) * sizeof(fvertex_data);
-    desc.Usage     = D3D11_USAGE_IMMUTABLE;
+    desc.Usage = D3D11_USAGE_IMMUTABLE;
     desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    const D3D11_SUBRESOURCE_DATA data = { in_vertex_list.data() };
-    if (FAILED(device->CreateBuffer(&desc, &data, out_vertex_buffer.GetAddressOf())))
+    const D3D11_SUBRESOURCE_DATA data = {in_vertex_list.data()};
+    if(FAILED(device->CreateBuffer(&desc, &data, out_vertex_buffer.GetAddressOf())))
     {
       throw std::runtime_error("CreateBuffer vertex failed.");
     }
@@ -260,12 +259,12 @@ namespace engine
     {
       throw std::runtime_error("CreateTexture2D output depth texture failed.");
     }
-    if(FAILED(device->CreateDepthStencilView(output_depth_texture.Get(), nullptr, out_depth_stencil_view.GetAddressOf())))  // TODO Missing descriptor?
+    if(FAILED(device->CreateDepthStencilView(output_depth_texture.Get(), nullptr, out_depth_stencil_view.GetAddressOf()))) // TODO Missing descriptor?
     {
       throw std::runtime_error("CreateDepthStencilView output depth texture failed");
     }
   }
-  
+
   void fdx11::create_shader_resource_view(uint32_t width, uint32_t height, bool is_hdr, uint32_t bytes_per_row, const void* in_bytes, ComPtr<ID3D11ShaderResourceView>& out_shader_resource_view) const
   {
     D3D11_TEXTURE2D_DESC texture_desc = {};
@@ -322,7 +321,6 @@ namespace engine
     }
   }
 
-  
 
   void fdx11::cleanup_render_target()
   {

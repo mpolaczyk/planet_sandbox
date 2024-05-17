@@ -1,4 +1,3 @@
-
 #include <string>
 
 #include "engine/hash.h"
@@ -13,15 +12,33 @@ namespace engine
     uint32_t c = 0x9e3779b9;
     a += c;
 
-    a -= c; a -= b; a ^= (b >> 13);
-    c -= b; c -= a; c ^= (a << 8);
-    b -= a; b -= c; b ^= (c >> 13);
-    a -= c; a -= b; a ^= (b >> 12);
-    c -= b; c -= a; c ^= (a << 16);
-    b -= a; b -= c; b ^= (c >> 5);
-    a -= c; a -= b; a ^= (b >> 3);
-    c -= b; c -= a; c ^= (a << 10);
-    b -= a; b -= c; b ^= (c >> 15);
+    a -= c;
+    a -= b;
+    a ^= (b >> 13);
+    c -= b;
+    c -= a;
+    c ^= (a << 8);
+    b -= a;
+    b -= c;
+    b ^= (c >> 13);
+    a -= c;
+    a -= b;
+    a ^= (b >> 12);
+    c -= b;
+    c -= a;
+    c ^= (a << 16);
+    b -= a;
+    b -= c;
+    b ^= (c >> 5);
+    a -= c;
+    a -= b;
+    a ^= (b >> 3);
+    c -= b;
+    c -= a;
+    c ^= (a << 10);
+    b -= a;
+    b -= c;
+    b ^= (c >> 15);
 
     return b;
   }

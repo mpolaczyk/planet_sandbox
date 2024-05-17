@@ -14,8 +14,9 @@ namespace engine
 
   enum class bmp_format
   {
-    rgba = 0,     // DXGI_FORMAT_R8G8B8A8
-    bgra          // BMP file
+    rgba = 0,
+    // DXGI_FORMAT_R8G8B8A8
+    bgra // BMP file
   };
 
   struct ENGINE_API fbmp_pixel
@@ -25,7 +26,11 @@ namespace engine
     uint8_t r = 0;
     uint8_t a = 255;
     fbmp_pixel() = default;
-    fbmp_pixel(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) { }
+
+    fbmp_pixel(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b)
+    {
+    }
+
     explicit fbmp_pixel(const fvec3& color);
   };
 

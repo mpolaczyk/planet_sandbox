@@ -57,7 +57,7 @@ namespace editor
     int selected_id = 0;
   };
 
-  
+
   struct frenderer_panel_model
   {
     fselection_combo_model<oclass_object> r_model;
@@ -70,14 +70,14 @@ namespace editor
     fselection_combo_model<amaterial> m_model;
     std::string object_name_filter;
   };
-  
+
   struct fscene_window_model
   {
     std::string import_file;
     frenderer_panel_model rp_model;
     fobjects_panel_model op_model;
   };
-  
+
   struct feditor_window_model
   {
     fmaterials_panel_model rp_model;

@@ -1,4 +1,3 @@
-
 #include "math/chunk_generator.h"
 
 namespace engine
@@ -6,7 +5,7 @@ namespace engine
   void fchunk_generator::generate_chunks(chunk_strategy_type strategy, uint32_t num, uint32_t image_width, uint32_t image_height, std::vector<fchunk>& out_chunks)
   {
     uint32_t snum = (uint32_t)sqrt(num);
-    switch (strategy)
+    switch(strategy)
     {
     case chunk_strategy_type::vertical_stripes:
       return generate_rectangles(num, 1, image_width, image_height, out_chunks);
@@ -15,7 +14,7 @@ namespace engine
       return generate_rectangles(1, num, image_width, image_height, out_chunks);
 
     case chunk_strategy_type::rectangles:
-      if (snum * snum != num)
+      if(snum * snum != num)
       {
         // Round to the nearest power of two https://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
         snum--;
@@ -37,9 +36,9 @@ namespace engine
   void fchunk_generator::generate_rectangles(uint32_t num_x, uint32_t num_y, uint32_t image_width, uint32_t image_height, std::vector<fchunk>& out_chunks)
   {
     uint32_t n = 0;
-    for (uint32_t ny = 0; ny < num_y; ny++)
+    for(uint32_t ny = 0; ny < num_y; ny++)
     {
-      for (uint32_t nx = 0; nx < num_x; nx++)
+      for(uint32_t nx = 0; nx < num_x; nx++)
       {
         fchunk ch;
         ch.id = n;

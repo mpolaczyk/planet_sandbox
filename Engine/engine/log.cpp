@@ -24,25 +24,29 @@ namespace engine
   {
     s_console_logger->trace(fmt);
   }
+
   void flogger::debug(const char* fmt)
   {
     s_console_logger->debug(fmt);
   }
+
   void flogger::info(const char* fmt)
   {
     s_console_logger->info(fmt);
   }
+
   void flogger::warn(const char* fmt)
   {
     s_console_logger->warn(fmt);
   }
+
   void flogger::error(const char* fmt)
   {
     s_console_logger->error(fmt);
   }
+
   void flogger::critical(const char* fmt)
   {
     s_console_logger->critical(fmt);
   }
-
 }

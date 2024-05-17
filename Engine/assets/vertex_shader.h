@@ -20,7 +20,7 @@ namespace engine
     std::string shader_file_name;
     std::string entrypoint;
     std::string target;
-    
+
     // Runtime
     fvertex_shader_render_state render_state;
   };

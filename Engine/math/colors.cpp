@@ -1,7 +1,7 @@
 #include <cassert>
 
 #include "math/colors.h"
-#include "math/math.h" 
+#include "math/math.h"
 
 namespace engine
 {
@@ -34,7 +34,7 @@ namespace engine
   fvec3 tone_mapping::change_luminance(const fvec3& c_in, float l_out)
   {
     float l_in = luminance(c_in);
-    if (l_in == 0.0f)
+    if(l_in == 0.0f)
     {
       return fvec3(0, 0, 0);
     }
@@ -50,5 +50,3 @@ namespace engine
     return change_luminance(v, l_new);
   }
 }
-
-

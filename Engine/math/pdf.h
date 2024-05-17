@@ -21,7 +21,9 @@ namespace engine
 
   struct ENGINE_API fsphere_pdf : public fpdf
   {
-    fsphere_pdf() {}
+    fsphere_pdf()
+    {
+    }
 
     virtual fvec3 get_direction() const override
     {
@@ -36,7 +38,9 @@ namespace engine
 
   struct ENGINE_API fcosine_pdf : public fpdf
   {
-    fcosine_pdf() {}
+    fcosine_pdf()
+    {
+    }
 
     explicit fcosine_pdf(const fvec3& w)
     {
@@ -97,7 +101,7 @@ namespace engine
 
     fvec3 get_direction() const override
     {
-      if (frandom_cache::get_float_0_1() > ratio)
+      if(frandom_cache::get_float_0_1() > ratio)
         return p[0]->get_direction();
       else
         return p[1]->get_direction();

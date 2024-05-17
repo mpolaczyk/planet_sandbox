@@ -1,4 +1,3 @@
-
 #include "object/object_registry_temp.cpp"
 
 #include "asset/asset.h"
@@ -39,17 +38,17 @@
 namespace engine
 {
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(oclass_object)
-  
+
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(aasset_base)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(astatic_mesh)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(atexture)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(amaterial)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(avertex_shader)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(apixel_shader)
-  
+
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rrenderer_base)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rgpu_forward_sync)
-  
+
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(hhittable_base)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(hscene)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(hsphere)
@@ -58,13 +57,13 @@ namespace engine
 
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(aasset_base)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(astatic_mesh)
-  
+
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(hhittable_base)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(hscene)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(hsphere)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(hstatic_mesh)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(hlight)
-  
+
   void fobject_registry::create_class_objects()
   {
     CLASS_OBJECT_REGISTER(oobject, oobject)
@@ -76,10 +75,10 @@ namespace engine
     CLASS_OBJECT_REGISTER(astatic_mesh, aasset_base)
     CLASS_OBJECT_REGISTER(avertex_shader, aasset_base)
     CLASS_OBJECT_REGISTER(apixel_shader, aasset_base)
-    
+
     CLASS_OBJECT_REGISTER(rrenderer_base, oobject)
     CLASS_OBJECT_REGISTER(rgpu_forward_sync, rrenderer_base)
-    
+
     CLASS_OBJECT_REGISTER(hhittable_base, oobject)
     CLASS_OBJECT_REGISTER(hscene, hhittable_base)
     CLASS_OBJECT_REGISTER(hsphere, hhittable_base)

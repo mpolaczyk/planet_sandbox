@@ -20,4 +20,3 @@ namespace engine
     fvec3 direction;
   };
 }
-

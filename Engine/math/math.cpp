@@ -12,7 +12,7 @@ namespace engine
 {
   float fmath::sign(float value)
   {
-    return value >= 0.0f ? 1.0f : -1.0f;  //  Assume 0 is positive
+    return value >= 0.0f ? 1.0f : -1.0f; //  Assume 0 is positive
   }
 
   float fmath::degrees_to_radians(float degrees)
@@ -34,10 +34,10 @@ namespace engine
   {
     // Fast inverse square root
     float xhalf = 0.5f * x;
-    int32_t i = reinterpret_cast<int32_t&>(x);  // store floating-point bits in integer
-    i = 0x5f3759df - (i >> 1);                  // initial guess for Newton's method
-    x = reinterpret_cast<float&>(i);            // convert new bits into float
-    x = x * (1.5f - xhalf * x * x);             // One round of Newton's method
+    int32_t i = reinterpret_cast<int32_t&>(x); // store floating-point bits in integer
+    i = 0x5f3759df - (i >> 1); // initial guess for Newton's method
+    x = reinterpret_cast<float&>(i); // convert new bits into float
+    x = x * (1.5f - xhalf * x * x); // One round of Newton's method
     return x;
   }
 
@@ -53,7 +53,7 @@ namespace engine
 
   float fmath::clamp(float f, float a, float b)
   {
-    return  min1(b, max1(a, f));
+    return min1(b, max1(a, f));
   }
 
   float fmath::smoothstep(float a, float b, float x)
@@ -78,7 +78,7 @@ namespace engine
 
   bool fmath::flip_normal_if_front_face(const fvec3& in_ray_direction, const fvec3& in_outward_normal, fvec3& out_normal)
   {
-    if (dot(in_ray_direction, in_outward_normal) < 0)
+    if(dot(in_ray_direction, in_outward_normal) < 0)
     {
       // Ray is inside
       out_normal = in_outward_normal;
@@ -146,7 +146,7 @@ namespace engine
     // Detect backface
     // !!!! it works but should be the opposite! are faces left or right oriented?
     // FIX use branchless
-    if ((dot(n, w) < 0))
+    if((dot(n, w) < 0))
     {
       out_hit.front_face = true;
     }
@@ -154,7 +154,7 @@ namespace engine
     {
       out_hit.front_face = false;
       n = n * -1;
-      if (drop_backface) return false;
+      if(drop_backface) return false;
     }
 
     // Plane intersection what is q and a?
@@ -162,7 +162,7 @@ namespace engine
     float a = dot(E1, q);
 
     // Ray parallel or close to the limit of precision?
-    if (fabsf(a) <= small_number) return false;
+    if(fabsf(a) <= small_number) return false;
 
     // ?
     const fvec3& s = (P - V0) / a;
@@ -175,13 +175,13 @@ namespace engine
     b[2] = 1.0f - (b[0] + b[1]);
 
     // Intersection outside of triangle?
-    if ((b[0] < 0.0f) || (b[1] < 0.0f) || (b[2] < 0.0f)) return false;
+    if((b[0] < 0.0f) || (b[1] < 0.0f) || (b[2] < 0.0f)) return false;
 
     // Distance to intersection
     float t = dot(E2, r);
 
     // Intersection outside of ray range?
-    if (t < t_min || t > t_max) return false;
+    if(t < t_min || t > t_max) return false;
 
     // Intersected inside triangle
     out_hit.t = t;
@@ -214,7 +214,7 @@ namespace engine
 
   float fmath::dot(const fvec3& u, const fvec3& v)
   {
-#if USE_SIMD 
+#if USE_SIMD
     __m128 a = _mm_mul_ps(u.R128, v.R128);
     a = _mm_hadd_ps(a, a);
     return _mm_cvtss_f32(_mm_hadd_ps(a, a));
@@ -240,7 +240,7 @@ namespace engine
 
   fvec3 fmath::normalize(const fvec3& v)
   {
-#if USE_SIMD 
+#if USE_SIMD
     __m128 a = _mm_mul_ps(v.R128, v.R128);
     a = _mm_hadd_ps(a, a);
     return fvec3(_mm_div_ps(v.R128, _mm_sqrt_ps(_mm_hadd_ps(a, a))));
@@ -248,9 +248,10 @@ namespace engine
     return v / length(v);
 #endif
   }
+
   float fmath::length(const fvec3& v)
   {
-#if USE_SIMD 
+#if USE_SIMD
     __m128 a = _mm_mul_ps(v.R128, v.R128);
     a = _mm_hadd_ps(a, a);
     return _mm_cvtss_f32(_mm_sqrt_ps(_mm_hadd_ps(a, a)));
@@ -258,6 +259,7 @@ namespace engine
     return std::sqrt(length_squared(v));
 #endif
   }
+
   float fmath::length_squared(const fvec3& v)
   {
     // commented out, non vectorized is faster in that case
@@ -333,16 +335,16 @@ namespace engine
   DirectX::XMFLOAT4 fmath::uint32_to_colorf(uint32_t value)
   {
     float af = static_cast<float>(static_cast<uint8_t>(value)) / 255.0;
-    float bf = static_cast<float>(static_cast<uint8_t>(value>>8)) / 255.0;
-    float cf = static_cast<float>(static_cast<uint8_t>(value>>16)) / 255.0;
+    float bf = static_cast<float>(static_cast<uint8_t>(value >> 8)) / 255.0;
+    float cf = static_cast<float>(static_cast<uint8_t>(value >> 16)) / 255.0;
     return DirectX::XMFLOAT4(af, bf, cf, 1.0f);
   }
 
   DirectX::XMUINT4 fmath::uint32_to_colori(uint32_t value)
   {
     uint8_t af = static_cast<uint8_t>(value);
-    uint8_t bf = static_cast<uint8_t>(value>>8);
-    uint8_t cf = static_cast<uint8_t>(value>>16);
+    uint8_t bf = static_cast<uint8_t>(value >> 8);
+    uint8_t cf = static_cast<uint8_t>(value >> 16);
     return DirectX::XMUINT4(af, bf, cf, 255);
   }
 }

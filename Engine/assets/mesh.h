@@ -25,4 +25,3 @@ namespace engine
     fstatic_mesh_render_state render_state;
   };
 }
-

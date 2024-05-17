@@ -10,6 +10,7 @@ namespace engine
     horizontal_stripes,
     rectangles,
   };
+
   static inline const char* chunk_strategy_names[] =
   {
     "None",

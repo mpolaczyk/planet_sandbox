@@ -45,8 +45,7 @@
   void CLASS_NAME::set_display_name(const std::string& name) \
   { \
     REG.set_custom_display_name(get_runtime_id(), name); \
-  } \
-
+  }
 // Put this in the cpp file. Default implementations.
 #define OBJECT_DEFINE_SPAWN(CLASS_NAME) CLASS_NAME* CLASS_NAME::spawn() \
   { \

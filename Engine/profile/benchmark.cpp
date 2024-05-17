@@ -1,4 +1,3 @@
-
 #include <functional>
 #include <chrono>
 
@@ -28,7 +27,7 @@ namespace engine
   uint64_t ftimer_instance::repeat(const std::string& name, uint32_t count, const std::function<void()>& func)
   {
     uint64_t sum = 0;
-    for (uint32_t i = 0; i < count; i++)
+    for(uint32_t i = 0; i < count; i++)
     {
       start(name);
       func();
@@ -55,13 +54,13 @@ namespace engine
     uint64_t time = end - begin;
 
     LOG_TRACE("Benchmark: {0} {1}[us] = {2}[ms] = {3}[s]", name, time, time / 1000, time / 1000000);
-    
+
     return time;
 #else
     return 0;
 #endif
   }
-  
+
   fscope_timer::fscope_timer(const std::string& in_name, uint64_t* out_time)
   {
     time_ptr = out_time;

@@ -1,4 +1,3 @@
-
 #include <sstream>
 
 #include "hittables/sphere.h"

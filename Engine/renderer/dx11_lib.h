@@ -38,7 +38,7 @@ namespace engine
       static fdx11 singleton;
       return singleton;
     }
-    
+
     void create_device();
     void create_debug_layer() const;
     void create_swap_chain(HWND hwnd);
@@ -57,11 +57,11 @@ namespace engine
     void create_depth_stencil_view(uint32_t width, uint32_t height, ComPtr<ID3D11DepthStencilView>& out_depth_stencil_view) const;
     void create_shader_resource_view(uint32_t width, uint32_t height, bool is_hdr, uint32_t bytes_per_row, const void* in_bytes, ComPtr<ID3D11ShaderResourceView>& out_shader_resource_view) const;
     void create_render_target_shader_resource_view(uint32_t width, uint32_t height, ComPtr<ID3D11Texture2D>& out_texture, ComPtr<ID3D11ShaderResourceView>& out_shader_resource_view) const;
-    
+
     void create_vertex_shader(const ComPtr<ID3D10Blob>& shader_blob, ComPtr<ID3D11VertexShader>& out_vertex_shader) const;
     void create_pixel_shader(const ComPtr<ID3D10Blob>& shader_blob, ComPtr<ID3D11PixelShader>& out_pixel_shader) const;
-    
-    template<typename T>
+
+    template <typename T>
     void update_constant_buffer(T* data, ComPtr<ID3D11Buffer>& out_constant_buffer) const
     {
       D3D11_MAPPED_SUBRESOURCE mapped_subresource_data;
@@ -69,7 +69,7 @@ namespace engine
       *static_cast<T*>(mapped_subresource_data.pData) = *data;
       device_context->Unmap(out_constant_buffer.Get(), 0);
     }
-    
+
     void cleanup_device();
     void cleanup_render_target();
 

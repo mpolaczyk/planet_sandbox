@@ -28,7 +28,7 @@ namespace engine
     oss << name << ".json";
     const std::string file_path = fio::get_mesh_file_path(oss.str().c_str());
     std::ifstream input_stream(file_path.c_str());
-    if (input_stream.fail())
+    if(input_stream.fail())
     {
       LOG_ERROR("Unable to open mesh asset: {0}", file_path);
       return false;
@@ -38,15 +38,15 @@ namespace engine
     input_stream >> j;
     instance->accept(vdeserialize_object(j));
     instance->set_display_name(name);
-    
-    if (!load_obj(instance->obj_file_name, instance))
+
+    if(!load_obj(instance->obj_file_name, instance))
     {
       LOG_ERROR("Failed to load object file: {0}", instance->obj_file_name);
       return false;
     }
     return true;
   }
-  
+
   void astatic_mesh::save(astatic_mesh* object)
   {
     assert(object != nullptr);
@@ -58,7 +58,7 @@ namespace engine
     oss << object->file_name << ".json";
     std::ofstream o(fio::get_mesh_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
-    if (o.is_open())
+    if(o.is_open())
     {
       o.write(str.data(), str.length());
     }

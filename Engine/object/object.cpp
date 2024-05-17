@@ -1,5 +1,4 @@
-
-#include <sstream>  
+#include <sstream>
 #include <cassert>
 
 #include "object/object.h"
@@ -15,10 +14,10 @@ namespace engine
   OBJECT_DEFINE(oobject, oobject, Object)
   OBJECT_DEFINE_NOSPAWN(oobject)
   OBJECT_DEFINE_VISITOR_BASE(oobject)
- 
+
   void oobject::set_runtime_id(int id)
   {
-    if (runtime_id == -1)
+    if(runtime_id == -1)
     {
       runtime_id = id;
     }
@@ -38,5 +37,4 @@ namespace engine
   {
     REG.destroy(runtime_id);
   }
-
 }

@@ -16,13 +16,16 @@ namespace engine
     OBJECT_DECLARE_VISITOR
 
     virtual uint32_t get_hash() const override;
-    virtual void load_resources() {};
+
+    virtual void load_resources()
+    {
+    };
 
     // Persistent members
     fvec3 origin = fvec3(0, 0, 0);
     fvec3 scale = fvec3(1, 1, 1);
-    fvec3 rotation = fvec3(0, 0, 0);  // degrees
-    
+    fvec3 rotation = fvec3(0, 0, 0); // degrees
+
     // Runtime members
     faabb bounding_box;
   };

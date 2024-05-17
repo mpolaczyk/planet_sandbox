@@ -15,7 +15,7 @@ namespace engine
     using namespace DirectX;
     const XMVECTOR _axis_forward = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
     const XMVECTOR _axis_up = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
-    
+
     // Handle camera rotation
     {
       float rotate_ratio = rotate_speed * delta_time;

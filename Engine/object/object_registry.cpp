@@ -1,4 +1,3 @@
-
 #include <cassert>
 
 #include "object/object_registry.h"
@@ -8,7 +7,7 @@ namespace engine
 {
   fobject_registry::~fobject_registry()
   {
-    for (int i = 0; i < objects.size(); i++)
+    for(int i = 0; i < objects.size(); i++)
     {
       if(objects[i] != nullptr)
       {
@@ -54,9 +53,9 @@ namespace engine
   {
     // Warning, null objects may be filtered, indexes in the return vector will not match the runtime id
     std::vector<oobject*> ans;
-    for (int i = 0; i < objects.size(); i++)
+    for(int i = 0; i < objects.size(); i++)
     {
-      if (no_nullptr && !is_valid(i))
+      if(no_nullptr && !is_valid(i))
       {
         continue;
       }
@@ -68,13 +67,13 @@ namespace engine
   std::vector<int> fobject_registry::get_all_ids(const oclass_object* type, bool no_nullptr) const
   {
     std::vector<int> ans;
-    for (int i = 0; i < object_classes.size(); i++)
+    for(int i = 0; i < object_classes.size(); i++)
     {
-      if (no_nullptr && !is_valid(i))
+      if(no_nullptr && !is_valid(i))
       {
         continue;
       }
-      if (object_classes[i]->is_child_of(type))
+      if(object_classes[i]->is_child_of(type))
       {
         ans.push_back(i);
       }
@@ -84,7 +83,7 @@ namespace engine
 
   const oclass_object* fobject_registry::find_class(const std::string& name) const
   {
-    for (int i = 0; i < class_objects.size(); i++)
+    for(int i = 0; i < class_objects.size(); i++)
     {
       if(class_objects[i]->class_name == name)
       {
@@ -106,9 +105,9 @@ namespace engine
     new_class->parent_class_name = parent_class_name;
     new_class->spawn_instance_func = spawn_func;
     // Classes should not be registered twice, if this happens it is most likely a programmer error
-    for (int i = 0; i < class_objects.size(); i++)
+    for(int i = 0; i < class_objects.size(); i++)
     {
-      if (class_objects[i]->class_name == class_name)
+      if(class_objects[i]->class_name == class_name)
       {
         LOG_ERROR("Unable to add class_object, it is already registered: {0}", class_name);
         return nullptr;

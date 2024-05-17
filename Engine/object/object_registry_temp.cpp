@@ -1,4 +1,3 @@
-
 #include <cassert>
 #include <algorithm>
 #include <string>
@@ -12,21 +11,21 @@
 
 namespace engine
 {
-  template<derives_from<oobject> T>
+  template <derives_from<oobject> T>
   bool fobject_registry::add(T* instance)
   {
-    if (instance == nullptr)
+    if(instance == nullptr)
     {
       LOG_ERROR("Unable to add nullptr object.");
       return false;
     }
-    if (instance->runtime_id != -1)
+    if(instance->runtime_id != -1)
     {
       LOG_ERROR("Unable to add already added object.");
       return false;
     }
     // Objects should not be added twice, if this happens it is most likely a programmer error
-    if (std::find(begin(objects), end(objects), instance) != end(objects))
+    if(std::find(begin(objects), end(objects), instance) != end(objects))
     {
       LOG_ERROR("Unable to add object, it is already registered: {0}", instance->runtime_id);
       return false;
@@ -38,12 +37,12 @@ namespace engine
     return true;
   }
 
-  template<derives_from<oobject> T>
+  template <derives_from<oobject> T>
   T* fobject_registry::get(int id) const
   {
-    if (is_valid(id))
+    if(is_valid(id))
     {
-      if (objects[id] != nullptr && get_class(id) == T::get_class_static())
+      if(objects[id] != nullptr && get_class(id) == T::get_class_static())
       {
         return static_cast<T*>(objects[id]); // Risky! no RTTI, no dynamic_cast
       }
@@ -51,33 +50,33 @@ namespace engine
     return nullptr;
   }
 
-  template<derives_from<oobject> T>
+  template <derives_from<oobject> T>
   std::vector<T*> fobject_registry::get_all_by_type()
   {
     auto type = T::get_class_static();
-    return find_all<T>([type](T* obj) -> bool { return obj->is_child_of(type);});
+    return find_all<T>([type](T* obj) -> bool { return obj->is_child_of(type); });
   }
 
-  template<derives_from<oobject> T>
+  template <derives_from<oobject> T>
   T* fobject_registry::copy_shallow(const T* source)
   {
     assert(source != nullptr);
 
     int source_runtime_id = source->get_runtime_id();
-      
-    if (!is_valid(source_runtime_id))
+
+    if(!is_valid(source_runtime_id))
     {
       LOG_ERROR("Unable to clone asset. Unknown source runtime id: {0}", source_runtime_id);
       return nullptr;
     }
-    if (object_classes[source_runtime_id] != T::get_class_static())
+    if(object_classes[source_runtime_id] != T::get_class_static())
     {
       LOG_ERROR("Unable to clone asset. Type mismatch: {0} and {1}", object_classes[source_runtime_id]->class_name, T::get_class_static()->class_name);
       return nullptr;
     }
     // Shallow copy
     T* obj = T::spawn();
-    if (obj == nullptr)
+    if(obj == nullptr)
     {
       return nullptr;
     }
@@ -87,20 +86,20 @@ namespace engine
     return obj;
   }
 
-  template<derives_from<oobject> T>
+  template <derives_from<oobject> T>
   T* fobject_registry::spawn_from_class(const oclass_object* type)
   {
     assert(type);
     return static_cast<T*>(type->spawn_instance_func());
   }
 
-  template<derives_from<oobject> T>
+  template <derives_from<oobject> T>
   T* fobject_registry::find(std::function<bool(T*)> predicate) const
   {
     const oclass_object* T_class = T::get_class_static();
-    for (int i = 0; i < objects.size(); i++)  // FIX: Linear search, at some point better structure will be needed
+    for(int i = 0; i < objects.size(); i++) // FIX: Linear search, at some point better structure will be needed
     {
-      if (objects[i] != nullptr && objects[i]->is_child_of(T_class) && predicate(static_cast<T*>(objects[i])))
+      if(objects[i] != nullptr && objects[i]->is_child_of(T_class) && predicate(static_cast<T*>(objects[i])))
       {
         return static_cast<T*>(objects[i]);
       }
@@ -108,14 +107,14 @@ namespace engine
     return nullptr;
   }
 
-  template<derives_from<oobject> T>
+  template <derives_from<oobject> T>
   std::vector<T*> fobject_registry::find_all(std::function<bool(T*)> predicate) const
   {
     std::vector<T*> ans;
     const oclass_object* T_class = T::get_class_static();
-    for (int i = 0; i < objects.size(); i++)  // FIX: Linear search, at some point better structure will be needed
+    for(int i = 0; i < objects.size(); i++) // FIX: Linear search, at some point better structure will be needed
     {
-      if (objects[i] != nullptr && objects[i]->is_child_of(T_class) && predicate(static_cast<T*>(objects[i])))
+      if(objects[i] != nullptr && objects[i]->is_child_of(T_class) && predicate(static_cast<T*>(objects[i])))
       {
         ans.push_back(static_cast<T*>(objects[i]));
       }

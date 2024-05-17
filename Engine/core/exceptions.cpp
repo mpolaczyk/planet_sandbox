@@ -1,4 +1,3 @@
-
 #include "windows_minimal.h"
 
 #include <sstream>
@@ -12,7 +11,7 @@ namespace engine
     // https://randomascii.wordpress.com/2012/04/21/exceptional-floating-point/
     DWORD exceptionCode = p_exp->ExceptionRecord->ExceptionCode;
     const char* pDescription = NULL;
-    switch (exceptionCode)
+    switch(exceptionCode)
     {
     case STATUS_FLOAT_INVALID_OPERATION:
       pDescription = "float invalid operation";
@@ -50,7 +49,7 @@ namespace engine
 
     printf("SEH Crash with exception % x(% s) at % p!\n", exceptionCode, pDescription, pIP);
 
-    if (pErrorOffset)
+    if(pErrorOffset)
     {
       // Float exceptions may be reported in a delayed manner — report the
       // actual instruction as well.
@@ -70,7 +69,7 @@ namespace engine
   // https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/set-se-translator?view=msvc-170
   void fseh_exception::handler(unsigned int exception_code, _EXCEPTION_POINTERS* exception_info)
   {
-    describe(exception_info);  // TODO: passing p_exp to fseh_exception causes invalid operation, so we can't use it in what()
+    describe(exception_info); // TODO: passing p_exp to fseh_exception causes invalid operation, so we can't use it in what()
     throw fseh_exception(exception_code);
   }
 
@@ -96,7 +95,7 @@ namespace engine
     size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                                  NULL, last_error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                                  (LPSTR)&buffer, 0, NULL);
-    
+
     std::string message(buffer, size);
     LocalFree(buffer);
     return message;

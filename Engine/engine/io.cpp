@@ -12,12 +12,12 @@ namespace engine
   {
     return project_name;
   }
-  
+
   void fio::init(const char* name)
   {
     project_name = name;
   }
-  
+
   std::string fio::get_working_dir()
   {
     std::string current_dir = std::filesystem::current_path().string();
@@ -76,13 +76,13 @@ namespace engine
 
   bool fio::validate_workspace_dir()
   {
-      using namespace std;
-      struct stat sb;
-      if (stat(get_workspace_dir().c_str(), &sb) == 0)
-      {
-          return true;
-      }
-      return false;
+    using namespace std;
+    struct stat sb;
+    if(stat(get_workspace_dir().c_str(), &sb) == 0)
+    {
+      return true;
+    }
+    return false;
   }
 
   std::string fio::get_workspace_file_path(const char* file_name)
@@ -132,7 +132,7 @@ namespace engine
     oss << shaders_dir << file_name;
     return oss.str();
   }
-  
+
   std::string fio::get_window_file_path()
   {
     return get_workspace_file_path("window.json");
@@ -151,9 +151,9 @@ namespace engine
   std::vector<std::string> fio::discover_files(const std::string& path, const std::string& extension, bool include_extension)
   {
     std::vector<std::string> result;
-    for (const auto& entry : std::filesystem::directory_iterator(path))
+    for(const auto& entry : std::filesystem::directory_iterator(path))
     {
-      if (entry.is_regular_file() && entry.path().extension() == extension)
+      if(entry.is_regular_file() && entry.path().extension() == extension)
       {
         std::string file_name = entry.path().filename().string();
         size_t index = file_name.find_last_of(".");

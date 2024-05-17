@@ -28,7 +28,7 @@ namespace engine
   class hlight;
   class rrenderer_base;
   class rgpu_forward_sync;
-  
+
   struct ENGINE_API vobject_visitor
   {
   public:
@@ -39,18 +39,18 @@ namespace engine
     vobject_visitor& operator=(vobject_visitor&&) = delete;
     vobject_visitor& operator=(const vobject_visitor&) = delete;
 
-    virtual void visit(amaterial& object) const       { vobject_visitor::invalid_operation(); }
-    virtual void visit(atexture& object) const        { vobject_visitor::invalid_operation(); }
-    virtual void visit(astatic_mesh& object) const    { vobject_visitor::invalid_operation(); }
-    virtual void visit(avertex_shader& object) const  { vobject_visitor::invalid_operation(); }
-    virtual void visit(apixel_shader& object) const   { vobject_visitor::invalid_operation(); }
-    
-    virtual void visit(hhittable_base& object) const  { vobject_visitor::invalid_operation(); }
-    virtual void visit(hscene& object) const          { vobject_visitor::invalid_operation(); }
-    virtual void visit(hstatic_mesh& object) const    { vobject_visitor::invalid_operation(); }
-    virtual void visit(hsphere& object) const         { vobject_visitor::invalid_operation(); }
-    virtual void visit(hlight& object) const          { vobject_visitor::invalid_operation(); }
-    
+    virtual void visit(amaterial& object) const { vobject_visitor::invalid_operation(); }
+    virtual void visit(atexture& object) const { vobject_visitor::invalid_operation(); }
+    virtual void visit(astatic_mesh& object) const { vobject_visitor::invalid_operation(); }
+    virtual void visit(avertex_shader& object) const { vobject_visitor::invalid_operation(); }
+    virtual void visit(apixel_shader& object) const { vobject_visitor::invalid_operation(); }
+
+    virtual void visit(hhittable_base& object) const { vobject_visitor::invalid_operation(); }
+    virtual void visit(hscene& object) const { vobject_visitor::invalid_operation(); }
+    virtual void visit(hstatic_mesh& object) const { vobject_visitor::invalid_operation(); }
+    virtual void visit(hsphere& object) const { vobject_visitor::invalid_operation(); }
+    virtual void visit(hlight& object) const { vobject_visitor::invalid_operation(); }
+
     virtual void visit(rrenderer_base& object) const { vobject_visitor::invalid_operation(); }
     virtual void visit(rgpu_forward_sync& object) const { vobject_visitor::invalid_operation(); }
 
@@ -59,5 +59,5 @@ namespace engine
     {
       throw std::runtime_error("Visitor operation not supported.");
     }
-  };    
+  };
 }

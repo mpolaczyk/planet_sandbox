@@ -11,7 +11,7 @@ namespace engine
 {
   class hlight;
   class rrenderer_base;
-  
+
   class ENGINE_API hscene : public hhittable_base
   {
   public:

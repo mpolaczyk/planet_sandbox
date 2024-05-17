@@ -44,7 +44,7 @@ namespace editor
     float render_delta_time_ms = 0.0f;
     fvec3 center_of_scene;
     float distance_to_center_of_scene = 0.0f;
-    
+
     bool output_window_is_clicked = false;
     bool output_window_is_hovered = false;
     uint8_t output_window_cursor_color[3];
@@ -76,7 +76,7 @@ namespace editor
   // Output window
   void draw_output_window(foutput_window_model& model, fapp_instance& state);
 
-  
+
   void draw_new_object_panel(fnew_object_panel_model& model, fapp_instance& state);
 
   void draw_delete_object_panel(fdelete_object_panel_model& model, fapp_instance& state);

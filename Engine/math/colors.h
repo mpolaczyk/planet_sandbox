@@ -70,5 +70,3 @@ namespace engine
     static fvec3 reinhard_extended_luminance(const fvec3& v, float max_white_l);
   };
 }
-
-

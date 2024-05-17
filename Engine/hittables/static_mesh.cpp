@@ -1,4 +1,3 @@
-
 #include <sstream>
 
 #include "hittables/static_mesh.h"

@@ -56,9 +56,9 @@ namespace editor
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SAVED!");
     }
     ImGui::Separator();
-    
+
     model.m_model.objects = REG.get_all_by_type<const amaterial>();
-    fui_helper::draw_selection_combo<amaterial>(model.m_model, "Material", [=](const amaterial* obj) -> bool { return true; }, nullptr);
+    fui_helper::draw_selection_combo<amaterial>(model.m_model, "Material", [=](const amaterial* obj) -> bool{ return true; }, nullptr);
     if (model.m_model.selected_object != nullptr)
     {
       const_cast<amaterial*>(model.m_model.selected_object)->accept(vdraw_edit_panel());
@@ -80,12 +80,12 @@ namespace editor
         std::ostringstream oss;
         const oobject* obj = objects[n];
         oss << obj->get_runtime_id() << ":" << obj->get_class()->get_class_name() << "      " << obj->get_display_name();
-        if (ImGui::Selectable(oss.str().c_str())) { }
+        if (ImGui::Selectable(oss.str().c_str())) {}
       }
       ImGui::EndListBox();
     }
   }
-  
+
   void draw_scene_window(fscene_window_model& model, fapp_instance& state)
   {
     ImGui::Begin("SCENE", nullptr);
@@ -95,14 +95,14 @@ namespace editor
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SAVED!");
     }
     ImGui::Separator();
-    
+
     if (ImGui::MenuItem("LOAD FROM FBX"))
     {
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Importing!");
       engine::ffbx::load_fbx_assimp(model.import_file, state.scene_root);
     }
     fui_helper::input_text("FBX file", model.import_file);
-    
+
     draw_renderer_panel(model.rp_model, state);
     draw_camera_panel(state);
     draw_scene_panel(state);
@@ -115,16 +115,15 @@ namespace editor
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
     ImGui::Separator();
 
-    
+
     // FIX this does not work for class objects!
     // co->is_child_of(renderer_base::get_class_static());
-    model.r_model.objects = REG.find_all<const oclass_object>([](const oclass_object* co) -> bool
-    {
+    model.r_model.objects = REG.find_all<const oclass_object>([](const oclass_object* co) -> bool{
       return co->get_parent_class_name() == rrenderer_base::get_class_static()->get_class_name();
-    });  
+    });
 
     // TODO FIX
-    
+
     //fui_helper::draw_selection_combo<oclass_object>(model.r_model, "Renderer class",
     //  [=](const oclass_object* obj) -> bool { return true; }, renderer_config.type);
     //if(model.r_model.selected_object != renderer_config.type)
@@ -132,11 +131,11 @@ namespace editor
     //  renderer_config.new_type = model.r_model.selected_object;
     //}
     //ImGui::Separator();
-    
+
     state.scene_root->renderer->accept(vdraw_edit_panel());
-    
+
     ImGui::Separator();
-    
+
     if (state.scene_root->renderer == nullptr)
     {
       ImGui::SameLine();
@@ -161,16 +160,16 @@ namespace editor
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SCENE");
     ImGui::Separator();
-    
+
     DirectX::XMFLOAT4& temp = state.scene_root->ambient_light_color;
-    float temp_arr[4] = { temp.x, temp.y, temp.z, temp.w };
+    float temp_arr[4] = { temp.x,temp.y,temp.z,temp.w };
     ImGui::ColorEdit4("Ambient", temp_arr, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-    temp = { temp_arr[0], temp_arr[1], temp_arr[2], temp_arr[3] };
+    temp = { temp_arr[0],temp_arr[1],temp_arr[2],temp_arr[3] };
 
     DirectX::XMVECTORF32& temp1 = state.scene_root->clear_color;
-    float temp_arr1[4] = { temp1.f[0], temp1.f[1], temp1.f[2], temp1.f[3] };
+    float temp_arr1[4] = { temp1.f[0],temp1.f[1],temp1.f[2],temp1.f[3] };
     ImGui::ColorEdit4("Clear", temp_arr1, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-    temp1 = { temp_arr1[0], temp_arr1[1], temp_arr1[2], temp_arr1[3] };
+    temp1 = { temp_arr1[0],temp_arr1[1],temp_arr1[2],temp_arr1[3] };
   }
   void draw_scene_objects_panel(fobjects_panel_model& model, fapp_instance& state)
   {
@@ -183,7 +182,7 @@ namespace editor
     draw_delete_object_panel(model.d_model, state);
 
     fui_helper::input_text("Name filter", model.object_name_filter);
-    
+
     int num_objects = (int)state.scene_root->objects.size();
     if (ImGui::BeginListBox("Objects", ImVec2(-FLT_MIN, fmath::min1(20, (float)num_objects + 1) * ImGui::GetTextLineHeightWithSpacing())))
     {
@@ -199,7 +198,7 @@ namespace editor
         std::string obj_name = obj->get_display_name();
         std::ostringstream oss;
         oss << obj_name;
-        if(!model.object_name_filter.empty() && !ftools::contains(obj_name, model.object_name_filter))
+        if (!model.object_name_filter.empty() && !ftools::contains(obj_name, model.object_name_filter))
         {
           continue;
         }
@@ -229,12 +228,12 @@ namespace editor
 
   void get_color_under_cursor(uint8_t& out_r, uint8_t& out_g, uint8_t& out_b)
   {
-    out_r = 0; 
-    out_g = 0; 
-    out_b = 0; 
+    out_r = 0;
+    out_g = 0;
+    out_b = 0;
     if (HDC hDC = GetDC(nullptr))
     {
-      POINT point;    
+      POINT point;
       if (GetCursorPos(&point))
       {
         COLORREF color = GetPixel(hDC, point.x, point.y);
@@ -262,11 +261,11 @@ namespace editor
       state.output_window_is_clicked = ImGui::IsItemClicked(ImGuiMouseButton_Left);
       state.output_window_is_hovered = ImGui::IsItemHovered();
       get_color_under_cursor(state.output_window_cursor_color[0], state.output_window_cursor_color[1], state.output_window_cursor_color[2]);
-      
+
       ImGui::End();
     }
   }
-  
+
   void draw_new_object_panel(fnew_object_panel_model& model, fapp_instance& state)
   {
     if (ImGui::Button("Add new"))
@@ -280,7 +279,7 @@ namespace editor
       model.c_model.objects = REG.get_classes();
       std::string hittable_class_name = hhittable_base::get_class_static()->get_class_name();
 
-      fui_helper::draw_selection_combo<oclass_object>(model.c_model, "Class", [=](const oclass_object* obj) -> bool { return obj->get_parent_class_name() == hittable_class_name; }, nullptr);
+      fui_helper::draw_selection_combo<oclass_object>(model.c_model, "Class", [=](const oclass_object* obj) -> bool{ return obj->get_parent_class_name() == hittable_class_name; }, nullptr);
 
       if (ImGui::Button("Add", ImVec2(120, 0)) && model.c_model.selected_object != nullptr)
       {
@@ -330,5 +329,5 @@ namespace editor
     }
   }
 
-  
+
 }

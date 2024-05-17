@@ -1,4 +1,3 @@
-
 #include <corecrt_memory.h>
 #include <stdio.h>
 #include <cassert>
@@ -29,7 +28,7 @@ namespace engine
 
   fbmp_image::~fbmp_image()
   {
-    if (width > 0 && height > 0 && buffer != nullptr)
+    if(width > 0 && height > 0 && buffer != nullptr)
     {
       free(buffer);
     }
@@ -40,10 +39,10 @@ namespace engine
     uint32_t file_size = FILE_HEADER_SIZE + INFO_HEADER_SIZE + (stride * height);
 
     static uint8_t file_header[] = {
-        0,0,     /// signature
-        0,0,0,0, /// image file size in bytes
-        0,0,0,0, /// reserved
-        0,0,0,0, /// start of pixel array
+      0, 0, /// signature
+      0, 0, 0, 0, /// image file size in bytes
+      0, 0, 0, 0, /// reserved
+      0, 0, 0, 0, /// start of pixel array
     };
 
     file_header[0] = (uint8_t)('B');
@@ -60,17 +59,17 @@ namespace engine
   uint8_t* fbmp_image::create_info_header(uint32_t height, uint32_t width) const
   {
     static uint8_t info_header[] = {
-        0,0,0,0, /// header size
-        0,0,0,0, /// image width
-        0,0,0,0, /// image height
-        0,0,     /// number of color planes
-        0,0,     /// bits per pixel
-        0,0,0,0, /// compression
-        0,0,0,0, /// image size
-        0,0,0,0, /// horizontal resolution
-        0,0,0,0, /// vertical resolution
-        0,0,0,0, /// colors in color table
-        0,0,0,0, /// important color count
+      0, 0, 0, 0, /// header size
+      0, 0, 0, 0, /// image width
+      0, 0, 0, 0, /// image height
+      0, 0, /// number of color planes
+      0, 0, /// bits per pixel
+      0, 0, 0, 0, /// compression
+      0, 0, 0, 0, /// image size
+      0, 0, 0, 0, /// horizontal resolution
+      0, 0, 0, 0, /// vertical resolution
+      0, 0, 0, 0, /// colors in color table
+      0, 0, 0, 0, /// important color count
     };
 
     info_header[0] = (uint8_t)(INFO_HEADER_SIZE);
@@ -94,12 +93,12 @@ namespace engine
     assert(y < height);
 
     uint32_t pixel_addr = y * width * BYTES_PER_PIXEL + x * BYTES_PER_PIXEL;
-    if (format == bmp_format::rgba)
+    if(format == bmp_format::rgba)
     {
       fbmp_pixel p2(p->b, p->g, p->r);
       memcpy(buffer + pixel_addr, &p2, sizeof(fbmp_pixel));
     }
-    else if (format == bmp_format::bgra)
+    else if(format == bmp_format::bgra)
     {
       memcpy(buffer + pixel_addr, p, sizeof(fbmp_pixel));
     }
@@ -108,7 +107,7 @@ namespace engine
   void fbmp_image::save_to_file(const char* image_file_name) const
   {
     assert(image_file_name != nullptr);
-    const uint8_t padding[3] = { 0, 0, 0 };
+    const uint8_t padding[3] = {0, 0, 0};
 
     uint32_t width_in_bytes = width * BYTES_PER_PIXEL;
     uint32_t padding_size = (4 - (width_in_bytes) % 4) % 4;
@@ -123,13 +122,13 @@ namespace engine
     fwrite(create_file_header(height, stride), 1, FILE_HEADER_SIZE, image_file);
     fwrite(create_info_header(height, width), 1, INFO_HEADER_SIZE, image_file);
 
-    if (padding_size == 0)
+    if(padding_size == 0)
     {
       fwrite(buffer, BYTES_PER_PIXEL, height * width, image_file);
     }
     else
     {
-      for (uint32_t x = 0; x < height; x++)
+      for(uint32_t x = 0; x < height; x++)
       {
         fwrite(buffer + (x * width_in_bytes), BYTES_PER_PIXEL, width, image_file);
         fwrite(padding, 1, padding_size, image_file);

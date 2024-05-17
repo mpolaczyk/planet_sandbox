@@ -9,7 +9,7 @@ namespace engine
   {
   public:
     static void init();
-    
+
     static void trace(const char* fmt);
     static void debug(const char* fmt);
     static void info(const char* fmt);

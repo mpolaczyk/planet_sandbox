@@ -27,7 +27,7 @@ namespace editor
   void update_default_spawn_position(fapp_instance& state)
   {
     fcamera& camera = state.scene_root->camera_config;
-    
+
     // Find center of the scene, new objects scan be spawned there
     fvec3 look_from = camera.location;
     fvec3 look_dir = fmath::to_vec3(camera.forward);
@@ -58,17 +58,17 @@ namespace editor
     // I do it this way because imported mesh data is bonkers. Mesh instances are merged together across the whole scene.
     // All of them have origin 0,0,0.
     // Line-box hit detection will not work properly. Line-mesh - no time for that.
-    if(state.output_window_is_hovered &&ImGui::IsMouseDown(ImGuiMouseButton_Left))
+    if (state.output_window_is_hovered && ImGui::IsMouseDown(ImGuiMouseButton_Left))
     {
       state.scene_root->renderer->show_object_id = 1;
-      
+
       std::vector<hstatic_mesh*> meshes = REG.get_all_by_type<hstatic_mesh>();
       bool found = false;
       for (hstatic_mesh* m : meshes)
       {
         XMUINT4 hash = fmath::uint32_to_colori(m->get_hash());
-          
-        if(state.output_window_cursor_color[0] == hash.x
+
+        if (state.output_window_cursor_color[0] == hash.x
           && state.output_window_cursor_color[1] == hash.y
           && state.output_window_cursor_color[2] == hash.z)
         {
@@ -77,7 +77,7 @@ namespace editor
           break;
         }
       }
-      if(!found)
+      if (!found)
       {
         state.selected_object = nullptr;
       }
@@ -93,20 +93,20 @@ namespace editor
     if (!io.WantCaptureKeyboard)
     {
       io.KeyRepeatDelay = 0.0f;
-      io.KeyRepeatRate = 1.0f/60.0f;
+      io.KeyRepeatRate = 1.0f / 60.0f;
     }
     else
     {
       io.KeyRepeatDelay = 0.25f;
       io.KeyRepeatRate = 0.05f;
     }
-    
+
     // Handle hotkeys
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
     {
       state.is_running = false;
     }
-    
+
     // Handle camera movement
     if (!io.WantCaptureKeyboard)
     {
@@ -127,7 +127,7 @@ namespace editor
       camera.input_left = 0;
       camera.input_right = 0;
     }
-    
+
     // Handle camera rotation
     if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
     {
@@ -140,7 +140,7 @@ namespace editor
       camera.input_yaw = 0;
       camera.input_pitch = 0;
     }
- 
+
     // Object movement
     if (!io.WantCaptureKeyboard)
     {

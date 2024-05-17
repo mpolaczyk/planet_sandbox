@@ -12,7 +12,7 @@ namespace editor
     virtual void init(const char* project_name) override;
     virtual void run() override;
     virtual void cleanup() override;
-    
+
   private:
     void pump_messages();
     void manage_renderer();

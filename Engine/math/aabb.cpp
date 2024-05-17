@@ -1,4 +1,3 @@
-
 #include "math/aabb.h"
 #include "math/vec3.h"
 #include "math/math.h"
@@ -9,7 +8,7 @@ namespace engine
 {
   bool faabb::hit(const fray& in_ray, float t_min, float t_max) const
   {
-    if (minimum == fvec3(0.0f) && maximum == fvec3(0.0f))
+    if(minimum == fvec3(0.0f) && maximum == fvec3(0.0f))
     {
       return false;
     }
@@ -30,19 +29,19 @@ namespace engine
     }
     return true;
 #else
-    for (int i = 0; i < 3; i++)
+    for(int i = 0; i < 3; i++)
     {
       float o = in_ray.origin[i];
       float d_inv = 0.0f;
       {
         ffpe_disabled_scope fpe;
-        d_inv = 1.0f / in_ray.direction[i];  // this is allowed to produce 1/0 = inf
+        d_inv = 1.0f / in_ray.direction[i]; // this is allowed to produce 1/0 = inf
       }
       float t0 = fmath::min1((minimum[i] - o) * d_inv, (maximum[i] - o) * d_inv);
       float t1 = fmath::max1((minimum[i] - o) * d_inv, (maximum[i] - o) * d_inv);
       t_min = fmath::max1(t0, t_min);
       t_max = fmath::min1(t1, t_max);
-      if (t_max <= t_min)
+      if(t_max <= t_min)
       {
         return false;
       }
@@ -54,12 +53,12 @@ namespace engine
   bool faabb::hit2(const fray& in_ray, float t_min, float t_max) const
   {
     // by Andrew Kensler at Pixar
-    for (int a = 0; a < 3; a++)
+    for(int a = 0; a < 3; a++)
     {
       float invD = 1.0f / in_ray.direction[a];
       float t0 = (minimum[a] - in_ray.origin[a]) * invD;
       float t1 = (maximum[a] - in_ray.origin[a]) * invD;
-      if (invD < 0.0f)
+      if(invD < 0.0f)
       {
         float temp = t0;
         t0 = t1;
@@ -67,7 +66,7 @@ namespace engine
       }
       t_min = t0 > t_min ? t0 : t_min;
       t_max = t1 < t_max ? t1 : t_max;
-      if (t_max <= t_min)
+      if(t_max <= t_min)
       {
         return false;
       }

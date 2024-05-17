@@ -8,15 +8,15 @@
 
 namespace engine
 {
-    class ENGINE_API hlight : public hhittable_base
-    {
-    public:
-        OBJECT_DECLARE(hlight, hhittable_base)
-        OBJECT_DECLARE_VISITOR
+  class ENGINE_API hlight : public hhittable_base
+  {
+  public:
+    OBJECT_DECLARE(hlight, hhittable_base)
+    OBJECT_DECLARE_VISITOR
 
-        virtual uint32_t get_hash() const override;
+    virtual uint32_t get_hash() const override;
 
-        // Persistent members
-        flight_properties properties;
-    };
+    // Persistent members
+    flight_properties properties;
+  };
 }
