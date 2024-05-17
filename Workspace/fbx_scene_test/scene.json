@@ -345,7 +345,7 @@
     "renderer_config": {
       "resolution_horizontal": 866,
       "resolution_vertical": 650,
-      "type": "rgpu"
+      "type": "rgpu_forward_sync"
     }
   }
 }

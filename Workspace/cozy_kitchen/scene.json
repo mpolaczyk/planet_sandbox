@@ -3715,7 +3715,7 @@
     "renderer_config": {
       "resolution_horizontal": 1600,
       "resolution_vertical": 1100,
-      "type": "rgpu"
+      "type": "rgpu_forward_sync"
     }
   }
 }

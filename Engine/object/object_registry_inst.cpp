@@ -8,7 +8,7 @@
 #include "assets/vertex_shader.h"
 #include "assets/pixel_shader.h"
 #include "renderer/renderer_base.h"
-#include "renderers/gpu_renderer.h"
+#include "renderers/gpu_forward_sync.h"
 #include "hittables/scene.h"
 #include "hittables/sphere.h"
 #include "hittables/static_mesh.h"
@@ -48,7 +48,7 @@ namespace engine
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(apixel_shader)
   
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rrenderer_base)
-  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rgpu)
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rgpu_forward_sync)
   
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(hhittable_base)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(hscene)
@@ -78,7 +78,7 @@ namespace engine
     CLASS_OBJECT_REGISTER(apixel_shader, aasset_base)
     
     CLASS_OBJECT_REGISTER(rrenderer_base, oobject)
-    CLASS_OBJECT_REGISTER(rgpu, rrenderer_base)
+    CLASS_OBJECT_REGISTER(rgpu_forward_sync, rrenderer_base)
     
     CLASS_OBJECT_REGISTER(hhittable_base, oobject)
     CLASS_OBJECT_REGISTER(hscene, hhittable_base)

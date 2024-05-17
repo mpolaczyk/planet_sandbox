@@ -128,7 +128,7 @@ copy $(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.dll $(SolutionD
     <ClInclude Include="persistence\object_persistence.h" />
     <ClInclude Include="persistence\persistence.h" />
     <ClInclude Include="renderers\aligned_structs.h" />
-    <ClInclude Include="renderers\gpu_renderer.h" />
+    <ClInclude Include="renderers\gpu_forward_sync.h" />
     <ClInclude Include="renderer\renderer_base.h" />
     <ClInclude Include="math\chunk_generator.h" />
     <ClInclude Include="renderer\dx11_lib.h" />
@@ -191,7 +191,7 @@ copy $(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.dll $(SolutionD
     <ClCompile Include="object\object_visitor.cpp" />
     <ClCompile Include="persistence\object_persistence.cpp" />
     <ClCompile Include="persistence\persistence.cpp" />
-    <ClCompile Include="renderers\gpu_renderer.cpp" />
+    <ClCompile Include="renderers\gpu_forward_sync.cpp" />
     <ClCompile Include="renderer\renderer_base.cpp" />
     <ClCompile Include="math\chunk_generator.cpp" />
     <ClCompile Include="renderer\dx11_lib.cpp" />
