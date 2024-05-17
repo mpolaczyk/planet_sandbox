@@ -2,6 +2,7 @@
 #include "renderer/dx11_lib.h"
 
 #include "object/object_registry.h"
+#include "object/object_visitor.h"
 #include "gpu_forward_sync.h"
 
 #include "engine/log.h"
@@ -15,28 +16,10 @@ namespace engine
 {
     OBJECT_DEFINE(rgpu_forward_sync, rrenderer_base, GPU forward sync)
     OBJECT_DEFINE_SPAWN(rgpu_forward_sync)
+    OBJECT_DEFINE_VISITOR(rgpu_forward_sync)
     
     void rgpu_forward_sync::init()
     {
-        // FIX temporary hack here! It should be properly persistent as part for the scene
-        vertex_shader_asset.set_name("gpu_renderer_vs");
-        if(!vertex_shader_asset.get()) 
-        {
-            throw std::runtime_error("Failed to load vertex shader");
-        }
-
-        pixel_shader_asset.set_name("gpu_renderer_ps");
-        if(!pixel_shader_asset.get())
-        {
-            throw std::runtime_error("Failed to load pixel shader");
-        }
-
-        default_material.set_name("default");
-        if(!default_material.get())
-        {
-            throw std::runtime_error("Failed to load default material");
-        }
-        
         auto dx = fdx11::instance();
         {
             D3D11_INPUT_ELEMENT_DESC input_element_desc[] =
@@ -158,13 +141,12 @@ namespace engine
             {
                 pfd.materials[i] = i < next_material_id ? materials[i]->properties : fmaterial_properties();
             }
-            const frenderer_config& rc = scene->renderer_config;
-            pfd.show_emissive = rc.show_emissive;
-            pfd.show_ambient = rc.show_ambient;
-            pfd.show_diffuse = rc.show_diffuse;
-            pfd.show_specular = rc.show_specular;
-            pfd.show_normals = rc.show_normals;
-            pfd.show_object_id = rc.show_object_id;
+            pfd.show_emissive = show_emissive;
+            pfd.show_ambient = show_ambient;
+            pfd.show_diffuse = show_diffuse;
+            pfd.show_specular = show_specular;
+            pfd.show_normals = show_normals;
+            pfd.show_object_id = show_object_id;
             dx.update_constant_buffer<fframe_data>(&pfd, frame_constant_buffer);
         }
         
@@ -177,7 +159,7 @@ namespace engine
             const amaterial* ma = sm->material_asset_ptr.get();
             if (ma == nullptr)
             {
-                ma = default_material.get();
+                ma = default_material_asset.get();
             }
             const atexture* ta = ma->texture_asset_ptr.get();
             
@@ -211,7 +193,7 @@ namespace engine
             {
                 if(ta == nullptr)
                 {
-                    ta = default_material.get()->texture_asset_ptr.get();
+                    ta = default_material_asset.get()->texture_asset_ptr.get();
                 }
                 dx.device_context->PSSetShaderResources(0, 1, ta->render_state.texture_srv.GetAddressOf());
             }

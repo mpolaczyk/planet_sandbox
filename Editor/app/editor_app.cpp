@@ -15,6 +15,7 @@
 #include "hittables/scene.h"
 #include "renderer/dx11_lib.h"
 #include "renderer/renderer_base.h"
+#include "renderers/gpu_forward_sync.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
  
@@ -63,7 +64,6 @@ namespace editor
     app_state.load_assets();
     app_state.load_scene_state();
     app_state.scene_root->load_resources();
-    app_state.renderer = REG.spawn_from_class<rrenderer_base>(app_state.scene_root->renderer_config.type);
     ::SetWindowPos(hwnd, NULL, app_state.window_conf.x, app_state.window_conf.y, app_state.window_conf.w, app_state.window_conf.h, NULL);
     
     LOG_INFO("Loading done, starting the main loop");
@@ -78,7 +78,7 @@ namespace editor
 
       const ImGuiIO& io = ImGui::GetIO();
       app_state.app_delta_time_ms = io.DeltaTime * 1000.0f;
-      app_state.render_delta_time_ms = static_cast<float>(app_state.renderer->get_render_time_ms());
+      app_state.render_delta_time_ms = static_cast<float>(app_state.scene_root->renderer->get_render_time_ms());
       
       handle_input(app_state);
       manage_renderer();
@@ -128,17 +128,21 @@ namespace editor
   void feditor_app::manage_renderer()
   {
     // Respawn the renderer if the type needs to be different
-    frenderer_config& renderer_config = app_state.scene_root->renderer_config;
-    if (app_state.renderer->get_class() != renderer_config.new_type && renderer_config.new_type != nullptr)
-    {
-      app_state.renderer->destroy();
-  
-      // Add new one
-      auto new_class = renderer_config.new_type;
-      auto new_renderer = REG.spawn_from_class<rrenderer_base>(new_class);
-      renderer_config.type = new_class;
-      app_state.renderer = new_renderer;
-    }
+
+
+    // TODO Fix this
+    
+    //frenderer_config& renderer_config = app_state.scene_root->renderer_config;
+    //if (app_state.renderer->get_class() != renderer_config.new_type && renderer_config.new_type != nullptr)
+    //{
+    //  app_state.renderer->destroy();
+    //
+    //  // Add new one
+    //  auto new_class = renderer_config.new_type;
+    //  auto new_renderer = REG.spawn_from_class<rrenderer_base>(new_class);
+    //  renderer_config.type = new_class;
+    //  app_state.renderer = new_renderer;
+    //}
   }
   
   void feditor_app::draw_ui()
@@ -162,20 +166,20 @@ namespace editor
   
   void feditor_app::draw_scene()
   {
-    if (app_state.renderer != nullptr)
+    hscene* scene = app_state.scene_root;
+    if(scene != nullptr)
     {
-        app_state.scene_root->load_resources();
+      rrenderer_base* renderer = scene->renderer;
+      if (renderer != nullptr)
+      {
+        scene->load_resources();
   
         update_default_spawn_position(app_state);
-
-        const frenderer_config& renderer_config = app_state.scene_root->renderer_config;
       
-        app_state.output_width = renderer_config.resolution_horizontal;
-        app_state.output_height = renderer_config.resolution_vertical;
-
-        app_state.scene_root->camera_config.update(app_state.app_delta_time_ms / 1000.0f);
+        scene->camera_config.update(app_state.app_delta_time_ms / 1000.0f, renderer->output_width, renderer->output_height);
         
-        app_state.renderer->render_frame(app_state.scene_root, app_state.selected_object);
+        renderer->render_frame(scene, app_state.selected_object);
+      }
     }
   }
   

@@ -18,10 +18,6 @@ namespace editor
 
   fapp_instance::~fapp_instance()
   {
-    if (renderer)
-    {
-      renderer->destroy();
-    }
     if (scene_root)
     {
       scene_root->destroy();
@@ -64,7 +60,7 @@ namespace editor
     // Line-box hit detection will not work properly. Line-mesh - no time for that.
     if(state.output_window_is_hovered &&ImGui::IsMouseDown(ImGuiMouseButton_Left))
     {
-      state.scene_root->renderer_config.show_object_id = 1;
+      state.scene_root->renderer->show_object_id = 1;
       
       std::vector<hstatic_mesh*> meshes = REG.get_all_by_type<hstatic_mesh>();
       bool found = false;
@@ -88,7 +84,7 @@ namespace editor
     }
     else
     {
-      state.scene_root->renderer_config.show_object_id = 0;
+      state.scene_root->renderer->show_object_id = 0;
     }
 
     ImGuiIO& io = ImGui::GetIO();

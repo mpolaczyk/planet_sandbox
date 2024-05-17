@@ -41,9 +41,6 @@ namespace engine
     static nlohmann::json serialize(const fcamera& value);
     static void deserialize(const nlohmann::json& j, fcamera& out_value);
 
-    static nlohmann::json serialize(const frenderer_config& value);
-    static void deserialize(const nlohmann::json& j, frenderer_config& out_value);
-
     static nlohmann::json serialize(const flight_properties& value);
     static void deserialize(const nlohmann::json& j, flight_properties& out_value);
 

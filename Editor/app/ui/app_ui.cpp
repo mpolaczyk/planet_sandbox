@@ -114,7 +114,8 @@ namespace editor
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
     ImGui::Separator();
-  
+
+    
     // FIX this does not work for class objects!
     // co->is_child_of(renderer_base::get_class_static());
     model.r_model.objects = REG.find_all<const oclass_object>([](const oclass_object* co) -> bool
@@ -122,31 +123,21 @@ namespace editor
       return co->get_parent_class_name() == rrenderer_base::get_class_static()->get_class_name();
     });  
 
-    frenderer_config& renderer_config = state.scene_root->renderer_config;
+    // TODO FIX
     
-    fui_helper::draw_selection_combo<oclass_object>(model.r_model, "Renderer class",
-      [=](const oclass_object* obj) -> bool { return true; }, renderer_config.type);
-    if(model.r_model.selected_object != renderer_config.type)
-    {
-      renderer_config.new_type = model.r_model.selected_object;
-    }
-    ImGui::Separator();
-  
-    ImGui::InputInt("Resolution v", &renderer_config.resolution_vertical, 1, 2160);
-    fcamera& camera = state.scene_root->camera_config;
-    renderer_config.resolution_horizontal = (int)((float)renderer_config.resolution_vertical * camera.aspect_ratio_w / camera.aspect_ratio_h);
-    ImGui::Text("Resolution h = %d", renderer_config.resolution_horizontal);
-
-    fui_helper::check_box("Show emissive", renderer_config.show_emissive);
-    fui_helper::check_box("Show ambient", renderer_config.show_ambient);
-    fui_helper::check_box("Show diffuse", renderer_config.show_diffuse);
-    fui_helper::check_box("Show specular", renderer_config.show_specular);
-    fui_helper::check_box("Show normals", renderer_config.show_normals);
-    fui_helper::check_box("Show object id", renderer_config.show_object_id);
+    //fui_helper::draw_selection_combo<oclass_object>(model.r_model, "Renderer class",
+    //  [=](const oclass_object* obj) -> bool { return true; }, renderer_config.type);
+    //if(model.r_model.selected_object != renderer_config.type)
+    //{
+    //  renderer_config.new_type = model.r_model.selected_object;
+    //}
+    //ImGui::Separator();
+    
+    state.scene_root->renderer->accept(vdraw_edit_panel());
     
     ImGui::Separator();
     
-    if (state.renderer == nullptr)
+    if (state.scene_root->renderer == nullptr)
     {
       ImGui::SameLine();
       ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.5f, 1.0f), "No renderer active");
@@ -158,11 +149,6 @@ namespace editor
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
     ImGui::Separator();
-    float ar[2] = { camera.aspect_ratio_w, camera.aspect_ratio_h };
-    ImGui::InputFloat2("Aspect ratio", ar);
-    camera.aspect_ratio_w = ar[0];
-    camera.aspect_ratio_h = ar[1];
-    ImGui::Text("Aspect ratio = %.3f", camera.aspect_ratio_w / camera.aspect_ratio_h);
     ImGui::InputFloat("Field of view", &camera.field_of_view, 1.0f, 189.0f, "%.0f");
     ImGui::Separator();
     ImGui::InputFloat3("Look from", camera.location.e, "%.2f");
@@ -265,12 +251,13 @@ namespace editor
 
   void draw_output_window(foutput_window_model& model, fapp_instance& state)
   {
-    if (state.renderer->output_texture)
+    if (state.scene_root->renderer->output_texture)
     {
       ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
       ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
-      ImVec2 size = ImVec2(state.output_width * model.zoom, state.output_height * model.zoom);
-      ImGui::Image((ImTextureID)state.renderer->output_srv.Get(), size, ImVec2(0, 0), ImVec2(1, 1));
+      const rrenderer_base* renderer = state.scene_root->renderer;
+      ImVec2 size = ImVec2(renderer->output_width * model.zoom, renderer->output_height * model.zoom);
+      ImGui::Image((ImTextureID)renderer->output_srv.Get(), size, ImVec2(0, 0), ImVec2(1, 1));
 
       state.output_window_is_clicked = ImGui::IsItemClicked(ImGuiMouseButton_Left);
       state.output_window_is_hovered = ImGui::IsItemHovered();

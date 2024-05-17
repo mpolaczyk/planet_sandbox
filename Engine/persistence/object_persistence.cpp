@@ -17,9 +17,11 @@
 #include "hittables/sphere.h"
 #include "hittables/scene.h"
 
+#include "renderer/renderer_base.h"
+#include "renderers/gpu_forward_sync.h"
+
 #include "engine/log.h"
 #include "hittables/light.h"
-#include "math/colors.h"
 #include "object/object_registry.h"
 
 namespace engine
@@ -50,7 +52,6 @@ namespace engine
     j["entrypoint"] = object.entrypoint;
     j["target"] = object.target;
   }
-  
   void vserialize_object::visit(hhittable_base& object) const
   {
     j["origin"] = fpersistence::serialize(object.origin);
@@ -60,18 +61,25 @@ namespace engine
   }
   void vserialize_object::visit(hscene& object) const
   {
-    nlohmann::json jarr = nlohmann::json::array();
-    for (hhittable_base* h : object.objects)
     {
-      nlohmann::json jj;
-      jj["class_name"] = h->get_class()->get_class_name();
-      h->accept(vserialize_object(jj));
-      jarr.push_back(jj);
+      nlohmann::json jobjects = nlohmann::json::array();
+      for (hhittable_base* h : object.objects)
+      {
+        nlohmann::json jj;
+        jj["class_name"] = h->get_class()->get_class_name();
+        h->accept(vserialize_object(jj));
+        jobjects.push_back(jj);
+      }
+      j["objects"] = jobjects;
     }
-    j["objects"] = jarr;
+    {
+      nlohmann::json jrenderer;
+      jrenderer["class_name"] = object.renderer->get_class()->get_class_name();
+      object.renderer->accept(vserialize_object(jrenderer));
+      j["renderer"] = jrenderer;
+    }
     j["ambient_light_color"] = fpersistence::serialize(object.ambient_light_color);
     j["clear_color"] = fpersistence::serialize(object.clear_color);
-    j["renderer_config"] = fpersistence::serialize(object.renderer_config);
     j["camera_config"] = fpersistence::serialize(object.camera_config);
   }
   void vserialize_object::visit(hstatic_mesh& object) const
@@ -93,6 +101,19 @@ namespace engine
 
     j["properties"] = fpersistence::serialize(object.properties);
   }
+  void vserialize_object::visit_rrenderer_base(rrenderer_base& object) const
+  {
+    j["output_width"] = object.output_width;
+    j["output_height"] = object.output_height;
+    j["default_material_asset"] = fpersistence::serialize(object.default_material_asset);
+  }
+  void vserialize_object::visit(rgpu_forward_sync& object) const
+  {
+    visit_rrenderer_base(object);
+    j["pixel_shader_asset"] = fpersistence::serialize(object.pixel_shader_asset);
+    j["vertex_shader_asset"] = fpersistence::serialize(object.vertex_shader_asset);
+  }
+
   
   void vdeserialize_object::visit(amaterial& object) const
   {
@@ -123,7 +144,6 @@ namespace engine
     TRY_PARSE(std::string, j, "entrypoint", object.entrypoint);
     TRY_PARSE(std::string, j, "target", object.target);
   }
-  
   void vdeserialize_object::visit(hhittable_base& object) const
   {
     nlohmann::json jorigin;
@@ -143,10 +163,23 @@ namespace engine
 
     nlohmann::json jclear_color;
     if (TRY_PARSE(nlohmann::json, j, "clear_color", jclear_color)) { fpersistence::deserialize(jclear_color, object.clear_color); }
-
-    nlohmann::json jrenderer_config;
-    if (TRY_PARSE(nlohmann::json, j, "renderer_config", jrenderer_config)) { fpersistence::deserialize(jrenderer_config, object.renderer_config); }
-
+    
+    nlohmann::json jrenderer;
+    if (TRY_PARSE(nlohmann::json, j, "renderer", jrenderer))
+    {
+      std::string class_name;
+      if (TRY_PARSE(std::string, jrenderer, "class_name", class_name))    // TODO move it to a helper function, every oobject can be serialized the same way - class_name + object
+      {
+        const oclass_object* class_o = REG.find_class(class_name);
+        rrenderer_base* obj = REG.spawn_from_class<rrenderer_base>(class_o);
+        if (obj != nullptr)
+        {
+          obj->accept(vdeserialize_object(jrenderer));
+          object.renderer = obj;
+        }
+      }
+    }
+    
     nlohmann::json jcamera_conf;
     if (TRY_PARSE(nlohmann::json, j, "camera_config", jcamera_conf)) { fpersistence::deserialize(jcamera_conf, object.camera_config); }
     
@@ -192,5 +225,20 @@ namespace engine
 
     nlohmann::json jproperties;
     if (TRY_PARSE(nlohmann::json, j, "properties", jproperties)) { fpersistence::deserialize(jproperties, object.properties); }
+  }
+  void vdeserialize_object::visit_rrenderer_base(rrenderer_base& object) const
+  {
+    TRY_PARSE(int, j, "output_width", object.output_width);
+    TRY_PARSE(int, j, "output_height", object.output_height);
+    nlohmann::json jmaterial;
+    if (TRY_PARSE(nlohmann::json, j, "default_material_asset", jmaterial)) { fpersistence::deserialize(jmaterial, object.default_material_asset); }
+  }
+  void vdeserialize_object::visit(rgpu_forward_sync& object) const
+  {
+    visit_rrenderer_base(object);
+    nlohmann::json jpixel_shader;
+    if (TRY_PARSE(nlohmann::json, j, "pixel_shader_asset", jpixel_shader)) { fpersistence::deserialize(jpixel_shader, object.pixel_shader_asset); }
+    nlohmann::json jvertex_shader;
+    if (TRY_PARSE(nlohmann::json, j, "vertex_shader_asset", jvertex_shader)) { fpersistence::deserialize(jvertex_shader, object.vertex_shader_asset); }
   }
 }

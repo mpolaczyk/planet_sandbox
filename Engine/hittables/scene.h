@@ -6,12 +6,11 @@
 
 #include "hittables.h"
 #include "math/camera.h"
-#include "math/vec3.h"
-#include "renderer/renderer_config.h"
 
 namespace engine
 {
   class hlight;
+  class rrenderer_base;
   
   class ENGINE_API hscene : public hhittable_base
   {
@@ -29,9 +28,9 @@ namespace engine
 
     // Persistent members
     std::vector<hhittable_base*> objects;
+    rrenderer_base* renderer = nullptr;
     DirectX::XMFLOAT4 ambient_light_color;
     DirectX::XMVECTORF32 clear_color;
-    frenderer_config renderer_config;
     fcamera camera_config;
   };
 }

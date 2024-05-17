@@ -14,14 +14,14 @@ namespace engine
   {
   public:
     fcamera() = default;
-    fcamera(const fvec3& look_from, float field_of_view, float aspect_ratio_w, float aspect_ratio_h)
-      : location(look_from), field_of_view(field_of_view), aspect_ratio_w(aspect_ratio_w), aspect_ratio_h(aspect_ratio_h)
+    fcamera(const fvec3& look_from, float field_of_view)
+      : location(look_from), field_of_view(field_of_view)
     {
     }
     
     uint32_t get_hash() const;
 
-    void update(float delta_time);
+    void update(float delta_time, int32_t width, int32_t height);
     
     // Camera movement
     int32_t input_forward, input_left, input_backward, input_right;
@@ -42,7 +42,5 @@ namespace engine
     float pitch;  
     float yaw;
     float field_of_view = 70.0f;
-    float aspect_ratio_h = 9.0f;
-    float aspect_ratio_w = 16.0f;
   };
 }

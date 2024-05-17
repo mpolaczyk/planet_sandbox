@@ -3,7 +3,8 @@
 #include <string>
 #include <wrl/client.h>
 
-#include "renderer_config.h"
+#include "asset/soft_asset_ptr.h"
+#include "assets/material.h"
 #include "resources/bmp.h"
 #include "object/object.h"
 
@@ -19,7 +20,7 @@ namespace engine
   {
   public:
     OBJECT_DECLARE(rrenderer_base, oobject)
-
+    
     rrenderer_base() = default;
     rrenderer_base(const rrenderer_base&) = delete;
     rrenderer_base& operator=(const rrenderer_base&) = delete;
@@ -28,15 +29,19 @@ namespace engine
     
     const hscene* scene = nullptr;
     const hhittable_base* selected_object = nullptr;
+    uint32_t last_frame_resolution_hash = 0;
+    int show_object_id = 0;
     
     // Output texture
     ComPtr<ID3D11Texture2D> output_texture;
     ComPtr<ID3D11ShaderResourceView> output_srv;
     ComPtr<ID3D11RenderTargetView> output_rtv;
     ComPtr<ID3D11DepthStencilView> output_dsv;
-    
-    unsigned int output_width = 0;
-    unsigned int output_height = 0;
+
+    // Persistent members
+    fsoft_asset_ptr<amaterial> default_material_asset;
+    int32_t output_width = 0;
+    int32_t output_height = 0;
     
     // Main public interface
     void render_frame(const hscene* in_scene, const hhittable_base* in_selected_object = nullptr);

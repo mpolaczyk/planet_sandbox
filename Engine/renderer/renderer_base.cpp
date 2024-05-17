@@ -4,6 +4,7 @@
 #include "renderer/dx11_lib.h"
 #include "renderer/renderer_base.h"
 #include "engine/log.h"
+#include "engine/hash.h"
 #include "hittables/scene.h"
 #include "object/object_registry.h"
 #include "profile/benchmark.h"
@@ -11,30 +12,31 @@
 namespace engine
 {
   OBJECT_DEFINE(rrenderer_base, oobject, Renderer base)
-  OBJECT_DEFINE_NOSPAWN(rrenderer_base) 
-
+  OBJECT_DEFINE_NOSPAWN(rrenderer_base)
+    
   void rrenderer_base::render_frame(const hscene* in_scene, const hhittable_base* in_selected_object)
   {
     if(in_scene == nullptr)
     {
-        LOG_ERROR("Can't render. Bad scene.");
-        return;
+      LOG_ERROR("Can't render. Scene is missing.");
+      return;
     }
-    const frenderer_config& renderer_config = in_scene->renderer_config;
-      
-    if (renderer_config.resolution_vertical == 0 || renderer_config.resolution_horizontal == 0) return;
-    scene = in_scene;
-    selected_object = in_selected_object;
-      
-    const bool size_changed = output_width != renderer_config.resolution_horizontal
-                          || output_height != renderer_config.resolution_vertical;
-    output_width = renderer_config.resolution_horizontal;
-    output_height = renderer_config.resolution_vertical;
-    if (size_changed)
+    if (output_height == 0 || output_width == 0)
+    {
+      LOG_ERROR("Can't render. Incorrect resolution.");
+      return;
+    }
+    
+    const uint32_t resolution_hash = fhash::combine(output_height, output_width);
+    if(resolution_hash != last_frame_resolution_hash)
     {
       LOG_INFO("Recreating output texture");
       create_output_texture(true);
+      last_frame_resolution_hash = resolution_hash;
     }
+    
+    scene = in_scene;
+    selected_object = in_selected_object;
     
     // Initialize
     if (!init_done)

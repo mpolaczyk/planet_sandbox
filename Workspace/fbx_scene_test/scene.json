@@ -7,8 +7,6 @@
       "z": 0.2745097875595093
     },
     "camera_config": {
-      "aspect_ratio_h": 3.0,
-      "aspect_ratio_w": 4.0,
       "field_of_view": 40.0,
       "look_from": {
         "x": -3.2336008548736572,
@@ -342,10 +340,19 @@
         }
       }
     ],
-    "renderer_config": {
-      "resolution_horizontal": 866,
-      "resolution_vertical": 650,
-      "type": "rgpu_forward_sync"
+    "renderer": {
+      "class_name": "rgpu_forward_sync",
+      "default_material_asset": {
+        "name": "default"
+      },
+      "output_height": 1080,
+      "output_width": 1920,
+      "pixel_shader_asset": {
+        "name": "gpu_renderer_ps"
+      },
+      "vertex_shader_asset": {
+        "name": "gpu_renderer_vs"
+      }
     }
   }
 }

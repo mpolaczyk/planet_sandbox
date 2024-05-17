@@ -26,6 +26,8 @@ namespace engine
   class hstatic_mesh;
   class hsphere;
   class hlight;
+  class rrenderer_base;
+  class rgpu_forward_sync;
   
   struct ENGINE_API vobject_visitor
   {
@@ -48,6 +50,9 @@ namespace engine
     virtual void visit(hstatic_mesh& object) const    { vobject_visitor::invalid_operation(); }
     virtual void visit(hsphere& object) const         { vobject_visitor::invalid_operation(); }
     virtual void visit(hlight& object) const          { vobject_visitor::invalid_operation(); }
+    
+    virtual void visit(rrenderer_base& object) const { vobject_visitor::invalid_operation(); }
+    virtual void visit(rgpu_forward_sync& object) const { vobject_visitor::invalid_operation(); }
 
   private:
     static void invalid_operation()

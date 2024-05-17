@@ -10,6 +10,8 @@
 #include "hittables/sphere.h"
 #include "hittables/static_mesh.h"
 
+#include "renderers/gpu_forward_sync.h"
+
 namespace editor
 {
   void vdraw_edit_panel::visit_hhittable_base(hhittable_base& object) const
@@ -84,6 +86,22 @@ namespace editor
   {
     ImGui::Text("File name: %s", object.file_name.c_str());
   }
+  
+  void vdraw_edit_panel::visit_rrenderer_base(rrenderer_base& object) const
+  {
+    ImGui::InputInt("Resolution h", &object.output_width);
+    ImGui::InputInt("Resolution v", &object.output_height);
+    {
+      fselection_combo_model<amaterial> model;
+      model.objects = REG.get_all_by_type<const amaterial>();
+      fui_helper::draw_selection_combo<amaterial>(model, "Default material",[=](const amaterial* obj) -> bool { return true; }, object.default_material_asset.get());
+        
+      if (model.selected_object != nullptr)
+      {
+        object.default_material_asset.set_name(model.selected_object->file_name);
+      }
+    }
+  }
 
   void vdraw_edit_panel::visit(amaterial& object) const
   {
@@ -105,5 +123,37 @@ namespace editor
         object.texture_asset_ptr.set_name(model.selected_object->file_name);
       }
     }
+  }
+  
+  void vdraw_edit_panel::visit(rgpu_forward_sync& object) const
+  {
+    visit_rrenderer_base(object);
+    {
+      fselection_combo_model<apixel_shader> model;
+      model.objects = REG.get_all_by_type<const apixel_shader>();
+      fui_helper::draw_selection_combo<apixel_shader>(model, "Pixel shader",[=](const apixel_shader* obj) -> bool { return true; }, object.pixel_shader_asset.get());
+        
+      if (model.selected_object != nullptr)
+      {
+        object.pixel_shader_asset.set_name(model.selected_object->file_name);
+      }
+    }
+    {
+      fselection_combo_model<avertex_shader> model;
+      model.objects = REG.get_all_by_type<const avertex_shader>();
+      fui_helper::draw_selection_combo<avertex_shader>(model, "Vertex shader",[=](const avertex_shader* obj) -> bool { return true; }, object.vertex_shader_asset.get());
+        
+      if (model.selected_object != nullptr)
+      {
+        object.vertex_shader_asset.set_name(model.selected_object->file_name);
+      }
+    }
+
+    fui_helper::check_box("Show emissive", object.show_emissive);
+    fui_helper::check_box("Show ambient", object.show_ambient);
+    fui_helper::check_box("Show diffuse", object.show_diffuse);
+    fui_helper::check_box("Show specular", object.show_specular);
+    fui_helper::check_box("Show normals", object.show_normals);
+    fui_helper::check_box("Show object id", object.show_object_id);
   }
 }

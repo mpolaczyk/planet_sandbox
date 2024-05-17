@@ -31,11 +31,18 @@ namespace engine
   {    
   public:
     OBJECT_DECLARE(rgpu_forward_sync, rrenderer_base)
+    OBJECT_DECLARE_VISITOR
     
-    // FIX make them persistent members
+    // Persistent members
     fsoft_asset_ptr<apixel_shader> pixel_shader_asset;
     fsoft_asset_ptr<avertex_shader> vertex_shader_asset;
-    fsoft_asset_ptr<amaterial> default_material;
+
+    // Runtime members
+    int show_emissive = 1;
+    int show_ambient = 1;
+    int show_specular = 1;
+    int show_diffuse = 1;
+    int show_normals = 0;
     
   protected:
     virtual void init() override;
@@ -50,8 +57,7 @@ namespace engine
     ComPtr<ID3D11RasterizerState> rasterizer_state;
     ComPtr<ID3D11DepthStencilState> depth_stencil_state;
 
-    // Rebuilt every frame based on hstatic_mesh objects placed on the scene
-    // BEGIN
+    // BEGIN - Rebuilt every frame based on hstatic_mesh objects placed on the scene
     
     // Map material pointer to material id (sent to gpu)
     // Needs to be quick to search

@@ -8,6 +8,9 @@
 
 #include "ui_helper.h"
 
+#include "assets/pixel_shader.h"
+#include "assets/vertex_shader.h"
+
 namespace editor
 {
   void fui_helper::input_float3(const char* caption, DirectX::XMFLOAT4& value)
@@ -108,4 +111,6 @@ namespace editor
   template void fui_helper::draw_selection_combo<atexture>(fselection_combo_model<atexture>& model, const char* name, std::function<bool(const atexture*)> predicate, const atexture* default_selected_object);
   template void fui_helper::draw_selection_combo<astatic_mesh>(fselection_combo_model<astatic_mesh>& model, const char* name, std::function<bool(const astatic_mesh*)> predicate, const astatic_mesh* default_selected_object);
   template void fui_helper::draw_selection_combo<oclass_object>(fselection_combo_model<oclass_object>& model, const char* name, std::function<bool(const oclass_object*)> predicate, const oclass_object* default_selected_object);
+  template void fui_helper::draw_selection_combo<apixel_shader>(fselection_combo_model<apixel_shader>& model, const char* name, std::function<bool(const apixel_shader*)> predicate, const apixel_shader* default_selected_object);
+  template void fui_helper::draw_selection_combo<avertex_shader>(fselection_combo_model<avertex_shader>& model, const char* name, std::function<bool(const avertex_shader*)> predicate, const avertex_shader* default_selected_object);
 }

@@ -7,12 +7,10 @@ namespace engine
 {
   uint32_t fcamera::get_hash() const
   {
-    uint32_t a = fhash::combine(fhash::get(location), fhash::get(yaw), fhash::get(pitch), fhash::get(aspect_ratio_h));
-    uint32_t b = fhash::combine(fhash::get(aspect_ratio_w), fhash::get(field_of_view));
-    return fhash::combine(a, b);
+    return fhash::combine(fhash::get(location), fhash::get(yaw), fhash::get(pitch), fhash::get(field_of_view));
   }
 
-  void fcamera::update(float delta_time)
+  void fcamera::update(float delta_time, int32_t width, int32_t height)
   {
     using namespace DirectX;
     const XMVECTOR _axis_forward = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
@@ -43,7 +41,7 @@ namespace engine
     }
     // Calculate camera
     {
-      XMMATRIX _projection_matrix = XMMatrixPerspectiveFovLH(XMConvertToRadians(field_of_view), aspect_ratio_w / aspect_ratio_h, fmath::t_min, fmath::infinity);
+      XMMATRIX _projection_matrix = XMMatrixPerspectiveFovLH(XMConvertToRadians(field_of_view), static_cast<float>(width) / static_cast<float>(height), fmath::t_min, fmath::infinity);
       XMMATRIX _rotation_matrix = XMMatrixTranspose(XMMatrixRotationQuaternion(_rotation_quaternion));
       XMMATRIX _translation_matrix = XMMatrixTranslationFromVector(XMVectorNegate(_location));
       XMMATRIX _view_matrix = _translation_matrix * _rotation_matrix;
