@@ -7,6 +7,7 @@ namespace engine
 {
   fobject_registry::~fobject_registry()
   {
+    const std::lock_guard<std::mutex> lock(registry_mutex);
     for(int i = 0; i < objects.size(); i++)
     {
       if(objects[i] != nullptr)
@@ -31,6 +32,7 @@ namespace engine
   void fobject_registry::set_custom_display_name(int id, const std::string& name)
   {
     assert(is_valid(id));
+    const std::lock_guard<std::mutex> lock(registry_mutex);
     object_custom_display_names[id] = name;
   }
 
@@ -100,6 +102,7 @@ namespace engine
 
   const oclass_object* fobject_registry::register_class(const std::string& class_name, const std::string& parent_class_name, spawn_instance_func_type spawn_func)
   {
+    const std::lock_guard<std::mutex> lock(registry_mutex);
     oclass_object* new_class = new oclass_object();
     new_class->class_name = class_name;
     new_class->parent_class_name = parent_class_name;

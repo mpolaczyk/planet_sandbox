@@ -14,6 +14,7 @@ namespace engine
   template <derives_from<oobject> T>
   bool fobject_registry::add(T* instance)
   {
+    const std::lock_guard<std::mutex> lock(registry_mutex);
     if(instance == nullptr)
     {
       LOG_ERROR("Unable to add nullptr object.");
@@ -61,7 +62,8 @@ namespace engine
   T* fobject_registry::copy_shallow(const T* source)
   {
     assert(source != nullptr);
-
+    const std::lock_guard<std::mutex> lock(registry_mutex);
+    
     int source_runtime_id = source->get_runtime_id();
 
     if(!is_valid(source_runtime_id))

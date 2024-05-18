@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include <ppl.h>
 #include <fstream>
 
 #include "ui_persistence.h"
@@ -37,28 +38,38 @@ namespace editor
   void fapp_instance::load_assets()
   {
     using namespace engine;
-    LOG_INFO("Loading: materials");
-    std::vector<std::string> material_names = fio::discover_material_files(false);
-    for (const std::string& name : material_names)
-    {
-      amaterial* temp = amaterial::spawn();
-      amaterial::load(temp, name);
-    }
 
     LOG_INFO("Loading: textures");
-    std::vector<std::string> texture_names = fio::discover_texture_files(false);
-    for (const std::string& name : texture_names)
     {
-      atexture* temp = atexture::spawn();
-      atexture::load(temp, name);
+      std::vector<std::string> texture_names = fio::discover_texture_files(false);
+      concurrency::parallel_for_each(begin(texture_names), end(texture_names),
+        [&](const std::string& name)
+        {
+          atexture* temp = atexture::spawn();
+          atexture::load(temp, name);
+        });
+    }
+    
+    LOG_INFO("Loading: materials");
+    {
+      std::vector<std::string> material_names = fio::discover_material_files(false);
+      concurrency::parallel_for_each(begin(material_names), end(material_names),
+        [&](const std::string& name)
+        {
+          amaterial* temp = amaterial::spawn();
+          amaterial::load(temp, name);
+        });
     }
 
     LOG_INFO("Loading: static meshes");
-    std::vector<std::string> mesh_names = fio::discover_mesh_files(false);
-    for (const std::string& name : mesh_names)
     {
-      astatic_mesh* temp = astatic_mesh::spawn();
-      astatic_mesh::load(temp, name);
+      std::vector<std::string> mesh_names = fio::discover_mesh_files(false);
+      concurrency::parallel_for_each(begin(mesh_names), end(mesh_names),
+        [&](const std::string& name)
+        {
+          astatic_mesh* temp = astatic_mesh::spawn();
+          astatic_mesh::load(temp, name);
+        });
     }
   }
 

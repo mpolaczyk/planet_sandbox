@@ -109,7 +109,7 @@ copy $(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.dll $(SolutionD
     <ClInclude Include="assets\vertex_shader.h" />
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="core\concepts.h" />
-    <ClInclude Include="engine\tools.h" />
+    <ClInclude Include="engine\string_tools.h" />
     <ClInclude Include="hittables\hittables.h" />
     <ClInclude Include="hittables\light.h" />
     <ClInclude Include="hittables\scene.h" />
@@ -172,7 +172,7 @@ copy $(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.dll $(SolutionD
     <ClCompile Include="assets\pixel_shader.cpp" />
     <ClCompile Include="assets\vertex_shader.cpp" />
     <ClCompile Include="asset\asset.cpp" />
-    <ClCompile Include="engine\tools.cpp" />
+    <ClCompile Include="engine\string_tools.cpp" />
     <ClCompile Include="hittables\hittables.cpp" />
     <ClCompile Include="hittables\light.cpp" />
     <ClCompile Include="hittables\scene.cpp" />

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <mutex>
 
 #include "core/core.h"
 #include "core/concepts.h"
@@ -57,6 +58,9 @@ namespace engine
     // Index is not related to the objects vector
     std::vector<const oclass_object*> class_objects; // A subset of objects of the class_object type. No ownership.    
 
+    // Lock only for the writing operations
+    std::mutex registry_mutex;
+    
   public:
     template <derives_from<oobject> T>
     bool add(T* instance);
