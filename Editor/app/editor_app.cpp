@@ -82,7 +82,6 @@ namespace editor
       app_state.render_delta_time_ms = static_cast<float>(app_state.scene_root->renderer->get_render_time_ms());
 
       handle_input(app_state);
-      manage_renderer();
       draw_scene();
       draw_ui();
       present();
@@ -124,26 +123,6 @@ namespace editor
       ::TranslateMessage(&msg);
       ::DispatchMessage(&msg);
     }
-  }
-
-  void feditor_app::manage_renderer()
-  {
-    // Respawn the renderer if the type needs to be different
-
-
-    // TODO Fix this
-
-    //frenderer_config& renderer_config = app_state.scene_root->renderer_config;
-    //if (app_state.renderer->get_class() != renderer_config.new_type && renderer_config.new_type != nullptr)
-    //{
-    //  app_state.renderer->destroy();
-    //
-    //  // Add new one
-    //  auto new_class = renderer_config.new_type;
-    //  auto new_renderer = REG.spawn_from_class<rrenderer_base>(new_class);
-    //  renderer_config.type = new_class;
-    //  app_state.renderer = new_renderer;
-    //}
   }
 
   void feditor_app::draw_ui()

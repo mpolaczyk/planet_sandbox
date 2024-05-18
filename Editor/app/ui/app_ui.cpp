@@ -115,25 +115,31 @@ namespace editor
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
     ImGui::Separator();
 
-
+    // Get list of all renderer classes
     // FIX this does not work for class objects!
     // co->is_child_of(renderer_base::get_class_static());
     model.r_model.objects = REG.find_all<const oclass_object>([](const oclass_object* co) -> bool{
       return co->get_parent_class_name() == rrenderer_base::get_class_static()->get_class_name();
     });
 
-    // TODO FIX
+    // Renderer class selection combo box
+    rrenderer_base* renderer = state.scene_root->renderer;
+    const oclass_object* renderer_class = renderer->get_class();
+    fui_helper::draw_selection_combo<oclass_object>(model.r_model, "Renderer class", [=](const oclass_object* obj) -> bool { return true; }, renderer_class);
+    if(model.r_model.selected_object != renderer_class)
+    {
+      // Different renderer is chosen, find instance or create new one if none exists
+      renderer = REG.find<rrenderer_base>([=](const rrenderer_base* obj) -> bool { return obj->get_class() == model.r_model.selected_object; });
+      if(renderer == nullptr)
+      {
+        renderer = REG.spawn_from_class<rrenderer_base>(model.r_model.selected_object);
+      }
+      state.scene_root->renderer = renderer;
+    }
+    ImGui::Separator();
 
-    //fui_helper::draw_selection_combo<oclass_object>(model.r_model, "Renderer class",
-    //  [=](const oclass_object* obj) -> bool { return true; }, renderer_config.type);
-    //if(model.r_model.selected_object != renderer_config.type)
-    //{
-    //  renderer_config.new_type = model.r_model.selected_object;
-    //}
-    //ImGui::Separator();
-
+    // Renderer edit panel
     state.scene_root->renderer->accept(vdraw_edit_panel());
-
     ImGui::Separator();
 
     if (state.scene_root->renderer == nullptr)
