@@ -40,8 +40,8 @@ namespace engine
 
     // Persistent members
     fsoft_asset_ptr<amaterial> default_material_asset;
-    int32_t output_width = 0;
-    int32_t output_height = 0;
+    int32_t output_width = 1080;
+    int32_t output_height = 1920;
 
     // Main public interface
     void render_frame(const hscene* in_scene, const hhittable_base* in_selected_object = nullptr);

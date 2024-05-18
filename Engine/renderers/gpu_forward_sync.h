@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include <unordered_map>
 #include <wrl/client.h>
 
 #include "core/core.h"
@@ -8,7 +7,7 @@
 #include "asset/soft_asset_ptr.h"
 #include "assets/pixel_shader.h"
 #include "assets/vertex_shader.h"
-#include "assets/material.h"
+#include "renderers/scene_acceleration.h"
 
 struct ID3D11InputLayout;
 struct ID3D11Buffer;
@@ -57,23 +56,6 @@ namespace engine
     ComPtr<ID3D11RasterizerState> rasterizer_state;
     ComPtr<ID3D11DepthStencilState> depth_stencil_state;
 
-    // BEGIN - Rebuilt every frame based on hstatic_mesh objects placed on the scene
-
-    // Map material pointer to material id (sent to gpu)
-    // Needs to be quick to search
-    typedef std::unordered_map<const amaterial*, uint32_t> material_map_type;
-    material_map_type material_map;
-    // Order of materials added to the material_map
-    std::vector<const amaterial*> materials;
-    uint32_t next_material_id = 0;
-
-    // All static meshes on the scene
-    std::vector<const hstatic_mesh*> meshes;
-
-    // All lights on the scene
-    std::vector<const hlight*> lights;
-    uint32_t next_light_id = 0;
-
-    //END
+    fscene_acceleration scene_acceleration;
   };
 }

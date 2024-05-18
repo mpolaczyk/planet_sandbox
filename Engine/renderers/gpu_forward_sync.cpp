@@ -48,58 +48,11 @@ namespace engine
     dx.device_context->ClearRenderTargetView(output_rtv.Get(), scene->clear_color);
     dx.device_context->ClearDepthStencilView(output_dsv.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-    // Poke static mesh loading and build scene caches
+    scene_acceleration.clean(MAX_LIGHTS, MAX_MATERIALS);
+    scene_acceleration.build(scene->objects);
+    if(!scene_acceleration.validate())
     {
-      material_map.clear();
-      material_map.reserve(MAX_MATERIALS);
-      materials.clear();
-      materials.reserve(MAX_MATERIALS);
-      next_material_id = 0;
-      meshes.clear();
-      lights.clear();
-      lights.reserve(MAX_LIGHTS);
-      next_light_id = 0;
-
-      for(const hhittable_base* hittable : scene->objects)
-      {
-        if(hittable->get_class() == hstatic_mesh::get_class_static())
-        {
-          const hstatic_mesh* mesh = static_cast<const hstatic_mesh*>(hittable);
-          meshes.push_back(mesh);
-          volatile const astatic_mesh* mesh_asset = mesh->mesh_asset_ptr.get();
-          const amaterial* material = mesh->material_asset_ptr.get();
-          if(material && !material_map.contains(material))
-          {
-            material_map.insert(std::pair<const amaterial*, uint32_t>(material, next_material_id));
-            materials.push_back(material);
-            next_material_id++;
-            if(next_material_id > MAX_MATERIALS)
-            {
-              LOG_ERROR("Unable to render more materials than MAX_MATERIALS");
-              return;
-            }
-          }
-        }
-        else if(hittable->get_class() == hlight::get_class_static())
-        {
-          const hlight* light = static_cast<const hlight*>(hittable);
-          if(light->properties.enabled)
-          {
-            lights.push_back(light);
-            next_light_id++;
-            if(next_light_id > MAX_LIGHTS)
-            {
-              LOG_ERROR("Unable to render more lights than MAX_LIGHTS");
-              return;
-            }
-          }
-        }
-      }
-      if(lights.size() == 0)
-      {
-        LOG_ERROR("Scene is missing light");
-        return;
-      }
+      return;
     }
 
     const D3D11_VIEWPORT viewport = {0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f};
@@ -123,24 +76,10 @@ namespace engine
     // Update per-frame constant buffer
     {
       fframe_data pfd;
+      scene_acceleration.get_lights_array(pfd.lights);
+      scene_acceleration.get_materials_array(pfd.materials);
       pfd.camera_position = XMFLOAT4(scene->camera_config.location.e);
       pfd.ambient_light = scene->ambient_light_color;
-      for(uint32_t i = 0; i < MAX_LIGHTS; i++)
-      {
-        if(i < next_light_id)
-        {
-          pfd.lights[i] = lights[i]->properties;
-          pfd.lights[i].position = XMFLOAT4(lights[i]->origin.e);
-        }
-        else
-        {
-          pfd.lights[i] = flight_properties();
-        }
-      }
-      for(uint32_t i = 0; i < MAX_MATERIALS; i++)
-      {
-        pfd.materials[i] = i < next_material_id ? materials[i]->properties : fmaterial_properties();
-      }
       pfd.show_emissive = show_emissive;
       pfd.show_ambient = show_ambient;
       pfd.show_diffuse = show_diffuse;
@@ -151,7 +90,7 @@ namespace engine
     }
 
     // Draw the scene
-    for(const hstatic_mesh* sm : meshes)
+    for(const hstatic_mesh* sm : scene_acceleration.meshes)
     {
       const astatic_mesh* sma = sm->mesh_asset_ptr.get();
       if(sma == nullptr) { continue; }
@@ -181,7 +120,7 @@ namespace engine
         XMStoreFloat4x4(&pod.model_world_view_projection, model_world_view_projection);
         if(const amaterial* material = sm->material_asset_ptr.get())
         {
-          pod.material_id = material_map[material];
+          pod.material_id = scene_acceleration.material_map[material];
         }
         pod.is_selected = selected_object == sm ? 1 : 0;
         pod.object_id = fmath::uint32_to_colorf(sm->get_hash());

@@ -130,6 +130,7 @@ copy $(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.dll $(SolutionD
     <ClInclude Include="renderers\aligned_structs.h" />
     <ClInclude Include="renderers\gpu_deferred_sync.h" />
     <ClInclude Include="renderers\gpu_forward_sync.h" />
+    <ClInclude Include="renderers\scene_acceleration.h" />
     <ClInclude Include="renderer\renderer_base.h" />
     <ClInclude Include="math\chunk_generator.h" />
     <ClInclude Include="renderer\dx11_lib.h" />
@@ -193,6 +194,7 @@ copy $(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.dll $(SolutionD
     <ClCompile Include="persistence\persistence.cpp" />
     <ClCompile Include="renderers\gpu_deferred_sync.cpp" />
     <ClCompile Include="renderers\gpu_forward_sync.cpp" />
+    <ClCompile Include="renderers\scene_acceleration.cpp" />
     <ClCompile Include="renderer\renderer_base.cpp" />
     <ClCompile Include="math\chunk_generator.cpp" />
     <ClCompile Include="renderer\dx11_lib.cpp" />
