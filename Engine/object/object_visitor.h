@@ -28,6 +28,7 @@ namespace engine
   class hlight;
   class rrenderer_base;
   class rgpu_forward_sync;
+  class rgpu_deferred_sync;
 
   struct ENGINE_API vobject_visitor
   {
@@ -53,6 +54,7 @@ namespace engine
 
     virtual void visit(rrenderer_base& object) const { vobject_visitor::invalid_operation(); }
     virtual void visit(rgpu_forward_sync& object) const { vobject_visitor::invalid_operation(); }
+    virtual void visit(rgpu_deferred_sync& object) const { vobject_visitor::invalid_operation(); }
 
   private:
     static void invalid_operation()

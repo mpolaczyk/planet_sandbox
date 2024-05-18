@@ -12,6 +12,7 @@ namespace engine
   class amaterial;
   class rrenderer_base;
   class rgpu_forward_sync;
+  class rgpu_deferred_sync;
 }
 
 namespace editor
@@ -28,5 +29,6 @@ namespace editor
     virtual void visit(hlight& object) const override;
     virtual void visit(amaterial& object) const override;
     virtual void visit(rgpu_forward_sync& object) const override;
+    virtual void visit(rgpu_deferred_sync& object) const override;
   };
 }

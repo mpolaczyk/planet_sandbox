@@ -156,4 +156,9 @@ namespace editor
     fui_helper::check_box("Show normals", object.show_normals);
     fui_helper::check_box("Show object id", object.show_object_id);
   }
+
+  void vdraw_edit_panel::visit(rgpu_deferred_sync& object) const
+  {
+    // ?
+  }
 }

@@ -23,6 +23,7 @@
 #include "engine/log.h"
 #include "hittables/light.h"
 #include "object/object_registry.h"
+#include "renderers/gpu_deferred_sync.h"
 
 namespace engine
 {
@@ -125,6 +126,10 @@ namespace engine
     j["vertex_shader_asset"] = fpersistence::serialize(object.vertex_shader_asset);
   }
 
+  void vserialize_object::visit(rgpu_deferred_sync& object) const
+  {
+    // ?
+  }
 
   void vdeserialize_object::visit(amaterial& object) const
   {
@@ -262,5 +267,10 @@ namespace engine
     if(TRY_PARSE(nlohmann::json, j, "pixel_shader_asset", jpixel_shader)) { fpersistence::deserialize(jpixel_shader, object.pixel_shader_asset); }
     nlohmann::json jvertex_shader;
     if(TRY_PARSE(nlohmann::json, j, "vertex_shader_asset", jvertex_shader)) { fpersistence::deserialize(jvertex_shader, object.vertex_shader_asset); }
+  }
+
+  void vdeserialize_object::visit(rgpu_deferred_sync& object) const
+  {
+    // ?
   }
 }

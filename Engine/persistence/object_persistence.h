@@ -29,6 +29,7 @@ namespace engine
     virtual void visit(hlight& object) const override;
 
     virtual void visit(rgpu_forward_sync& object) const override;
+    virtual void visit(rgpu_deferred_sync& object) const override;
 
     nlohmann::json& j;
   };
@@ -55,6 +56,7 @@ namespace engine
     virtual void visit(hlight& object) const override;
 
     virtual void visit(rgpu_forward_sync& object) const override;
+    virtual void visit(rgpu_deferred_sync& object) const override;
 
     const nlohmann::json& j;
   };
