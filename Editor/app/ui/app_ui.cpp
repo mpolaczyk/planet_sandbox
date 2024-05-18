@@ -13,7 +13,7 @@
 
 #include "core/core.h"
 #include "engine.h"
-#include "engine/tools.h"
+#include "engine/string_tools.h"
 #include "hittables/hittables.h"
 #include "hittables/static_mesh.h"
 #include "hittables/scene.h"
@@ -204,7 +204,7 @@ namespace editor
         std::string obj_name = obj->get_display_name();
         std::ostringstream oss;
         oss << obj_name;
-        if (!model.object_name_filter.empty() && !ftools::contains(obj_name, model.object_name_filter))
+        if (!model.object_name_filter.empty() && !fstring_tools::contains(obj_name, model.object_name_filter))
         {
           continue;
         }

@@ -4,7 +4,7 @@
 
 #include "renderer/dx11_lib.h"
 #include "engine/log.h"
-#include "engine/tools.h"
+#include "engine/string_tools.h"
 
 namespace engine
 {
@@ -75,7 +75,7 @@ namespace engine
     DXGI_ADAPTER_DESC adapter_desc;
     adapter->GetDesc(&adapter_desc);
 
-    LOG_INFO("Graphics Device: {0}", ftools::to_utf8(adapter_desc.Description));
+    LOG_INFO("Graphics Device: {0}", fstring_tools::to_utf8(adapter_desc.Description));
 
     ComPtr<IDXGIFactory2> factory;
     if(FAILED(adapter->GetParent(IID_PPV_ARGS(factory.GetAddressOf()))))

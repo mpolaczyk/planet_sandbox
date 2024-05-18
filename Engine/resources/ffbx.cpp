@@ -7,7 +7,7 @@
 
 #include "engine/io.h"
 #include "engine/log.h"
-#include "engine/tools.h"
+#include "engine/string_tools.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
 #include "nlohmann/json.hpp"
@@ -275,8 +275,8 @@ namespace engine
       // FBX constains one geometry object per mesh, even if they are the same meshes
       aiMesh* mesh = ai_scene->mMeshes[i];
       std::string mesh_name = mesh->mName.C_Str();
-      ftools::replace(mesh_name, "::", "_");
-      ftools::replace(mesh_name, "|", "_");
+      fstring_tools::replace(mesh_name, "::", "_");
+      fstring_tools::replace(mesh_name, "|", "_");
       std::ostringstream temp;
       temp << mesh_name << i;
       mesh_name = temp.str();
@@ -363,8 +363,8 @@ namespace engine
       // FBX constains one geometry object per mesh, even if they are the same meshes
       const ofbx::Mesh* mesh = g_scene->getMesh(i);
       std::string mesh_name = mesh->name;
-      ftools::replace(mesh_name, "::", "_");
-      ftools::replace(mesh_name, "|", "_");
+      fstring_tools::replace(mesh_name, "::", "_");
+      fstring_tools::replace(mesh_name, "|", "_");
 
       // Get static mesh, export object file and save json
       // Mesh assset object will be available in the object registry at the end
@@ -393,8 +393,8 @@ namespace engine
         {
           const ofbx::Material* material = mesh->getMaterial(y);
           std::string material_name = material->name;
-          ftools::replace(mesh_name, "::", "_");
-          ftools::replace(mesh_name, "|", "_");
+          fstring_tools::replace(mesh_name, "::", "_");
+          fstring_tools::replace(mesh_name, "|", "_");
 
           if(std::find(g_material_assets.begin(), g_material_assets.end(), material_name) != g_material_assets.end())
           {
@@ -426,8 +426,8 @@ namespace engine
         if(mesh->getMaterialCount() > 0)
         {
           //std::string material_name = mesh->getMaterial(0)->name;
-          //ftools::replace(mesh_name, "::", "_");
-          //ftools::replace(mesh_name, "|", "_");
+          //fstring_tools::replace(mesh_name, "::", "_");
+          //fstring_tools::replace(mesh_name, "|", "_");
           //object->material_asset_ptr.set_name(material_name);
           object->material_asset_ptr.set_name("default");
         }
