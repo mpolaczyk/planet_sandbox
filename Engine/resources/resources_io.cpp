@@ -194,11 +194,11 @@ namespace engine
       }
       else if(shader_compiler_errors_blob)
       {
-        LOG_ERROR("Could not copile shader. {0}", static_cast<const char*>(shader_compiler_errors_blob->GetBufferPointer()));
+        LOG_ERROR("Could not compile shader. {0}", static_cast<const char*>(shader_compiler_errors_blob->GetBufferPointer()));
       }
       else
       {
-        LOG_ERROR("Could not copile shader. Result: {0}", result);
+        LOG_ERROR("Could not compile shader. Result: {0}", result);
       }
       return false;
     }

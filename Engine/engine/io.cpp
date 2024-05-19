@@ -165,16 +165,26 @@ namespace engine
 
   std::vector<std::string> fio::discover_material_files(bool include_extension)
   {
-    return discover_files(get_materials_dir(), ".json", include_extension);
+    return discover_files(get_materials_dir(), ".material", include_extension);
   }
 
   std::vector<std::string> fio::discover_texture_files(bool include_extension)
   {
-    return discover_files(get_textures_dir(), ".json", include_extension);
+    return discover_files(get_textures_dir(), ".texture", include_extension);
   }
 
   std::vector<std::string> fio::discover_mesh_files(bool include_extension)
   {
-    return discover_files(get_meshes_dir(), ".json", include_extension);
+    return discover_files(get_meshes_dir(), ".mesh", include_extension);
+  }
+
+  std::vector<std::string> fio::discover_pixel_shader_files(bool include_extension)
+  {
+    return discover_files(get_shaders_dir(), ".pixel_shader", include_extension);
+  }
+  
+  std::vector<std::string> fio::discover_vertex_shader_files(bool include_extension)
+  {
+    return discover_files(get_shaders_dir(), ".vertex_shader", include_extension);
   }
 }

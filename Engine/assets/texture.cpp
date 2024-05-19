@@ -25,7 +25,7 @@ namespace engine
     LOG_DEBUG("Loading texture: {0}", name);
 
     std::ostringstream oss;
-    oss << name << ".json";
+    oss << name << ".texture";
     const std::string file_path = fio::get_texture_file_path(oss.str().c_str());
     std::ifstream input_stream(file_path.c_str());
     if(input_stream.fail())

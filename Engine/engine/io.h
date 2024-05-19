@@ -45,5 +45,7 @@ namespace engine
     static std::vector<std::string> discover_material_files(bool include_extension = true);
     static std::vector<std::string> discover_texture_files(bool include_extension = true);
     static std::vector<std::string> discover_mesh_files(bool include_extension = true);
+    static std::vector<std::string> discover_pixel_shader_files(bool include_extension = true);
+    static std::vector<std::string> discover_vertex_shader_files(bool include_extension = true);
   };
 }

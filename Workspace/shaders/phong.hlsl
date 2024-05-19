@@ -36,7 +36,6 @@ float get_light_cone_intensity(flight_properties light, float3 L)
     return smoothstep(min_cos, max_cos, cos_angle); 
 }
 
-
 flight_components point_light(flight_properties light, float3 V, float4 P, float3 N, float specular_power)
 {
     flight_components result;

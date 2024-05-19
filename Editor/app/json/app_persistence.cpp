@@ -5,6 +5,8 @@
 
 #include "ui_persistence.h"
 #include "app/app.h"
+#include "assets/pixel_shader.h"
+#include "assets/vertex_shader.h"
 #include "hittables/scene.h"
 
 #include "nlohmann/json.hpp"
@@ -69,6 +71,28 @@ namespace editor
         {
           astatic_mesh* temp = astatic_mesh::spawn();
           astatic_mesh::load(temp, name);
+        });
+    }
+
+    LOG_INFO("Loading: pixel shaders");
+    {
+      std::vector<std::string> shader_names = fio::discover_pixel_shader_files(false);
+      concurrency::parallel_for_each(begin(shader_names), end(shader_names),
+        [&](const std::string& name)
+        {
+          apixel_shader* temp = apixel_shader::spawn();
+          apixel_shader::load(temp, name);
+        });
+    }
+
+    LOG_INFO("Loading: vertex shaders");
+    {
+      std::vector<std::string> shader_names = fio::discover_vertex_shader_files(false);
+      concurrency::parallel_for_each(begin(shader_names), end(shader_names),
+        [&](const std::string& name)
+        {
+          avertex_shader* temp = avertex_shader::spawn();
+          avertex_shader::load(temp, name);
         });
     }
   }

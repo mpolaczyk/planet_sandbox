@@ -348,10 +348,10 @@
       "output_height": 1080,
       "output_width": 1920,
       "pixel_shader_asset": {
-        "name": "forward_ps"
+        "name": "forward"
       },
       "vertex_shader_asset": {
-        "name": "forward_vs"
+        "name": "forward"
       }
     }
   }

@@ -24,7 +24,7 @@ namespace engine
     LOG_DEBUG("Loading material: {0}", name);
 
     std::ostringstream oss;
-    oss << name << ".json";
+    oss << name << ".material";
     const std::string file_path = fio::get_material_file_path(oss.str().c_str());
     std::ifstream input_stream(file_path.c_str());
     if(input_stream.fail())
@@ -49,7 +49,7 @@ namespace engine
     object->accept(vserialize_object(j));
 
     std::ostringstream oss;
-    oss << object->file_name << ".json";
+    oss << object->file_name << ".material";
     std::ofstream o(fio::get_material_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
     if(o.is_open())

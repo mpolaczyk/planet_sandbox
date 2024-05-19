@@ -29,7 +29,7 @@ namespace engine
     LOG_DEBUG("Loading pixel shader: {0}", name);
 
     std::ostringstream oss;
-    oss << name << ".json";
+    oss << name << ".pixel_shader";
     const std::string file_path = fio::get_shader_file_path(oss.str().c_str());
     std::ifstream input_stream(file_path.c_str());
     if(input_stream.fail())
