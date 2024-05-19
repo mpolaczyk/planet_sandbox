@@ -33,6 +33,6 @@ namespace editor
     static bool input_text(const char* caption, std::string& text);
 
     template<typename T>
-    static void draw_selection_combo(fselection_combo_model<T>& model, const char* name, std::function<bool(const T*)> predicate, const T* default_selected_object);
+    static void draw_selection_combo(fselection_combo_model<T>& model, const char* name, std::function<bool(const T*)> filter_predicate, const T* default_selected_object);
   };
 }
