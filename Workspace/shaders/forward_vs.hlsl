@@ -1,4 +1,4 @@
-#include "gpu_renderer_common.hlsl"
+#include "forward_common.hlsl"
 
 cbuffer fobject_data : register(b0)
 {

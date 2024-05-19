@@ -128,7 +128,9 @@ namespace engine
 
   void vserialize_object::visit(rgpu_deferred_sync& object) const
   {
-    // ?
+    visit_rrenderer_base(object);
+    j["gbuffer_pixel_shader_asset"] = fpersistence::serialize(object.gbuffer_pixel_shader_asset);
+    j["gbuffer_vertex_shader_asset"] = fpersistence::serialize(object.gbuffer_vertex_shader_asset);
   }
 
   void vdeserialize_object::visit(amaterial& object) const
@@ -271,6 +273,10 @@ namespace engine
 
   void vdeserialize_object::visit(rgpu_deferred_sync& object) const
   {
-    // ?
+    visit_rrenderer_base(object);
+    nlohmann::json jgbuffer_pixel_shader;
+    if(TRY_PARSE(nlohmann::json, j, "gbuffer_pixel_shader_asset", jgbuffer_pixel_shader)) { fpersistence::deserialize(jgbuffer_pixel_shader, object.gbuffer_pixel_shader_asset); }
+    nlohmann::json jgbuffer_vertex_shader;
+    if(TRY_PARSE(nlohmann::json, j, "gbuffer_vertex_shader_asset", jgbuffer_vertex_shader)) { fpersistence::deserialize(jgbuffer_vertex_shader, object.gbuffer_vertex_shader_asset); }
   }
 }

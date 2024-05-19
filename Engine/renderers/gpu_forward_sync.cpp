@@ -14,10 +14,59 @@ using namespace DirectX;
 
 namespace engine
 {
+  ALIGNED_STRUCT_BEGIN(fframe_data)
+  {
+    XMFLOAT4 camera_position; // 16
+    XMFLOAT4 ambient_light; // 16
+    int32_t show_emissive; // 4    // TODO pack bits
+    int32_t show_ambient; // 4
+    int32_t show_specular; // 4
+    int32_t show_diffuse; // 4
+    int32_t show_normals; // 4
+    int32_t show_object_id; // 4
+    int32_t padding[2]; // 8
+    flight_properties lights[MAX_LIGHTS]; // 80xN
+    fmaterial_properties materials[MAX_MATERIALS]; // 80xN
+  };
+
+  ALIGNED_STRUCT_END(fframe_data)
+
+  ALIGNED_STRUCT_BEGIN(fobject_data)
+  {
+    XMFLOAT4X4 model_world; // 64 Used to transform the vertex position from object space to world space
+    XMFLOAT4X4 inverse_transpose_model_world; // 64 Used to transform the vertex normal from object space to world space
+    XMFLOAT4X4 model_world_view_projection; // 64 Used to transform the vertex position from object space to projected clip space
+    XMFLOAT4 object_id; // 16
+    uint32_t material_id; // 4
+    int32_t is_selected; // 4
+    int32_t padding[2]; // 8
+  };
+
+  ALIGNED_STRUCT_END(fobject_data)
+
   OBJECT_DEFINE(rgpu_forward_sync, rrenderer_base, GPU forward sync)
   OBJECT_DEFINE_SPAWN(rgpu_forward_sync)
   OBJECT_DEFINE_VISITOR(rgpu_forward_sync)
 
+  bool rgpu_forward_sync::can_render() const
+  {
+    if(!rrenderer_base::can_render())
+    {
+      return false;
+    }
+    if(vertex_shader_asset.get() == nullptr)
+    {
+      LOG_ERROR("Missing vertex shader setup.");
+      return false;
+    }
+    if(pixel_shader_asset.get() == nullptr)
+    {
+      LOG_ERROR("Missing pixel shader setup.");
+      return false;
+    }
+    return true;
+  }
+  
   void rgpu_forward_sync::init()
   {
     auto dx = fdx11::instance();

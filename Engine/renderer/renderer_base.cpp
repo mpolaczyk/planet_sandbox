@@ -15,14 +15,11 @@ namespace engine
 
   void rrenderer_base::render_frame(const hscene* in_scene, const hhittable_base* in_selected_object)
   {
-    if(in_scene == nullptr)
+    scene = in_scene;
+    selected_object = in_selected_object;
+
+    if(!can_render())
     {
-      LOG_ERROR("Can't render. Scene is missing.");
-      return;
-    }
-    if(output_height == 0 || output_width == 0)
-    {
-      LOG_ERROR("Can't render. Incorrect resolution.");
       return;
     }
 
@@ -33,9 +30,6 @@ namespace engine
       create_output_texture(true);
       last_frame_resolution_hash = resolution_hash;
     }
-
-    scene = in_scene;
-    selected_object = in_selected_object;
 
     // Initialize
     if(!init_done)
@@ -50,6 +44,21 @@ namespace engine
       render_frame_impl();
     }
     render_time_ms = static_cast<double>(render_time_us) / 1000;
+  }
+
+  bool rrenderer_base::can_render() const
+  {
+    if(output_height == 0 || output_width == 0)
+    {
+      LOG_ERROR("Can't render. Incorrect resolution.");
+      return false;
+    }
+    if(scene == nullptr)
+    {
+      LOG_ERROR("Can't render. Scene is missing.");
+      return false;
+    }
+    return true;
   }
 
   void rrenderer_base::create_output_texture(bool cleanup)

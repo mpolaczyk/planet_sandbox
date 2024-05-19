@@ -1,4 +1,4 @@
-#include "gpu_renderer_common.hlsl"
+#include "forward_common.hlsl"
 
 #define POINT_LIGHT 0
 #define DIRECTIONAL_LIGHT 1

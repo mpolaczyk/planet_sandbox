@@ -40,16 +40,18 @@ namespace engine
 
     // Persistent members
     fsoft_asset_ptr<amaterial> default_material_asset;
-    int32_t output_width = 1080;
-    int32_t output_height = 1920;
+    int32_t output_width = 1920;
+    int32_t output_height = 1080;
 
     // Main public interface
     void render_frame(const hscene* in_scene, const hhittable_base* in_selected_object = nullptr);
     double get_render_time_ms() const { return render_time_ms; }
 
   protected:
+    virtual bool can_render() const;
     virtual void init() = 0;
     virtual void render_frame_impl() = 0;
+    
     double render_time_ms = 0.0;
 
   private:

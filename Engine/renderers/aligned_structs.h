@@ -6,9 +6,6 @@
 #define MAX_MATERIALS 32
 #define MAX_LIGHTS 16
 
-#define ALIGNED_STRUCT_BEGIN(NAME) struct alignas(16) ENGINE_API NAME
-#define ALIGNED_STRUCT_END(NAME) static_assert(sizeof(NAME) % 16 == 0);
-
 namespace engine
 {
   using namespace DirectX;
@@ -56,34 +53,4 @@ namespace engine
   };
 
   ALIGNED_STRUCT_END(flight_properties)
-
-  ALIGNED_STRUCT_BEGIN(fframe_data)
-  {
-    XMFLOAT4 camera_position; // 16
-    XMFLOAT4 ambient_light; // 16
-    int32_t show_emissive; // 4    // TODO pack bits
-    int32_t show_ambient; // 4
-    int32_t show_specular; // 4
-    int32_t show_diffuse; // 4
-    int32_t show_normals; // 4
-    int32_t show_object_id; // 4
-    int32_t padding[2]; // 8
-    flight_properties lights[MAX_LIGHTS]; // 80xN
-    fmaterial_properties materials[MAX_MATERIALS]; // 80xN
-  };
-
-  ALIGNED_STRUCT_END(fframe_data)
-
-  ALIGNED_STRUCT_BEGIN(fobject_data)
-  {
-    XMFLOAT4X4 model_world; // 64 Used to transform the vertex position from object space to world space
-    XMFLOAT4X4 inverse_transpose_model_world; // 64 Used to transform the vertex normal from object space to world space
-    XMFLOAT4X4 model_world_view_projection; // 64 Used to transform the vertex position from object space to projected clip space
-    XMFLOAT4 object_id; // 16
-    uint32_t material_id; // 4
-    int32_t is_selected; // 4
-    int32_t padding[2]; // 8
-  };
-
-  ALIGNED_STRUCT_END(fobject_data)
 }

@@ -7,6 +7,8 @@
 #include "renderer/renderer_base.h"
 #include "asset/soft_asset_ptr.h"
 #include "assets/pixel_shader.h"
+#include "assets/vertex_shader.h"
+#include "renderers/scene_acceleration.h"
 
 struct ID3D11InputLayout;
 struct ID3D11Buffer;
@@ -31,7 +33,12 @@ namespace engine
     OBJECT_DECLARE(rgpu_deferred_sync, rrenderer_base)
     OBJECT_DECLARE_VISITOR
 
+    // Persistent members
+    fsoft_asset_ptr<apixel_shader> gbuffer_pixel_shader_asset;
+    fsoft_asset_ptr<avertex_shader> gbuffer_vertex_shader_asset;
+    
   protected:
+    virtual bool can_render() const override;
     virtual void init() override;
     virtual void render_frame_impl() override;
 
@@ -43,5 +50,7 @@ namespace engine
     ComPtr<ID3D11Buffer> object_constant_buffer;
     ComPtr<ID3D11RasterizerState> rasterizer_state;
     ComPtr<ID3D11DepthStencilState> depth_stencil_state;
+
+    fscene_acceleration scene_acceleration;
   };
 }

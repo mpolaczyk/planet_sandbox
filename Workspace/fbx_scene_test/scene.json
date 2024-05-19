@@ -348,10 +348,10 @@
       "output_height": 1080,
       "output_width": 1920,
       "pixel_shader_asset": {
-        "name": "gpu_renderer_ps"
+        "name": "forward_ps"
       },
       "vertex_shader_asset": {
-        "name": "gpu_renderer_vs"
+        "name": "forward_vs"
       }
     }
   }

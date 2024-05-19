@@ -1,0 +1,5 @@
+{
+  "shader_file_name": "gbuffer_deferred_vs.hlsl",
+  "entrypoint" : "vs_main",
+  "target": "vs_5_0"
+}

@@ -1,0 +1,5 @@
+{
+  "shader_file_name": "gbuffer_deferred_ps.hlsl",
+  "entrypoint" : "ps_main",
+  "target": "ps_5_0"
+}

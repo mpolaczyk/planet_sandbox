@@ -11,6 +11,7 @@
 #include "hittables/static_mesh.h"
 
 #include "renderers/gpu_forward_sync.h"
+#include "renderers/gpu_deferred_sync.h"
 
 namespace editor
 {
@@ -159,6 +160,26 @@ namespace editor
 
   void vdraw_edit_panel::visit(rgpu_deferred_sync& object) const
   {
-    // ?
+    visit_rrenderer_base(object);
+    {
+      fselection_combo_model<apixel_shader> model;
+      model.objects = REG.get_all_by_type<const apixel_shader>();
+      fui_helper::draw_selection_combo<apixel_shader>(model, "GBuffer pixel shader", [=](const apixel_shader* obj) -> bool{ return true; }, object.gbuffer_pixel_shader_asset.get());
+
+      if (model.selected_object != nullptr)
+      {
+        object.gbuffer_pixel_shader_asset.set_name(model.selected_object->file_name);
+      }
+    }
+    {
+      fselection_combo_model<avertex_shader> model;
+      model.objects = REG.get_all_by_type<const avertex_shader>();
+      fui_helper::draw_selection_combo<avertex_shader>(model, "GBuffer vertex shader", [=](const avertex_shader* obj) -> bool{ return true; }, object.gbuffer_vertex_shader_asset.get());
+
+      if (model.selected_object != nullptr)
+      {
+        object.gbuffer_vertex_shader_asset.set_name(model.selected_object->file_name);
+      }
+    }
   }
 }
