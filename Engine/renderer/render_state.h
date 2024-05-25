@@ -19,6 +19,7 @@ namespace engine
 
   struct ENGINE_API ftexture_render_state
   {
+    ComPtr<ID3D11Texture2D> texture;
     ComPtr<ID3D11ShaderResourceView> texture_srv;
   };
 

@@ -102,7 +102,7 @@ namespace engine
     }
   }
 
-  void fdx11::create_render_target()
+  void fdx11::create_render_target()  // TODO overlaps with create_render_target_view(), clean it up!
   {
     ComPtr<ID3D11Texture2D> frame_buffer;
     if(FAILED(swap_chain->GetBuffer(0, IID_PPV_ARGS(&frame_buffer))))
@@ -229,98 +229,62 @@ namespace engine
     }
   }
 
-  void fdx11::create_render_target_view(const ComPtr<ID3D11Texture2D>& texture, ComPtr<ID3D11RenderTargetView>& out_render_target_view) const
+  void fdx11::create_render_target_view(const ComPtr<ID3D11Texture2D>& in_texture, DXGI_FORMAT format, D3D11_RTV_DIMENSION view_dimmension, ComPtr<ID3D11RenderTargetView>& out_render_target_view) const
   {
     D3D11_RENDER_TARGET_VIEW_DESC desc = {};
-    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+    desc.Format = format;
+    desc.ViewDimension = view_dimmension;
     desc.Texture2D.MipSlice = 0;
-    if(FAILED(device->CreateRenderTargetView(texture.Get(), &desc, out_render_target_view.GetAddressOf())))
+    if(FAILED(device->CreateRenderTargetView(in_texture.Get(), &desc, out_render_target_view.GetAddressOf())))
     {
-      throw std::runtime_error("CreateRenderTargetView output texture failed");
+      throw std::runtime_error("CreateRenderTargetView failed");
     }
   }
 
-  void fdx11::create_depth_stencil_view(uint32_t width, uint32_t height, ComPtr<ID3D11DepthStencilView>& out_depth_stencil_view) const
+  void fdx11::create_depth_stencil_view(const ComPtr<ID3D11Texture2D>& in_texture, uint32_t width, uint32_t height, ComPtr<ID3D11DepthStencilView>& out_depth_stencil_view) const
   {
-    D3D11_TEXTURE2D_DESC texture_desc = {};
-    texture_desc.Width = width;
-    texture_desc.Height = height;
-    texture_desc.MipLevels = 1;
-    texture_desc.ArraySize = 1;
-    texture_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    texture_desc.SampleDesc.Count = 1;
-    texture_desc.Usage = D3D11_USAGE_DEFAULT;
-    texture_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-    texture_desc.CPUAccessFlags = 0;
-    texture_desc.MiscFlags = 0;
-    ComPtr<ID3D11Texture2D> output_depth_texture;
-    if(FAILED(device->CreateTexture2D(&texture_desc, NULL, &output_depth_texture)))
-    {
-      throw std::runtime_error("CreateTexture2D output depth texture failed.");
-    }
-    if(FAILED(device->CreateDepthStencilView(output_depth_texture.Get(), nullptr, out_depth_stencil_view.GetAddressOf()))) // TODO Missing descriptor?
+    if(FAILED(device->CreateDepthStencilView(in_texture.Get(), nullptr, out_depth_stencil_view.GetAddressOf()))) // TODO Missing descriptor?
     {
       throw std::runtime_error("CreateDepthStencilView output depth texture failed");
     }
   }
 
-  void fdx11::create_shader_resource_view(uint32_t width, uint32_t height, bool is_hdr, uint32_t bytes_per_row, const void* in_bytes, ComPtr<ID3D11ShaderResourceView>& out_shader_resource_view) const
+  void fdx11::create_texture(uint32_t width, uint32_t height, DXGI_FORMAT format, D3D11_BIND_FLAG bind_flags, D3D11_USAGE usage, ComPtr<ID3D11Texture2D>& out_texture, uint32_t bytes_per_row, const void* in_bytes) const
   {
     D3D11_TEXTURE2D_DESC texture_desc = {};
     texture_desc.Width = width;
     texture_desc.Height = height;
     texture_desc.MipLevels = 1;
     texture_desc.ArraySize = 1;
-    texture_desc.Format = is_hdr ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
+    texture_desc.Format = format;
     texture_desc.SampleDesc.Count = 1;
-    texture_desc.Usage = D3D11_USAGE_IMMUTABLE;
-    texture_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    texture_desc.Usage = usage;
+    texture_desc.BindFlags = bind_flags;
+    texture_desc.CPUAccessFlags = 0;
+    texture_desc.MiscFlags = 0;
 
     D3D11_SUBRESOURCE_DATA texture_subresource_data = {};
     texture_subresource_data.SysMemPitch = bytes_per_row;
     texture_subresource_data.pSysMem = in_bytes;
-
-    ComPtr<ID3D11Texture2D> texture;
-    if(FAILED(device->CreateTexture2D(&texture_desc, &texture_subresource_data, texture.GetAddressOf())))
+    
+    if(FAILED(device->CreateTexture2D(&texture_desc, in_bytes != nullptr ? &texture_subresource_data : nullptr, out_texture.GetAddressOf())))
     {
-      throw std::runtime_error("CreateTexture2D texture asset failed.");
-    }
-
-    if(FAILED(device->CreateShaderResourceView(texture.Get(), nullptr, out_shader_resource_view.GetAddressOf())))
-    {
-      throw std::runtime_error("CreateShaderResourceView texture asset failed.");
+      throw std::runtime_error("CreateTexture2D failed.");
     }
   }
-
-  void fdx11::create_render_target_shader_resource_view(uint32_t width, uint32_t height, ComPtr<ID3D11Texture2D>& out_texture, ComPtr<ID3D11ShaderResourceView>& out_shader_resource_view) const
+  
+  void fdx11::create_shader_resource_view(const ComPtr<ID3D11Texture2D>& in_texture, DXGI_FORMAT format, D3D11_SRV_DIMENSION view_dimmension, ComPtr<ID3D11ShaderResourceView>& out_shader_resource_view) const
   {
-    D3D11_TEXTURE2D_DESC texture_desc = {};
-    texture_desc.Width = width;
-    texture_desc.Height = height;
-    texture_desc.MipLevels = 1;
-    texture_desc.ArraySize = 1;
-    texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    texture_desc.SampleDesc.Count = 1;
-    texture_desc.Usage = D3D11_USAGE_DEFAULT;
-    texture_desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-    texture_desc.CPUAccessFlags = 0;
-    texture_desc.MiscFlags = 0;
-    if(FAILED(device->CreateTexture2D(&texture_desc, NULL, &out_texture)))
-    {
-      throw std::runtime_error("CreateTexture2D output texture failed.");
-    }
     D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_desc = {};
-    shader_resource_view_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    shader_resource_view_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    shader_resource_view_desc.Format = format;
+    shader_resource_view_desc.ViewDimension = view_dimmension;
     shader_resource_view_desc.Texture2D.MostDetailedMip = 0;
     shader_resource_view_desc.Texture2D.MipLevels = 1;
-    if(FAILED(device->CreateShaderResourceView(out_texture.Get(), &shader_resource_view_desc, out_shader_resource_view.GetAddressOf())))
+    if(FAILED(device->CreateShaderResourceView(in_texture.Get(), &shader_resource_view_desc, out_shader_resource_view.GetAddressOf())))
     {
-      throw std::runtime_error("CreateShaderResourceView output texture failed.");
+      throw std::runtime_error("CreateShaderResourceView failed.");
     }
   }
-
 
   void fdx11::cleanup_render_target()
   {

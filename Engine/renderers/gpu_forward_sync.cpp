@@ -14,6 +14,10 @@ using namespace DirectX;
 
 namespace engine
 {
+  OBJECT_DEFINE(rgpu_forward_sync, rrenderer_base, GPU forward sync)
+  OBJECT_DEFINE_SPAWN(rgpu_forward_sync)
+  OBJECT_DEFINE_VISITOR(rgpu_forward_sync)
+  
   ALIGNED_STRUCT_BEGIN(fframe_data)
   {
     XMFLOAT4 camera_position; // 16
@@ -43,10 +47,6 @@ namespace engine
   };
 
   ALIGNED_STRUCT_END(fobject_data)
-
-  OBJECT_DEFINE(rgpu_forward_sync, rrenderer_base, GPU forward sync)
-  OBJECT_DEFINE_SPAWN(rgpu_forward_sync)
-  OBJECT_DEFINE_VISITOR(rgpu_forward_sync)
 
   bool rgpu_forward_sync::can_render() const
   {

@@ -34,6 +34,7 @@ namespace engine
 
     // Output texture
     ComPtr<ID3D11Texture2D> output_texture;
+    ComPtr<ID3D11Texture2D> output_depth;
     ComPtr<ID3D11ShaderResourceView> output_srv;
     ComPtr<ID3D11RenderTargetView> output_rtv;
     ComPtr<ID3D11DepthStencilView> output_dsv;
@@ -51,11 +52,11 @@ namespace engine
     virtual bool can_render() const;
     virtual void init() = 0;
     virtual void render_frame_impl() = 0;
-    
-    double render_time_ms = 0.0;
+    virtual void create_output_texture(bool cleanup = false);
 
+    double render_time_ms = 0.0;
+    
   private:
-    void create_output_texture(bool cleanup = false);
     bool init_done = false;
   };
 }

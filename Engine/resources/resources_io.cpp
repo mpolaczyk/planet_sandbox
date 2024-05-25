@@ -156,6 +156,7 @@ namespace engine
       if(data_hdr == nullptr)
       {
         LOG_ERROR("Texture file: {0} failed to open", path);
+        delete buffer;
         return false;
       }
       buffer = static_cast<const void*>(data_hdr);
@@ -167,13 +168,19 @@ namespace engine
       if(data_ldr == nullptr)
       {
         LOG_ERROR("Texture file: {0} failed to open", path);
+        delete buffer;
         return false;
       }
       buffer = static_cast<const void*>(data_ldr);
       bytes_per_row = out_texture->desired_channels * sizeof(uint8_t) * out_texture->width;
     }
+    
+    DXGI_FORMAT format = is_hdr ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
 
-    fdx11::instance().create_shader_resource_view(out_texture->width, out_texture->height, is_hdr, bytes_per_row, buffer, out_texture->render_state.texture_srv);
+    fdx11::instance().create_texture(out_texture->width, out_texture->height, format, D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE, out_texture->render_state.texture, bytes_per_row, buffer);
+    
+    fdx11::instance().create_shader_resource_view(out_texture->render_state.texture, format, D3D11_SRV_DIMENSION_TEXTURE2D, out_texture->render_state.texture_srv);
+    
     delete buffer;
     return true;
   }
