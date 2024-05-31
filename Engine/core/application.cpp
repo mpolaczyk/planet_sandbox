@@ -10,6 +10,7 @@
 #include "engine/log.h"
 #include "math/random.h"
 #include "renderer/dx11_lib.h"
+#include "resources/ffbx.h"
 
 namespace engine
 {
@@ -48,6 +49,7 @@ namespace engine
   {
     fio::init(project_name);
     flogger::init();
+    fassimp_logger::initialize();
     frandom_cache::init();
 
     REG.create_class_objects();

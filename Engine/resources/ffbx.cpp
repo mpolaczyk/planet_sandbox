@@ -87,22 +87,20 @@ namespace engine
     aiProcess_Debone |
     aiProcess_GenBoundingBoxes;
 
-  struct assimp_logger : public Assimp::LogStream
-  {
-    static void initialize()
-    {
-      if(Assimp::DefaultLogger::isNullLogger())
-      {
-        Assimp::DefaultLogger::create("", Assimp::Logger::VERBOSE);
-        Assimp::DefaultLogger::get()->attachStream(new assimp_logger, Assimp::Logger::Err | Assimp::Logger::Warn);
-      }
-    }
+ 
+   void fassimp_logger::initialize()
+   {
+     if(Assimp::DefaultLogger::isNullLogger())
+     {
+       Assimp::DefaultLogger::create("", Assimp::Logger::VERBOSE);
+       Assimp::DefaultLogger::get()->attachStream(new fassimp_logger, Assimp::Logger::Err | Assimp::Logger::Warn);
+     }
+   }
 
-    void write(const char* message) override
-    {
-      LOG_ERROR("Assimp: {0}", message);
-    }
-  };
+   void fassimp_logger::write(const char* message)
+   {
+     LOG_ERROR("Assimp: {0}", message);
+   }
 
   void ffbx::save_as_obj_ofbx(const ofbx::Mesh& mesh, const char* path)
   {
@@ -196,7 +194,6 @@ namespace engine
     obj_scene->mMeshes[0]->mMaterialIndex = 0;
 
     Assimp::Exporter exporter;
-    assimp_logger::initialize();
 
     if(exporter.Export(obj_scene, "obj", path) == aiReturn_FAILURE)
     {
@@ -255,7 +252,6 @@ namespace engine
     fbx_file << project_dir << file_name;
 
     Assimp::Importer importer;
-    assimp_logger::initialize();
 
     const aiScene* ai_scene = importer.ReadFile(fbx_file.str(), assimp_import_flags);
     if(!ai_scene)
