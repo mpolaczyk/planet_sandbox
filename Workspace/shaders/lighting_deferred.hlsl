@@ -1,10 +1,27 @@
-#include "deferred_common.hlsl"
 #include "material_properties.hlsl"
 #include "phong.hlsl"
+
+#define MAX_MATERIALS 32
+#define MAX_LIGHTS 16
 
 #define POINT_LIGHT 0
 #define DIRECTIONAL_LIGHT 1
 #define SPOT_LIGHT 2
+
+struct VS_Input
+{
+  float3 position  : POSITION;
+  float3 normal    : NORMAL;
+  float3 tangent   : TANGENT;
+  float3 bitangent : BITANGENT;
+  float2 uv        : TEXCOORD;
+};
+
+struct VS_output
+{
+  float4 position_cs : SV_POSITION;
+  float2 uv	         : TEXCOORD;
+};
 
 Texture2D position_ws_texture		: register(t0);
 Texture2D normal_ws_texture		  : register(t1);
@@ -67,7 +84,15 @@ flight_components compute_light(float4 P, float3 N, float specular_power)
   return final_light;
 }
 
-float4 ps_main(VS_lighting_output input) : SV_Target
+VS_output vs_main(VS_Input input)
+{
+  VS_output output;
+  output.position_cs = float4(input.position, 1.0f);
+  output.uv          = input.uv;
+  return output;
+}
+
+float4 ps_main(VS_output input) : SV_Target
 {
   float4 position_ws   = position_ws_texture.Sample(sampler0, input.uv).xyzw;
   float3 normal_ws     = normal_ws_texture.Sample(sampler0, input.uv).xyz;
