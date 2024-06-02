@@ -45,7 +45,7 @@ namespace engine
   ALIGNED_STRUCT_END(flighting_deferred_frame_data)
 
 
-  bool rgpu_deferred_sync::can_render() const
+  bool rgpu_deferred_sync::can_render()
   {
     if(!rrenderer_base::can_render())
     {
@@ -53,23 +53,39 @@ namespace engine
     }
     if(gbuffer_vertex_shader_asset.get() == nullptr)
     {
-      LOG_ERROR("Missing gbuffer vertex shader setup.");
-      return false;
+      gbuffer_vertex_shader_asset.set_name("gbuffer_deferred");
+      if(gbuffer_vertex_shader_asset.get() == nullptr)
+      {
+        LOG_ERROR("Missing gbuffer vertex shader setup.");
+        return false;
+      }
     }
     if(gbuffer_pixel_shader_asset.get() == nullptr)
     {
-      LOG_ERROR("Missing gbuffer pixel shader setup.");
-      return false;
+      gbuffer_pixel_shader_asset.set_name("gbuffer_deferred");
+      if(gbuffer_pixel_shader_asset.get() == nullptr)
+      {
+        LOG_ERROR("Missing gbuffer pixel shader setup.");
+        return false;
+      }
     }
     if(lighting_vertex_shader_asset.get() == nullptr)
     {
-      LOG_ERROR("Missing lighting vertex shader setup.");
-      return false;
+      lighting_vertex_shader_asset.set_name("lighting_deferred");
+      if(lighting_vertex_shader_asset.get() == nullptr)
+      {
+        LOG_ERROR("Missing lighting vertex shader setup.");
+        return false;
+      }
     }
     if(lighting_pixel_shader_asset.get() == nullptr)
     {
-      LOG_ERROR("Missing lighting pixel shader setup.");
-      return false;
+      lighting_pixel_shader_asset.set_name("lighting_deferred");
+      if(lighting_pixel_shader_asset.get() == nullptr)
+      {
+        LOG_ERROR("Missing lighting pixel shader setup.");
+        return false;
+      }
     }
     return true;
   }

@@ -48,7 +48,7 @@ namespace engine
 
   ALIGNED_STRUCT_END(fobject_data)
 
-  bool rgpu_forward_sync::can_render() const
+  bool rgpu_forward_sync::can_render()
   {
     if(!rrenderer_base::can_render())
     {
@@ -56,13 +56,21 @@ namespace engine
     }
     if(vertex_shader_asset.get() == nullptr)
     {
-      LOG_ERROR("Missing vertex shader setup.");
-      return false;
+      vertex_shader_asset.set_name("forward");
+      if(vertex_shader_asset.get() == nullptr)
+      {
+        LOG_ERROR("Missing vertex shader setup.");
+        return false;
+      }
     }
     if(pixel_shader_asset.get() == nullptr)
     {
-      LOG_ERROR("Missing pixel shader setup.");
-      return false;
+      pixel_shader_asset.set_name("forward");
+      if(pixel_shader_asset.get() == nullptr)
+      {
+        LOG_ERROR("Missing pixel shader setup.");
+        return false;
+      }
     }
     return true;
   }

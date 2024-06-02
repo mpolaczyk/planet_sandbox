@@ -46,7 +46,7 @@ namespace engine
     render_time_ms = static_cast<double>(render_time_us) / 1000;
   }
 
-  bool rrenderer_base::can_render() const
+  bool rrenderer_base::can_render()
   {
     if(output_height == 0 || output_width == 0)
     {

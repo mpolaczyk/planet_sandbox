@@ -49,7 +49,7 @@ namespace engine
     double get_render_time_ms() const { return render_time_ms; }
 
   protected:
-    virtual bool can_render() const;
+    virtual bool can_render();
     virtual void init() = 0;
     virtual void render_frame_impl() = 0;
     virtual void create_output_texture(bool cleanup = false);

@@ -54,7 +54,7 @@ namespace engine
     int show_tex_color = 0;
     
   protected:
-    virtual bool can_render() const override;
+    virtual bool can_render() override;
     virtual void init() override;
     virtual void render_frame_impl() override;
     virtual void create_output_texture(bool cleanup = false) override;
