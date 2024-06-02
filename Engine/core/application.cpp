@@ -10,7 +10,7 @@
 #include "engine/log.h"
 #include "math/random.h"
 #include "renderer/dx11_lib.h"
-#include "resources/ffbx.h"
+#include "resources/assimp_logger.h"
 
 namespace engine
 {

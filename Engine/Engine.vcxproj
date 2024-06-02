@@ -135,6 +135,7 @@ copy $(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.dll $(SolutionD
     <ClInclude Include="math\chunk_generator.h" />
     <ClInclude Include="renderer\dx11_lib.h" />
     <ClInclude Include="renderer\render_state.h" />
+    <ClInclude Include="resources\assimp_logger.h" />
     <ClInclude Include="resources\bmp.h" />
     <ClInclude Include="core\exceptions.h" />
     <ClInclude Include="core\windows_minimal.h" />
@@ -198,6 +199,7 @@ copy $(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.dll $(SolutionD
     <ClCompile Include="renderer\renderer_base.cpp" />
     <ClCompile Include="math\chunk_generator.cpp" />
     <ClCompile Include="renderer\dx11_lib.cpp" />
+    <ClCompile Include="resources\assimp_logger.cpp" />
     <ClCompile Include="resources\bmp.cpp" />
     <ClCompile Include="core\exceptions.cpp" />
     <ClCompile Include="math\aabb.cpp" />

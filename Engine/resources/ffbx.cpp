@@ -12,7 +12,6 @@
 #include "hittables/static_mesh.h"
 #include "nlohmann/json.hpp"
 
-#include "assimp/DefaultLogger.hpp"
 #include "assimp/Importer.hpp"
 #include "assimp/Exporter.hpp"
 #include "assimp/LogStream.hpp"
@@ -86,21 +85,6 @@ namespace engine
     aiProcess_OptimizeMeshes |
     aiProcess_Debone |
     aiProcess_GenBoundingBoxes;
-
- 
-   void fassimp_logger::initialize()
-   {
-     if(Assimp::DefaultLogger::isNullLogger())
-     {
-       Assimp::DefaultLogger::create("", Assimp::Logger::VERBOSE);
-       Assimp::DefaultLogger::get()->attachStream(new fassimp_logger, Assimp::Logger::Err | Assimp::Logger::Warn);
-     }
-   }
-
-   void fassimp_logger::write(const char* message)
-   {
-     LOG_ERROR("Assimp: {0}", message);
-   }
 
   void ffbx::save_as_obj_ofbx(const ofbx::Mesh& mesh, const char* path)
   {

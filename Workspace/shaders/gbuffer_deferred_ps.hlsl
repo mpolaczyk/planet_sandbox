@@ -19,7 +19,7 @@ struct PS_Output
   uint material_id   : SV_Target3;
 };
 
-PS_Output ps_main(VS_Output input) : SV_Target
+PS_Output ps_main(VS_gbuffer_output input) : SV_Target
 {
   PS_Output output;
   output.position_ws = input.position_ws;

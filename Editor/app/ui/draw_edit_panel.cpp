@@ -181,5 +181,28 @@ namespace editor
         object.gbuffer_vertex_shader_asset.set_name(model.selected_object->file_name);
       }
     }
+    {
+      fselection_combo_model<apixel_shader> model;
+      model.objects = REG.get_all_by_type<const apixel_shader>();
+      fui_helper::draw_selection_combo<apixel_shader>(model, "Lighting pixel shader", [=](const apixel_shader* obj) -> bool{ return true; }, object.lighting_pixel_shader_asset.get());
+
+      if (model.selected_object != nullptr)
+      {
+        object.lighting_pixel_shader_asset.set_name(model.selected_object->file_name);
+      }
+    }
+    {
+      fselection_combo_model<avertex_shader> model;
+      model.objects = REG.get_all_by_type<const avertex_shader>();
+      fui_helper::draw_selection_combo<avertex_shader>(model, "Lighting vertex shader", [=](const avertex_shader* obj) -> bool{ return true; }, object.lighting_vertex_shader_asset.get());
+
+      if (model.selected_object != nullptr)
+      {
+        object.lighting_vertex_shader_asset.set_name(model.selected_object->file_name);
+      }
+    }
+    fui_helper::check_box("Show normal", object.show_normal_ws);
+    fui_helper::check_box("Show position", object.show_position_ws);
+    fui_helper::check_box("Show text color", object.show_tex_color);
   }
 }

@@ -17,9 +17,9 @@ cbuffer fobject_data : register(b0)
   uint material_id;
 };
 
-VS_Output vs_main(VS_Input input)
+VS_gbuffer_output vs_main(VS_Input input)
 {
-  VS_Output output;
+  VS_gbuffer_output output;
   output.position_cs = mul(model_world_view_projection, float4(input.position, 1.0f));
   output.position_ws = mul(model_world, float4(input.position, 1.0f));
   output.normal_ws   = normalize(mul((float3x3)inverse_transpose_model_world, input.normal));

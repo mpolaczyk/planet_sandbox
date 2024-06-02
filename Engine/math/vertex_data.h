@@ -32,6 +32,7 @@ namespace engine
     {
     }
 
+    // Don't change the layout, this needs to match the input layout for vertex buffers
     XMFLOAT3 position = {0.f, 0.f, 0.f};
     XMFLOAT3 normal = {0.f, 0.f, 0.f};
     XMFLOAT3 tangent = {0.f, 0.f, 0.f};

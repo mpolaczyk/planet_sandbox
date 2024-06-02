@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include "assimp/DefaultLogger.hpp"
-
 #include "core/core.h"
 
 namespace ofbx
@@ -19,12 +17,6 @@ namespace engine
 {
   struct fmaterial_properties;
   class hscene;
-
-  struct fassimp_logger : public Assimp::LogStream
-  {
-    static void initialize();
-    void write(const char* message) override;
-  };
   
   struct ENGINE_API ffbx
   {

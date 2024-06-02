@@ -1,3 +1,5 @@
+#include "light_properties.hlsl"
+
 struct flight_components
 {
     float4 diffuse;

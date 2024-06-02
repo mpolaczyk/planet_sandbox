@@ -9,12 +9,12 @@
     "camera_config": {
       "field_of_view": 40.0,
       "look_from": {
-        "x": -3.2336008548736572,
-        "y": 5.279082298278809,
-        "z": -29.817813873291016
+        "x": 0.0,
+        "y": 0.0,
+        "z": -20.0
       },
-      "pitch": 5.989735126495361,
-      "yaw": 4.0492634773254395
+      "pitch": 0.0,
+      "yaw": 0.0
     },
     "clear_color": {
       "w": 1.0,
@@ -350,6 +350,12 @@
       },
       "gbuffer_vertex_shader_asset": {
         "name": "gbuffer_deferred"
+      },
+      "lighting_pixel_shader_asset": {
+        "name": "lighting_deferred"
+      },
+      "lighting_vertex_shader_asset": {
+        "name": "lighting_deferred"
       },
       "output_height": 1080,
       "output_width": 1920
