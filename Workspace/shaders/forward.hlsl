@@ -8,7 +8,7 @@
 #define DIRECTIONAL_LIGHT 1
 #define SPOT_LIGHT 2
 
-struct VS_Input
+struct fvs_input
 {
   float3 position  : POSITION;
   float3 normal    : NORMAL;
@@ -17,7 +17,7 @@ struct VS_Input
   float2 uv        : TEXCOORD;
 };
 
-struct VS_Output
+struct fvs_output
 {
   float4 position_cs  : SV_Position;
   float4 position_ws  : TEXCOORD0;
@@ -94,9 +94,9 @@ flight_components compute_light(float4 P, float3 N, float specular_power)
   return final_light;
 }
 
-VS_Output vs_main(VS_Input input)
+fvs_output vs_main(fvs_input input)
 {
-  VS_Output output;
+  fvs_output output;
   output.position_ws    = mul(model_world, float4(input.position, 1.0f));
   output.position_cs    = mul(model_world_view_projection, float4(input.position, 1.0f));
   output.normal_ws      = normalize(mul((float3x3)inverse_transpose_model_world, input.normal));
@@ -104,7 +104,7 @@ VS_Output vs_main(VS_Input input)
   return output;
 }
 
-float4 ps_main(VS_Output input) : SV_Target
+float4 ps_main(fvs_output input) : SV_Target
 {
   if(show_normals)
   {
