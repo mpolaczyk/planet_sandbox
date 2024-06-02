@@ -117,8 +117,8 @@ namespace engine
     dx.device_context->VSSetConstantBuffers(0, 1, object_constant_buffer.GetAddressOf());
 
     dx.device_context->PSSetShader(pixel_shader_asset.get()->render_state.shader.Get(), nullptr, 0);
-    dx.device_context->PSSetConstantBuffers(0, 1, frame_constant_buffer.GetAddressOf());
-    dx.device_context->PSSetConstantBuffers(1, 1, object_constant_buffer.GetAddressOf());
+    dx.device_context->PSSetConstantBuffers(0, 1, object_constant_buffer.GetAddressOf());
+    dx.device_context->PSSetConstantBuffers(1, 1, frame_constant_buffer.GetAddressOf());
 
     dx.device_context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
 

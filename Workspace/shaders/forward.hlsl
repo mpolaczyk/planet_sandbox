@@ -1,34 +1,34 @@
-#include "forward_common.hlsl"
 #include "phong.hlsl"
+#include "material_properties.hlsl"
+
+#define MAX_MATERIALS 32
+#define MAX_LIGHTS 16
 
 #define POINT_LIGHT 0
 #define DIRECTIONAL_LIGHT 1
 #define SPOT_LIGHT 2
 
+struct VS_Input
+{
+  float3 position  : POSITION;
+  float3 normal    : NORMAL;
+  float3 tangent   : TANGENT;
+  float3 bitangent : BITANGENT;
+  float2 uv        : TEXCOORD;
+};
+
+struct VS_Output
+{
+  float4 position_cs  : SV_Position;
+  float4 position_ws  : TEXCOORD0;
+  float3 normal_ws    : TEXCOORD1;
+  float2 uv           : TEXCOORD2;
+};
+
 Texture2D texture0 : register(t0);
 sampler sampler0 : register(s0);
 
-cbuffer fframe_data : register(b0)
-{
-  float4 camera_position;     // 16
-  //
-  float4 ambient_light;       // 16
-  //
-  int show_emissive;			// 4        // TODO bit flags
-  int show_ambient;			// 4
-  int show_specular;			// 4
-  int show_diffuse; 			// 4
-  //
-  int show_normals;			// 4
-  int show_object_id;         // 4
-  int2 padding;				// 8
-  //
-  flight_properties lights[MAX_LIGHTS];    // 80xN
-
-  fmaterial_properties materials[MAX_MATERIALS];  // 80xN
-};
-
-cbuffer fobject_data : register(b1)
+cbuffer fobject_data : register(b0)
 {
   matrix model_world;
   matrix inverse_transpose_model_world;
@@ -36,6 +36,21 @@ cbuffer fobject_data : register(b1)
   float4 object_id;    
   uint material_id;
   int is_selected;
+};
+
+cbuffer fframe_data : register(b1)
+{
+  float4 camera_position;     // 16
+  float4 ambient_light;       // 16
+  int show_emissive;			    // 4        // TODO bit flags
+  int show_ambient;			      // 4
+  int show_specular;			    // 4
+  int show_diffuse; 			    // 4
+  int show_normals;			      // 4
+  int show_object_id;         // 4
+  int2 padding;				        // 8
+  flight_properties lights[MAX_LIGHTS];             // 80xN
+  fmaterial_properties materials[MAX_MATERIALS];    // 80xN
 };
 
 flight_components compute_light(float4 P, float3 N, float specular_power)
@@ -77,6 +92,16 @@ flight_components compute_light(float4 P, float3 N, float specular_power)
   final_light.specular = saturate(final_light.specular);
 
   return final_light;
+}
+
+VS_Output vs_main(VS_Input input)
+{
+  VS_Output output;
+  output.position_ws    = mul(model_world, float4(input.position, 1.0f));
+  output.position_cs    = mul(model_world_view_projection, float4(input.position, 1.0f));
+  output.normal_ws      = normalize(mul((float3x3)inverse_transpose_model_world, input.normal));
+  output.uv             = input.uv;
+  return output;
 }
 
 float4 ps_main(VS_Output input) : SV_Target
