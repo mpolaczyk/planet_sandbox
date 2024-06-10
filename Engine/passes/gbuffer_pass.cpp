@@ -56,8 +56,9 @@ namespace engine
     
     for(int i = 0; i < egbuffer_type::count; i++)
     {
-      dx.device_context->ClearRenderTargetView(rtvs[i].Get(), scene->clear_color);
+      dx.device_context->ClearRenderTargetView(output_rtv[i].Get(), scene->clear_color);
     }
+    dx.device_context->ClearDepthStencilView(output_dsv.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
     
     const D3D11_VIEWPORT viewport = {0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f};
     dx.device_context->RSSetViewports(1, &viewport);
@@ -66,9 +67,9 @@ namespace engine
     ID3D11RenderTargetView* const* rtvsp[egbuffer_type::count];
     for(int i = 0; i < egbuffer_type::count; i++)
     {
-      rtvsp[i] = rtvs[i].GetAddressOf();
+      rtvsp[i] = output_rtv[i].GetAddressOf();
     }
-    dx.device_context->OMSetRenderTargets(egbuffer_type::count, rtvsp[0], dsv.Get());
+    dx.device_context->OMSetRenderTargets(egbuffer_type::count, rtvsp[0], output_dsv.Get());
 
     dx.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     dx.device_context->IASetInputLayout(input_layout.Get());
@@ -143,12 +144,12 @@ namespace engine
     {
       for(int i = 0; i < egbuffer_type::count; i++)
       {
-        DX_RELEASE(rtvs[i])
-        DX_RELEASE(srvs[i])
-        DX_RELEASE(textures[i])
+        DX_RELEASE(output_rtv[i])
+        DX_RELEASE(output_srv[i])
+        DX_RELEASE(output_texture[i])
       }
-      DX_RELEASE(dsb)
-      DX_RELEASE(dsv)
+      DX_RELEASE(output_dsv)
+      DX_RELEASE(output_depth)
     }
 
     fdx11& dx = fdx11::instance();
@@ -157,9 +158,12 @@ namespace engine
       DXGI_FORMAT format = (i == egbuffer_type::material_id ? DXGI_FORMAT_R8_UINT : DXGI_FORMAT_R32G32B32A32_FLOAT); // TODO All rgba? normal can be float3
       D3D11_BIND_FLAG bind_flag = static_cast<D3D11_BIND_FLAG>(D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
 
-      dx.create_texture(output_width, output_height, format, bind_flag, D3D11_USAGE_DEFAULT, textures[i]);
-      dx.create_shader_resource_view(textures[i], format, D3D11_SRV_DIMENSION_TEXTURE2D, srvs[i]);
-      dx.create_render_target_view(textures[i], format, D3D11_RTV_DIMENSION_TEXTURE2D, rtvs[i]);
+      dx.create_texture(output_width, output_height, format, bind_flag, D3D11_USAGE_DEFAULT, output_texture[i]);
+      dx.create_shader_resource_view(output_texture[i], format, D3D11_SRV_DIMENSION_TEXTURE2D, output_srv[i]);
+      dx.create_render_target_view(output_texture[i], format, D3D11_RTV_DIMENSION_TEXTURE2D, output_rtv[i]);
     }
+
+    dx.create_texture(output_width, output_height, DXGI_FORMAT_D24_UNORM_S8_UINT, D3D11_BIND_DEPTH_STENCIL, D3D11_USAGE_DEFAULT, output_depth);
+    dx.create_depth_stencil_view(output_depth, output_width, output_height, output_dsv);
   }
 }

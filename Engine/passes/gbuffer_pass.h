@@ -22,12 +22,12 @@ namespace engine
     virtual void create_output_texture(bool cleanup = false) override;
     
     // Output
-    ComPtr<ID3D11Texture2D> textures[egbuffer_type::count];
-    ComPtr<ID3D11RenderTargetView> rtvs[egbuffer_type::count];
-    ComPtr<ID3D11ShaderResourceView> srvs[egbuffer_type::count];
-    ComPtr<ID3D11Texture2D> dsb;  // TODO not used! depth stencil buffer
-    ComPtr<ID3D11DepthStencilView> dsv;
-
+    ComPtr<ID3D11Texture2D> output_texture[egbuffer_type::count];
+    ComPtr<ID3D11RenderTargetView> output_rtv[egbuffer_type::count];
+    ComPtr<ID3D11ShaderResourceView> output_srv[egbuffer_type::count];
+    ComPtr<ID3D11DepthStencilView> output_dsv;
+    ComPtr<ID3D11Texture2D> output_depth;
+    
   private:
     ComPtr<ID3D11Buffer> object_constant_buffer;
   };

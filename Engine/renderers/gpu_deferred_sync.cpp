@@ -88,10 +88,10 @@ namespace engine
     gbuffer_pass.draw();
     
     deferred_lighting_pass.init();
-    deferred_lighting_pass.gbuffer_srvs[egbuffer_type::material_id] = gbuffer_pass.srvs[egbuffer_type::material_id];
-    deferred_lighting_pass.gbuffer_srvs[egbuffer_type::normal] = gbuffer_pass.srvs[egbuffer_type::normal];
-    deferred_lighting_pass.gbuffer_srvs[egbuffer_type::position] = gbuffer_pass.srvs[egbuffer_type::position];
-    deferred_lighting_pass.gbuffer_srvs[egbuffer_type::tex_color] = gbuffer_pass.srvs[egbuffer_type::tex_color];
+    deferred_lighting_pass.gbuffer_srvs[egbuffer_type::material_id] = gbuffer_pass.output_srv[egbuffer_type::material_id];
+    deferred_lighting_pass.gbuffer_srvs[egbuffer_type::normal] = gbuffer_pass.output_srv[egbuffer_type::normal];
+    deferred_lighting_pass.gbuffer_srvs[egbuffer_type::position] = gbuffer_pass.output_srv[egbuffer_type::position];
+    deferred_lighting_pass.gbuffer_srvs[egbuffer_type::tex_color] = gbuffer_pass.output_srv[egbuffer_type::tex_color];
     deferred_lighting_pass.draw();
     
   }
