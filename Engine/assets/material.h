@@ -6,7 +6,7 @@
 #include "object/object.h"
 #include "asset/asset.h"
 #include "asset/soft_asset_ptr.h"
-#include "renderers/aligned_structs.h"
+#include "renderer/aligned_structs.h"
 
 namespace engine
 {

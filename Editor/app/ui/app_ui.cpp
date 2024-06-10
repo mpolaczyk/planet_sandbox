@@ -256,13 +256,13 @@ namespace editor
 
   void draw_output_window(foutput_window_model& model, fapp_instance& state)
   {
-    if (state.scene_root->renderer->output_texture)
+    if (state.scene_root->renderer->get_output_texture())
     {
       ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
       ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
       const rrenderer_base* renderer = state.scene_root->renderer;
       ImVec2 size = ImVec2(renderer->output_width * model.zoom, renderer->output_height * model.zoom);
-      ImGui::Image((ImTextureID)renderer->output_srv.Get(), size, ImVec2(0, 0), ImVec2(1, 1));
+      ImGui::Image((ImTextureID)renderer->get_output_srv().Get(), size, ImVec2(0, 0), ImVec2(1, 1));
 
       state.output_window_is_clicked = ImGui::IsItemClicked(ImGuiMouseButton_Left);
       state.output_window_is_hovered = ImGui::IsItemHovered();

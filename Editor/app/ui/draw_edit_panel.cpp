@@ -149,12 +149,12 @@ namespace editor
         object.vertex_shader_asset.set_name(model.selected_object->file_name);
       }
     }
-
-    fui_helper::check_box("Show emissive", object.show_emissive);
-    fui_helper::check_box("Show ambient", object.show_ambient);
-    fui_helper::check_box("Show diffuse", object.show_diffuse);
-    fui_helper::check_box("Show specular", object.show_specular);
-    fui_helper::check_box("Show normals", object.show_normals);
+    
+    fui_helper::check_box("Show emissive", object.forward_pass.show_emissive);
+    fui_helper::check_box("Show ambient", object.forward_pass.show_ambient);
+    fui_helper::check_box("Show diffuse", object.forward_pass.show_diffuse);
+    fui_helper::check_box("Show specular", object.forward_pass.show_specular);
+    fui_helper::check_box("Show normals", object.forward_pass.show_normals);
     fui_helper::check_box("Show object id", object.show_object_id);
   }
 
@@ -201,8 +201,9 @@ namespace editor
         object.lighting_vertex_shader_asset.set_name(model.selected_object->file_name);
       }
     }
-    fui_helper::check_box("Show normal", object.show_normal_ws);
-    fui_helper::check_box("Show position", object.show_position_ws);
-    fui_helper::check_box("Show text color", object.show_tex_color);
+    fui_helper::check_box("Show normal", object.deferred_lighting_pass.show_normal_ws);
+    fui_helper::check_box("Show position", object.deferred_lighting_pass.show_position_ws);
+    fui_helper::check_box("Show tex color", object.deferred_lighting_pass.show_tex_color);
+    fui_helper::check_box("Show object id", object.show_object_id);
   }
 }
