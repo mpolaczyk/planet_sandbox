@@ -51,4 +51,9 @@ namespace engine
     forward_pass.init();
   }
 
+  void rgpu_forward_sync::render_frame_impl()
+  {
+    forward_pass.show_object_id = show_object_id;
+    forward_pass.draw();
+  };
 }

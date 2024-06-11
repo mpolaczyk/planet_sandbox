@@ -39,7 +39,7 @@ namespace engine
       return singleton;
     }
 
-    // TODO: Most of create_... methods can be mae static, it's jut helper code.
+    // TODO: Most of create_... methods can be made static, it's jut helper code.
     // HELPER FUNCTIONS
     
     void create_input_layout(const D3D11_INPUT_ELEMENT_DESC* input_element_desc, uint32_t input_element_desc_size, const ComPtr<ID3D10Blob>& vertex_shader_blob, ComPtr<ID3D11InputLayout>& input_layout) const;

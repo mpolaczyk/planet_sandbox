@@ -37,7 +37,7 @@ namespace engine
   protected:
     virtual bool can_render() override;
     virtual void init() override;
-    virtual void render_frame_impl() override { forward_pass.draw(); };
+    virtual void render_frame_impl() override;
     virtual void create_output_texture(bool cleanup) override { forward_pass.create_output_texture(cleanup); };
   };
 }
