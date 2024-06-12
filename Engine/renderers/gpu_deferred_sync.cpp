@@ -64,35 +64,25 @@ namespace engine
 
   void rgpu_deferred_sync::init()
   {
-    auto dx = fdx11::instance();
-
-    // TODO Function call
-    gbuffer_pass.vertex_shader = &gbuffer_vertex_shader_asset.get()->render_state;
-    gbuffer_pass.pixel_shader = &gbuffer_pixel_shader_asset.get()->render_state;
-    gbuffer_pass.scene_acceleration = &scene_acceleration;
-    gbuffer_pass.scene = scene;
-    gbuffer_pass.output_width = output_width;
-    gbuffer_pass.output_height = output_height;
-    gbuffer_pass.default_material_asset = default_material_asset;
-
-    // TODO Function call
-    deferred_lighting_pass.vertex_shader = &lighting_vertex_shader_asset.get()->render_state;
-    deferred_lighting_pass.pixel_shader = &lighting_pixel_shader_asset.get()->render_state;
-    deferred_lighting_pass.scene_acceleration = &scene_acceleration;
-    deferred_lighting_pass.scene = scene;
-    deferred_lighting_pass.output_width = output_width;
-    deferred_lighting_pass.output_height = output_height;
-    deferred_lighting_pass.default_material_asset = default_material_asset;
+    // Everything happens in the frame
   }
 
   void rgpu_deferred_sync::render_frame_impl()
   {
+    gbuffer_pass.copy_input(&gbuffer_vertex_shader_asset.get()->render_state, &gbuffer_pixel_shader_asset.get()->render_state,
+      &scene_acceleration, scene, selected_object,
+      output_width, output_height,
+      default_material_asset);
+    
     gbuffer_pass.init();
-    gbuffer_pass.selected_object = selected_object;
     gbuffer_pass.draw();
     
+    deferred_lighting_pass.copy_input(&lighting_vertex_shader_asset.get()->render_state, &lighting_pixel_shader_asset.get()->render_state,
+      &scene_acceleration, scene, selected_object,
+      output_width, output_height,
+      default_material_asset);
+    
     deferred_lighting_pass.init();
-    deferred_lighting_pass.selected_object = selected_object;
     deferred_lighting_pass.gbuffer_srvs[egbuffer_type::material_id] = gbuffer_pass.output_srv[egbuffer_type::material_id];
     deferred_lighting_pass.gbuffer_srvs[egbuffer_type::normal] = gbuffer_pass.output_srv[egbuffer_type::normal];
     deferred_lighting_pass.gbuffer_srvs[egbuffer_type::position] = gbuffer_pass.output_srv[egbuffer_type::position];
@@ -101,7 +91,6 @@ namespace engine
     deferred_lighting_pass.gbuffer_srvs[egbuffer_type::is_selected] = gbuffer_pass.output_srv[egbuffer_type::is_selected];
     deferred_lighting_pass.show_object_id = show_object_id;
     deferred_lighting_pass.draw();
-    
   }
 
   void rgpu_deferred_sync::create_output_texture(bool cleanup)

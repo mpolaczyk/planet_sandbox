@@ -26,7 +26,22 @@ namespace engine
     virtual void init() = 0;
     virtual void draw() = 0;
     virtual void create_output_texture(bool cleanup = false) = 0;
-
+    virtual void copy_input(const fvertex_shader_render_state* in_vertex_shader, const fpixel_shader_render_state* in_pixel_shader,
+      const fscene_acceleration* in_scene_acceleration, const hscene* in_scene, const hhittable_base* in_selected_object,
+      int in_output_width, int in_output_height,
+      fsoft_asset_ptr<amaterial>& in_default_material)
+    {
+      pixel_shader = in_pixel_shader;
+      vertex_shader = in_vertex_shader;
+      scene_acceleration = in_scene_acceleration;
+      scene = in_scene;
+      selected_object = in_selected_object;
+      output_width = in_output_width;
+      output_height = in_output_height;
+      default_material_asset = in_default_material;
+    }
+    
+  protected:
     // Input
     const fpixel_shader_render_state* pixel_shader = nullptr;
     const fvertex_shader_render_state* vertex_shader = nullptr;
