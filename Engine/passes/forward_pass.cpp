@@ -39,7 +39,7 @@ namespace engine
       XMFLOAT4X4 model_world_view_projection; // 64 Used to transform the vertex position from object space to projected clip space
       XMFLOAT4 object_id; // 16
       uint32_t material_id; // 4
-      int32_t is_selected; // 4
+      uint32_t is_selected; // 4
       int32_t padding[2]; // 8
     };
 

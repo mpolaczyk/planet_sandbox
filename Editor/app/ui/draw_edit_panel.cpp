@@ -155,7 +155,6 @@ namespace editor
     fui_helper::check_box("Show diffuse", object.forward_pass.show_diffuse);
     fui_helper::check_box("Show specular", object.forward_pass.show_specular);
     fui_helper::check_box("Show normals", object.forward_pass.show_normals);
-    fui_helper::check_box("Show object id", object.show_object_id);
   }
 
   void vdraw_edit_panel::visit(rgpu_deferred_sync& object) const
@@ -204,6 +203,5 @@ namespace editor
     fui_helper::check_box("Show normal", object.deferred_lighting_pass.show_normal_ws);
     fui_helper::check_box("Show position", object.deferred_lighting_pass.show_position_ws);
     fui_helper::check_box("Show tex color", object.deferred_lighting_pass.show_tex_color);
-    fui_helper::check_box("Show object id", object.show_object_id);
   }
 }

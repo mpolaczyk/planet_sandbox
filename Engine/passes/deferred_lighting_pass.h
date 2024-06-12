@@ -26,6 +26,7 @@ namespace engine
     int show_normal_ws = 0;
     int show_position_ws = 0;
     int show_tex_color = 0;
+    int show_object_id = 0;
     ComPtr<ID3D11ShaderResourceView> gbuffer_srvs[egbuffer_type::count];
     
     // Output

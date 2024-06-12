@@ -8,6 +8,7 @@
 #include "core/core.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
+#include "math/math.h"
 #include "renderer/dx11_lib.h"
 #include "renderer/render_state.h"
 #include "renderer/scene_acceleration.h"
@@ -23,8 +24,10 @@ namespace engine
       XMFLOAT4X4 model_world; // 64 
       XMFLOAT4X4 inverse_transpose_model_world; // 64 
       XMFLOAT4X4 model_world_view_projection; // 64
+      XMFLOAT4 object_id; // 16
       uint32_t material_id; // 4
-      int32_t padding[3]; // 12
+      uint32_t is_selected; // 4
+      int32_t padding[2]; // 8
     };
 
     ALIGNED_STRUCT_END(fobject_data)
@@ -115,6 +118,8 @@ namespace engine
         {
           pod.material_id = scene_acceleration->material_map.at(material);
         }
+        pod.is_selected = selected_object == sm ? 1 : 0;
+        pod.object_id = fmath::uint32_to_colorf(sm->get_hash());
         dx.update_constant_buffer<fobject_data>(&pod, object_constant_buffer);
       }
 
@@ -155,7 +160,7 @@ namespace engine
     fdx11& dx = fdx11::instance();
     for(int i = 0; i < egbuffer_type::count; i++)
     {
-      DXGI_FORMAT format = (i == egbuffer_type::material_id ? DXGI_FORMAT_R8_UINT : DXGI_FORMAT_R32G32B32A32_FLOAT); // TODO All rgba? normal can be float3
+      DXGI_FORMAT format = (i == egbuffer_type::material_id || i == egbuffer_type::is_selected ? DXGI_FORMAT_R8_UINT : DXGI_FORMAT_R32G32B32A32_FLOAT);
       D3D11_BIND_FLAG bind_flag = static_cast<D3D11_BIND_FLAG>(D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
 
       dx.create_texture(output_width, output_height, format, bind_flag, D3D11_USAGE_DEFAULT, output_texture[i]);

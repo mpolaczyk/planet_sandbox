@@ -24,6 +24,8 @@ struct fps_output
   float4 normal_ws	 : SV_Target1;
   float4 tex_color	 : SV_Target2;
   uint material_id   : SV_Target3;
+  float4 object_id   : SV_Target4;
+  uint is_selected   : SV_Target5;
 };
 
 Texture2D texture0 : register(t0);
@@ -34,7 +36,9 @@ cbuffer fobject_data : register(b0)
   matrix model_world;
   matrix inverse_transpose_model_world;
   matrix model_world_view_projection;
+  float4 object_id;    
   uint material_id;
+  uint is_selected;
 };
 
 fvs_output vs_main(fvs_input input)
@@ -54,5 +58,7 @@ fps_output ps_main(fvs_output input) : SV_Target
   output.normal_ws   = float4(input.normal_ws, 1.0);
   output.tex_color   = texture0.Sample(sampler0, input.uv);
   output.material_id = material_id;
+  output.object_id   = object_id;
+  output.is_selected = is_selected;
   return output;
 }

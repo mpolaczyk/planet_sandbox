@@ -24,7 +24,7 @@ namespace engine
       int32_t show_position_ws; // 4    // TODO pack bits
       int32_t show_normal_ws; // 4
       int32_t show_tex_color; // 4
-      int32_t padding; // 4
+      int32_t show_object_id; // 4
       flight_properties lights[MAX_LIGHTS]; // 80xN
       fmaterial_properties materials[MAX_MATERIALS]; // 80xN
     };
@@ -125,6 +125,7 @@ namespace engine
       pfd.show_normal_ws = show_normal_ws;
       pfd.show_position_ws = show_position_ws;
       pfd.show_tex_color = show_tex_color;
+      pfd.show_object_id = show_object_id;
       dx.update_constant_buffer<fframe_data>(&pfd, frame_constant_buffer);
     }
 

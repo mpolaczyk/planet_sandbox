@@ -39,6 +39,7 @@ namespace engine
   
   void rgpu_forward_sync::init()
   {
+    // TODO Function call
     forward_pass.vertex_shader = &vertex_shader_asset.get()->render_state;
     forward_pass.pixel_shader = &pixel_shader_asset.get()->render_state;
     forward_pass.scene_acceleration = &scene_acceleration;
@@ -46,13 +47,13 @@ namespace engine
     forward_pass.output_width = output_width;
     forward_pass.output_height = output_height;
     forward_pass.default_material_asset = default_material_asset;
-    forward_pass.selected_object = selected_object;
 
     forward_pass.init();
   }
 
   void rgpu_forward_sync::render_frame_impl()
   {
+    forward_pass.selected_object = selected_object; 
     forward_pass.show_object_id = show_object_id;
     forward_pass.draw();
   };

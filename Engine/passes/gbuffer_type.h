@@ -8,6 +8,8 @@ namespace engine
     normal,
     tex_color,
     material_id,
+    object_id,        // Selection mechanism.
+    is_selected,      // I hate it, too expensive. TODO I need to do a proper trace.
     count,
   };
 }
