@@ -5,22 +5,23 @@ Author: planet620
 
 This is a fork of the previous project [2.3] (Ray Tracer release 2.3)
 All CPU rendering functionality has been removed.
-The goal is to achieve the same result but with DX12 and DXR (long way to go).
+The goal is to achieve the same result but with DX12 and DXR.
 
 Features added so far:
 
 - Engine and editor separated to a DLL and EXE
-- DX11 support for simple scene rendering, forward renderer, Phong lighting model
+- DX11 support for simple scene rendering, forward renderer, deferred renderer, Phong lighting model
 - Custom RTTI and memory menegament for resources like scene objects, assets, shaders etc.
 - Persistent soft asset pointers
 - FBX scene import
-- Support to multiple project folders
+- Support to multiple project folders (use command line argument fbx_scene_test or cozy_kitchen)
 - Improved UI
     - Material editor
     - Managed objects list
     - Scene editor
     - Object selection and highlight
     - Combo list for managed objects
+    - Object selection
 
 Example scene: [Cozy Kitchen] imported from Blender.
 ![Example output](screen.jpg)
