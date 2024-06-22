@@ -1,8 +1,11 @@
 #pragma once
 
 #include <exception>
+#include <string>
 
 #include "core/core.h"
+
+#define THROW_IF_FAILED(code) if(HRESULT hr = code < 0) throw std::runtime_error(fwin32_error::get_error_description(hr));
 
 namespace engine
 {
@@ -44,5 +47,6 @@ namespace engine
   struct ENGINE_API fwin32_error
   {
     static std::string get_last_error_as_string();
+    static std::string get_error_description(HRESULT hr);
   };
 }

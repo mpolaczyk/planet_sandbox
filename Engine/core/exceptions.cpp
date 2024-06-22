@@ -4,6 +4,8 @@
 
 #include "core/exceptions.h"
 
+#include "engine/string_tools.h"
+
 namespace engine
 {
   int fseh_exception::describe(_EXCEPTION_POINTERS* p_exp)
@@ -99,5 +101,28 @@ namespace engine
     std::string message(buffer, size);
     LocalFree(buffer);
     return message;
+  }
+
+  std::string fwin32_error::get_error_description(HRESULT hr)
+  {
+    std::ostringstream oss;
+    wchar_t* message = nullptr;
+    const auto result = FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK,
+                                       nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                                       (LPWSTR)&message, 0, nullptr);
+    if(!result)
+    {
+      oss << "Failed formatting windows error message";
+    }
+    else
+    {
+      const std::wstring description = message;
+      oss << fstring_tools::to_utf8(description);
+      if(!LocalFree(message))
+      {
+        oss << "Failed to free memory for windows error message";
+      }
+    }
+    return oss.str();
   }
 }

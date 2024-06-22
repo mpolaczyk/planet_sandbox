@@ -200,10 +200,7 @@ namespace editor
     dx.command_queue->ExecuteCommandLists(1, (ID3D12CommandList*const*)dx.command_list.GetAddressOf());
 
     // Present
-    if(FAILED(dx.swap_chain->Present(1, 0)))
-    {
-      throw new std::runtime_error("Failed to present");
-    }
+    THROW_IF_FAILED(dx.swap_chain->Present(1, 0))
 
     dx.move_to_next_frame();
   }

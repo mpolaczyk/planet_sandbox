@@ -8,6 +8,8 @@
 #include "d3dx12/d3dx12_barriers.h"
 
 #include "renderer/dx12_lib.h"
+
+#include "core/exceptions.h"
 #include "engine/log.h"
 #include "engine/string_tools.h"
 
@@ -74,14 +76,8 @@ namespace engine
 #if BUILD_DEBUG
     ComPtr<ID3D12Debug> debug;
     ComPtr<ID3D12Debug1> debug1;
-    if(FAILED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug))))
-    {
-      throw std::runtime_error("D3D12GetDebugInterface query failed.");
-    }
-    if(FAILED(debug->QueryInterface(IID_PPV_ARGS(&debug1))))
-    {
-      throw std::runtime_error("QueryInterface ID3D12Debug1 failed.");
-    }
+    THROW_IF_FAILED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)))
+    THROW_IF_FAILED(debug->QueryInterface(IID_PPV_ARGS(&debug1)))
     debug1->SetEnableGPUBasedValidation(true);
     debug->EnableDebugLayer();
     DX_RELEASE(debug);
@@ -97,19 +93,13 @@ namespace engine
 #if BUILD_DEBUG
       factory_flags |= DXGI_CREATE_FACTORY_DEBUG;
 #endif
-      if(FAILED(CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(&factory)))) 
-      {
-        throw std::runtime_error("CreateDXGIFactory2 query failed.");
-      }
+      THROW_IF_FAILED(CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(&factory)))
       
       get_hw_adapter(factory.Get(), &adapter);
       DXGI_ADAPTER_DESC adapter_desc;
       adapter->GetDesc(&adapter_desc);
       LOG_INFO("Graphics Device: {0}", fstring_tools::to_utf8(adapter_desc.Description));
-      if(FAILED((D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&device)))))
-      {
-        throw std::runtime_error("D3D12CreateDevice failed.");
-      }
+      THROW_IF_FAILED((D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&device))))
       DX_RELEASE(adapter);
     }
 
@@ -131,10 +121,7 @@ namespace engine
       desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
       desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
       desc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
-      if(FAILED(device->CreateCommandQueue(&desc, IID_PPV_ARGS(&command_queue))))
-      {
-        throw std::runtime_error("CreateCommandQueue failed.");
-      }
+      THROW_IF_FAILED(device->CreateCommandQueue(&desc, IID_PPV_ARGS(&command_queue)) < 0)
     }
 
     // Swap chain
@@ -153,14 +140,8 @@ namespace engine
       desc.Stereo = FALSE;
 
       ComPtr<IDXGISwapChain1> swap_chain1;
-      if(FAILED(factory->CreateSwapChainForHwnd(command_queue.Get(), hwnd, &desc, nullptr, nullptr, &swap_chain1)))
-      {
-        throw std::runtime_error("CreateSwapChainForHwnd failed.");
-      }
-      if(FAILED(swap_chain1.As(&swap_chain)))
-      {
-        throw std::runtime_error("IDXGISwapChain3 query failed.");
-      }
+      THROW_IF_FAILED(factory->CreateSwapChainForHwnd(command_queue.Get(), hwnd, &desc, nullptr, nullptr, &swap_chain1))
+      THROW_IF_FAILED(swap_chain1.As(&swap_chain))
       DX_RELEASE(swap_chain1);
       DX_RELEASE(factory);
     }
@@ -171,21 +152,15 @@ namespace engine
       desc.NumDescriptors = back_buffer_count;
       desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
       desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-      if(FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&rtv_descriptor_heap))))
-      {
-        throw std::runtime_error("CreateDescriptorHeap failed.");
-      }
+      THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&rtv_descriptor_heap)))
+      
       rtv_descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
       D3D12_CPU_DESCRIPTOR_HANDLE handle = rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
       for (UINT n = 0; n < back_buffer_count; n++)
       {
-        if(FAILED(swap_chain->GetBuffer(n, IID_PPV_ARGS(&rtv[n]))))
-        {
-          throw std::runtime_error("RTV GetBuffer failed.");
-        }
+        THROW_IF_FAILED(swap_chain->GetBuffer(n, IID_PPV_ARGS(&rtv[n])))
         device->CreateRenderTargetView(rtv[n].Get(), nullptr, handle);
-        //rtv_descriptors[n] = handle;
         handle.ptr += rtv_descriptor_size;
       }
     }
@@ -196,29 +171,17 @@ namespace engine
       desc.NumDescriptors = 1;
       desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
       desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-      if(FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&srv_descriptor_heap))))
-      {
-        throw std::runtime_error("CreateDescriptorHeap failed.");
-      }
+      THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&srv_descriptor_heap)))
     }
 
     // Command allocators, and lists
     {
       for (UINT n = 0; n < back_buffer_count; n++)
       {
-        if (FAILED(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&command_allocator[n]))))
-        {
-          throw std::runtime_error("CreateCommandAllocator failed.");
-        }
+        THROW_IF_FAILED(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&command_allocator[n])))
       }
-      if(FAILED(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, command_allocator[0].Get(), nullptr, IID_PPV_ARGS(&command_list))))
-      {
-        throw std::runtime_error("CreateCommandList failed.");
-      }
-      if(FAILED(command_list->Close()))
-      {
-        throw std::runtime_error("Close command list failed.");
-      }
+      THROW_IF_FAILED(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, command_allocator[0].Get(), nullptr, IID_PPV_ARGS(&command_list)))
+      THROW_IF_FAILED(command_list->Close())
     }
     
     // Create an empty root signature.
@@ -228,14 +191,8 @@ namespace engine
 
       ComPtr<ID3DBlob> signature;
       ComPtr<ID3DBlob> error;
-      if(FAILED(D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error)))
-      {
-        throw std::runtime_error("D3D12SerializeRootSignature failed.");
-      }
-      if(FAILED(device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
-      {
-        throw std::runtime_error("CreateRootSignature failed.");
-      }
+      THROW_IF_FAILED(D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error))
+      THROW_IF_FAILED(device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&root_signature)))
     }
 
     // TODO Create pipeline state (shaders, input, etc)
@@ -244,18 +201,12 @@ namespace engine
 
     // Create synchronization objects
     {
-      if(FAILED(device->CreateFence(fence_value[back_buffer_index], D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))))
-      {
-        throw std::runtime_error("CreateFence failed.");
-      }
+      THROW_IF_FAILED(device->CreateFence(fence_value[back_buffer_index], D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)))
 
       fence_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
       if (fence_event == nullptr)
       {
-        if(FAILED(HRESULT_FROM_WIN32(GetLastError())))
-        {
-          throw std::runtime_error("CreateEvent failed.");
-        }
+        THROW_IF_FAILED(HRESULT_FROM_WIN32(GetLastError()))
       }
     }
 
@@ -274,10 +225,7 @@ namespace engine
     // Wait if all backbuffers are in use (currently displayed or rendered on GPU)
     if (completed_fence_value < fence_value[back_buffer_index])
     {
-      if (FAILED(fence->SetEventOnCompletion(fence_value[back_buffer_index], fence_event)))
-      {
-        throw new std::runtime_error("Failed to set event on completion");
-      }
+      THROW_IF_FAILED(fence->SetEventOnCompletion(fence_value[back_buffer_index], fence_event))
       WaitForSingleObjectEx(fence_event, INFINITE, FALSE);
     }
 
@@ -287,14 +235,8 @@ namespace engine
 
   void fdx12::wait_for_gpu()
   {
-    if(FAILED(command_queue->Signal(fence.Get(), fence_value[back_buffer_index])))
-    {
-      throw std::runtime_error("Signal failed.");
-    }
-    if(FAILED(fence->SetEventOnCompletion(fence_value[back_buffer_index], fence_event)))
-    {
-      throw std::runtime_error("SetEventOnCompletion failed.");
-    }
+    THROW_IF_FAILED(command_queue->Signal(fence.Get(), fence_value[back_buffer_index]))
+    THROW_IF_FAILED(fence->SetEventOnCompletion(fence_value[back_buffer_index], fence_event))
     WaitForSingleObjectEx(fence_event, INFINITE, FALSE);
     fence_value[back_buffer_index]++;
   }
@@ -320,10 +262,7 @@ namespace engine
     }
 
     // Resize
-    if(FAILED(swap_chain->ResizeBuffers(0, in_width, in_height, DXGI_FORMAT_UNKNOWN, 0)))
-    {
-      throw std::runtime_error("Failed to resize buffers");
-    }
+    THROW_IF_FAILED(swap_chain->ResizeBuffers(0, in_width, in_height, DXGI_FORMAT_UNKNOWN, 0))
     back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
     
     // Create resources
@@ -331,10 +270,7 @@ namespace engine
       D3D12_CPU_DESCRIPTOR_HANDLE handle = rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
       for (UINT n = 0; n < back_buffer_count; n++)
       {
-        if(FAILED(swap_chain->GetBuffer(n, IID_PPV_ARGS(&rtv[n]))))
-        {
-          throw std::runtime_error("RTV GetBuffer failed.");
-        }
+        THROW_IF_FAILED(swap_chain->GetBuffer(n, IID_PPV_ARGS(&rtv[n])))
         device->CreateRenderTargetView(rtv[n].Get(), nullptr, handle);
         handle.ptr += rtv_descriptor_size;
       }
@@ -365,10 +301,7 @@ namespace engine
 
 #ifdef BUILD_DEBUG
     ComPtr<IDXGIDebug1> debug;
-    if(FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug))))
-    {
-      throw std::runtime_error("D3D12GetDebugInterface query failed.");
-    }
+    THROW_IF_FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))
     debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY);
     DX_RELEASE(debug);
 #endif
@@ -377,10 +310,7 @@ namespace engine
 
   //void fdx12::create_input_layout(const D3D11_INPUT_ELEMENT_DESC* input_element_desc, uint32_t input_element_desc_size, const ComPtr<ID3D10Blob>& vertex_shader_blob, ComPtr<ID3D11InputLayout>& input_layout) const
   //{
-  //  if(FAILED(device->CreateInputLayout(input_element_desc, input_element_desc_size, vertex_shader_blob->GetBufferPointer(), vertex_shader_blob->GetBufferSize(), input_layout.GetAddressOf())))
-  //  {
-  //    throw std::runtime_error("CreateInputLayout failed.");
-  //  }
+  //  THROW_IF_FAILED(device->CreateInputLayout(input_element_desc, input_element_desc_size, vertex_shader_blob->GetBufferPointer(), vertex_shader_blob->GetBufferSize(), input_layout.GetAddressOf()))
   //}
   //
   //void fdx12::create_sampler_state(ComPtr<ID3D11SamplerState>& out_sampler_state) const
@@ -395,10 +325,7 @@ namespace engine
   //  desc.BorderColor[2] = 1.0f;
   //  desc.BorderColor[3] = 1.0f;
   //  desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-  //  if(FAILED(device->CreateSamplerState(&desc, &out_sampler_state)))
-  //  {
-  //    throw std::runtime_error("CreateSamplerState failed.");
-  //  }
+  //  THROW_IF_FAILED(device->CreateSamplerState(&desc, &out_sampler_state))
   //}
   //
   //void fdx12::create_constant_buffer(uint32_t size, ComPtr<ID3D11Buffer>& out_constant_buffer) const
@@ -408,10 +335,7 @@ namespace engine
   //  desc.Usage = D3D11_USAGE_DYNAMIC;
   //  desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
   //  desc.ByteWidth = size;
-  //  if(FAILED(device->CreateBuffer(&desc, nullptr, &out_constant_buffer)))
-  //  {
-  //    throw std::runtime_error("CreateBuffer failed.");
-  //  }
+  //  THROW_IF_FAILED(device->CreateBuffer(&desc, nullptr, &out_constant_buffer))
   //}
   //
   //void fdx12::create_rasterizer_state(ComPtr<ID3D11RasterizerState>& out_rasterizer_state) const
@@ -427,10 +351,7 @@ namespace engine
   //  desc.MultisampleEnable = FALSE;
   //  desc.ScissorEnable = FALSE;
   //  desc.SlopeScaledDepthBias = 0.0f;
-  //  if(FAILED(device->CreateRasterizerState(&desc, &out_rasterizer_state)))
-  //  {
-  //    throw std::runtime_error("CreateRasterizerState failed.");
-  //  }
+  //  THROW_IF_FAILED(device->CreateRasterizerState(&desc, &out_rasterizer_state))
   //}
   //
   //void fdx12::create_depth_stencil_state(ComPtr<ID3D11DepthStencilState>& out_depth_stencil_state) const
@@ -440,26 +361,17 @@ namespace engine
   //  desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
   //  desc.DepthFunc = D3D11_COMPARISON_LESS;
   //  desc.StencilEnable = FALSE;
-  //  if(FAILED(device->CreateDepthStencilState(&desc, &out_depth_stencil_state)))
-  //  {
-  //    throw std::runtime_error("CreateDepthStencilState failed.");
-  //  }
+  //  THROW_IF_FAILED(device->CreateDepthStencilState(&desc, &out_depth_stencil_state))
   //}
   //
   //void fdx12::create_vertex_shader(const ComPtr<ID3D10Blob>& shader_blob, ComPtr<ID3D11VertexShader>& out_vertex_shader) const
   //{
-  //  if(FAILED(device->CreateVertexShader(shader_blob->GetBufferPointer(), shader_blob->GetBufferSize(), nullptr, out_vertex_shader.GetAddressOf())))
-  //  {
-  //    throw std::runtime_error("CreateVertexShader failed");
-  //  }
+  //  THROW_IF_FAILED(device->CreateVertexShader(shader_blob->GetBufferPointer(), shader_blob->GetBufferSize(), nullptr, out_vertex_shader.GetAddressOf()))
   //}
   //
   //void fdx12::create_pixel_shader(const ComPtr<ID3D10Blob>& shader_blob, ComPtr<ID3D11PixelShader>& out_pixel_shader) const
   //{
-  //  if(FAILED(device->CreatePixelShader(shader_blob->GetBufferPointer(), shader_blob->GetBufferSize(), nullptr, out_pixel_shader.GetAddressOf())))
-  //  {
-  //    throw std::runtime_error("CreatePixelShader failed");
-  //  }
+  //  THROW_IF_FAILED(device->CreatePixelShader(shader_blob->GetBufferPointer(), shader_blob->GetBufferSize(), nullptr, out_pixel_shader.GetAddressOf()))
   //}
   //
   //void fdx12::create_index_buffer(const std::vector<fface_data>& in_face_list, ComPtr<ID3D11Buffer>& out_index_buffer) const
@@ -469,10 +381,7 @@ namespace engine
   //  desc.Usage = D3D11_USAGE_IMMUTABLE;
   //  desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
   //  D3D11_SUBRESOURCE_DATA data = {in_face_list.data()};
-  //  if(FAILED(device->CreateBuffer(&desc, &data, out_index_buffer.GetAddressOf())))
-  //  {
-  //    throw std::runtime_error("CreateBuffer index failed.");
-  //  }
+  //  THROW_IF_FAILED(device->CreateBuffer(&desc, &data, out_index_buffer.GetAddressOf()))
   //}
   //
   //void fdx12::create_vertex_buffer(const std::vector<fvertex_data>& in_vertex_list, ComPtr<ID3D11Buffer>& out_vertex_buffer) const
@@ -482,10 +391,7 @@ namespace engine
   //  desc.Usage = D3D11_USAGE_IMMUTABLE;
   //  desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
   //  const D3D11_SUBRESOURCE_DATA data = {in_vertex_list.data()};
-  //  if(FAILED(device->CreateBuffer(&desc, &data, out_vertex_buffer.GetAddressOf())))
-  //  {
-  //    throw std::runtime_error("CreateBuffer vertex failed.");
-  //  }
+  //  THROW_IF_FAILED(device->CreateBuffer(&desc, &data, out_vertex_buffer.GetAddressOf()))
   //}
   //
   //void fdx12::create_render_target_view(const ComPtr<ID3D11Texture2D>& in_texture, DXGI_FORMAT format, D3D11_RTV_DIMENSION view_dimmension, ComPtr<ID3D11RenderTargetView>& out_render_target_view) const
@@ -494,18 +400,12 @@ namespace engine
   //  desc.Format = format;
   //  desc.ViewDimension = view_dimmension;
   //  desc.Texture2D.MipSlice = 0;
-  //  if (FAILED(device->CreateRenderTargetView(in_texture.Get(), &desc, out_render_target_view.GetAddressOf())))
-  //  {
-  //    throw std::runtime_error("CreateRenderTargetView failed");
-  //  }
+  //  THROW_IF_FAILED(device->CreateRenderTargetView(in_texture.Get(), &desc, out_render_target_view.GetAddressOf()))
   //}
   //
   //void fdx12::create_depth_stencil_view(const ComPtr<ID3D11Texture2D>& in_texture, uint32_t width, uint32_t height, ComPtr<ID3D11DepthStencilView>& out_depth_stencil_view) const
   //{
-  //  if(FAILED(device->CreateDepthStencilView(in_texture.Get(), nullptr, out_depth_stencil_view.GetAddressOf()))) // TODO Missing descriptor?
-  //  {
-  //    throw std::runtime_error("CreateDepthStencilView output depth texture failed");
-  //  }
+  //  THROW_IF_FAILED(device->CreateDepthStencilView(in_texture.Get(), nullptr, out_depth_stencil_view.GetAddressOf()))) // TODO Missing descriptor
   //}
   //
   //void fdx12::create_texture(uint32_t width, uint32_t height, DXGI_FORMAT format, D3D11_BIND_FLAG bind_flags, D3D11_USAGE usage, ComPtr<ID3D11Texture2D>& out_texture, uint32_t bytes_per_row, const void* in_bytes) const
@@ -526,10 +426,7 @@ namespace engine
   //  texture_subresource_data.SysMemPitch = bytes_per_row;
   //  texture_subresource_data.pSysMem = in_bytes;
   //  
-  //  if(FAILED(device->CreateTexture2D(&texture_desc, in_bytes != nullptr ? &texture_subresource_data : nullptr, out_texture.GetAddressOf())))
-  //  {
-  //    throw std::runtime_error("CreateTexture2D failed.");
-  //  }
+  //  THROW_IF_FAILED(device->CreateTexture2D(&texture_desc, in_bytes != nullptr ? &texture_subresource_data : nullptr, out_texture.GetAddressOf()))
   //}
   //
   //void fdx12::create_shader_resource_view(const ComPtr<ID3D11Texture2D>& in_texture, DXGI_FORMAT format, D3D11_SRV_DIMENSION view_dimmension, ComPtr<ID3D11ShaderResourceView>& out_shader_resource_view) const
@@ -539,9 +436,6 @@ namespace engine
   //  shader_resource_view_desc.ViewDimension = view_dimmension;
   //  shader_resource_view_desc.Texture2D.MostDetailedMip = 0;
   //  shader_resource_view_desc.Texture2D.MipLevels = 1;
-  //  if(FAILED(device->CreateShaderResourceView(in_texture.Get(), &shader_resource_view_desc, out_shader_resource_view.GetAddressOf())))
-  //  {
-  //    throw std::runtime_error("CreateShaderResourceView failed.");
-  //  }
+  //  THROW_IF_FAILED(device->CreateShaderResourceView(in_texture.Get(), &shader_resource_view_desc, out_shader_resource_view.GetAddressOf()))
   //}
 }
