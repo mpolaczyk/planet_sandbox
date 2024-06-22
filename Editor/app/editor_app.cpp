@@ -1,19 +1,18 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 
 #include "core/windows_minimal.h"
 
-#include <d3d11_1.h>
 #include <tchar.h>
 #include <DirectXColors.h>
 
 #include "imgui.h"
 #include "imgui_impl_win32.h"
-#include "imgui_impl_dx11.h"
+#include "imgui_impl_dx12.h"
 
 #include "app/editor_app.h"
 
 #include "hittables/scene.h"
-#include "renderer/dx11_lib.h"
+#include "renderer/dx12_lib.h"
 #include "renderer/renderer_base.h"
 #include "renderers/gpu_forward_sync.h"
 
@@ -23,7 +22,7 @@ namespace editor
 {
   LRESULT feditor_app::wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   {
-    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+    if(ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
     {
       return true;
     }
@@ -45,7 +44,7 @@ namespace editor
       // overwrite imgui config file name
       std::string imgui_ini_filename = engine::fio::get_imgui_file_path();
       char* buff = new char[imgui_ini_filename.size() + 1];
-      strcpy(buff, imgui_ini_filename.c_str());  // returning char* is fucked up
+      strcpy(buff, imgui_ini_filename.c_str()); // returning char* is fucked up
       io.IniFilename = buff;
     }
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
@@ -56,8 +55,10 @@ namespace editor
 
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
-    fdx11& dx = fdx11::instance();
-    ImGui_ImplDX11_Init(dx.device.Get(), dx.device_context.Get());
+    fdx12& dx = fdx12::instance();
+
+    ImGui_ImplDX12_Init(dx.device.Get(), dx.back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM, dx.srv_descriptor_heap.Get(),
+                        dx.srv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), dx.srv_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
 
     // Load persistent state
     app_state.load_window_state();
@@ -72,10 +73,10 @@ namespace editor
 
   void feditor_app::run()
   {
-    while (app_state.is_running)
+    while(app_state.is_running)
     {
       pump_messages();
-      if (!app_state.is_running) break;
+      if(!app_state.is_running) break;
 
       const ImGuiIO& io = ImGui::GetIO();
       app_state.app_delta_time_ms = io.DeltaTime * 1000.0f;
@@ -97,9 +98,12 @@ namespace editor
 
   void feditor_app::cleanup()
   {
+    fdx12& dx = fdx12::instance();
+    
+    
     app_state.save_window_state();
 
-    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplDX12_Shutdown();
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
 
@@ -114,9 +118,9 @@ namespace editor
     // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
     // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
     MSG msg;
-    while (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+    while(::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
     {
-      if (msg.message == WM_QUIT)
+      if(msg.message == WM_QUIT)
       {
         app_state.is_running = false;
       }
@@ -128,14 +132,14 @@ namespace editor
   void feditor_app::draw_ui()
   {
     // Start the Dear ImGui frame
-    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplDX12_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-  #ifndef IMGUI_DISABLE_DEMO_WINDOWS
+#ifndef IMGUI_DISABLE_DEMO_WINDOWS
       // Debug UI only in debug mode
       if (0) { ImGui::ShowDemoWindow(); }
-  #endif
+#endif
 
     draw_editor_window(app_state.editor_window_model, app_state);
     draw_output_window(app_state.output_window_model, app_state);
@@ -147,10 +151,10 @@ namespace editor
   void feditor_app::draw_scene()
   {
     hscene* scene = app_state.scene_root;
-    if (scene != nullptr)
+    if(scene != nullptr)
     {
       rrenderer_base* renderer = scene->renderer;
-      if (renderer != nullptr)
+      if(renderer != nullptr)
       {
         scene->load_resources();
 
@@ -165,13 +169,56 @@ namespace editor
 
   void feditor_app::present()
   {
-    fdx11& dx = fdx11::instance();
-    dx.device_context->OMSetRenderTargets(1, dx.rtv.GetAddressOf(), nullptr);
+    fdx12& dx = fdx12::instance();
 
-    dx.device_context->ClearRenderTargetView(dx.rtv.Get(), DirectX::Colors::LightSlateGray);
+    dx.viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(app_state.window_conf.w), static_cast<float>(app_state.window_conf.h));
+    dx.scissor_rect = CD3DX12_RECT(0, 0, static_cast<LONG>(app_state.window_conf.w), static_cast<LONG>(app_state.window_conf.h));
+    
+    dx.command_allocators[dx.back_buffer_index]->Reset();
+    
+    dx.command_list->Reset(dx.command_allocators[dx.back_buffer_index].Get(), nullptr);
+    dx.command_list->SetGraphicsRootSignature(dx.root_signature.Get());
+    dx.command_list->RSSetViewports(1, &dx.viewport);
+    dx.command_list->RSSetScissorRects(1, &dx.scissor_rect);
 
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    CD3DX12_RESOURCE_BARRIER resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(dx.rtv[dx.back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    dx.command_list->ResourceBarrier(1, &resource_barrier);
 
-    dx.swap_chain->Present(1, 0); // Present with vsync
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(dx.rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), dx.back_buffer_index, dx.rtv_descriptor_size);
+    dx.command_list->OMSetRenderTargets(1, &rtv_handle, FALSE, nullptr);
+    dx.command_list->ClearRenderTargetView(rtv_handle, DirectX::Colors::LightSlateGray, 0, nullptr);
+
+    dx.command_list->SetDescriptorHeaps(1, dx.srv_descriptor_heap.GetAddressOf());
+    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dx.command_list.Get());
+
+    resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(dx.rtv[dx.back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+    dx.command_list->ResourceBarrier(1, &resource_barrier);
+
+    dx.command_list->Close();
+    dx.command_queue->ExecuteCommandLists(1, (ID3D12CommandList*const*)dx.command_list.GetAddressOf());
+
+    // Present
+    if(FAILED(dx.swap_chain->Present(1, 0)))
+    {
+      throw new std::runtime_error("Failed to present");
+    }
+
+    // Move to the next frame
+    
+    UINT64 current_fence_value = dx.fence_values[dx.back_buffer_index];
+    dx.command_queue->Signal(dx.fence.Get(), current_fence_value);
+    dx.back_buffer_index = dx.swap_chain->GetCurrentBackBufferIndex();
+
+    int completed_fence_value = dx.fence->GetCompletedValue();
+    if(completed_fence_value < dx.fence_values[dx.back_buffer_index])
+    {
+      if(FAILED(dx.fence->SetEventOnCompletion(dx.fence_values[dx.back_buffer_index], dx.fence_event)))
+      {
+        LOG_ERROR("Failed to set event on completion");
+      }
+      WaitForSingleObjectEx(dx.fence_event, INFINITE, FALSE);
+    }
+
+    dx.fence_values[dx.back_buffer_index] = current_fence_value + 1;
   }
 }

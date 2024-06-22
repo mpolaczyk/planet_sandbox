@@ -1,15 +1,12 @@
-#include <d3d11_1.h>
-
 #include <tchar.h>
 
 #include "core/application.h"
-
 
 #include "engine/io.h"
 #include "object/object_registry.h"
 #include "engine/log.h"
 #include "math/random.h"
-#include "renderer/dx11_lib.h"
+#include "renderer/dx12_lib.h"
 #include "resources/assimp_logger.h"
 
 namespace engine
@@ -23,16 +20,17 @@ namespace engine
 
   LRESULT fapplication::wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   {
-    fdx11& dx = fdx11::instance();
+    fdx12& dx = fdx12::instance();
     switch(msg)
     {
     case WM_SIZE:
-      if(dx.device != NULL && wParam != SIZE_MINIMIZED)
-      {
-        dx.cleanup_render_target();
-        dx.swap_chain->ResizeBuffers(0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
-        dx.create_render_target();
-      }
+      //if(dx.device != NULL && wParam != SIZE_MINIMIZED)
+      //{
+        // FIX
+        //dx.cleanup_render_target();
+        //dx.swap_chain->ResizeBuffers(0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
+        //dx.create_render_target();
+      //}
       return 0;
     case WM_SYSCOMMAND:
       if((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
@@ -69,11 +67,8 @@ namespace engine
     hwnd = ::CreateWindow(wc.lpszClassName, _T("Editor"), WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
 
     // Initialize Direct3D
-    fdx11& dx = fdx11::instance();
-    dx.create_device();
-    dx.create_debug_layer();
-    dx.create_swap_chain(hwnd);
-    dx.create_render_target();
+    fdx12& dx = fdx12::instance();
+    dx.create_pipeline(hwnd);
 
     // Show the window
     ::ShowWindow(hwnd, SW_SHOWDEFAULT);
@@ -82,9 +77,7 @@ namespace engine
 
   void fapplication::cleanup()
   {
-    fdx11& dx = fdx11::instance();
-    dx.cleanup_device();
-    dx.cleanup_render_target();
+    
     ::DestroyWindow(hwnd);
     ::UnregisterClass(wc.lpszClassName, wc.hInstance);
   }

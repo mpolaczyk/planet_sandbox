@@ -50,12 +50,11 @@
     <ClInclude Include="persistence\persistence_helper.h" />
     <ClInclude Include="assets\pixel_shader.h" />
     <ClInclude Include="assets\vertex_shader.h" />
-    <ClInclude Include="renderer\dx11_lib.h" />
+    <ClInclude Include="renderer\dx12_lib.h" />
     <ClInclude Include="renderer\renderer_base.h" />
     <ClInclude Include="math\vertex_data.h" />
     <ClInclude Include="third_party\WaveFrontReader.h" />
     <ClInclude Include="hittables\light.h" />
-    <ClInclude Include="renderers\aligned_structs.h" />
     <ClInclude Include="renderer\render_state.h" />
     <ClInclude Include="resources\ffbx.h" />
     <ClInclude Include="third_party\libdeflate.h" />
@@ -63,6 +62,14 @@
     <ClInclude Include="engine\string_tools.h" />
     <ClInclude Include="renderers\gpu_deferred_sync.h" />
     <ClInclude Include="renderers\gpu_forward_sync.h" />
+    <ClInclude Include="passes\deferred_lighting_pass.h" />
+    <ClInclude Include="passes\forward_pass.h" />
+    <ClInclude Include="passes\gbuffer_pass.h" />
+    <ClInclude Include="passes\gbuffer_type.h" />
+    <ClInclude Include="passes\pass_base.h" />
+    <ClInclude Include="renderer\aligned_structs.h" />
+    <ClInclude Include="renderer\scene_acceleration.h" />
+    <ClInclude Include="resources\assimp_logger.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -106,7 +113,7 @@
     <ClCompile Include="persistence\persistence_helper_inst.cpp" />
     <ClCompile Include="assets\pixel_shader.cpp" />
     <ClCompile Include="assets\vertex_shader.cpp" />
-    <ClCompile Include="renderer\dx11_lib.cpp" />
+    <ClCompile Include="renderer\dx12_lib.cpp" />
     <ClCompile Include="renderer\renderer_base.cpp" />
     <ClCompile Include="hittables\light.cpp" />
     <ClCompile Include="resources\ffbx.cpp" />
@@ -115,5 +122,10 @@
     <ClCompile Include="engine\string_tools.cpp" />
     <ClCompile Include="renderers\gpu_deferred_sync.cpp" />
     <ClCompile Include="renderers\gpu_forward_sync.cpp" />
+    <ClCompile Include="passes\deferred_lighting_pass.cpp" />
+    <ClCompile Include="passes\forward_pass.cpp" />
+    <ClCompile Include="passes\gbuffer_pass.cpp" />
+    <ClCompile Include="renderer\scene_acceleration.cpp" />
+    <ClCompile Include="resources\assimp_logger.cpp" />
   </ItemGroup>
 </Project>
