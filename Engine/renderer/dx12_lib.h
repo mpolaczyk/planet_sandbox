@@ -76,14 +76,16 @@ namespace engine
     void create_pipeline(HWND hwnd);
     void move_to_next_frame();
     void wait_for_gpu();
-    void resize_window(UINT lo_lparam, UINT hi_lparam);
+    void resize_window(UINT width, UINT height);
     void cleanup();
     
 
     static void get_hw_adapter(IDXGIFactory1* in_factory, IDXGIAdapter1** out_adapter, bool prefer_high_performance_adapter = false);
-    static constexpr UINT back_buffer_count = 2;
+    static constexpr UINT back_buffer_count = 3;
     
     // Pipeline
+    UINT width = 0;
+    UINT height = 0;
     ComPtr<ID3D12Device> device;
     ComPtr<ID3D12CommandQueue> command_queue;
     ComPtr<ID3D12RootSignature> root_signature;

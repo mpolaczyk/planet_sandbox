@@ -248,7 +248,6 @@ namespace engine
       {
         throw std::runtime_error("CreateFence failed.");
       }
-      fence_value[back_buffer_index]++;
 
       fence_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
       if (fence_event == nullptr)
@@ -267,12 +266,14 @@ namespace engine
   {
     UINT64 current_fence_value = fence_value[back_buffer_index];
     command_queue->Signal(fence.Get(), current_fence_value);
+    
     back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
 
     int completed_fence_value = fence->GetCompletedValue();
+
+    // Wait if all backbuffers are in use (currently displayed or rendered on GPU)
     if (completed_fence_value < fence_value[back_buffer_index])
     {
-      // GPU is still working with the previous fence value, frame is not done, let's wait for it
       if (FAILED(fence->SetEventOnCompletion(fence_value[back_buffer_index], fence_event)))
       {
         throw new std::runtime_error("Failed to set event on completion");
@@ -280,6 +281,7 @@ namespace engine
       WaitForSingleObjectEx(fence_event, INFINITE, FALSE);
     }
 
+    // Set things up for next frame
     fence_value[back_buffer_index] = current_fence_value + 1;
   }
 
@@ -297,22 +299,33 @@ namespace engine
     fence_value[back_buffer_index]++;
   }
 
-  void fdx12::resize_window(UINT lo_lparam, UINT hi_lparam)
+  void fdx12::resize_window(UINT in_width, UINT in_height)
   {
-    wait_for_gpu();
+    if(in_width == 0 || in_height == 0)
+    {
+      return;
+    }
+    if(in_width == width && in_height == height)
+    {
+      return;
+    }
 
+    wait_for_gpu();
+    
     // Release resources
     for (UINT n = 0; n < back_buffer_count; n++)
     {
       rtv[n].Reset();
+      fence_value[n] = fence_value[back_buffer_index];
     }
 
     // Resize
-    if(FAILED(swap_chain->ResizeBuffers(0, lo_lparam, hi_lparam, DXGI_FORMAT_UNKNOWN, 0)))
+    if(FAILED(swap_chain->ResizeBuffers(0, in_width, in_height, DXGI_FORMAT_UNKNOWN, 0)))
     {
       throw std::runtime_error("Failed to resize buffers");
     }
-
+    back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
+    
     // Create resources
     {
       D3D12_CPU_DESCRIPTOR_HANDLE handle = rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
@@ -326,6 +339,8 @@ namespace engine
         handle.ptr += rtv_descriptor_size;
       }
     }
+    width = in_width;
+    height = in_height;
   }
 
   void fdx12::cleanup()

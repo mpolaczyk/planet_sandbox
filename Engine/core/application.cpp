@@ -26,7 +26,7 @@ namespace engine
     case WM_SIZE:
       if(dx.device != NULL && wParam != SIZE_MINIMIZED)
       {
-        dx.resize_window((UINT)LOWORD(lParam), (UINT)HIWORD(lParam));
+        dx.resize_window(LOWORD(lParam), HIWORD(lParam));
       }
       return 0;
     case WM_SYSCOMMAND:

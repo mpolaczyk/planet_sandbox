@@ -170,7 +170,7 @@ namespace editor
   void feditor_app::present()
   {
     fdx12& dx = fdx12::instance();
-    
+
     dx.command_allocator[dx.back_buffer_index]->Reset();
     dx.command_list->Reset(dx.command_allocator[dx.back_buffer_index].Get(), nullptr);
     
