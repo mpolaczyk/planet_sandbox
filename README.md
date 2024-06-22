@@ -9,8 +9,12 @@ The goal is to achieve the same result but with DX12 and DXR.
 
 Features added so far:
 
-- Engine and editor separated to a DLL and EXE
+2.0 - Work in progress
+- DX12 support
+
+[1.0] - Initial release
 - DX11 support for simple scene rendering, forward renderer, deferred renderer, Phong lighting model
+- Engine and editor separated to a DLL and EXE
 - Custom RTTI and memory menegament for resources like scene objects, assets, shaders etc.
 - Persistent soft asset pointers
 - FBX scene import
@@ -27,7 +31,9 @@ Example scene: [Cozy Kitchen] imported from Blender.
 ![Example output](screen.jpg)
 
 ### Third party dependencies
-DirectX 11
+DirectX 12
+
+[DirectX 12 Agility SDK] 1.614
 
 [ocornut/imgui] v1.87
 
@@ -47,7 +53,8 @@ DirectX 11
 
 [//]: # (links)
 
-   [2.3]: <https://bitbucket.org/planet620/raytracer/commits/tag/release_2.3>
+   [1.0]: <https://bitbucket.org/planet620/planetsandbox/src/release_1.0/>
+   [2.3]: <https://bitbucket.org/planet620/raytracer/src/release_2.3/>
    [ocornut/imgui]: <https://github.com/ocornut/imgui>
    [nlohmann/json]: <https://github.com/nlohmann/json>
    [PIX for Windows]: <https://devblogs.microsoft.com/pix/download>
@@ -57,3 +64,4 @@ DirectX 11
    [assimp]: <https://github.com/assimp/assimp>
    [openfbx]: <https://github.com/nem0/OpenFBX>
    [Cozy Kitchen]: <https://www.blender.org/download/demo-files>
+   [DirectX 12 Agility SDK]: <https://www.nuget.org/packages/Microsoft.Direct3D.D3D12/1.614.0>
