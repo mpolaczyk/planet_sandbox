@@ -1,9 +1,6 @@
 #pragma once
 
 #include "d3d12.h"
-#include "d3dx12/d3dx12_root_signature.h"
-#include "d3dx12/d3dx12_core.h"
-#include "d3dx12/d3dx12_barriers.h"
 
 #include <dxgi1_6.h>
 
@@ -77,9 +74,9 @@ namespace engine
     //}
     
     void create_pipeline(HWND hwnd);
-    
     void move_to_next_frame();
     void wait_for_gpu();
+    void resize_window(UINT lo_lparam, UINT hi_lparam);
     void cleanup();
     
 
@@ -87,8 +84,6 @@ namespace engine
     static constexpr UINT back_buffer_count = 2;
     
     // Pipeline
-    CD3DX12_VIEWPORT viewport;
-    CD3DX12_RECT scissor_rect;
     ComPtr<ID3D12Device> device;
     ComPtr<ID3D12CommandQueue> command_queue;
     ComPtr<ID3D12RootSignature> root_signature;
@@ -97,14 +92,13 @@ namespace engine
     UINT rtv_descriptor_size = 0;
     ComPtr<ID3D12DescriptorHeap> srv_descriptor_heap;
     ComPtr<ID3D12Resource> rtv[back_buffer_count];
-    ComPtr<ID3D12CommandAllocator> command_allocators[back_buffer_count];
+    ComPtr<ID3D12CommandAllocator> command_allocator[back_buffer_count];
     ComPtr<ID3D12GraphicsCommandList> command_list;
-    ComPtr<ID3D12PipelineState> pipeline_state;
     
     // Synchronization
     UINT64 back_buffer_index = 0;
     HANDLE fence_event = nullptr;
     ComPtr<ID3D12Fence> fence;
-    UINT64 fence_values[back_buffer_count] = {};
+    UINT64 fence_value[back_buffer_count] = {};
   };
 }

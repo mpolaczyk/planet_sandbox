@@ -4,6 +4,9 @@
 
 #include <tchar.h>
 #include <DirectXColors.h>
+#include "d3dx12/d3dx12_root_signature.h"
+#include "d3dx12/d3dx12_barriers.h"
+#include "d3dx12/d3dx12_core.h"
 
 #include "imgui.h"
 #include "imgui_impl_win32.h"
@@ -167,16 +170,17 @@ namespace editor
   void feditor_app::present()
   {
     fdx12& dx = fdx12::instance();
-
-    dx.viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(app_state.window_conf.w), static_cast<float>(app_state.window_conf.h));
-    dx.scissor_rect = CD3DX12_RECT(0, 0, static_cast<LONG>(app_state.window_conf.w), static_cast<LONG>(app_state.window_conf.h));
     
-    dx.command_allocators[dx.back_buffer_index]->Reset();
+    dx.command_allocator[dx.back_buffer_index]->Reset();
+    dx.command_list->Reset(dx.command_allocator[dx.back_buffer_index].Get(), nullptr);
     
-    dx.command_list->Reset(dx.command_allocators[dx.back_buffer_index].Get(), nullptr);
     dx.command_list->SetGraphicsRootSignature(dx.root_signature.Get());
-    dx.command_list->RSSetViewports(1, &dx.viewport);
-    dx.command_list->RSSetScissorRects(1, &dx.scissor_rect);
+
+    CD3DX12_VIEWPORT viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(app_state.window_conf.w), static_cast<float>(app_state.window_conf.h));
+    dx.command_list->RSSetViewports(1, &viewport);
+    
+    CD3DX12_RECT scissor_rect = CD3DX12_RECT(0, 0, static_cast<LONG>(app_state.window_conf.w), static_cast<LONG>(app_state.window_conf.h));
+    dx.command_list->RSSetScissorRects(1, &scissor_rect);
 
     CD3DX12_RESOURCE_BARRIER resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(dx.rtv[dx.back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     dx.command_list->ResourceBarrier(1, &resource_barrier);
@@ -186,6 +190,7 @@ namespace editor
     dx.command_list->ClearRenderTargetView(rtv_handle, DirectX::Colors::LightSlateGray, 0, nullptr);
 
     dx.command_list->SetDescriptorHeaps(1, dx.srv_descriptor_heap.GetAddressOf());
+    
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dx.command_list.Get());
 
     resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(dx.rtv[dx.back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);

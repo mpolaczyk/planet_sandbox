@@ -2,6 +2,10 @@
 
 #include <winerror.h>
 #include <cassert>
+#include <dxgidebug.h>
+#pragma comment(lib, "dxguid.lib")
+#include "d3dx12/d3dx12_root_signature.h"
+#include "d3dx12/d3dx12_barriers.h"
 
 #include "renderer/dx12_lib.h"
 #include "engine/log.h"
@@ -145,6 +149,8 @@ namespace engine
       desc.Scaling = DXGI_SCALING_STRETCH;
       desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
       desc.SampleDesc.Count = 1;
+      desc.SampleDesc.Quality = 0;
+      desc.Stereo = FALSE;
 
       ComPtr<IDXGISwapChain1> swap_chain1;
       if(FAILED(factory->CreateSwapChainForHwnd(command_queue.Get(), hwnd, &desc, nullptr, nullptr, &swap_chain1)))
@@ -155,6 +161,8 @@ namespace engine
       {
         throw std::runtime_error("IDXGISwapChain3 query failed.");
       }
+      DX_RELEASE(swap_chain1);
+      DX_RELEASE(factory);
     }
 
     // Rtv descriptor heap, descriptor handle, buffer and rtv
@@ -185,7 +193,7 @@ namespace engine
     // Render target shader resource descriptor heap
     {
       D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-      desc.NumDescriptors = back_buffer_count;
+      desc.NumDescriptors = 1;
       desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
       desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
       if(FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&srv_descriptor_heap))))
@@ -198,12 +206,12 @@ namespace engine
     {
       for (UINT n = 0; n < back_buffer_count; n++)
       {
-        if (FAILED(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&command_allocators[n]))))
+        if (FAILED(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&command_allocator[n]))))
         {
           throw std::runtime_error("CreateCommandAllocator failed.");
         }
       }
-      if(FAILED(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, command_allocators[0].Get(), nullptr, IID_PPV_ARGS(&command_list))))
+      if(FAILED(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, command_allocator[0].Get(), nullptr, IID_PPV_ARGS(&command_list))))
       {
         throw std::runtime_error("CreateCommandList failed.");
       }
@@ -236,11 +244,11 @@ namespace engine
 
     // Create synchronization objects
     {
-      if(FAILED(device->CreateFence(fence_values[back_buffer_index], D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))))
+      if(FAILED(device->CreateFence(fence_value[back_buffer_index], D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))))
       {
         throw std::runtime_error("CreateFence failed.");
       }
-      fence_values[back_buffer_index]++;
+      fence_value[back_buffer_index]++;
 
       fence_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
       if (fence_event == nullptr)
@@ -253,51 +261,102 @@ namespace engine
     }
 
     wait_for_gpu();
-
-    DX_RELEASE(factory);
   }
 
   void fdx12::move_to_next_frame()
   {
-    UINT64 current_fence_value = fence_values[back_buffer_index];
+    UINT64 current_fence_value = fence_value[back_buffer_index];
     command_queue->Signal(fence.Get(), current_fence_value);
     back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
 
     int completed_fence_value = fence->GetCompletedValue();
-    if (completed_fence_value < fence_values[back_buffer_index])
+    if (completed_fence_value < fence_value[back_buffer_index])
     {
-      if (FAILED(fence->SetEventOnCompletion(fence_values[back_buffer_index], fence_event)))
+      // GPU is still working with the previous fence value, frame is not done, let's wait for it
+      if (FAILED(fence->SetEventOnCompletion(fence_value[back_buffer_index], fence_event)))
       {
         throw new std::runtime_error("Failed to set event on completion");
       }
       WaitForSingleObjectEx(fence_event, INFINITE, FALSE);
     }
 
-    fence_values[back_buffer_index] = current_fence_value + 1;
+    fence_value[back_buffer_index] = current_fence_value + 1;
   }
 
   void fdx12::wait_for_gpu()
   {
-    if(FAILED(command_queue->Signal(fence.Get(), fence_values[back_buffer_index])))
+    if(FAILED(command_queue->Signal(fence.Get(), fence_value[back_buffer_index])))
     {
       throw std::runtime_error("Signal failed.");
     }
-    if(FAILED(fence->SetEventOnCompletion(fence_values[back_buffer_index], fence_event)))
+    if(FAILED(fence->SetEventOnCompletion(fence_value[back_buffer_index], fence_event)))
     {
       throw std::runtime_error("SetEventOnCompletion failed.");
     }
     WaitForSingleObjectEx(fence_event, INFINITE, FALSE);
-    fence_values[back_buffer_index]++;
+    fence_value[back_buffer_index]++;
   }
-  
+
+  void fdx12::resize_window(UINT lo_lparam, UINT hi_lparam)
+  {
+    wait_for_gpu();
+
+    // Release resources
+    for (UINT n = 0; n < back_buffer_count; n++)
+    {
+      rtv[n].Reset();
+    }
+
+    // Resize
+    if(FAILED(swap_chain->ResizeBuffers(0, lo_lparam, hi_lparam, DXGI_FORMAT_UNKNOWN, 0)))
+    {
+      throw std::runtime_error("Failed to resize buffers");
+    }
+
+    // Create resources
+    {
+      D3D12_CPU_DESCRIPTOR_HANDLE handle = rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
+      for (UINT n = 0; n < back_buffer_count; n++)
+      {
+        if(FAILED(swap_chain->GetBuffer(n, IID_PPV_ARGS(&rtv[n]))))
+        {
+          throw std::runtime_error("RTV GetBuffer failed.");
+        }
+        device->CreateRenderTargetView(rtv[n].Get(), nullptr, handle);
+        handle.ptr += rtv_descriptor_size;
+      }
+    }
+  }
+
   void fdx12::cleanup()
   {
     wait_for_gpu();
 
-    DX_RELEASE(device);
+    for (UINT n = 0; n < back_buffer_count; n++)
+    {
+      rtv[n].Reset();
+      command_allocator[n].Reset();
+    }
     DX_RELEASE(swap_chain);
+    DX_RELEASE(command_queue);
+    DX_RELEASE(command_list);
+    DX_RELEASE(rtv_descriptor_heap);
+    DX_RELEASE(srv_descriptor_heap);
+    DX_RELEASE(fence);
+    DX_RELEASE(root_signature);
+    DX_RELEASE(device);
 
     CloseHandle(fence_event);
+
+#ifdef BUILD_DEBUG
+    ComPtr<IDXGIDebug1> debug;
+    if(FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug))))
+    {
+      throw std::runtime_error("D3D12GetDebugInterface query failed.");
+    }
+    debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY);
+    DX_RELEASE(debug);
+#endif
   }
 
 

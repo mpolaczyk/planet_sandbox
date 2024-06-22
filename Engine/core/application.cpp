@@ -24,13 +24,10 @@ namespace engine
     switch(msg)
     {
     case WM_SIZE:
-      //if(dx.device != NULL && wParam != SIZE_MINIMIZED)
-      //{
-        // FIX
-        //dx.cleanup_render_target();
-        //dx.swap_chain->ResizeBuffers(0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
-        //dx.create_render_target();
-      //}
+      if(dx.device != NULL && wParam != SIZE_MINIMIZED)
+      {
+        dx.resize_window((UINT)LOWORD(lParam), (UINT)HIWORD(lParam));
+      }
       return 0;
     case WM_SYSCOMMAND:
       if((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
@@ -77,7 +74,9 @@ namespace engine
 
   void fapplication::cleanup()
   {
-    
+    fdx12& dx = fdx12::instance();
+    dx.cleanup();
+
     ::DestroyWindow(hwnd);
     ::UnregisterClass(wc.lpszClassName, wc.hInstance);
   }
