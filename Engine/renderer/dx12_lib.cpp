@@ -80,8 +80,10 @@ namespace engine
     }
     debug1->SetEnableGPUBasedValidation(true);
     debug->EnableDebugLayer();
+    DX_RELEASE(debug);
+    DX_RELEASE(debug1);
 #endif
-
+    
     // Factory, hardware adapter and device
     ComPtr<IDXGIFactory4> factory;
     {
@@ -104,6 +106,7 @@ namespace engine
       {
         throw std::runtime_error("D3D12CreateDevice failed.");
       }
+      DX_RELEASE(adapter);
     }
 
     // Info queue
@@ -118,7 +121,7 @@ namespace engine
     }
 #endif
 
-    // Commad queue
+    // Command queue
     {
       D3D12_COMMAND_QUEUE_DESC desc = {};
       desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -229,7 +232,7 @@ namespace engine
 
     // TODO Create pipeline state (shaders, input, etc)
     
-    // TODO Create vertes buffer
+    // TODO Create vertex buffer
 
     // Create synchronization objects
     {
@@ -247,8 +250,30 @@ namespace engine
           throw std::runtime_error("CreateEvent failed.");
         }
       }
-      wait_for_gpu();
     }
+
+    wait_for_gpu();
+
+    DX_RELEASE(factory);
+  }
+
+  void fdx12::move_to_next_frame()
+  {
+    UINT64 current_fence_value = fence_values[back_buffer_index];
+    command_queue->Signal(fence.Get(), current_fence_value);
+    back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
+
+    int completed_fence_value = fence->GetCompletedValue();
+    if (completed_fence_value < fence_values[back_buffer_index])
+    {
+      if (FAILED(fence->SetEventOnCompletion(fence_values[back_buffer_index], fence_event)))
+      {
+        throw new std::runtime_error("Failed to set event on completion");
+      }
+      WaitForSingleObjectEx(fence_event, INFINITE, FALSE);
+    }
+
+    fence_values[back_buffer_index] = current_fence_value + 1;
   }
 
   void fdx12::wait_for_gpu()
@@ -267,7 +292,10 @@ namespace engine
   
   void fdx12::cleanup()
   {
+    wait_for_gpu();
 
+    DX_RELEASE(device);
+    DX_RELEASE(swap_chain);
 
     CloseHandle(fence_event);
   }

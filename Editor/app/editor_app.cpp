@@ -98,9 +98,6 @@ namespace editor
 
   void feditor_app::cleanup()
   {
-    fdx12& dx = fdx12::instance();
-    
-    
     app_state.save_window_state();
 
     ImGui_ImplDX12_Shutdown();
@@ -203,22 +200,6 @@ namespace editor
       throw new std::runtime_error("Failed to present");
     }
 
-    // Move to the next frame
-    
-    UINT64 current_fence_value = dx.fence_values[dx.back_buffer_index];
-    dx.command_queue->Signal(dx.fence.Get(), current_fence_value);
-    dx.back_buffer_index = dx.swap_chain->GetCurrentBackBufferIndex();
-
-    int completed_fence_value = dx.fence->GetCompletedValue();
-    if(completed_fence_value < dx.fence_values[dx.back_buffer_index])
-    {
-      if(FAILED(dx.fence->SetEventOnCompletion(dx.fence_values[dx.back_buffer_index], dx.fence_event)))
-      {
-        LOG_ERROR("Failed to set event on completion");
-      }
-      WaitForSingleObjectEx(dx.fence_event, INFINITE, FALSE);
-    }
-
-    dx.fence_values[dx.back_buffer_index] = current_fence_value + 1;
+    dx.move_to_next_frame();
   }
 }

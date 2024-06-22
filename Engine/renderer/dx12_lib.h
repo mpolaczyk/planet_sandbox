@@ -39,12 +39,6 @@ typedef HWND__* HWND;
 namespace engine
 {
   using Microsoft::WRL::ComPtr;
-
-  struct ENGINE_API fframe_context
-  {
-    ComPtr<ID3D12CommandAllocator>  command_allocator;
-    UINT64                          fence_value;
-  };
   
   class ENGINE_API fdx12 final
   {
@@ -84,6 +78,7 @@ namespace engine
     
     void create_pipeline(HWND hwnd);
     
+    void move_to_next_frame();
     void wait_for_gpu();
     void cleanup();
     
@@ -100,21 +95,16 @@ namespace engine
     ComPtr<IDXGISwapChain3> swap_chain;
     ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap;
     UINT rtv_descriptor_size = 0;
-    //D3D12_CPU_DESCRIPTOR_HANDLE rtv_descriptors[back_buffer_count];
     ComPtr<ID3D12DescriptorHeap> srv_descriptor_heap;
     ComPtr<ID3D12Resource> rtv[back_buffer_count];
     ComPtr<ID3D12CommandAllocator> command_allocators[back_buffer_count];
     ComPtr<ID3D12GraphicsCommandList> command_list;
     ComPtr<ID3D12PipelineState> pipeline_state;
-
     
     // Synchronization
     UINT64 back_buffer_index = 0;
     HANDLE fence_event = nullptr;
     ComPtr<ID3D12Fence> fence;
     UINT64 fence_values[back_buffer_count] = {};
-
-
-    bool swap_chain_occluded = false;
   };
 }
