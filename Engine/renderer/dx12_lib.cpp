@@ -24,7 +24,7 @@ namespace engine
     
     if (SUCCEEDED(in_factory->QueryInterface(IID_PPV_ARGS(&factory6))))
     {
-      for(UINT adapter_index = 0;
+      for(uint32_t adapter_index = 0;
           SUCCEEDED(factory6->EnumAdapterByGpuPreference(adapter_index,prefer_high_performance_adapter == true ? DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE : DXGI_GPU_PREFERENCE_UNSPECIFIED, IID_PPV_ARGS(&adapter1)));
           ++adapter_index)
       {
@@ -45,7 +45,7 @@ namespace engine
 
     if(adapter1.Get() == nullptr)
     {
-      for (UINT adapter_index = 0; SUCCEEDED(in_factory->EnumAdapters1(adapter_index, &adapter1)); ++adapter_index)
+      for (uint32_t adapter_index = 0; SUCCEEDED(in_factory->EnumAdapters1(adapter_index, &adapter1)); ++adapter_index)
       {
         DXGI_ADAPTER_DESC1 desc;
         adapter1->GetDesc1(&desc);
@@ -85,22 +85,30 @@ namespace engine
 #endif
     
     // Factory, hardware adapter and device
-    ComPtr<IDXGIFactory4> factory;
+    ComPtr<IDXGIFactory4> factory4;
     {
-      ComPtr<IDXGIAdapter1> adapter;
+      ComPtr<IDXGIAdapter1> adapter1;
 
-      UINT factory_flags = 0;
+      uint32_t factory_flags = 0;
 #if BUILD_DEBUG
       factory_flags |= DXGI_CREATE_FACTORY_DEBUG;
 #endif
-      THROW_IF_FAILED(CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(&factory)))
+      THROW_IF_FAILED(CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(&factory4)))
+      ComPtr<IDXGIFactory5> factory5;
+      if (SUCCEEDED(factory4.As(&factory5)))
+      {
+        if (FAILED(factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allow_screen_tearing, sizeof(allow_screen_tearing))))
+        {
+          allow_screen_tearing = false;
+        }
+      }
       
-      get_hw_adapter(factory.Get(), &adapter);
+      get_hw_adapter(factory4.Get(), &adapter1);
       DXGI_ADAPTER_DESC adapter_desc;
-      adapter->GetDesc(&adapter_desc);
+      adapter1->GetDesc(&adapter_desc);
       LOG_INFO("Graphics Device: {0}", fstring_tools::to_utf8(adapter_desc.Description));
-      THROW_IF_FAILED((D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&device))))
-      DX_RELEASE(adapter);
+      THROW_IF_FAILED((D3D12CreateDevice(adapter1.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&device))))
+      DX_RELEASE(adapter1);
     }
 
     // Info queue
@@ -128,6 +136,7 @@ namespace engine
     {
       DXGI_SWAP_CHAIN_DESC1 desc = {};
       desc.BufferCount = back_buffer_count;
+      desc.Flags = allow_screen_tearing ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
       desc.Width = 0;
       desc.Height = 0;
       desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -140,10 +149,11 @@ namespace engine
       desc.Stereo = FALSE;
 
       ComPtr<IDXGISwapChain1> swap_chain1;
-      THROW_IF_FAILED(factory->CreateSwapChainForHwnd(command_queue.Get(), hwnd, &desc, nullptr, nullptr, &swap_chain1))
+      THROW_IF_FAILED(factory4->CreateSwapChainForHwnd(command_queue.Get(), hwnd, &desc, nullptr, nullptr, &swap_chain1))
+      THROW_IF_FAILED(factory4->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER));
       THROW_IF_FAILED(swap_chain1.As(&swap_chain))
       DX_RELEASE(swap_chain1);
-      DX_RELEASE(factory);
+      DX_RELEASE(factory4);
     }
 
     // Rtv descriptor heap, descriptor handle, buffer and rtv
@@ -156,12 +166,12 @@ namespace engine
       
       rtv_descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
-      D3D12_CPU_DESCRIPTOR_HANDLE handle = rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
-      for (UINT n = 0; n < back_buffer_count; n++)
+      CD3DX12_CPU_DESCRIPTOR_HANDLE handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+      for (uint32_t n = 0; n < back_buffer_count; n++)
       {
         THROW_IF_FAILED(swap_chain->GetBuffer(n, IID_PPV_ARGS(&rtv[n])))
         device->CreateRenderTargetView(rtv[n].Get(), nullptr, handle);
-        handle.ptr += rtv_descriptor_size;
+        handle.Offset(rtv_descriptor_size);
       }
     }
 
@@ -176,7 +186,7 @@ namespace engine
 
     // Command allocators, and lists
     {
-      for (UINT n = 0; n < back_buffer_count; n++)
+      for (uint32_t n = 0; n < back_buffer_count; n++)
       {
         THROW_IF_FAILED(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&command_allocator[n])))
       }
@@ -209,39 +219,31 @@ namespace engine
         THROW_IF_FAILED(HRESULT_FROM_WIN32(GetLastError()))
       }
     }
-
-    wait_for_gpu();
+    
+    flush(last_fence_value);
   }
 
-  void fdx12::move_to_next_frame()
+  void fdx12::wait_for_fence_value(uint32_t value) const
   {
-    UINT64 current_fence_value = fence_value[back_buffer_index];
-    command_queue->Signal(fence.Get(), current_fence_value);
-    
-    back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
-
-    int completed_fence_value = fence->GetCompletedValue();
-
-    // Wait if all backbuffers are in use (currently displayed or rendered on GPU)
-    if (completed_fence_value < fence_value[back_buffer_index])
+    if (fence->GetCompletedValue() < value)
     {
-      THROW_IF_FAILED(fence->SetEventOnCompletion(fence_value[back_buffer_index], fence_event))
+      THROW_IF_FAILED(fence->SetEventOnCompletion(value, fence_event))
       WaitForSingleObjectEx(fence_event, INFINITE, FALSE);
     }
-
-    // Set things up for next frame
-    fence_value[back_buffer_index] = current_fence_value + 1;
   }
-
-  void fdx12::wait_for_gpu()
+  uint64_t fdx12::signal(uint64_t& out_value) const
   {
-    THROW_IF_FAILED(command_queue->Signal(fence.Get(), fence_value[back_buffer_index]))
-    THROW_IF_FAILED(fence->SetEventOnCompletion(fence_value[back_buffer_index], fence_event))
-    WaitForSingleObjectEx(fence_event, INFINITE, FALSE);
-    fence_value[back_buffer_index]++;
+    uint64_t value_for_signal = ++out_value;
+    THROW_IF_FAILED(command_queue->Signal(fence.Get(), value_for_signal));
+    return value_for_signal;
+  }
+  void fdx12::flush(uint64_t& out_fence_value) const
+  {
+    uint64_t value_for_signal = signal(out_fence_value);
+    wait_for_fence_value(value_for_signal);
   }
 
-  void fdx12::resize_window(UINT in_width, UINT in_height)
+  void fdx12::resize_window(uint32_t in_width, uint32_t in_height)
   {
     if(in_width == 0 || in_height == 0)
     {
@@ -252,10 +254,10 @@ namespace engine
       return;
     }
 
-    wait_for_gpu();
+    flush(last_fence_value);
     
     // Release resources
-    for (UINT n = 0; n < back_buffer_count; n++)
+    for (uint32_t n = 0; n < back_buffer_count; n++)
     {
       rtv[n].Reset();
       fence_value[n] = fence_value[back_buffer_index];
@@ -263,16 +265,17 @@ namespace engine
 
     // Resize
     THROW_IF_FAILED(swap_chain->ResizeBuffers(0, in_width, in_height, DXGI_FORMAT_UNKNOWN, 0))
+    
     back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
     
     // Create resources
     {
-      D3D12_CPU_DESCRIPTOR_HANDLE handle = rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
-      for (UINT n = 0; n < back_buffer_count; n++)
+      CD3DX12_CPU_DESCRIPTOR_HANDLE handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+      for (uint32_t n = 0; n < back_buffer_count; n++)
       {
         THROW_IF_FAILED(swap_chain->GetBuffer(n, IID_PPV_ARGS(&rtv[n])))
         device->CreateRenderTargetView(rtv[n].Get(), nullptr, handle);
-        handle.ptr += rtv_descriptor_size;
+        handle.Offset(rtv_descriptor_size);
       }
     }
     width = in_width;
@@ -281,9 +284,9 @@ namespace engine
 
   void fdx12::cleanup()
   {
-    wait_for_gpu();
+    flush(last_fence_value);
 
-    for (UINT n = 0; n < back_buffer_count; n++)
+    for (uint32_t n = 0; n < back_buffer_count; n++)
     {
       rtv[n].Reset();
       command_allocator[n].Reset();

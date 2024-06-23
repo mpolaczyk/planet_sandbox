@@ -74,33 +74,39 @@ namespace engine
     //}
     
     void create_pipeline(HWND hwnd);
-    void move_to_next_frame();
-    void wait_for_gpu();
-    void resize_window(UINT width, UINT height);
-    void cleanup();
     
+    void wait_for_fence_value(uint32_t value) const;
+    uint64_t signal(uint64_t& out_value) const;
+    void flush(uint64_t& out_fence_value) const;
+    
+    void resize_window(uint32_t width, uint32_t height);
+    void cleanup();
+
+    bool allow_screen_tearing = false;
+    bool allow_vsync = true;
 
     static void get_hw_adapter(IDXGIFactory1* in_factory, IDXGIAdapter1** out_adapter, bool prefer_high_performance_adapter = false);
-    static constexpr UINT back_buffer_count = 3;
+    static constexpr uint32_t back_buffer_count = 3;
     
     // Pipeline
-    UINT width = 0;
-    UINT height = 0;
+    uint32_t width = 0;
+    uint32_t height = 0;
     ComPtr<ID3D12Device> device;
     ComPtr<ID3D12CommandQueue> command_queue;
     ComPtr<ID3D12RootSignature> root_signature;
     ComPtr<IDXGISwapChain3> swap_chain;
     ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap;
-    UINT rtv_descriptor_size = 0;
+    uint32_t rtv_descriptor_size = 0;
     ComPtr<ID3D12DescriptorHeap> srv_descriptor_heap;
     ComPtr<ID3D12Resource> rtv[back_buffer_count];
     ComPtr<ID3D12CommandAllocator> command_allocator[back_buffer_count];
     ComPtr<ID3D12GraphicsCommandList> command_list;
     
     // Synchronization
-    UINT64 back_buffer_index = 0;
+    uint64_t back_buffer_index = 0;
     HANDLE fence_event = nullptr;
     ComPtr<ID3D12Fence> fence;
-    UINT64 fence_value[back_buffer_count] = {};
+    uint64_t fence_value[back_buffer_count] = {};
+    uint64_t last_fence_value = 0;
   };
 }

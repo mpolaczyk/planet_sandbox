@@ -197,11 +197,18 @@ namespace editor
     dx.command_list->ResourceBarrier(1, &resource_barrier);
 
     dx.command_list->Close();
-    dx.command_queue->ExecuteCommandLists(1, (ID3D12CommandList*const*)dx.command_list.GetAddressOf());
+    ID3D12CommandList* const command_lists[] = { dx.command_list.Get() };
+    dx.command_queue->ExecuteCommandLists(_countof(command_lists), command_lists);
 
+    dx.fence_value[dx.back_buffer_index] = dx.signal(dx.last_fence_value);
+    
     // Present
-    THROW_IF_FAILED(dx.swap_chain->Present(1, 0))
+    uint32_t present_sync = dx.allow_vsync ? 1 : 0;
+    uint32_t present_flags = dx.allow_screen_tearing && !dx.allow_vsync ? DXGI_PRESENT_ALLOW_TEARING : 0;
+    THROW_IF_FAILED(dx.swap_chain->Present(present_sync, present_flags))
 
-    dx.move_to_next_frame();
+    dx.back_buffer_index = dx.swap_chain->GetCurrentBackBufferIndex();
+
+    dx.wait_for_fence_value(dx.fence_value[dx.back_buffer_index]);
   }
 }
