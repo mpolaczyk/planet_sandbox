@@ -10,7 +10,6 @@
 #include "core/core.h"
 #include "math/vertex_data.h"
 
-
 struct ID3D12Device;
 struct ID3D12RootSignature;
 struct IDXGISwapChain3;
@@ -86,6 +85,19 @@ namespace engine
     bool allow_vsync = true;
 
     static void get_hw_adapter(IDXGIFactory1* in_factory, IDXGIAdapter1** out_adapter, bool prefer_high_performance_adapter = false);
+    static void enable_debug_layer();
+    static void create_factory(ComPtr<IDXGIFactory4>& out_factory4);
+    static void create_device(const ComPtr<IDXGIFactory4>& in_factory, ComPtr<ID3D12Device>& out_device);
+    static bool enable_screen_tearing(const ComPtr<IDXGIFactory4>& in_factory);
+    static void enable_info_queue(const ComPtr<ID3D12Device>& in_device);
+    static void create_command_queue(const ComPtr<ID3D12Device>& in_device, ComPtr<ID3D12CommandQueue>& out_command_queue);
+    static void create_swap_chain(HWND hwnd, const ComPtr<IDXGIFactory4>& in_factory, const ComPtr<ID3D12CommandQueue>& in_command_queue, int back_buffer_count, bool allow_screen_tearing, ComPtr<IDXGISwapChain3>& out_swap_chain);
+    static void create_render_target(const ComPtr<ID3D12Device>& in_device, const ComPtr<IDXGISwapChain3>& in_swap_chain, int back_bufffer_count, ComPtr<ID3D12DescriptorHeap>& out_rtv_descriptor_heap, uint32_t& out_rtv_descriptor_size, std::vector<ComPtr<ID3D12Resource>>& out_resource);
+    static void create_shader_resource(const ComPtr<ID3D12Device>& in_device, ComPtr<ID3D12DescriptorHeap>& out_srv_descriptor_heap);
+    static void create_command_list(const ComPtr<ID3D12Device>& in_device, int back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators);
+    static void create_root_signature(const ComPtr<ID3D12Device>& in_device, ComPtr<ID3D12RootSignature>& out_root_signature);
+    static void create_synchronisation(const ComPtr<ID3D12Device>& in_device, int back_buffer_count, int initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values);
+
     static constexpr uint32_t back_buffer_count = 3;
     
     // Pipeline
@@ -98,15 +110,15 @@ namespace engine
     ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap;
     uint32_t rtv_descriptor_size = 0;
     ComPtr<ID3D12DescriptorHeap> srv_descriptor_heap;
-    ComPtr<ID3D12Resource> rtv[back_buffer_count];
-    ComPtr<ID3D12CommandAllocator> command_allocator[back_buffer_count];
+    std::vector<ComPtr<ID3D12Resource>> rtv;
+    std::vector<ComPtr<ID3D12CommandAllocator>> command_allocator;
     ComPtr<ID3D12GraphicsCommandList> command_list;
     
     // Synchronization
     uint64_t back_buffer_index = 0;
     HANDLE fence_event = nullptr;
     ComPtr<ID3D12Fence> fence;
-    uint64_t fence_value[back_buffer_count] = {};
+    std::vector<uint64_t> fence_value = {};
     uint64_t last_fence_value = 0;
   };
 }
