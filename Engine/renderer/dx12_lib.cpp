@@ -1,9 +1,9 @@
 #include <winerror.h>
-#include <cassert>
 #include <dxgidebug.h>
+#include <dxgi1_6.h>
 #pragma comment(lib, "dxguid.lib")
+#include "d3d12.h"
 #include "d3dx12/d3dx12_root_signature.h"
-#include "d3dx12/d3dx12_barriers.h"
 
 #include "renderer/dx12_lib.h"
 
@@ -110,7 +110,7 @@ namespace engine
     }
     return success;
   }
-  
+
   void fdx12::enable_info_queue(const ComPtr<ID3D12Device>& in_device)
   {
     ID3D12InfoQueue* info_queue = nullptr;
@@ -123,11 +123,11 @@ namespace engine
 
   void fdx12::create_command_queue(const ComPtr<ID3D12Device>& in_device, ComPtr<ID3D12CommandQueue>& out_command_queue)
   {
-      D3D12_COMMAND_QUEUE_DESC desc = {};
-      desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-      desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-      desc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
-      THROW_IF_FAILED(in_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&out_command_queue)))
+    D3D12_COMMAND_QUEUE_DESC desc = {};
+    desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+    desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+    desc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
+    THROW_IF_FAILED(in_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&out_command_queue)))
   }
 
   void fdx12::create_swap_chain(HWND hwnd, const ComPtr<IDXGIFactory4>& in_factory, const ComPtr<ID3D12CommandQueue>& in_command_queue, int back_buffer_count, bool allow_screen_tearing, ComPtr<IDXGISwapChain3>& out_swap_chain)
@@ -152,7 +152,7 @@ namespace engine
     THROW_IF_FAILED(swap_chain1.As(&out_swap_chain))
   }
 
-  void fdx12::create_render_target(const ComPtr<ID3D12Device>& in_device, const ComPtr<IDXGISwapChain3>& in_swap_chain, int back_bufffer_count, ComPtr<ID3D12DescriptorHeap>& out_rtv_descriptor_heap, uint32_t& out_rtv_descriptor_size, std::vector<ComPtr<ID3D12Resource>>& out_resource)
+  void fdx12::create_render_target(const ComPtr<ID3D12Device>& in_device, const ComPtr<IDXGISwapChain3>& in_swap_chain, int back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_rtv_descriptor_heap, uint32_t& out_rtv_descriptor_size, std::vector<ComPtr<ID3D12Resource>>& out_resource)
   {
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = back_buffer_count;
@@ -202,13 +202,13 @@ namespace engine
     ComPtr<ID3DBlob> signature;
     ComPtr<ID3DBlob> error;
     THROW_IF_FAILED(D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error))
-    THROW_IF_FAILED(in_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&out_root_signature)))  
+    THROW_IF_FAILED(in_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&out_root_signature)))
   }
 
   void fdx12::create_synchronisation(const ComPtr<ID3D12Device>& in_device, int back_buffer_count, int initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values)
   {
     THROW_IF_FAILED(in_device->CreateFence(initial_fence_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&out_fence)))
-    
+
     out_fence_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
     if(out_fence_event == nullptr)
     {
@@ -221,118 +221,62 @@ namespace engine
       out_fence_values.push_back(initial_fence_value);
     }
   }
-  
-  void fdx12::create_pipeline(HWND hwnd)
+
+  void fdx12::report_live_objects()
   {
-#if BUILD_DEBUG
-    enable_debug_layer();
-#endif
-    ComPtr<IDXGIFactory4> factory;
-    create_factory(factory);
-    create_device(factory, device);
-    allow_screen_tearing = enable_screen_tearing(factory);
-#if BUILD_DEBUG
-    enable_info_queue(device);
-#endif
-    create_command_queue(device, command_queue);
-    create_swap_chain(hwnd, factory, command_queue, back_buffer_count, allow_screen_tearing, swap_chain);
-    create_render_target(device, swap_chain, back_buffer_count, rtv_descriptor_heap, rtv_descriptor_size, rtv);
-    create_shader_resource(device, srv_descriptor_heap);
-    create_command_list(device, back_buffer_count, command_list, command_allocator);
-    create_root_signature(device, root_signature);
-    create_synchronisation(device, back_buffer_count, last_fence_value, fence, fence_event, fence_value);
-    flush(last_fence_value);
-  }
-
-  void fdx12::wait_for_fence_value(uint32_t value) const
-  {
-    if(fence->GetCompletedValue() < value)
-    {
-      THROW_IF_FAILED(fence->SetEventOnCompletion(value, fence_event))
-      WaitForSingleObjectEx(fence_event, INFINITE, FALSE);
-    }
-  }
-
-  uint64_t fdx12::signal(uint64_t& out_value) const
-  {
-    uint64_t value_for_signal = ++out_value;
-    THROW_IF_FAILED(command_queue->Signal(fence.Get(), value_for_signal));
-    return value_for_signal;
-  }
-
-  void fdx12::flush(uint64_t& out_fence_value) const
-  {
-    uint64_t value_for_signal = signal(out_fence_value);
-    wait_for_fence_value(value_for_signal);
-  }
-
-  void fdx12::resize_window(uint32_t in_width, uint32_t in_height)
-  {
-    if(in_width == 0 || in_height == 0)
-    {
-      return;
-    }
-    if(in_width == width && in_height == height)
-    {
-      return;
-    }
-
-    flush(last_fence_value);
-
-    // Release resources
-    for(uint32_t n = 0; n < back_buffer_count; n++)
-    {
-      rtv[n].Reset();
-      fence_value[n] = fence_value[back_buffer_index];
-    }
-
-    // Resize
-    THROW_IF_FAILED(swap_chain->ResizeBuffers(0, in_width, in_height, DXGI_FORMAT_UNKNOWN, 0))
-
-    back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
-
-    // Create resources
-    {
-      CD3DX12_CPU_DESCRIPTOR_HANDLE handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
-      for(uint32_t n = 0; n < back_buffer_count; n++)
-      {
-        THROW_IF_FAILED(swap_chain->GetBuffer(n, IID_PPV_ARGS(&rtv[n])))
-        device->CreateRenderTargetView(rtv[n].Get(), nullptr, handle);
-        handle.Offset(rtv_descriptor_size);
-      }
-    }
-    width = in_width;
-    height = in_height;
-  }
-
-  void fdx12::cleanup()
-  {
-    flush(last_fence_value);
-
-    for(uint32_t n = 0; n < back_buffer_count; n++)
-    {
-      rtv[n].Reset();
-      command_allocator[n].Reset();
-    }
-    DX_RELEASE(swap_chain);
-    DX_RELEASE(command_queue);
-    DX_RELEASE(command_list);
-    DX_RELEASE(rtv_descriptor_heap);
-    DX_RELEASE(srv_descriptor_heap);
-    DX_RELEASE(fence);
-    DX_RELEASE(root_signature);
-    DX_RELEASE(device);
-
-    CloseHandle(fence_event);
-
-#ifdef BUILD_DEBUG
     ComPtr<IDXGIDebug1> debug;
     THROW_IF_FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))
     debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY);
     DX_RELEASE(debug);
-#endif
   }
-
+  
+  void fdx12::create_vertex_buffer(const std::vector<fvertex_data>& in_vertex_list, fstatic_mesh_render_state& out_render_state)
+  {
+    //UINT num_vertices = in_vertex_list.size();
+    //{
+    //  const CD3DX12_HEAP_PROPERTIES heap_props{D3D12_HEAP_TYPE_DEFAULT};
+    //  const auto resource_desc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(in_vertex_list));
+    //  THROW_IF_FAILED(device->CreateCommittedResource(&heap_props, D3D12_HEAP_FLAG_NONE, &resource_desc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&out_render_state.vertex_buffer)));
+    //}
+    //// create committed resource for cpu upload of vertex data 
+    //ComPtr<ID3D12Resource> vertex_upload_buffer;
+    //{
+    //  const CD3DX12_HEAP_PROPERTIES heap_props{D3D12_HEAP_TYPE_UPLOAD};
+    //  const auto resource_desc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(in_vertex_list));
+    //  THROW_IF_FAILED(device->CreateCommittedResource(&heap_props, D3D12_HEAP_FLAG_NONE, &resource_desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&vertex_upload_buffer)));
+    //}
+    //// copy array of vertex data to upload buffer 
+    //{
+    //  fvertex_data* mapped_vertex_data = nullptr;
+    //  CD3DX12_RANGE read_range(0, 0);
+    //  THROW_IF_FAILED(vertex_upload_buffer->Map(0, &read_range, reinterpret_cast<void**>(&mapped_vertex_data)));
+    //  memcpy(mapped_vertex_data, in_vertex_list.data(), sizeof(fvertex_data));
+    //  vertex_upload_buffer->Unmap(0, nullptr);
+    //}
+    //// reset command list and allocator  
+    //THROW_IF_FAILED(command_allocator[back_buffer_index]->Reset());
+    //THROW_IF_FAILED(command_list->Reset(command_allocator[back_buffer_index].Get(), nullptr));
+    //// copy upload buffer to vertex buffer 
+    //command_list->CopyResource(out_render_state.vertex_buffer.Get(), vertex_upload_buffer.Get());
+    //// transition vertex buffer to vertex buffer state 
+    //{
+    //  const auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(out_render_state.vertex_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+    //  command_list->ResourceBarrier(1, &barrier);
+    //}
+    //// close command list  
+    //THROW_IF_FAILED(command_list->Close());
+    //// submit command list to queue as array with single element 
+    //ID3D12CommandList* const command_lists[] = {command_list.Get()};
+    //command_queue->ExecuteCommandLists((UINT)std::size(command_lists), command_lists);
+    //// insert fence to detect when upload is complete
+//
+    //flush(last_fence_value);
+//
+    //// Create the vertex buffer view. 
+    //out_render_state.vertex_buffer_view.BufferLocation = out_render_state.vertex_buffer->GetGPUVirtualAddress();
+    //out_render_state.vertex_buffer_view.SizeInBytes = num_vertices * sizeof(fvertex_data);
+    //out_render_state.vertex_buffer_view.StrideInBytes = sizeof(fvertex_data);
+  }
 
   //void fdx12::create_input_layout(const D3D11_INPUT_ELEMENT_DESC* input_element_desc, uint32_t input_element_desc_size, const ComPtr<ID3D10Blob>& vertex_shader_blob, ComPtr<ID3D11InputLayout>& input_layout) const
   //{

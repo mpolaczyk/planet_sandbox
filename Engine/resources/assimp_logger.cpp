@@ -5,7 +5,7 @@
 namespace engine
 {
    
-  void fassimp_logger::initialize()
+  void fassimp_logger::init()
   {
     if(Assimp::DefaultLogger::isNullLogger())
     {

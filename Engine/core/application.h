@@ -1,10 +1,19 @@
 #pragma once
 
-#include "core/windows_minimal.h"
+#include <memory>
+#include <wrl/client.h>
+
 #include "core/core.h"
 
+struct ID3D12Device;
+
+using Microsoft::WRL::ComPtr;
+
 namespace engine
-{
+{  
+  struct fcommand_queue;
+  class fwindow;
+
   class ENGINE_API fapplication
   {
   public:
@@ -12,12 +21,14 @@ namespace engine
 
     virtual LRESULT wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     virtual void init(const char* project_name);
-    virtual void run() = 0; // Implement main loop here
+    virtual void run() = 0;
+    virtual fwindow spawn_window() = 0;
     virtual void cleanup();
 
   protected:
-    HWND hwnd;
-    WNDCLASSEX wc;
+    ComPtr<ID3D12Device> device;
+    std::shared_ptr<fcommand_queue> command_queue;
+    std::shared_ptr<fwindow> window;
   };
 
   fapplication* create_application();

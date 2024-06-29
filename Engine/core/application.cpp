@@ -1,12 +1,14 @@
-#include <tchar.h>
+#include <dxgi1_4.h>
 
 #include "core/application.h"
-
+#include "core/exceptions.h"
+#include "core/window.h"
 #include "engine/io.h"
 #include "object/object_registry.h"
 #include "engine/log.h"
 #include "math/random.h"
 #include "renderer/dx12_lib.h"
+#include "renderer/command_queue.h"
 #include "resources/assimp_logger.h"
 
 namespace engine
@@ -20,13 +22,13 @@ namespace engine
 
   LRESULT fapplication::wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   {
-    fdx12& dx = fdx12::instance();
     switch(msg)
     {
     case WM_SIZE:
-      if(dx.device != NULL && wParam != SIZE_MINIMIZED)
+      if(device != nullptr && wParam != SIZE_MINIMIZED)
       {
-        dx.resize_window(LOWORD(lParam), HIWORD(lParam));
+        command_queue->flush();
+        window->resize(device, LOWORD(lParam), HIWORD(lParam));
       }
       return 0;
     case WM_SYSCOMMAND:
@@ -44,7 +46,7 @@ namespace engine
   {
     fio::init(project_name);
     flogger::init();
-    fassimp_logger::initialize();
+    fassimp_logger::init();
     frandom_cache::init();
 
     REG.create_class_objects();
@@ -58,26 +60,33 @@ namespace engine
       LOG_CRITICAL("Invalid workspace directory!");
     }
 
-    // Window
-    wc = {sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("Editor"), NULL};
-    ::RegisterClassEx(&wc);
-    hwnd = ::CreateWindow(wc.lpszClassName, _T("Editor"), WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
+#if BUILD_DEBUG
+    fdx12::enable_debug_layer();
+#endif
+    ComPtr<IDXGIFactory4> factory;
+    fdx12::create_factory(factory);
+    fdx12::create_device(factory, device);
+#if BUILD_DEBUG
+    fdx12::enable_info_queue(device);
+#endif
 
-    // Initialize Direct3D
-    fdx12& dx = fdx12::instance();
-    dx.create_pipeline(hwnd);
-
-    // Show the window
-    ::ShowWindow(hwnd, SW_SHOWDEFAULT);
-    ::UpdateWindow(hwnd);
+    command_queue = std::make_shared<fcommand_queue>();
+    command_queue->init(device, window->back_buffer_count);
+    command_queue->flush();
+    
+    window = std::make_shared<fwindow>(spawn_window());
+    window->init(WndProc, device, factory, command_queue->get_command_queue());
+    window->show();
   }
 
   void fapplication::cleanup()
   {
-    fdx12& dx = fdx12::instance();
-    dx.cleanup();
-
-    ::DestroyWindow(hwnd);
-    ::UnregisterClass(wc.lpszClassName, wc.hInstance);
+    command_queue->flush();
+    command_queue->cleanup();
+    window->cleanup();
+    DX_RELEASE(device);
+#ifdef BUILD_DEBUG
+    fdx12::report_live_objects();
+#endif
   }
 }

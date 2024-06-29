@@ -115,6 +115,7 @@ copy $(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\bin\x64\D3D12C
     <ClInclude Include="assets\vertex_shader.h" />
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="core\concepts.h" />
+    <ClInclude Include="core\window.h" />
     <ClInclude Include="engine\string_tools.h" />
     <ClInclude Include="hittables\hittables.h" />
     <ClInclude Include="hittables\light.h" />
@@ -141,6 +142,7 @@ copy $(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\bin\x64\D3D12C
     <ClInclude Include="renderers\gpu_deferred_sync.h" />
     <ClInclude Include="renderers\gpu_forward_sync.h" />
     <ClInclude Include="renderer\aligned_structs.h" />
+    <ClInclude Include="renderer\command_queue.h" />
     <ClInclude Include="renderer\renderer_base.h" />
     <ClInclude Include="math\chunk_generator.h" />
     <ClInclude Include="renderer\dx12_lib.h" />
@@ -185,6 +187,7 @@ copy $(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\bin\x64\D3D12C
     <ClCompile Include="assets\pixel_shader.cpp" />
     <ClCompile Include="assets\vertex_shader.cpp" />
     <ClCompile Include="asset\asset.cpp" />
+    <ClCompile Include="core\window.cpp" />
     <ClCompile Include="engine\string_tools.cpp" />
     <ClCompile Include="hittables\hittables.cpp" />
     <ClCompile Include="hittables\light.cpp" />
@@ -209,6 +212,7 @@ copy $(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\bin\x64\D3D12C
     <ClCompile Include="persistence\persistence.cpp" />
     <ClCompile Include="renderers\gpu_deferred_sync.cpp" />
     <ClCompile Include="renderers\gpu_forward_sync.cpp" />
+    <ClCompile Include="renderer\command_queue.cpp" />
     <ClCompile Include="renderer\renderer_base.cpp" />
     <ClCompile Include="math\chunk_generator.cpp" />
     <ClCompile Include="renderer\dx12_lib.cpp" />

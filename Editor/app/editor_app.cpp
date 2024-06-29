@@ -14,6 +14,10 @@
 
 #include "app/editor_app.h"
 
+#include <dxgi.h>
+#include <dxgi1_4.h>
+
+#include "core/window.h"
 #include "hittables/scene.h"
 #include "renderer/dx12_lib.h"
 #include "renderer/renderer_base.h"
@@ -57,11 +61,9 @@ namespace editor
     ImGui::StyleColorsClassic();
 
     // Setup Platform/Renderer backends
-    ImGui_ImplWin32_Init(hwnd);
-    fdx12& dx = fdx12::instance();
-
-    ImGui_ImplDX12_Init(dx.device.Get(), dx.back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM, dx.srv_descriptor_heap.Get(),
-                        dx.srv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), dx.srv_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
+    ImGui_ImplWin32_Init(window->hwnd);
+    ImGui_ImplDX12_Init(device.Get(), window->back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM, window->srv_descriptor_heap.Get(),
+                        window->srv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), window->srv_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
 
     // Load persistent state
     app_state.load_window_state();
@@ -69,7 +71,8 @@ namespace editor
     app_state.load_assets();
     app_state.load_scene_state();
     app_state.scene_root->load_resources();
-    ::SetWindowPos(hwnd, NULL, app_state.window_conf.x, app_state.window_conf.y, app_state.window_conf.w, app_state.window_conf.h, NULL);
+    
+    ::SetWindowPos(window->hwnd, NULL, app_state.window_conf.x, app_state.window_conf.y, app_state.window_conf.w, app_state.window_conf.h, NULL);
 
     LOG_INFO("Loading done, starting the main loop");
   }
@@ -88,15 +91,20 @@ namespace editor
       handle_input(app_state);
       draw_scene();
       draw_ui();
-      present();
+      render();
 
       RECT rect;
-      ::GetWindowRect(hwnd, &rect);
+      ::GetWindowRect(window->hwnd, &rect);
       app_state.window_conf.x = rect.left;
       app_state.window_conf.y = rect.top;
       app_state.window_conf.w = rect.right - rect.left;
       app_state.window_conf.h = rect.bottom - rect.top;
     }
+  }
+
+  fwindow feditor_app::spawn_window()
+  {
+    return fwindow(L"Editor");    // TODO use editor window class
   }
 
   void feditor_app::cleanup()
@@ -167,48 +175,36 @@ namespace editor
     }
   }
 
-  void feditor_app::present()
+  void feditor_app::render()
   {
     fdx12& dx = fdx12::instance();
-
-    dx.command_allocator[dx.back_buffer_index]->Reset();
-    dx.command_list->Reset(dx.command_allocator[dx.back_buffer_index].Get(), nullptr);
     
-    dx.command_list->SetGraphicsRootSignature(dx.root_signature.Get());
+    auto command_list = command_queue->get_command_list(window->back_buffer_index);
+    
+    command_list->SetGraphicsRootSignature(window->root_signature.Get());
 
     CD3DX12_VIEWPORT viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(app_state.window_conf.w), static_cast<float>(app_state.window_conf.h));
-    dx.command_list->RSSetViewports(1, &viewport);
+    command_list->RSSetViewports(1, &viewport);
     
     CD3DX12_RECT scissor_rect = CD3DX12_RECT(0, 0, static_cast<LONG>(app_state.window_conf.w), static_cast<LONG>(app_state.window_conf.h));
-    dx.command_list->RSSetScissorRects(1, &scissor_rect);
+    command_list->RSSetScissorRects(1, &scissor_rect);
 
-    CD3DX12_RESOURCE_BARRIER resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(dx.rtv[dx.back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-    dx.command_list->ResourceBarrier(1, &resource_barrier);
+    CD3DX12_RESOURCE_BARRIER resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(window->rtv[window->back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    command_list->ResourceBarrier(1, &resource_barrier);
 
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(dx.rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), dx.back_buffer_index, dx.rtv_descriptor_size);
-    dx.command_list->OMSetRenderTargets(1, &rtv_handle, FALSE, nullptr);
-    dx.command_list->ClearRenderTargetView(rtv_handle, DirectX::Colors::LightSlateGray, 0, nullptr);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(window->rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), window->back_buffer_index, window->rtv_descriptor_size);
+    command_list->OMSetRenderTargets(1, &rtv_handle, FALSE, nullptr);
+    command_list->ClearRenderTargetView(rtv_handle, DirectX::Colors::LightSlateGray, 0, nullptr);
 
-    dx.command_list->SetDescriptorHeaps(1, dx.srv_descriptor_heap.GetAddressOf());
+    command_list->SetDescriptorHeaps(1, window->srv_descriptor_heap.GetAddressOf());
     
-    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dx.command_list.Get());
+    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), command_list.Get());
 
-    resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(dx.rtv[dx.back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-    dx.command_list->ResourceBarrier(1, &resource_barrier);
-
-    dx.command_list->Close();
-    ID3D12CommandList* const command_lists[] = { dx.command_list.Get() };
-    dx.command_queue->ExecuteCommandLists(_countof(command_lists), command_lists);
-
-    dx.fence_value[dx.back_buffer_index] = dx.signal(dx.last_fence_value);
+    resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(window->rtv[window->back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+    command_list->ResourceBarrier(1, &resource_barrier);
     
-    // Present
-    uint32_t present_sync = dx.allow_vsync ? 1 : 0;
-    uint32_t present_flags = dx.allow_screen_tearing && !dx.allow_vsync ? DXGI_PRESENT_ALLOW_TEARING : 0;
-    THROW_IF_FAILED(dx.swap_chain->Present(present_sync, present_flags))
-
-    dx.back_buffer_index = dx.swap_chain->GetCurrentBackBufferIndex();
-
-    dx.wait_for_fence_value(dx.fence_value[dx.back_buffer_index]);
+    uint64_t fence_value = command_queue->execute_command_list(window->back_buffer_index);
+    window->present();
+    command_queue->wait_for_fence_value(fence_value);
   }
 }
