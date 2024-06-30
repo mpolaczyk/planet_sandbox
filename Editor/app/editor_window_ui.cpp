@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "core/windows_minimal.h"
 
-#include "draw_edit_panel.h"
+#include "ui/draw_edit_panel.h"
 #include "imgui.h"
 
 #include "math/chunk_generator.h"

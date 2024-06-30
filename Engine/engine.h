@@ -31,6 +31,8 @@
 #include "assets/material.h"
 #include "assets/mesh.h"
 #include "assets/texture.h"
+#include "assets/pixel_shader.h"
+#include "assets/vertex_shader.h"
 #include "resources/resources_io.h"
 #include "persistence/persistence_helper.h"
 
