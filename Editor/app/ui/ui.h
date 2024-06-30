@@ -9,15 +9,6 @@ namespace engine
 
 namespace editor
 {
-  struct fwindow_config
-  {
-  public:
-    int x = 100;
-    int y = 100;
-    int w = 1920;
-    int h = 1080;
-  };
-
   /*
    *_model - for each panel/window
    - not part of app state
@@ -26,7 +17,7 @@ namespace editor
    - not needed to be shared between multiple panels/widgets
    - not persistent
   */
-
+  
   struct fhittable_selection_combo_model
   {
     int selected_id = 0;

@@ -22,7 +22,7 @@ namespace engine
 
     if(SUCCEEDED(in_factory->QueryInterface(IID_PPV_ARGS(&factory6))))
     {
-      for(uint32_t adapter_index = 0;
+      for(int adapter_index = 0;
           SUCCEEDED(factory6->EnumAdapterByGpuPreference(adapter_index,prefer_high_performance_adapter == true ? DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE : DXGI_GPU_PREFERENCE_UNSPECIFIED, IID_PPV_ARGS(&adapter1)));
           ++adapter_index)
       {
@@ -43,7 +43,7 @@ namespace engine
 
     if(adapter1.Get() == nullptr)
     {
-      for(uint32_t adapter_index = 0; SUCCEEDED(in_factory->EnumAdapters1(adapter_index, &adapter1)); ++adapter_index)
+      for(int adapter_index = 0; SUCCEEDED(in_factory->EnumAdapters1(adapter_index, &adapter1)); ++adapter_index)
       {
         DXGI_ADAPTER_DESC1 desc;
         adapter1->GetDesc1(&desc);
@@ -130,7 +130,7 @@ namespace engine
     THROW_IF_FAILED(in_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&out_command_queue)))
   }
 
-  void fdx12::create_swap_chain(HWND hwnd, const ComPtr<IDXGIFactory4>& in_factory, const ComPtr<ID3D12CommandQueue>& in_command_queue, int back_buffer_count, bool allow_screen_tearing, ComPtr<IDXGISwapChain3>& out_swap_chain)
+  void fdx12::create_swap_chain(HWND hwnd, const ComPtr<IDXGIFactory4>& in_factory, const ComPtr<ID3D12CommandQueue>& in_command_queue, int back_buffer_count, bool allow_screen_tearing, ComPtr<IDXGISwapChain4>& out_swap_chain)
   {
     DXGI_SWAP_CHAIN_DESC1 desc = {};
     desc.BufferCount = back_buffer_count;
@@ -152,7 +152,7 @@ namespace engine
     THROW_IF_FAILED(swap_chain1.As(&out_swap_chain))
   }
 
-  void fdx12::create_render_target(const ComPtr<ID3D12Device>& in_device, const ComPtr<IDXGISwapChain3>& in_swap_chain, int back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_rtv_descriptor_heap, uint32_t& out_rtv_descriptor_size, std::vector<ComPtr<ID3D12Resource>>& out_resource)
+  void fdx12::create_render_target(const ComPtr<ID3D12Device>& in_device, const ComPtr<IDXGISwapChain4>& in_swap_chain, int back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_rtv_descriptor_heap, uint32_t& out_rtv_descriptor_size, std::vector<ComPtr<ID3D12Resource>>& out_resource)
   {
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = back_buffer_count;
@@ -164,7 +164,7 @@ namespace engine
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE handle(out_rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
     out_resource.reserve(back_buffer_count);
-    for(uint32_t n = 0; n < back_buffer_count; n++)
+    for(int n = 0; n < back_buffer_count; n++)
     {
       out_resource.push_back(nullptr);
       THROW_IF_FAILED(in_swap_chain->GetBuffer(n, IID_PPV_ARGS(&out_resource[n])))
@@ -185,7 +185,7 @@ namespace engine
   void fdx12::create_command_list(const ComPtr<ID3D12Device>& in_device, int back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators)
   {
     out_command_allocators.reserve(back_buffer_count);
-    for(uint32_t n = 0; n < back_buffer_count; n++)
+    for(int n = 0; n < back_buffer_count; n++)
     {
       out_command_allocators.push_back(nullptr);
       THROW_IF_FAILED(in_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&out_command_allocators[n])))
@@ -205,7 +205,7 @@ namespace engine
     THROW_IF_FAILED(in_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&out_root_signature)))
   }
 
-  void fdx12::create_synchronisation(const ComPtr<ID3D12Device>& in_device, int back_buffer_count, int initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values)
+  void fdx12::create_synchronisation(const ComPtr<ID3D12Device>& in_device, int back_buffer_count, uint64_t initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values)
   {
     THROW_IF_FAILED(in_device->CreateFence(initial_fence_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&out_fence)))
 
@@ -216,7 +216,7 @@ namespace engine
     }
 
     out_fence_values.reserve(back_buffer_count);
-    for(uint32_t n = 0; n < back_buffer_count; n++)
+    for(int n = 0; n < back_buffer_count; n++)
     {
       out_fence_values.push_back(initial_fence_value);
     }

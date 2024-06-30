@@ -15,7 +15,7 @@ namespace engine
 
   void fcommand_queue::cleanup()
   {
-    for(uint32_t n = 0; n < back_buffer_count; n++)
+    for(int n = 0; n < back_buffer_count; n++)
     {
       command_allocator[n].Reset();
     }

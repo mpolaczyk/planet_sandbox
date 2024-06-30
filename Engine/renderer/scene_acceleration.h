@@ -27,7 +27,7 @@ namespace engine
     // Order of materials added to the material_map
     std::vector<const amaterial*> materials;
     uint32_t next_material_id = 0;
-    int32_t max_materials = 0;
+    uint32_t max_materials = 0;
 
     // All static meshes on the scene
     std::vector<const hstatic_mesh*> meshes;
@@ -35,6 +35,6 @@ namespace engine
     // All lights on the scene
     std::vector<const hlight*> lights;
     uint32_t next_light_id = 0;
-    int32_t max_lights = 0;
+    uint32_t max_lights = 0;
   };
 }

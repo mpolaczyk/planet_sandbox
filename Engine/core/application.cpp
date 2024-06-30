@@ -1,4 +1,4 @@
-#include <dxgi1_4.h>
+#include <dxgi1_5.h>
 
 #include "core/application.h"
 #include "core/exceptions.h"
@@ -11,13 +11,14 @@
 #include "renderer/command_queue.h"
 #include "resources/assimp_logger.h"
 
+
 namespace engine
 {
-  fapplication* fapplication::app_weak_ptr = nullptr;
+  fapplication* fapplication::instance = nullptr;
 
   LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   {
-    return fapplication::app_weak_ptr->wnd_proc(hWnd, msg, wParam, lParam);
+    return fapplication::instance->wnd_proc(hWnd, msg, wParam, lParam);
   }
 
   LRESULT fapplication::wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -73,10 +74,39 @@ namespace engine
     command_queue = std::make_shared<fcommand_queue>();
     command_queue->init(device, window->back_buffer_count);
     command_queue->flush();
-    
-    window = std::make_shared<fwindow>(spawn_window());
+
     window->init(WndProc, device, factory, command_queue->get_command_queue());
     window->show();
+
+    LOG_INFO("Loading done, starting the main loop");
+  }
+
+  void fapplication::main_loop()
+  {
+    while(is_running)
+    {
+      MSG msg;
+      while(::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+      {
+        if(msg.message == WM_CLOSE)
+        {
+          is_running = false;
+        }
+        ::TranslateMessage(&msg);
+        ::DispatchMessage(&msg);
+      }
+      if(!is_running) break;
+
+      ComPtr<ID3D12GraphicsCommandList> command_list = command_queue->get_command_list(window->get_back_buffer_index());
+      update();
+      window->update();
+      draw();
+      window->draw();
+      window->render(command_list);
+      uint64_t fence_value = command_queue->execute_command_list(window->get_back_buffer_index());
+      window->present();
+      command_queue->wait_for_fence_value(fence_value);
+    }
   }
 
   void fapplication::cleanup()

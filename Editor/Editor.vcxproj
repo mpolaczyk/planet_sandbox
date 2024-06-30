@@ -129,10 +129,9 @@
     <None Include="..\Workspace\Content\Shaders\gpu_renderer_common.hlsl" />
     <None Include="..\Workspace\Content\Shaders\gpu_renderer_ps.hlsl" />
     <None Include="..\Workspace\Content\Shaders\gpu_renderer_vs.hlsl" />
-    <ClCompile Include="app\app.cpp" />
     <ClCompile Include="app\editor_app.cpp" />
+    <ClCompile Include="app\editor_window.cpp" />
     <ClCompile Include="app\json\app_persistence.cpp" />
-    <ClCompile Include="app\json\ui_persistence.cpp" />
     <ClCompile Include="app\ui\app_ui.cpp" />
     <ClCompile Include="app\ui\draw_edit_panel.cpp" />
     <ClCompile Include="app\ui\ui_helper.cpp" />
@@ -171,9 +170,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="app\app.h" />
     <ClInclude Include="app\editor_app.h" />
-    <ClInclude Include="app\json\ui_persistence.h" />
+    <ClInclude Include="app\editor_window.h" />
     <ClInclude Include="app\ui\draw_edit_panel.h" />
     <ClInclude Include="app\ui\ui_helper.h" />
     <ClInclude Include="app\ui\ui.h" />

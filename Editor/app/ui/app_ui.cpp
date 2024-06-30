@@ -6,13 +6,14 @@
 #include "draw_edit_panel.h"
 #include "imgui.h"
 
-#include "app/app.h"
 #include "math/chunk_generator.h"
 #include "renderer/renderer_base.h"
 #include "math/camera.h"
 
 #include "core/core.h"
 #include "engine.h"
+#include "app/editor_app.h"
+#include "app/editor_window.h"
 #include "engine/string_tools.h"
 #include "hittables/hittables.h"
 #include "hittables/static_mesh.h"
@@ -21,38 +22,38 @@
 
 namespace editor
 {
-  void draw_editor_window(feditor_window_model& model, fapp_instance& state)
+  void feditor_window::draw_editor_window(feditor_window_model& model)
   {
     ImGui::Begin("EDITOR", nullptr);
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "STATS");
     ImGui::Separator();
-    ImGui::Text("Application %.3f ms/frame", state.app_delta_time_ms);
-    ImGui::Text("Renderer %.3f ms/frame", state.render_delta_time_ms);
-    draw_hotkeys_panel(state);
-    draw_materials_panel(model.rp_model, state);
+    ImGui::Text("Application %.3f ms/frame", get_editor_app()->app_delta_time_ms);
+    ImGui::Text("Renderer %.3f ms/frame", get_editor_app()->render_delta_time_ms);
+    draw_hotkeys_panel();
+    draw_materials_panel(model.rp_model);
     draw_object_registry_panel();
     ImGui::End();
   }
-  void draw_hotkeys_panel(fapp_instance& state)
+  void feditor_window::draw_hotkeys_panel()
   {
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "HOTKEYS");
     ImGui::Separator();
     ImGui::Text("LMB (on image) - select object");
-    ImGui::Text("Scroll - Camera speed (current speed: %f)", state.scene_root->camera_config.move_speed);
+    ImGui::Text("Scroll - Camera speed (current speed: %f)", get_editor_app()->scene_root->camera_config.move_speed);
     ImGui::Text("QWEASD - Camera movement");
     ImGui::Text("RMB - Camera rotation");
     ImGui::Text("ZXC + mouse - Object movement");
   }
-  void draw_materials_panel(fmaterials_panel_model& model, fapp_instance& state)
+  void feditor_window::draw_materials_panel(fmaterials_panel_model& model)
   {
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "MATERIALS");
     ImGui::Separator();
     if (ImGui::MenuItem("SAVE ALL"))
     {
-      state.save_materials();
+      feditor_app::save_materials();
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SAVED!");
     }
     ImGui::Separator();
@@ -64,7 +65,7 @@ namespace editor
       const_cast<amaterial*>(model.m_model.selected_object)->accept(vdraw_edit_panel());
     }
   }
-  void draw_object_registry_panel()
+  void feditor_window::draw_object_registry_panel()
   {
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "OBJECT REGISTRY");
@@ -86,12 +87,12 @@ namespace editor
     }
   }
 
-  void draw_scene_window(fscene_window_model& model, fapp_instance& state)
+  void feditor_window::draw_scene_window(fscene_window_model& model)
   {
     ImGui::Begin("SCENE", nullptr);
     if (ImGui::MenuItem("SAVE SCENE"))
     {
-      state.save_scene_state();
+      static_cast<feditor_app*>(fapplication::instance)->save_scene_state();
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SAVED!");
     }
     ImGui::Separator();
@@ -99,17 +100,17 @@ namespace editor
     if (ImGui::MenuItem("LOAD FROM FBX"))
     {
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Importing!");
-      engine::ffbx::load_fbx_assimp(model.import_file, state.scene_root);
+      engine::ffbx::load_fbx_assimp(model.import_file, get_editor_app()->scene_root);
     }
     fui_helper::input_text("FBX file", model.import_file);
 
-    draw_renderer_panel(model.rp_model, state);
-    draw_camera_panel(state);
-    draw_scene_panel(state);
-    draw_scene_objects_panel(model.op_model, state);
+    draw_renderer_panel(model.rp_model);
+    draw_camera_panel();
+    draw_scene_panel();
+    draw_scene_objects_panel(model.op_model);
     ImGui::End();
   }
-  void draw_renderer_panel(frenderer_panel_model& model, fapp_instance& state)
+  void feditor_window::draw_renderer_panel(frenderer_panel_model& model)
   {
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "RENDERER");
@@ -123,7 +124,7 @@ namespace editor
     });
 
     // Renderer class selection combo box
-    rrenderer_base* renderer = state.scene_root->renderer;
+    rrenderer_base* renderer = get_editor_app()->scene_root->renderer;
     const oclass_object* renderer_class = renderer->get_class();
     fui_helper::draw_selection_combo<oclass_object>(model.r_model, "Renderer class", [=](const oclass_object* obj) -> bool { return true; }, renderer_class);
     if(model.r_model.selected_object != renderer_class)
@@ -134,23 +135,23 @@ namespace editor
       {
         renderer = REG.spawn_from_class<rrenderer_base>(model.r_model.selected_object);
       }
-      state.scene_root->renderer = renderer;
+      get_editor_app()->scene_root->renderer = renderer;
     }
     ImGui::Separator();
 
     // Renderer edit panel
-    state.scene_root->renderer->accept(vdraw_edit_panel());
+    get_editor_app()->scene_root->renderer->accept(vdraw_edit_panel());
     ImGui::Separator();
 
-    if (state.scene_root->renderer == nullptr)
+    if (get_editor_app()->scene_root->renderer == nullptr)
     {
       ImGui::SameLine();
       ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.5f, 1.0f), "No renderer active");
     }
   }
-  void draw_camera_panel(fapp_instance& state)
+  void feditor_window::draw_camera_panel()
   {
-    fcamera& camera = state.scene_root->camera_config;
+    fcamera& camera = get_editor_app()->scene_root->camera_config;
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
     ImGui::Separator();
@@ -161,41 +162,41 @@ namespace editor
     ImGui::InputFloat("Yaw", &camera.yaw, 0.1f, 1.0f, "%.2f");
     ImGui::Separator();
   }
-  void draw_scene_panel(fapp_instance& state)
+  void feditor_window::draw_scene_panel()
   {
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SCENE");
     ImGui::Separator();
 
-    DirectX::XMFLOAT4& temp = state.scene_root->ambient_light_color;
+    DirectX::XMFLOAT4& temp = get_editor_app()->scene_root->ambient_light_color;
     float temp_arr[4] = { temp.x,temp.y,temp.z,temp.w };
     ImGui::ColorEdit4("Ambient", temp_arr, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
     temp = { temp_arr[0],temp_arr[1],temp_arr[2],temp_arr[3] };
 
-    DirectX::XMVECTORF32& temp1 = state.scene_root->clear_color;
+    DirectX::XMVECTORF32& temp1 = get_editor_app()->scene_root->clear_color;
     float temp_arr1[4] = { temp1.f[0],temp1.f[1],temp1.f[2],temp1.f[3] };
     ImGui::ColorEdit4("Clear", temp_arr1, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
     temp1 = { temp_arr1[0],temp_arr1[1],temp_arr1[2],temp_arr1[3] };
   }
-  void draw_scene_objects_panel(fobjects_panel_model& model, fapp_instance& state)
+  void feditor_window::draw_scene_objects_panel(fobjects_panel_model& model)
   {
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SCENE OBJECTS");
     ImGui::Separator();
 
-    draw_new_object_panel(model.nop_model, state);
+    draw_new_object_panel(model.nop_model);
     ImGui::SameLine();
-    draw_delete_object_panel(model.d_model, state);
+    draw_delete_object_panel(model.d_model);
 
     fui_helper::input_text("Name filter", model.object_name_filter);
 
-    int num_objects = (int)state.scene_root->objects.size();
+    int num_objects = (int)get_editor_app()->scene_root->objects.size();
     if (ImGui::BeginListBox("Objects", ImVec2(-FLT_MIN, fmath::min1(20, (float)num_objects + 1) * ImGui::GetTextLineHeightWithSpacing())))
     {
       for (int n = 0; n < num_objects; n++)
       {
-        hhittable_base* obj = state.scene_root->objects[n];
-        if (state.selected_object != nullptr && obj == state.selected_object)
+        hhittable_base* obj = get_editor_app()->scene_root->objects[n];
+        if (selected_object != nullptr && obj == selected_object)
         {
           model.m_model.selected_id = -1;
           model.selected_id = n;
@@ -213,7 +214,7 @@ namespace editor
           model.m_model.reset();
           model.selected_id = n;
           model.d_model.selected_id = n;
-          state.selected_object = nullptr;
+          selected_object = nullptr;
         }
       }
       ImGui::EndListBox();
@@ -225,8 +226,8 @@ namespace editor
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SELECTED OBJECT");
       ImGui::Separator();
 
-      hhittable_base* selected_obj = state.scene_root->objects[model.selected_id];
-      state.selected_object = selected_obj;
+      hhittable_base* selected_obj = get_editor_app()->scene_root->objects[model.selected_id];
+      selected_object = selected_obj;
 
       selected_obj->accept(vdraw_edit_panel());
     }
@@ -254,25 +255,25 @@ namespace editor
     }
   }
 
-  void draw_output_window(foutput_window_model& model, fapp_instance& state)
+  void feditor_window::draw_output_window(foutput_window_model& model)
   {
-    if (state.scene_root->renderer->get_output_texture())
-    {
-      ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-      ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
-      const rrenderer_base* renderer = state.scene_root->renderer;
-      ImVec2 size = ImVec2(renderer->output_width * model.zoom, renderer->output_height * model.zoom);
-      ImGui::Image((ImTextureID)renderer->get_output_srv().Get(), size, ImVec2(0, 0), ImVec2(1, 1));
-
-      state.output_window_is_clicked = ImGui::IsItemClicked(ImGuiMouseButton_Left);
-      state.output_window_is_hovered = ImGui::IsItemHovered();
-      get_color_under_cursor(state.output_window_cursor_color[0], state.output_window_cursor_color[1], state.output_window_cursor_color[2]);
-
-      ImGui::End();
-    }
+    //if (state.scene_root->renderer->get_output_texture())
+    //{
+    //  ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+    //  ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
+    //  const rrenderer_base* renderer = state.scene_root->renderer;
+    //  ImVec2 size = ImVec2(renderer->output_width * model.zoom, renderer->output_height * model.zoom);
+    //  ImGui::Image((ImTextureID)renderer->get_output_srv().Get(), size, ImVec2(0, 0), ImVec2(1, 1));
+    //
+    //  state.output_window_is_clicked = ImGui::IsItemClicked(ImGuiMouseButton_Left);
+    //  state.output_window_is_hovered = ImGui::IsItemHovered();
+    //  get_color_under_cursor(state.output_window_cursor_color[0], state.output_window_cursor_color[1], state.output_window_cursor_color[2]);
+    //
+    //  ImGui::End();
+    //}
   }
 
-  void draw_new_object_panel(fnew_object_panel_model& model, fapp_instance& state)
+  void feditor_window::draw_new_object_panel(fnew_object_panel_model& model)
   {
     if (ImGui::Button("Add new"))
     {
@@ -289,7 +290,7 @@ namespace editor
 
       if (ImGui::Button("Add", ImVec2(120, 0)) && model.c_model.selected_object != nullptr)
       {
-        state.scene_root->add(REG.spawn_from_class<hhittable_base>(model.c_model.selected_object));
+        get_editor_app()->scene_root->add(REG.spawn_from_class<hhittable_base>(model.c_model.selected_object));
         ImGui::CloseCurrentPopup();
       }
       ImGui::SetItemDefaultFocus();
@@ -302,7 +303,7 @@ namespace editor
     }
   }
 
-  void draw_delete_object_panel(fdelete_object_panel_model& model, fapp_instance& state)
+  void feditor_window::draw_delete_object_panel(fdelete_object_panel_model& model)
   {
     if (ImGui::Button("Delete selected"))
     {
@@ -312,7 +313,7 @@ namespace editor
 
     if (ImGui::BeginPopupModal("Delete object?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {
-      hhittable_base* selected_obj = state.scene_root->objects[model.selected_id];
+      hhittable_base* selected_obj = get_editor_app()->scene_root->objects[model.selected_id];
       if (selected_obj != nullptr)
       {
         ImGui::BeginDisabled(true);
@@ -321,7 +322,7 @@ namespace editor
 
         if (ImGui::Button("Delete", ImVec2(120, 0)))
         {
-          state.scene_root->remove(model.selected_id);
+          get_editor_app()->scene_root->remove(model.selected_id);
           ImGui::CloseCurrentPopup();
         }
         ImGui::SetItemDefaultFocus();
@@ -334,6 +335,157 @@ namespace editor
       ImGui::EndPopup();
     }
   }
+void feditor_window::update_default_spawn_position()
+  {
+    fcamera& camera = get_editor_app()->scene_root->camera_config;
 
+    // Find center of the scene, new objects scan be spawned there
+    fvec3 look_from = camera.location;
+    fvec3 look_dir = fmath::to_vec3(camera.forward);
+    float dist_to_focus = 50.0f;
+
+    // Ray to the look at position to find non colliding spawn point
+    fray center_of_scene_ray(look_from, look_dir);
+    fhit_record center_of_scene_hit;
+    // TODO FIX
+    //if (state.scene_root->hit(center_of_scene_ray, 2.0f*dist_to_focus, center_of_scene_hit))
+    //{
+    //  state.center_of_scene = center_of_scene_hit.p;
+    //  state.distance_to_center_of_scene = fmath::length(center_of_scene_hit.p - look_from);
+    //}
+    //else
+    //{
+    //  state.center_of_scene = look_from - look_dir * dist_to_focus;
+    //  state.distance_to_center_of_scene = dist_to_focus;
+    //}
+  }
+
+  void feditor_window::handle_input()
+  {
+    // Object selection
+    // Hover the mouse over the input window and click to select.
+    // User will hold LMB until the next frame is rendered. Renderer will output the object id texture.
+    // Color under cursor will determine which hittable is hitted on the scene.
+    // I do it this way because imported mesh data is bonkers. Mesh instances are merged together across the whole scene.
+    // All of them have origin 0,0,0.
+    // Line-box hit detection will not work properly. Line-mesh - no time for that.
+    if (output_window_is_hovered && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+    {
+      get_editor_app()->scene_root->renderer->show_object_id = 1;
+
+      std::vector<hstatic_mesh*> meshes = REG.get_all_by_type<hstatic_mesh>();
+      bool found = false;
+      for (hstatic_mesh* m : meshes)
+      {
+        XMUINT4 hash = fmath::uint32_to_colori(m->get_hash());
+
+        if (output_window_cursor_color[0] == hash.x
+          && output_window_cursor_color[1] == hash.y
+          && output_window_cursor_color[2] == hash.z)
+        {
+          selected_object = m;
+          found = true;
+          break;
+        }
+      }
+      if (!found)
+      {
+        selected_object = nullptr;
+      }
+    }
+    else
+    {
+      get_editor_app()->scene_root->renderer->show_object_id = 0;
+    }
+
+    ImGuiIO& io = ImGui::GetIO();
+    fcamera& camera = get_editor_app()->scene_root->camera_config;
+
+    if (!io.WantCaptureKeyboard)
+    {
+      io.KeyRepeatDelay = 0.0f;
+      io.KeyRepeatRate = 1.0f / 60.0f;
+    }
+    else
+    {
+      io.KeyRepeatDelay = 0.25f;
+      io.KeyRepeatRate = 0.05f;
+    }
+
+    // Handle hotkeys
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
+    {
+      fapplication::instance->is_running = false;
+    }
+
+    // Handle camera movement
+    if (!io.WantCaptureKeyboard)
+    {
+      camera.move_speed += ImGui::GetIO().MouseWheel;
+      camera.input_up = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_E)) ? 1 : 0;
+      camera.input_down = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Q)) ? 1 : 0;
+      camera.input_forward = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_W)) ? 1 : 0;
+      camera.input_backward = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S)) ? 1 : 0;
+      camera.input_left = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_A)) ? 1 : 0;
+      camera.input_right = ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D)) ? 1 : 0;
+    }
+    else
+    {
+      camera.input_up = 0;
+      camera.input_down = 0;
+      camera.input_forward = 0;
+      camera.input_backward = 0;
+      camera.input_left = 0;
+      camera.input_right = 0;
+    }
+
+    // Handle camera rotation
+    if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
+    {
+      ImVec2 mouse_delta = ImGui::GetIO().MouseDelta;
+      camera.input_yaw = static_cast<int>(mouse_delta.x);
+      camera.input_pitch = static_cast<int>(mouse_delta.y);
+    }
+    else
+    {
+      camera.input_yaw = 0;
+      camera.input_pitch = 0;
+    }
+
+    // Object movement
+    if (!io.WantCaptureKeyboard)
+    {
+      fvec3 object_movement_axis = fvec3(0.0f, 0.0f, 0.0f);
+      float mouse_delta = 0.0f;
+      if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Z)))
+      {
+        object_movement_axis = fvec3(1.0f, 0.0f, 0.0f);
+        mouse_delta = ImGui::GetIO().MouseDelta.x;
+        if (camera.forward.z < 0.0f)
+        {
+          mouse_delta = -mouse_delta;
+        }
+      }
+      else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_C)))
+      {
+        object_movement_axis = fvec3(0.0f, -1.0f, 0.0f);
+        mouse_delta = ImGui::GetIO().MouseDelta.y;
+      }
+      else if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_X)))
+      {
+        object_movement_axis = fvec3(0.0f, 0.0f, 1.0f);
+        mouse_delta = ImGui::GetIO().MouseDelta.x;
+        if (camera.forward.x > 0.0f)
+        {
+          mouse_delta = -mouse_delta;
+        }
+      }
+      if (!fmath::is_zero(object_movement_axis) && mouse_delta != 0.0f && selected_object != nullptr)
+      {
+        fvec3 selected_origin = selected_object->origin;
+        selected_object->origin = selected_origin + object_movement_axis * mouse_delta;
+      }
+    }
+  }
 
 }

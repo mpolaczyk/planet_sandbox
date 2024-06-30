@@ -9,7 +9,7 @@
 
 struct ID3D12Device;
 struct ID3D12RootSignature;
-struct IDXGISwapChain3;
+struct IDXGISwapChain4;
 struct ID3D12RenderTargetView;
 struct IDXGIFactory1;
 struct IDXGIFactory4;
@@ -75,12 +75,12 @@ namespace engine
     static bool enable_screen_tearing(const ComPtr<IDXGIFactory4>& in_factory);
     static void enable_info_queue(const ComPtr<ID3D12Device>& in_device);
     static void create_command_queue(const ComPtr<ID3D12Device>& in_device, ComPtr<ID3D12CommandQueue>& out_command_queue);
-    static void create_swap_chain(HWND hwnd, const ComPtr<IDXGIFactory4>& in_factory, const ComPtr<ID3D12CommandQueue>& in_command_queue, int back_buffer_count, bool allow_screen_tearing, ComPtr<IDXGISwapChain3>& out_swap_chain);
-    static void create_render_target(const ComPtr<ID3D12Device>& in_device, const ComPtr<IDXGISwapChain3>& in_swap_chain, int back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_rtv_descriptor_heap, uint32_t& out_rtv_descriptor_size, std::vector<ComPtr<ID3D12Resource>>& out_resource);
+    static void create_swap_chain(HWND hwnd, const ComPtr<IDXGIFactory4>& in_factory, const ComPtr<ID3D12CommandQueue>& in_command_queue, int back_buffer_count, bool allow_screen_tearing, ComPtr<IDXGISwapChain4>& out_swap_chain);
+    static void create_render_target(const ComPtr<ID3D12Device>& in_device, const ComPtr<IDXGISwapChain4>& in_swap_chain, int back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_rtv_descriptor_heap, uint32_t& out_rtv_descriptor_size, std::vector<ComPtr<ID3D12Resource>>& out_resource);
     static void create_shader_resource(const ComPtr<ID3D12Device>& in_device, ComPtr<ID3D12DescriptorHeap>& out_srv_descriptor_heap);
     static void create_command_list(const ComPtr<ID3D12Device>& in_device, int back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators);
     static void create_root_signature(const ComPtr<ID3D12Device>& in_device, ComPtr<ID3D12RootSignature>& out_root_signature);
-    static void create_synchronisation(const ComPtr<ID3D12Device>& in_device, int back_buffer_count, int initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values);
+    static void create_synchronisation(const ComPtr<ID3D12Device>& in_device, int back_buffer_count, uint64_t initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values);
     static void report_live_objects();
     
     void create_vertex_buffer(const std::vector<fvertex_data>& in_vertex_list, fstatic_mesh_render_state& out_render_state);

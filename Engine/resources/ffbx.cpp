@@ -220,7 +220,7 @@ namespace engine
   void print_hierarhy(aiNode* node, int level)
   {
     LOG_INFO("level:{0} children:{1}", level, node->mNumChildren);
-    for(int i = 0; i < node->mNumChildren; i++)
+    for(unsigned int i = 0; i < node->mNumChildren; i++)
     {
       aiNode* c = node->mChildren[i];
       LOG_INFO("level:{0} meshes:{1}", c->mName.C_Str(), c->mNumMeshes);
@@ -396,8 +396,8 @@ namespace engine
 
       // Scene object - spawn it
       {
-        float scale = 0.01f;
-        float flip_z = -1;
+        double scale = 0.01;
+        double flip_z = -1;
         hstatic_mesh* object = hstatic_mesh::spawn();
         std::ostringstream display_name;
         display_name << mesh_name << i;

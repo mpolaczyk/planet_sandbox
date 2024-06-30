@@ -1,20 +1,25 @@
 #pragma once
 
+#include "core/application.h"
 #include "core/windows_minimal.h"
 #include "core/exceptions.h"
+#include "core/window.h"
 #include "engine/log.h"
 
 using namespace engine;
 
 namespace engine
 {
-  extern fapplication* create_application(); // Provide this in the user application
+  // Provide this in the user application
+  extern fapplication* create_application();
+  extern fwindow* create_window();
 }
 
 int main(int argc, char** argv)
 {
   fapplication* app = create_application();
-  fapplication::app_weak_ptr = app;
+  fapplication::instance = app;
+  app->window.reset(create_window());
 
   if(!IsDebuggerPresent())
   {
@@ -30,7 +35,7 @@ int main(int argc, char** argv)
     else
     {
       app->init(argv[1]);
-      app->run();
+      app->main_loop();
       app->cleanup();
     }
   }
@@ -41,7 +46,7 @@ int main(int argc, char** argv)
     __debugbreak();
     system("pause");
   }
-  fapplication::app_weak_ptr = nullptr;
+  fapplication::instance = nullptr;
   delete app;
   return 0;
 }

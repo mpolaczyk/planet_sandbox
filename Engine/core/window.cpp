@@ -2,8 +2,13 @@
 #include <dxgi1_6.h>
 #include "d3d12.h"
 #include "d3dx12/d3dx12_root_signature.h"
+#include "d3dx12/d3dx12_core.h"
+#include "d3dx12/d3dx12_barriers.h"
 
 #include "core/window.h"
+
+#include <DirectXColors.h>
+
 #include "core/exceptions.h"
 #include "renderer/dx12_lib.h"
 
@@ -22,9 +27,9 @@ namespace engine
 
   void fwindow::init(WNDPROC wnd_proc, const ComPtr<ID3D12Device>& in_device, const ComPtr<IDXGIFactory4>& in_factory, const ComPtr<ID3D12CommandQueue>& in_command_queue)
   {
-    wc = {sizeof(WNDCLASSEX), CS_CLASSDC, wnd_proc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, name, NULL};
+    wc = {sizeof(WNDCLASSEX), CS_CLASSDC, wnd_proc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, get_name(), NULL};
     ::RegisterClassEx(&wc);
-    hwnd = ::CreateWindow(wc.lpszClassName, name, WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
+    hwnd = ::CreateWindow(wc.lpszClassName, get_name(), WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
     
     screen_tearing = fdx12::enable_screen_tearing(in_factory);
     fdx12::create_swap_chain(hwnd, in_factory, in_command_queue, back_buffer_count, screen_tearing, swap_chain);
@@ -33,6 +38,29 @@ namespace engine
     fdx12::create_root_signature(in_device, root_signature);
   }
 
+  void fwindow::render(const ComPtr<ID3D12GraphicsCommandList>& command_list)
+  {
+    command_list->SetGraphicsRootSignature(root_signature.Get());
+
+    CD3DX12_VIEWPORT viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height));
+    command_list->RSSetViewports(1, &viewport);
+
+    CD3DX12_RECT scissor_rect = CD3DX12_RECT(0, 0, static_cast<LONG>(width), static_cast<LONG>(height));
+    command_list->RSSetScissorRects(1, &scissor_rect);
+
+    CD3DX12_RESOURCE_BARRIER resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    command_list->ResourceBarrier(1, &resource_barrier);
+
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, rtv_descriptor_size);
+    command_list->OMSetRenderTargets(1, &rtv_handle, FALSE, nullptr);
+    command_list->ClearRenderTargetView(rtv_handle, DirectX::Colors::LightSlateGray, 0, nullptr);
+
+    command_list->SetDescriptorHeaps(1, srv_descriptor_heap.GetAddressOf());
+
+    resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+    command_list->ResourceBarrier(1, &resource_barrier);
+  }
+  
   void fwindow::present()
   {
     uint32_t present_sync = vsync ? 1 : 0;

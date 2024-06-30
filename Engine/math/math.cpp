@@ -334,9 +334,9 @@ namespace engine
 
   DirectX::XMFLOAT4 fmath::uint32_to_colorf(uint32_t value)
   {
-    float af = static_cast<float>(static_cast<uint8_t>(value)) / 255.0;
-    float bf = static_cast<float>(static_cast<uint8_t>(value >> 8)) / 255.0;
-    float cf = static_cast<float>(static_cast<uint8_t>(value >> 16)) / 255.0;
+    float af = static_cast<float>(static_cast<uint8_t>(value)) / 255.0f;
+    float bf = static_cast<float>(static_cast<uint8_t>(value >> 8)) / 255.0f;
+    float cf = static_cast<float>(static_cast<uint8_t>(value >> 16)) / 255.0f;
     return DirectX::XMFLOAT4(af, bf, cf, 1.0f);
   }
 
