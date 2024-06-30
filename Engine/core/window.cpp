@@ -3,7 +3,6 @@
 #include "d3d12.h"
 #include "d3dx12/d3dx12_root_signature.h"
 #include "d3dx12/d3dx12_core.h"
-#include "d3dx12/d3dx12_barriers.h"
 
 #include "core/window.h"
 
@@ -48,8 +47,7 @@ namespace engine
     CD3DX12_RECT scissor_rect = CD3DX12_RECT(0, 0, static_cast<LONG>(width), static_cast<LONG>(height));
     command_list->RSSetScissorRects(1, &scissor_rect);
 
-    CD3DX12_RESOURCE_BARRIER resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-    command_list->ResourceBarrier(1, &resource_barrier);
+    fdx12::add_resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, rtv_descriptor_size);
     command_list->OMSetRenderTargets(1, &rtv_handle, FALSE, nullptr);
@@ -57,8 +55,7 @@ namespace engine
 
     command_list->SetDescriptorHeaps(1, srv_descriptor_heap.GetAddressOf());
 
-    resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-    command_list->ResourceBarrier(1, &resource_barrier);
+    fdx12::add_resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
   }
   
   void fwindow::present()

@@ -4,6 +4,7 @@
 #pragma comment(lib, "dxguid.lib")
 #include "d3d12.h"
 #include "d3dx12/d3dx12_root_signature.h"
+#include "d3dx12/d3dx12_barriers.h"
 
 #include "renderer/dx12_lib.h"
 
@@ -228,6 +229,12 @@ namespace engine
     THROW_IF_FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))
     debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY);
     DX_RELEASE(debug);
+  }
+
+  void fdx12::add_resource_barrier(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after)
+  {
+    CD3DX12_RESOURCE_BARRIER resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource.Get(), state_before, state_after);
+    command_list->ResourceBarrier(1, &resource_barrier);
   }
   
   void fdx12::create_vertex_buffer(const std::vector<fvertex_data>& in_vertex_list, fstatic_mesh_render_state& out_render_state)

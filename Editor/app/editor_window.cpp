@@ -4,10 +4,9 @@
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx12.h"
 
-#include "d3dx12/d3dx12_barriers.h"
-
 #include "editor_window.h"
 #include "app/editor_app.h"
+#include "renderer/dx12_lib.h"
 
 namespace editor
 {
@@ -62,13 +61,11 @@ namespace editor
   {
     fwindow::render(command_list);
 
-    CD3DX12_RESOURCE_BARRIER resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-    command_list->ResourceBarrier(1, &resource_barrier);
+    fdx12::add_resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), command_list.Get());
 
-    resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-    command_list->ResourceBarrier(1, &resource_barrier);
+    fdx12::add_resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
   }
 
 

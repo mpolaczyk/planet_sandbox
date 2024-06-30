@@ -82,6 +82,8 @@ namespace engine
     static void create_root_signature(const ComPtr<ID3D12Device>& in_device, ComPtr<ID3D12RootSignature>& out_root_signature);
     static void create_synchronisation(const ComPtr<ID3D12Device>& in_device, int back_buffer_count, uint64_t initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values);
     static void report_live_objects();
+    static void add_resource_barrier(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after);
+
     
     void create_vertex_buffer(const std::vector<fvertex_data>& in_vertex_list, fstatic_mesh_render_state& out_render_state);
   };
