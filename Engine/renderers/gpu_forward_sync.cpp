@@ -47,7 +47,7 @@ namespace engine
     forward_pass.init();
   }
 
-  void rgpu_forward_sync::render_frame_impl()
+  void rgpu_forward_sync::render_frame_impl(const ComPtr<ID3D12GraphicsCommandList>& command_list)
   {
     forward_pass.copy_input(&vertex_shader_asset.get()->render_state, &pixel_shader_asset.get()->render_state,
       &scene_acceleration, scene, selected_object,
@@ -56,6 +56,6 @@ namespace engine
     
     forward_pass.show_object_id = show_object_id;
     
-    forward_pass.draw();
+    forward_pass.draw(command_list);
   };
 }

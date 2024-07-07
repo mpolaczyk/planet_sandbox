@@ -8,8 +8,11 @@
 
 #include <DirectXColors.h>
 
+#include "core/application.h"
 #include "core/exceptions.h"
 #include "renderer/dx12_lib.h"
+#include "renderer/renderer_base.h"
+#include "hittables/scene.h"
 
 namespace engine
 {
@@ -34,28 +37,34 @@ namespace engine
     fdx12::create_swap_chain(hwnd, in_factory, in_command_queue, back_buffer_count, screen_tearing, swap_chain);
     fdx12::create_render_target(in_device, swap_chain, back_buffer_count, rtv_descriptor_heap, rtv_descriptor_size, rtv);
     fdx12::create_shader_resource(in_device, srv_descriptor_heap);
-    fdx12::create_root_signature(in_device, root_signature);
   }
 
   void fwindow::render(const ComPtr<ID3D12GraphicsCommandList>& command_list)
   {
-    command_list->SetGraphicsRootSignature(root_signature.Get());
+    fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, rtv_descriptor_size);
+    command_list->OMSetRenderTargets(1, &rtv_handle, FALSE, nullptr);
+    command_list->ClearRenderTargetView(rtv_handle, DirectX::Colors::LightSlateGray, 0, nullptr);
+    
     CD3DX12_VIEWPORT viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height));
     command_list->RSSetViewports(1, &viewport);
 
     CD3DX12_RECT scissor_rect = CD3DX12_RECT(0, 0, static_cast<LONG>(width), static_cast<LONG>(height));
     command_list->RSSetScissorRects(1, &scissor_rect);
-
-    fdx12::add_resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, rtv_descriptor_size);
-    command_list->OMSetRenderTargets(1, &rtv_handle, FALSE, nullptr);
-    command_list->ClearRenderTargetView(rtv_handle, DirectX::Colors::LightSlateGray, 0, nullptr);
-
+    
     command_list->SetDescriptorHeaps(1, srv_descriptor_heap.GetAddressOf());
 
-    fdx12::add_resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+    if(hscene* scene_root = fapplication::instance->scene_root)
+    {
+      if(rrenderer_base* renderer = scene_root->renderer)
+      {
+        renderer->render_frame(command_list, scene_root, nullptr);  // TODO selected object
+      }
+    }
+
+    fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+
   }
   
   void fwindow::present()
@@ -106,7 +115,6 @@ namespace engine
     DX_RELEASE(swap_chain);
     DX_RELEASE(rtv_descriptor_heap);
     DX_RELEASE(srv_descriptor_heap);
-    DX_RELEASE(root_signature);
 
     ::DestroyWindow(hwnd);
     ::UnregisterClass(wc.lpszClassName, wc.hInstance);

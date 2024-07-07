@@ -1,9 +1,9 @@
-﻿#include <fstream>
+#include <fstream>
 #include <sstream>
 
-#include <d3d11_1.h>
+
 #include <d3dcompiler.h>
-#include "renderer/dx11_lib.h"
+#include "renderer/dx12_lib.h"
 
 #include "nlohmann/json.hpp"
 
@@ -43,12 +43,11 @@ namespace engine
     instance->accept(vdeserialize_object(j));
     instance->set_display_name(name);
 
-    if(!load_hlsl(instance->shader_file_name, instance->entrypoint, instance->target, instance->render_state.shader_blob))
+    if(!load_hlsl(instance->shader_file_name, instance->entrypoint, instance->target, instance->render_state.blob))
     {
-      DX_RELEASE(instance->render_state.shader_blob)
+      DX_RELEASE(instance->render_state.blob)
       return false;
     }
-    fdx11::instance().create_vertex_shader(instance->render_state.shader_blob, instance->render_state.shader);
     return true;
   }
 }

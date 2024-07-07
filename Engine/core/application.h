@@ -4,13 +4,15 @@
 #include <wrl/client.h>
 
 #include "core/core.h"
+#include "math/camera.h"
 
-struct ID3D12Device;
+struct ID3D12Device2;
 
 using Microsoft::WRL::ComPtr;
 
 namespace engine
-{  
+{
+  class hscene;
   struct fcommand_queue;
   class fwindow;
 
@@ -21,17 +23,21 @@ namespace engine
 
     virtual LRESULT wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     virtual void init(const char* project_name);
-    virtual void update() = 0;
-    virtual void draw() = 0;
+    virtual void update();
     virtual void cleanup();
 
     void main_loop();
+
+    float app_delta_time_ms = 0.0f;
+    float render_delta_time_ms = 0.0f;
+    
+    hscene* scene_root = nullptr;
+    fcamera camera;
     
     bool is_running = true;
     std::shared_ptr<fwindow> window;
     
-  protected:
-    ComPtr<ID3D12Device> device;
+    ComPtr<ID3D12Device2> device;
     std::shared_ptr<fcommand_queue> command_queue;
   };
 

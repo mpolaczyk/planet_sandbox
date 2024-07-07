@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <wrl/client.h>
 
@@ -8,6 +8,8 @@
 #include "asset/soft_asset_ptr.h"
 #include "assets/pixel_shader.h"
 #include "assets/vertex_shader.h"
+
+struct ID3D12GraphicsCommandList;
 
 namespace engine
 {
@@ -26,18 +28,18 @@ namespace engine
     fsoft_asset_ptr<apixel_shader> pixel_shader_asset;
     fsoft_asset_ptr<avertex_shader> vertex_shader_asset;
 
-    virtual ComPtr<ID3D11Texture2D> get_output_texture() const override { return forward_pass.output_texture; };
-    virtual ComPtr<ID3D11Texture2D> get_output_depth() const override { return forward_pass.output_depth; };
-    virtual ComPtr<ID3D11ShaderResourceView> get_output_srv() const override { return forward_pass.output_srv; };
-    virtual ComPtr<ID3D11RenderTargetView> get_output_rtv() const override { return forward_pass.output_rtv; };
-    virtual ComPtr<ID3D11DepthStencilView> get_output_dsv() const override { return forward_pass.output_dsv; };
+    //virtual ComPtr<ID3D11Texture2D> get_output_texture() const override { return forward_pass.output_texture; };
+    //virtual ComPtr<ID3D11Texture2D> get_output_depth() const override { return forward_pass.output_depth; };
+    //virtual ComPtr<ID3D11ShaderResourceView> get_output_srv() const override { return forward_pass.output_srv; };
+    //virtual ComPtr<ID3D11RenderTargetView> get_output_rtv() const override { return forward_pass.output_rtv; };
+    //virtual ComPtr<ID3D11DepthStencilView> get_output_dsv() const override { return forward_pass.output_dsv; };
 
     fforward_pass forward_pass;
     
   protected:
     virtual bool can_render() override;
     virtual void init() override;
-    virtual void render_frame_impl() override;
+    virtual void render_frame_impl(const ComPtr<ID3D12GraphicsCommandList>& command_list) override;
     virtual void create_output_texture(bool cleanup) override { forward_pass.create_output_texture(cleanup); };
   };
 }

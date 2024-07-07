@@ -4,11 +4,8 @@
 
 #include "passes/pass_base.h"
 
-struct ID3D11Texture2D;
-struct ID3D11Buffer;
-struct ID3D11RenderTargetView;
-struct ID3D11ShaderResourceView;
-struct ID3D11DepthStencilView;
+struct ID3D12RootSignature;
+struct ID3D12PipelineState;
 
 namespace engine
 {
@@ -17,7 +14,7 @@ namespace engine
   struct fforward_pass : fpass_base
   {
     virtual void init() override;
-    virtual void draw() override;
+    virtual void draw(const ComPtr<ID3D12GraphicsCommandList>& command_list) override;
     virtual void create_output_texture(bool cleanup = false) override;
     
     // Input
@@ -28,15 +25,19 @@ namespace engine
     int show_normals = 0;
     int show_object_id = 0;
     
-    // Output
-    ComPtr<ID3D11Texture2D> output_texture;
-    ComPtr<ID3D11Texture2D> output_depth;
-    ComPtr<ID3D11ShaderResourceView> output_srv;
-    ComPtr<ID3D11RenderTargetView> output_rtv;
-    ComPtr<ID3D11DepthStencilView> output_dsv;
+    // private:
+    //   ComPtr<ID3D11Buffer> frame_constant_buffer;
+    //   ComPtr<ID3D11Buffer> object_constant_buffer;
 
-  private:
-    ComPtr<ID3D11Buffer> frame_constant_buffer;
-    ComPtr<ID3D11Buffer> object_constant_buffer;
+    ComPtr<ID3D12RootSignature> root_signature;
+    ComPtr<ID3D12PipelineState> pipeline_state;
+
+    
+    
+
+    ComPtr<ID3D12Resource> index_buffer;
+
+    ComPtr<ID3DBlob> vertex_shader_blob;
+    ComPtr<ID3DBlob> pixel_shader_blob;
   };
 }

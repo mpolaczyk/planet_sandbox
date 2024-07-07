@@ -1,5 +1,5 @@
-﻿#include <d3d11_1.h>
-#include "renderer/dx11_lib.h"
+
+#include "renderer/dx12_lib.h"
 
 #include "object/object_registry.h"
 #include "object/object_visitor.h"
@@ -67,7 +67,7 @@ namespace engine
     // Everything happens in the frame
   }
 
-  void rgpu_deferred_sync::render_frame_impl()
+  void rgpu_deferred_sync::render_frame_impl(const ComPtr<ID3D12GraphicsCommandList>& command_list)
   {
     gbuffer_pass.copy_input(&gbuffer_vertex_shader_asset.get()->render_state, &gbuffer_pixel_shader_asset.get()->render_state,
       &scene_acceleration, scene, selected_object,
@@ -75,7 +75,7 @@ namespace engine
       default_material_asset);
     
     gbuffer_pass.init();
-    gbuffer_pass.draw();
+    gbuffer_pass.draw(command_list);
     
     deferred_lighting_pass.copy_input(&lighting_vertex_shader_asset.get()->render_state, &lighting_pixel_shader_asset.get()->render_state,
       &scene_acceleration, scene, selected_object,
@@ -83,19 +83,19 @@ namespace engine
       default_material_asset);
     
     deferred_lighting_pass.init();
-    deferred_lighting_pass.gbuffer_srvs[egbuffer_type::material_id] = gbuffer_pass.output_srv[egbuffer_type::material_id];
-    deferred_lighting_pass.gbuffer_srvs[egbuffer_type::normal] = gbuffer_pass.output_srv[egbuffer_type::normal];
-    deferred_lighting_pass.gbuffer_srvs[egbuffer_type::position] = gbuffer_pass.output_srv[egbuffer_type::position];
-    deferred_lighting_pass.gbuffer_srvs[egbuffer_type::tex_color] = gbuffer_pass.output_srv[egbuffer_type::tex_color];
-    deferred_lighting_pass.gbuffer_srvs[egbuffer_type::object_id] = gbuffer_pass.output_srv[egbuffer_type::object_id];
-    deferred_lighting_pass.gbuffer_srvs[egbuffer_type::is_selected] = gbuffer_pass.output_srv[egbuffer_type::is_selected];
+    //deferred_lighting_pass.gbuffer_srvs[egbuffer_type::material_id] = gbuffer_pass.output_srv[egbuffer_type::material_id];
+    //deferred_lighting_pass.gbuffer_srvs[egbuffer_type::normal] = gbuffer_pass.output_srv[egbuffer_type::normal];
+    //deferred_lighting_pass.gbuffer_srvs[egbuffer_type::position] = gbuffer_pass.output_srv[egbuffer_type::position];
+    //deferred_lighting_pass.gbuffer_srvs[egbuffer_type::tex_color] = gbuffer_pass.output_srv[egbuffer_type::tex_color];
+    //deferred_lighting_pass.gbuffer_srvs[egbuffer_type::object_id] = gbuffer_pass.output_srv[egbuffer_type::object_id];
+    //deferred_lighting_pass.gbuffer_srvs[egbuffer_type::is_selected] = gbuffer_pass.output_srv[egbuffer_type::is_selected];
     deferred_lighting_pass.show_object_id = show_object_id;
-    deferred_lighting_pass.draw();
+    deferred_lighting_pass.draw(command_list);
   }
 
   void rgpu_deferred_sync::create_output_texture(bool cleanup)
   {
-    gbuffer_pass.create_output_texture(cleanup);
-    deferred_lighting_pass.create_output_texture(cleanup);
+    //gbuffer_pass.create_output_texture(cleanup);
+    //deferred_lighting_pass.create_output_texture(cleanup);
   };
 }

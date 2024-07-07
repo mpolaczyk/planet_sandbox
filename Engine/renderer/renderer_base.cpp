@@ -1,4 +1,3 @@
-#include <d3d11_1.h>
 
 #include "engine/log.h"
 #include "engine/hash.h"
@@ -13,7 +12,7 @@ namespace engine
   OBJECT_DEFINE(rrenderer_base, oobject, Renderer base)
   OBJECT_DEFINE_NOSPAWN(rrenderer_base)
 
-  void rrenderer_base::render_frame(const hscene* in_scene, const hhittable_base* in_selected_object)
+  void rrenderer_base::render_frame(const ComPtr<ID3D12GraphicsCommandList>& command_list, const hscene* in_scene, const hhittable_base* in_selected_object)
   {
     scene = in_scene;
     selected_object = in_selected_object;
@@ -49,7 +48,7 @@ namespace engine
         return;
       }
       
-      render_frame_impl();
+      render_frame_impl(command_list);
     }
     render_time_ms = static_cast<double>(render_time_us) / 1000;
   }

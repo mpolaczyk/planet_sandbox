@@ -30,7 +30,7 @@ namespace engine
     uint32_t max_materials = 0;
 
     // All static meshes on the scene
-    std::vector<const hstatic_mesh*> meshes;
+    std::vector<hstatic_mesh*> meshes;
 
     // All lights on the scene
     std::vector<const hlight*> lights;

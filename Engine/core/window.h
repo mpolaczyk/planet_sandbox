@@ -44,7 +44,7 @@ namespace engine
     int width = 1920;
     int height = 1080;
     
-    ComPtr<ID3D12RootSignature> root_signature;
+    //ComPtr<ID3D12RootSignature> root_signature;
     ComPtr<IDXGISwapChain4> swap_chain;
     ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap;
     uint32_t rtv_descriptor_size = 0;

@@ -341,24 +341,18 @@
       }
     ],
     "renderer": {
-      "class_name": "rgpu_deferred_sync",
+      "class_name": "rgpu_forward_sync",
       "default_material_asset": {
-        "name": "default"
-      },
-      "gbuffer_pixel_shader_asset": {
-        "name": "gbuffer_deferred"
-      },
-      "gbuffer_vertex_shader_asset": {
-        "name": "gbuffer_deferred"
-      },
-      "lighting_pixel_shader_asset": {
-        "name": "lighting_deferred"
-      },
-      "lighting_vertex_shader_asset": {
-        "name": "lighting_deferred"
+        "name": ""
       },
       "output_height": 1080,
-      "output_width": 1920
+      "output_width": 1920,
+      "pixel_shader_asset": {
+        "name": "forward"
+      },
+      "vertex_shader_asset": {
+        "name": "forward"
+      }
     }
   }
 }

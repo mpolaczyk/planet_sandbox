@@ -6,9 +6,11 @@
 #include "engine/io.h"
 #include "object/object_registry.h"
 #include "engine/log.h"
+#include "hittables/scene.h"
 #include "math/random.h"
 #include "renderer/dx12_lib.h"
 #include "renderer/command_queue.h"
+#include "renderer/renderer_base.h"
 #include "resources/assimp_logger.h"
 
 
@@ -75,6 +77,8 @@ namespace engine
     command_queue->init(device, window->back_buffer_count);
     command_queue->flush();
 
+    scene_root = hscene::spawn();
+    
     window->init(WndProc, device, factory, command_queue->get_command_queue());
     window->show();
 
@@ -97,11 +101,11 @@ namespace engine
       }
       if(!is_running) break;
 
-      ComPtr<ID3D12GraphicsCommandList> command_list = command_queue->get_command_list(window->get_back_buffer_index());
       update();
       window->update();
-      draw();
       window->draw();
+
+      ComPtr<ID3D12GraphicsCommandList> command_list = command_queue->get_command_list(window->get_back_buffer_index());
       window->render(command_list);
       uint64_t fence_value = command_queue->execute_command_list(window->get_back_buffer_index());
       window->present();
@@ -109,8 +113,24 @@ namespace engine
     }
   }
 
+  void fapplication::update()
+  {
+    //const ImGuiIO& io = ImGui::GetIO();
+    //app_delta_time_ms = io.DeltaTime * 1000.0f;
+    render_delta_time_ms = static_cast<float>(scene_root->renderer->get_render_time_ms());
+
+    if(scene_root != nullptr && scene_root->renderer != nullptr)
+    {
+      scene_root->camera_config.update(render_delta_time_ms / 1000.0f, scene_root->renderer->output_width, scene_root->renderer->output_height);
+    }
+  }
+  
   void fapplication::cleanup()
   {
+    if (scene_root)
+    {
+      scene_root->destroy();
+    }
     command_queue->flush();
     command_queue->cleanup();
     window->cleanup();

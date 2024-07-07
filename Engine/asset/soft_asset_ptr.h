@@ -36,6 +36,7 @@ namespace engine
     bool is_loaded() const;
 
     const T* get() const;
+    T* get();
 
   private:
     mutable T* asset_ptr = nullptr;

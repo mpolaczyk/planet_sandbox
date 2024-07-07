@@ -29,7 +29,7 @@
 
 #include "assets/mesh.h"
 #include "assets/texture.h"
-#include "renderer/dx11_lib.h"
+#include "renderer/dx12_lib.h"
 
 
 namespace engine
@@ -82,7 +82,7 @@ namespace engine
 
       // Vertex list
       {
-        std::vector<fvertex_data> vertex_list;
+        std::vector<fvertex_data>& vertex_list = out_static_mesh->render_state.vertex_list;
         vertex_list.reserve(ai_mesh->mNumVertices);
         for(size_t i = 0; i < vertex_list.capacity(); ++i)
         {
@@ -100,16 +100,14 @@ namespace engine
           }
           vertex_list.push_back(vertex);
         }
-        // Vertex buffer
-        fdx11::instance().create_vertex_buffer(vertex_list, out_static_mesh->render_state.vertex_buffer);
-
-        out_static_mesh->render_state.offset = 0;
-        out_static_mesh->render_state.stride = sizeof(fvertex_data);
+        out_static_mesh->render_state.num_vertices = vertex_list.size();
+        out_static_mesh->render_state.vertex_list_size = vertex_list.size() * sizeof(fvertex_data);
+        out_static_mesh->render_state.vertex_stride = sizeof(fvertex_data);
       }
 
       // Face list
       {
-        std::vector<fface_data> face_list;
+        std::vector<fface_data>& face_list = out_static_mesh->render_state.face_list;
         face_list.reserve(ai_mesh->mNumFaces);
         for(size_t i = 0; i < face_list.capacity(); ++i)
         {
@@ -117,9 +115,8 @@ namespace engine
           const aiFace& ai_face = ai_mesh->mFaces[i];
           face_list.push_back(std::move(fface_data(ai_face.mIndices[0], ai_face.mIndices[1], ai_face.mIndices[2])));
         }
-        // Index buffer
-        fdx11::instance().create_index_buffer(face_list, out_static_mesh->render_state.index_buffer);
-        out_static_mesh->render_state.num_indices = static_cast<int32_t>(face_list.size()) * 3;
+        out_static_mesh->render_state.num_faces = face_list.size();
+        out_static_mesh->render_state.face_list_size = face_list.size() * sizeof(fface_data);
       }
 
       // Bounding box
@@ -177,14 +174,16 @@ namespace engine
     
     DXGI_FORMAT format = is_hdr ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
 
-    fdx11::instance().create_texture(out_texture->width, out_texture->height, format, D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE, out_texture->render_state.texture, bytes_per_row, buffer);
+    //fdx12::instance().create_texture(out_texture->width, out_texture->height, format, D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE, out_texture->render_state.texture, bytes_per_row, buffer);
     
-    fdx11::instance().create_shader_resource_view(out_texture->render_state.texture, format, D3D11_SRV_DIMENSION_TEXTURE2D, out_texture->render_state.texture_srv);
+    //fdx12::instance().create_shader_resource_view(out_texture->render_state.texture, format, D3D11_SRV_DIMENSION_TEXTURE2D, out_texture->render_state.texture_srv);
     
     delete buffer;
     return true;
   }
 
+  // https://asawicki.info/news_1719_two_shader_compilers_of_direct3d_12
+  // TODO upgrade to dxc
   bool load_hlsl(const std::string& file_name, const std::string& entrypoint, const std::string& target, ComPtr<ID3D10Blob>& out_shader_blob)
   {
     std::string path = fio::get_shader_file_path(file_name.c_str());

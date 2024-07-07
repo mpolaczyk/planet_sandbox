@@ -25,11 +25,11 @@ namespace engine
 
   void fscene_acceleration::build(const std::vector<hhittable_base*>& objects)
   {
-    for(const hhittable_base* hittable : objects)
+    for(hhittable_base* hittable : objects)
     {
       if(hittable->get_class() == hstatic_mesh::get_class_static())
       {
-        const hstatic_mesh* mesh = static_cast<const hstatic_mesh*>(hittable);
+        hstatic_mesh* mesh = static_cast<hstatic_mesh*>(hittable);
         meshes.push_back(mesh);
         volatile const astatic_mesh* mesh_asset = mesh->mesh_asset_ptr.get();
         const amaterial* material = mesh->material_asset_ptr.get();

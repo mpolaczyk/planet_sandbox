@@ -39,6 +39,7 @@ namespace editor
   void feditor_window::update()
   {
     handle_input();
+    update_default_spawn_position();
   }
 
   void feditor_window::draw()
@@ -51,7 +52,7 @@ namespace editor
 #endif
 
     draw_editor_window(editor_window_model);
-    draw_output_window(output_window_model);
+    //draw_output_window(output_window_model);
     draw_scene_window(scene_window_model);
 
     ImGui::Render();
@@ -61,11 +62,11 @@ namespace editor
   {
     fwindow::render(command_list);
 
-    fdx12::add_resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), command_list.Get());
 
-    fdx12::add_resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+    fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
   }
 
 

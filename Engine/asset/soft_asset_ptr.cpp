@@ -51,4 +51,10 @@ namespace engine
     }
     return asset_ptr;
   }
+  
+  template <derives_from<aasset_base> T>
+  T* fsoft_asset_ptr<T>::get()
+  {
+    return const_cast<T*>(const_cast<const fsoft_asset_ptr<T>*>(this)->get());
+  }
 }
