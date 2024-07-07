@@ -4,9 +4,6 @@
 
 #include "passes/pass_base.h"
 
-struct ID3D12RootSignature;
-struct ID3D12PipelineState;
-
 namespace engine
 {
   using Microsoft::WRL::ComPtr;
@@ -28,15 +25,7 @@ namespace engine
     // private:
     //   ComPtr<ID3D11Buffer> frame_constant_buffer;
     //   ComPtr<ID3D11Buffer> object_constant_buffer;
-
-    ComPtr<ID3D12RootSignature> root_signature;
-    ComPtr<ID3D12PipelineState> pipeline_state;
-
     
-    
-
-    ComPtr<ID3D12Resource> index_buffer;
-
     ComPtr<ID3DBlob> vertex_shader_blob;
     ComPtr<ID3DBlob> pixel_shader_blob;
   };

@@ -1,17 +1,20 @@
 #include <winerror.h>
+
+#include "renderer/dx12_lib.h"
+
 #include <dxgidebug.h>
 #include <dxgi1_6.h>
 #pragma comment(lib, "dxguid.lib")
 #include "d3d12.h"
 #include "d3dx12/d3dx12_root_signature.h"
 #include "d3dx12/d3dx12_barriers.h"
-#include <d3dx12/d3dx12_resource_helpers.h>
-
-#include "renderer/dx12_lib.h"
+#include "d3dx12/d3dx12_resource_helpers.h"
 
 #include "core/exceptions.h"
 #include "engine/log.h"
 #include "engine/string_tools.h"
+#include "renderer/pipeline_state.h"
+#include "renderer/render_state.h"
 
 namespace engine
 {
@@ -22,10 +25,10 @@ namespace engine
     ComPtr<IDXGIAdapter1> adapter1;
     ComPtr<IDXGIFactory6> factory6;
 
-    if(SUCCEEDED(factory->QueryInterface(IID_PPV_ARGS(&factory6))))
+    if(SUCCEEDED(factory->QueryInterface(IID_PPV_ARGS(factory6.GetAddressOf()))))
     {
       for(int adapter_index = 0;
-          SUCCEEDED(factory6->EnumAdapterByGpuPreference(adapter_index,prefer_high_performance_adapter == true ? DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE : DXGI_GPU_PREFERENCE_UNSPECIFIED, IID_PPV_ARGS(&adapter1)));
+          SUCCEEDED(factory6->EnumAdapterByGpuPreference(adapter_index,prefer_high_performance_adapter == true ? DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE : DXGI_GPU_PREFERENCE_UNSPECIFIED, IID_PPV_ARGS(adapter1.GetAddressOf())));
           ++adapter_index)
       {
         DXGI_ADAPTER_DESC1 desc;
@@ -74,29 +77,10 @@ namespace engine
   {
     ComPtr<ID3D12Debug> debug;
     ComPtr<ID3D12Debug1> debug1;
-    THROW_IF_FAILED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)))
-    THROW_IF_FAILED(debug->QueryInterface(IID_PPV_ARGS(&debug1)))
+    THROW_IF_FAILED(D3D12GetDebugInterface(IID_PPV_ARGS(debug.GetAddressOf())))
+    THROW_IF_FAILED(debug->QueryInterface(IID_PPV_ARGS(debug1.GetAddressOf())))
     debug1->SetEnableGPUBasedValidation(true);
     debug->EnableDebugLayer();
-  }
-
-  void fdx12::create_factory(ComPtr<IDXGIFactory4>& out_factory4)
-  {
-    uint32_t factory_flags = 0;
-#if BUILD_DEBUG
-    factory_flags |= DXGI_CREATE_FACTORY_DEBUG;
-#endif
-    THROW_IF_FAILED(CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(&out_factory4)))
-  }
-
-  void fdx12::create_device(ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12Device2>& out_device)
-  {
-    ComPtr<IDXGIAdapter1> adapter1;
-    get_hw_adapter(factory.Get(), &adapter1);
-    DXGI_ADAPTER_DESC adapter_desc;
-    adapter1->GetDesc(&adapter_desc);
-    LOG_INFO("Graphics Device: {0}", fstring_tools::to_utf8(adapter_desc.Description));
-    THROW_IF_FAILED((D3D12CreateDevice(adapter1.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&out_device))))
   }
 
   bool fdx12::enable_screen_tearing(ComPtr<IDXGIFactory4> factory)
@@ -115,12 +99,30 @@ namespace engine
 
   void fdx12::enable_info_queue(ComPtr<ID3D12Device> device)
   {
-    ID3D12InfoQueue* info_queue = nullptr;
-    device->QueryInterface(IID_PPV_ARGS(&info_queue));
+    ComPtr<ID3D12InfoQueue> info_queue;
+    device->QueryInterface(IID_PPV_ARGS(info_queue.GetAddressOf()));
     info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
     info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
     info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
-    info_queue->Release();
+  }
+  
+  void fdx12::create_factory(ComPtr<IDXGIFactory4>& out_factory4)
+  {
+    uint32_t factory_flags = 0;
+#if BUILD_DEBUG
+    factory_flags |= DXGI_CREATE_FACTORY_DEBUG;
+#endif
+    THROW_IF_FAILED(CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(out_factory4.GetAddressOf())))
+  }
+
+  void fdx12::create_device(ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12Device2>& out_device)
+  {
+    ComPtr<IDXGIAdapter1> adapter1;
+    get_hw_adapter(factory.Get(), &adapter1);
+    DXGI_ADAPTER_DESC adapter_desc;
+    adapter1->GetDesc(&adapter_desc);
+    LOG_INFO("Graphics Device: {0}", fstring_tools::to_utf8(adapter_desc.Description));
+    THROW_IF_FAILED((D3D12CreateDevice(adapter1.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(out_device.GetAddressOf()))))
   }
 
   void fdx12::create_command_queue(ComPtr<ID3D12Device> device, ComPtr<ID3D12CommandQueue>& out_command_queue)
@@ -129,7 +131,7 @@ namespace engine
     desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
     desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
     desc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
-    THROW_IF_FAILED(device->CreateCommandQueue(&desc, IID_PPV_ARGS(&out_command_queue)))
+    THROW_IF_FAILED(device->CreateCommandQueue(&desc, IID_PPV_ARGS(out_command_queue.GetAddressOf())))
   }
 
   void fdx12::create_swap_chain(HWND hwnd, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue, int back_buffer_count, bool allow_screen_tearing, ComPtr<IDXGISwapChain4>& out_swap_chain)
@@ -183,7 +185,7 @@ namespace engine
     desc.NumDescriptors = 1;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&out_srv_descriptor_heap)))
+    THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_srv_descriptor_heap.GetAddressOf())))
   }
 
   void fdx12::create_command_list(ComPtr<ID3D12Device> device, int back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators)
@@ -192,26 +194,15 @@ namespace engine
     for(int n = 0; n < back_buffer_count; n++)
     {
       out_command_allocators.push_back(nullptr);
-      THROW_IF_FAILED(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&out_command_allocators[n])))
+      THROW_IF_FAILED(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(out_command_allocators[n].GetAddressOf())))
     }
-    THROW_IF_FAILED(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, out_command_allocators[0].Get(), nullptr, IID_PPV_ARGS(&out_command_list)))
+    THROW_IF_FAILED(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, out_command_allocators[0].Get(), nullptr, IID_PPV_ARGS(out_command_list.GetAddressOf())))
     THROW_IF_FAILED(out_command_list->Close())
-  }
-
-  void fdx12::create_root_signature(ComPtr<ID3D12Device> device, ComPtr<ID3D12RootSignature>& out_root_signature)
-  {
-    CD3DX12_ROOT_SIGNATURE_DESC desc;
-    desc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
-    ComPtr<ID3DBlob> signature;
-    ComPtr<ID3DBlob> error;
-    THROW_IF_FAILED(D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error))
-    THROW_IF_FAILED(device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&out_root_signature)))
   }
 
   void fdx12::create_synchronisation(ComPtr<ID3D12Device> device, int back_buffer_count, uint64_t initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values)
   {
-    THROW_IF_FAILED(device->CreateFence(initial_fence_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&out_fence)))
+    THROW_IF_FAILED(device->CreateFence(initial_fence_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(out_fence.GetAddressOf())))
 
     out_fence_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
     if(out_fence_event == nullptr)
@@ -226,12 +217,47 @@ namespace engine
     }
   }
 
+  void fdx12::create_root_signature(ComPtr<ID3D12Device> device, const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, ComPtr<ID3D12RootSignature>& out_root_signature)
+  {
+    D3D12_FEATURE_DATA_ROOT_SIGNATURE root_signature_feature_data = {};
+    root_signature_feature_data.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+    if (FAILED(device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &root_signature_feature_data, sizeof(root_signature_feature_data))))
+    {
+      root_signature_feature_data.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+    }
+      
+    // Allow input layout and deny unnecessary access to certain pipeline stages.
+    D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags =
+        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+    
+    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC root_signature_desc;
+    root_signature_desc.Init_1_1(root_parameters.size(), root_parameters.data(), 0, nullptr, root_signature_flags);
+      
+    // Serialize the root signature.
+    ComPtr<ID3DBlob> root_signature_blob;
+    ComPtr<ID3DBlob> error_blob;
+    THROW_IF_FAILED(D3DX12SerializeVersionedRootSignature(&root_signature_desc, root_signature_feature_data.HighestVersion, root_signature_blob.GetAddressOf(), error_blob.GetAddressOf()));
+    // TODO: read error_blob
+    
+    // Create the root signature.
+    THROW_IF_FAILED(device->CreateRootSignature(0, root_signature_blob->GetBufferPointer(), root_signature_blob->GetBufferSize(), IID_PPV_ARGS(out_root_signature.GetAddressOf())));
+  }
+
+  void fdx12::create_pipeline_state(ComPtr<ID3D12Device2> device, fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state)
+  {
+    const D3D12_PIPELINE_STATE_STREAM_DESC pipeline_state_stream_desc(sizeof(fpipeline_state_stream), &pipeline_state_stream);
+    THROW_IF_FAILED(device->CreatePipelineState(&pipeline_state_stream_desc, IID_PPV_ARGS(out_pipeline_state.GetAddressOf())));
+  }
+
   void fdx12::report_live_objects()
   {
     ComPtr<IDXGIDebug1> debug;
-    THROW_IF_FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))
+    THROW_IF_FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(debug.GetAddressOf())))
     debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY);
-    DX_RELEASE(debug);
   }
 
   void fdx12::resource_barrier(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after)

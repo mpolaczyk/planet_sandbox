@@ -9,6 +9,8 @@
 //struct ID3D11RasterizerState;
 //struct ID3D11DepthStencilState;
 
+struct ID3D12RootSignature;
+struct ID3D12PipelineState;
 struct ID3D12GraphicsCommandList;
 
 namespace engine
@@ -59,5 +61,8 @@ namespace engine
 //    ComPtr<ID3D11SamplerState> sampler_state;
 //    ComPtr<ID3D11RasterizerState> rasterizer_state;
 //    ComPtr<ID3D11DepthStencilState> depth_stencil_state;
+
+    ComPtr<ID3D12RootSignature> root_signature;
+    ComPtr<ID3D12PipelineState> pipeline_state;
   };
 }

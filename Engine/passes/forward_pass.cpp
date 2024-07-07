@@ -13,7 +13,7 @@
 #include "renderer/dx12_lib.h"
 #include "renderer/render_state.h"
 #include "renderer/aligned_structs.h"
-#include "renderer/command_queue.h"
+#include "renderer/pipeline_state.h"
 #include "renderer/scene_acceleration.h"
 
 namespace engine
@@ -57,6 +57,44 @@ namespace engine
   
   void fforward_pass::init()
   {
+    ComPtr<ID3D12Device2> device = fapplication::instance->device;
+
+    // Root signature
+    {
+      std::vector<CD3DX12_ROOT_PARAMETER1> root_parameters;
+      CD3DX12_ROOT_PARAMETER1 temp;
+      temp.InitAsConstants(sizeof(XMMATRIX) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+      root_parameters.push_back(temp);
+
+      fdx12::create_root_signature(device, root_parameters, root_signature);
+    }
+
+    // Pipeline state
+    {
+      D3D12_INPUT_ELEMENT_DESC input_element_desc[] = {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+      };
+    
+      D3D12_RT_FORMAT_ARRAY rtv_formats = {};
+      rtv_formats.NumRenderTargets = 1;
+      rtv_formats.RTFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+      fpipeline_state_stream pipeline_state_stream;
+      pipeline_state_stream.root_signature = root_signature.Get();
+      pipeline_state_stream.input_layout = { input_element_desc, _countof(input_element_desc) };
+      pipeline_state_stream.primitive_topology_type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+      pipeline_state_stream.vertex_shader = CD3DX12_SHADER_BYTECODE(vertex_shader->blob.Get());
+      pipeline_state_stream.pixel_shader = CD3DX12_SHADER_BYTECODE(pixel_shader->blob.Get());
+      pipeline_state_stream.dsv_format = DXGI_FORMAT_D32_FLOAT;
+      pipeline_state_stream.rtv_formats = rtv_formats;
+      
+      fdx12::create_pipeline_state(device, pipeline_state_stream, pipeline_state);
+    }
+    
     //{
     //  D3D11_INPUT_ELEMENT_DESC input_element_desc[] =
     //  {
@@ -74,82 +112,14 @@ namespace engine
     //dx.create_rasterizer_state(rasterizer_state);
     //dx.create_depth_stencil_state(depth_stencil_state);
   }
-
-  struct fpipeline_state_stream
-  {
-    CD3DX12_PIPELINE_STATE_STREAM_ROOT_SIGNATURE root_signature;
-    CD3DX12_PIPELINE_STATE_STREAM_INPUT_LAYOUT input_layout;
-    CD3DX12_PIPELINE_STATE_STREAM_PRIMITIVE_TOPOLOGY primitive_topology_type;
-    CD3DX12_PIPELINE_STATE_STREAM_VS vertex_shader;
-    CD3DX12_PIPELINE_STATE_STREAM_PS pixel_shader;
-    CD3DX12_PIPELINE_STATE_STREAM_DEPTH_STENCIL_FORMAT dsv_format;
-    CD3DX12_PIPELINE_STATE_STREAM_RENDER_TARGET_FORMATS rtv_formats;
-  };
   
   void fforward_pass::draw(const ComPtr<ID3D12GraphicsCommandList>& command_list)
   {
-    auto app = fapplication::instance;
-
-    // Create the vertex input layout
-    D3D12_INPUT_ELEMENT_DESC input_element_desc[] = {
-      { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-    };
-
-    // Create a root signature.
-    D3D12_FEATURE_DATA_ROOT_SIGNATURE root_signature_feature_data = {};
-    root_signature_feature_data.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-    if (FAILED(app->device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &root_signature_feature_data, sizeof(root_signature_feature_data))))
-    {
-      root_signature_feature_data.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-    }
-
-    // Allow input layout and deny unnecessary access to certain pipeline stages.
-    D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags =
-        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
-
-    // A single 32-bit constant root parameter that is used by the vertex shader.
-    CD3DX12_ROOT_PARAMETER1 root_parameters[1];
-    root_parameters[0].InitAsConstants(sizeof(XMMATRIX) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
-
-    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC root_signature_desc;
-    root_signature_desc.Init_1_1(_countof(root_parameters), root_parameters, 0, nullptr, root_signature_flags);
-
-    // Serialize the root signature.
-    ComPtr<ID3DBlob> root_signature_blob;
-    ComPtr<ID3DBlob> error_blob;
-    THROW_IF_FAILED(D3DX12SerializeVersionedRootSignature(&root_signature_desc, root_signature_feature_data.HighestVersion, &root_signature_blob, &error_blob));
-    // Create the root signature.
-    THROW_IF_FAILED(app->device->CreateRootSignature(0, root_signature_blob->GetBufferPointer(), root_signature_blob->GetBufferSize(), IID_PPV_ARGS(&root_signature)));
-
-    fpipeline_state_stream pipeline_state_stream;
-
-    D3D12_RT_FORMAT_ARRAY rtv_formats = {};
-    rtv_formats.NumRenderTargets = 1;
-    rtv_formats.RTFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-
-    pipeline_state_stream.root_signature = root_signature.Get();
-    pipeline_state_stream.input_layout = { input_element_desc, _countof(input_element_desc) };
-    pipeline_state_stream.primitive_topology_type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-    pipeline_state_stream.vertex_shader = CD3DX12_SHADER_BYTECODE(vertex_shader->blob.Get());
-    pipeline_state_stream.pixel_shader = CD3DX12_SHADER_BYTECODE(pixel_shader->blob.Get());
-    pipeline_state_stream.dsv_format = DXGI_FORMAT_D32_FLOAT;
-    pipeline_state_stream.rtv_formats = rtv_formats;
-
-    D3D12_PIPELINE_STATE_STREAM_DESC pipeline_state_stream_desc = { sizeof(fpipeline_state_stream), &pipeline_state_stream };
-    THROW_IF_FAILED(app->device->CreatePipelineState(&pipeline_state_stream_desc, IID_PPV_ARGS(&pipeline_state)));
+    ComPtr<ID3D12Device2> device = fapplication::instance->device;
     
     command_list->SetPipelineState(pipeline_state.Get());
     command_list->SetGraphicsRootSignature(root_signature.Get());
-
-    command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);  // Duplicate setting? Pipeline state already has one
     
     for(hstatic_mesh* sm : scene_acceleration->meshes)
     {
@@ -159,13 +129,13 @@ namespace engine
 
       if(!smrs.is_resource_online)
       {
-        fdx12::upload_vertex_buffer(fapplication::instance->device, command_list, smrs);
-        fdx12::upload_index_buffer(fapplication::instance->device, command_list, smrs);
+        fdx12::upload_vertex_buffer(device, command_list, smrs);
+        fdx12::upload_index_buffer(device, command_list, smrs);
       }
       command_list->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list->IASetIndexBuffer(&smrs.index_buffer_view);
 
-      command_list->DrawIndexedInstanced(smrs.num_faces*3, 1, 0, 0, 0);
+      command_list->DrawIndexedInstanced(smrs.num_vertices, 1, 0, 0, 0);
       
     }
     

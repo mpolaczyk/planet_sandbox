@@ -1,3 +1,5 @@
+#include <d3d12.h>
+
 #include "command_queue.h"
 
 #include "core/exceptions.h"
@@ -29,7 +31,7 @@ namespace engine
   {
     return fence->GetCompletedValue() >= value;
   }
-  
+
   void fcommand_queue::wait_for_fence_value(uint64_t value) const
   {
     if(!is_fence_complete(value))
@@ -67,7 +69,7 @@ namespace engine
   {
     /// TODO: validate if value < number fo back buffers and if this buffer was requested in get_command_list
     command_list->Close();
-    ID3D12CommandList* const command_lists[] = { command_list.Get() };
+    ID3D12CommandList* const command_lists[] = {command_list.Get()};
     command_queue->ExecuteCommandLists(_countof(command_lists), command_lists);
 
     fence_value[back_buffer_id] = signal();

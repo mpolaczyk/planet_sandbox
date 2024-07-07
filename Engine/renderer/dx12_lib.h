@@ -1,25 +1,28 @@
 #pragma once
 
-#include <vector>
 #include <wrl/client.h>
+#include <vector>
 
 #include "core/core.h"
-#include "math/vertex_data.h"
-#include "renderer/render_state.h"
 
 struct ID3D12Device;
+struct ID3D12Device2;
 struct ID3D12RootSignature;
 struct IDXGISwapChain4;
 struct ID3D12RenderTargetView;
 struct IDXGIFactory1;
 struct IDXGIFactory4;
 struct IDXGIAdapter1;
+struct ID3D12Fence;
 struct ID3D12CommandQueue;
 struct ID3D12RootSignature;
 struct ID3D12DescriptorHeap;
 struct ID3D12Resource;
 struct ID3D12CommandAllocator;
 struct ID3D12GraphicsCommandList;
+struct ID3D12PipelineState;
+struct CD3DX12_ROOT_PARAMETER1;
+enum D3D12_RESOURCE_STATES;
 
 #if !defined(_WINDEF_) && !defined(__INTELLISENSE__)
 class HWND__;
@@ -31,6 +34,9 @@ typedef HWND__* HWND;
 namespace engine
 {
   using Microsoft::WRL::ComPtr;
+  
+  struct fpipeline_state_stream;
+  struct fstatic_mesh_render_state;
   
   class ENGINE_API fdx12 final
   {
@@ -63,21 +69,25 @@ namespace engine
     //}
     
     static void get_hw_adapter(IDXGIFactory1* factory, IDXGIAdapter1** out_adapter, bool prefer_high_performance_adapter = false);
+    
     static void enable_debug_layer();
-    static void create_factory(ComPtr<IDXGIFactory4>& out_factory4);
-    static void create_device(ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12Device2>& out_device);
     static bool enable_screen_tearing(ComPtr<IDXGIFactory4> factory);
     static void enable_info_queue(ComPtr<ID3D12Device> device);
+    
+    static void create_factory(ComPtr<IDXGIFactory4>& out_factory4);
+    static void create_device(ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12Device2>& out_device);
     static void create_command_queue(ComPtr<ID3D12Device> device, ComPtr<ID3D12CommandQueue>& out_command_queue);
     static void create_swap_chain(HWND hwnd, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue, int back_buffer_count, bool allow_screen_tearing, ComPtr<IDXGISwapChain4>& out_swap_chain);
     static void create_render_target(ComPtr<ID3D12Device> device, ComPtr<IDXGISwapChain4> swap_chain, int back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_rtv_descriptor_heap, uint32_t& out_rtv_descriptor_size, std::vector<ComPtr<ID3D12Resource>>& out_resource);
     static void create_shader_resource(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap>& out_srv_descriptor_heap);
     static void create_command_list(ComPtr<ID3D12Device> device, int back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators);
-    static void create_root_signature(ComPtr<ID3D12Device> device, ComPtr<ID3D12RootSignature>& out_root_signature);
     static void create_synchronisation(ComPtr<ID3D12Device> device, int back_buffer_count, uint64_t initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values);
-    static void report_live_objects();
-    static void resource_barrier(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after);
+    static void create_root_signature(ComPtr<ID3D12Device> device, const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, ComPtr<ID3D12RootSignature>& out_root_signature);
+    static void create_pipeline_state(ComPtr<ID3D12Device2> device, fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state);
 
+    static void report_live_objects();
+    
+    static void resource_barrier(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after);
     static void upload_buffer_resource(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, size_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_gpu_resource);
     static void upload_vertex_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state);
     static void upload_index_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state);
