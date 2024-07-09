@@ -22,12 +22,12 @@ namespace engine
   public:   
     void show() const;
     void hide() const;
-    virtual void init(WNDPROC wnd_proc, const ComPtr<ID3D12Device>& in_device, const ComPtr<IDXGIFactory4>& in_factory, const ComPtr<ID3D12CommandQueue>& in_command_queue);
+    virtual void init(WNDPROC wnd_proc, ComPtr<ID3D12Device> device, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue);
     virtual void update() = 0;
     virtual void draw() = 0;
-    virtual void render(const ComPtr<ID3D12GraphicsCommandList>& command_list);
+    virtual void render(ComPtr<ID3D12GraphicsCommandList> command_list);
     void present();
-    void resize(const ComPtr<ID3D12Device>& in_device, uint32_t in_width, uint32_t in_height);
+    void resize(const ComPtr<ID3D12Device> device, uint32_t width, uint32_t height);
     virtual const wchar_t* get_name() const = 0;
     virtual void cleanup();
 
@@ -46,9 +46,10 @@ namespace engine
     
     ComPtr<IDXGISwapChain4> swap_chain;
     ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap;
-    uint32_t rtv_descriptor_size = 0;
     ComPtr<ID3D12DescriptorHeap> srv_descriptor_heap;
+    ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap;
     std::vector<ComPtr<ID3D12Resource>> rtv;
+    ComPtr<ID3D12Resource> dsv;
     
     int back_buffer_index = 0;
   };

@@ -15,12 +15,12 @@ namespace editor
   class feditor_window final : public engine::fwindow
   {
   public:
-    virtual void init(WNDPROC wnd_proc, const ComPtr<ID3D12Device>& in_device, const ComPtr<IDXGIFactory4>& in_factory, const ComPtr<ID3D12CommandQueue>& in_command_queue) override;
+    virtual void init(WNDPROC wnd_proc, ComPtr<ID3D12Device> device, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue) override;
     virtual const wchar_t* get_name() const override { return L"Editor"; }
     virtual void cleanup() override;
     virtual void update() override;
     virtual void draw() override;
-    virtual void render(const ComPtr<ID3D12GraphicsCommandList>& command_list) override;
+    virtual void render(ComPtr<ID3D12GraphicsCommandList> command_list) override;
 
     void handle_input();
     void update_default_spawn_position();

@@ -5,6 +5,8 @@
 #include <dxgidebug.h>
 #include <dxgi1_6.h>
 #pragma comment(lib, "dxguid.lib")
+#include <DirectXColors.h>
+
 #include "d3d12.h"
 #include "d3dx12/d3dx12_root_signature.h"
 #include "d3dx12/d3dx12_barriers.h"
@@ -134,7 +136,7 @@ namespace engine
     THROW_IF_FAILED(device->CreateCommandQueue(&desc, IID_PPV_ARGS(out_command_queue.GetAddressOf())))
   }
 
-  void fdx12::create_swap_chain(HWND hwnd, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue, int back_buffer_count, bool allow_screen_tearing, ComPtr<IDXGISwapChain4>& out_swap_chain)
+  void fdx12::create_swap_chain(HWND hwnd, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue, uint32_t back_buffer_count, bool allow_screen_tearing, ComPtr<IDXGISwapChain4>& out_swap_chain)
   {
     DXGI_SWAP_CHAIN_DESC1 desc = {};
     desc.BufferCount = back_buffer_count;
@@ -156,30 +158,67 @@ namespace engine
     THROW_IF_FAILED(swap_chain1.As(&out_swap_chain))
   }
 
-  void fdx12::create_render_target(ComPtr<ID3D12Device> device, ComPtr<IDXGISwapChain4> swap_chain, int back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_rtv_descriptor_heap, uint32_t& out_rtv_descriptor_size, std::vector<ComPtr<ID3D12Resource>>& out_resource)
+  void fdx12::create_render_target_descriptor_heap(ComPtr<ID3D12Device> device, uint32_t back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap)
   {
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = back_buffer_count;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     desc.NodeMask = 0;
-    THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_rtv_descriptor_heap.GetAddressOf())))
+    THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.GetAddressOf())))
+  }
+  
+  void fdx12::create_render_target(ComPtr<ID3D12Device> device, ComPtr<IDXGISwapChain4> swap_chain, ComPtr<ID3D12DescriptorHeap> descriptor_heap, uint32_t back_buffer_count, std::vector<ComPtr<ID3D12Resource>>& out_rtv)
+  {
+    const uint32_t descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
-    out_rtv_descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
-    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(out_rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
-    out_resource.reserve(back_buffer_count);
-    for(int n = 0; n < back_buffer_count; n++)
+    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+    out_rtv.reserve(back_buffer_count);
+    for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       ComPtr<ID3D12Resource> back_buffer;
       THROW_IF_FAILED(swap_chain->GetBuffer(n, IID_PPV_ARGS(back_buffer.GetAddressOf())))
       device->CreateRenderTargetView(back_buffer.Get(), nullptr, handle);
-      out_resource.push_back(back_buffer);
-      handle.Offset(static_cast<int>(out_rtv_descriptor_size));
+      out_rtv.push_back(back_buffer);
+      handle.Offset(static_cast<int>(descriptor_size));
     }
   }
 
-  void fdx12::create_shader_resource(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap>& out_srv_descriptor_heap)
+  void fdx12::create_depth_stencil_descriptor_heap(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap)
+  {
+    D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+    desc.NumDescriptors = 1;
+    desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+    desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&out_descriptor_heap)));
+  }
+
+  void fdx12::resize_swap_chain(ComPtr<IDXGISwapChain4> swap_chain, uint32_t back_buffer_count, uint32_t width, uint32_t height)
+  {
+    DXGI_SWAP_CHAIN_DESC desc = {};
+    THROW_IF_FAILED(swap_chain->GetDesc(&desc));
+    THROW_IF_FAILED(swap_chain->ResizeBuffers(back_buffer_count, width, height, desc.BufferDesc.Format, desc.Flags));
+  }
+  
+  void fdx12::create_depth_stencil(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap> descriptor_heap, int width, int height, ComPtr<ID3D12Resource>& out_dsv)
+  {
+    D3D12_CLEAR_VALUE clear_value = {};
+    clear_value.Format = DXGI_FORMAT_D32_FLOAT;
+    clear_value.DepthStencil = { 1.0f, 0 };
+
+    CD3DX12_HEAP_PROPERTIES heap_prop(D3D12_HEAP_TYPE_DEFAULT);
+    CD3DX12_RESOURCE_DESC resource_desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, width, height, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+    THROW_IF_FAILED(device->CreateCommittedResource(&heap_prop, D3D12_HEAP_FLAG_NONE, &resource_desc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &clear_value, IID_PPV_ARGS(out_dsv.GetAddressOf())));
+    
+    D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
+    desc.Format = DXGI_FORMAT_D32_FLOAT;
+    desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+    desc.Texture2D.MipSlice = 0;
+    desc.Flags = D3D12_DSV_FLAG_NONE;
+    device->CreateDepthStencilView(out_dsv.Get(), &desc, descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+  }
+
+  void fdx12::create_shader_resource_descriptor_heap(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap>& out_srv_descriptor_heap)
   {
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = 1;
@@ -188,10 +227,10 @@ namespace engine
     THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_srv_descriptor_heap.GetAddressOf())))
   }
 
-  void fdx12::create_command_list(ComPtr<ID3D12Device> device, int back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators)
+  void fdx12::create_command_list(ComPtr<ID3D12Device> device, uint32_t back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators)
   {
     out_command_allocators.reserve(back_buffer_count);
-    for(int n = 0; n < back_buffer_count; n++)
+    for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       out_command_allocators.push_back(nullptr);
       THROW_IF_FAILED(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(out_command_allocators[n].GetAddressOf())))
@@ -200,7 +239,7 @@ namespace engine
     THROW_IF_FAILED(out_command_list->Close())
   }
 
-  void fdx12::create_synchronisation(ComPtr<ID3D12Device> device, int back_buffer_count, uint64_t initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values)
+  void fdx12::create_synchronisation(ComPtr<ID3D12Device> device, uint32_t back_buffer_count, uint64_t initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values)
   {
     THROW_IF_FAILED(device->CreateFence(initial_fence_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(out_fence.GetAddressOf())))
 
@@ -211,7 +250,7 @@ namespace engine
     }
 
     out_fence_values.reserve(back_buffer_count);
-    for(int n = 0; n < back_buffer_count; n++)
+    for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       out_fence_values.push_back(initial_fence_value);
     }
@@ -253,11 +292,44 @@ namespace engine
     THROW_IF_FAILED(device->CreatePipelineState(&pipeline_state_stream_desc, IID_PPV_ARGS(out_pipeline_state.GetAddressOf())));
   }
 
+  void fdx12::set_render_targets(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap, ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap, int back_buffer_index)
+  {
+    uint32_t rtv_descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, rtv_descriptor_size);
+    D3D12_CPU_DESCRIPTOR_HANDLE dsv_handle = dsv_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
+    command_list->OMSetRenderTargets(1, &rtv_handle, FALSE, &dsv_handle);
+  }
+  
+  void fdx12::set_viewport(ComPtr<ID3D12GraphicsCommandList> command_list, uint32_t width, uint32_t height)
+  {
+    CD3DX12_VIEWPORT viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height));
+    command_list->RSSetViewports(1, &viewport);
+  }
+
+  void fdx12::set_scissor(ComPtr<ID3D12GraphicsCommandList> command_list, uint32_t width, uint32_t height)
+  {
+    CD3DX12_RECT scissor_rect = CD3DX12_RECT(0, 0, static_cast<LONG>(width), static_cast<LONG>(height));
+    command_list->RSSetScissorRects(1, &scissor_rect);
+  }
+
+  void fdx12::clear_render_target(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> descriptor_heap, uint32_t back_buffer_index)
+  {
+    uint32_t descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, descriptor_size);
+    command_list->ClearRenderTargetView(handle, DirectX::Colors::LightSlateGray, 0, nullptr);
+  }
+
+  void fdx12::clear_depth_stencil(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> descriptor_heap)
+  {
+    D3D12_CPU_DESCRIPTOR_HANDLE handle = descriptor_heap->GetCPUDescriptorHandleForHeapStart();
+    command_list->ClearDepthStencilView(handle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+  }
+  
   void fdx12::report_live_objects()
   {
     ComPtr<IDXGIDebug1> debug;
     THROW_IF_FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(debug.GetAddressOf())))
-    debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY);
+    debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
   }
 
   void fdx12::resource_barrier(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after)
@@ -266,7 +338,7 @@ namespace engine
     command_list->ResourceBarrier(1, &resource_barrier);
   }
 
-  void fdx12::upload_buffer_resource(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, size_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_gpu_resource)
+  void fdx12::upload_buffer_resource(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, size_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource)
   {
     // Create a committed resource for the GPU resource in a default heap.
     CD3DX12_HEAP_PROPERTIES type_default = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
@@ -276,23 +348,22 @@ namespace engine
     // Create an committed resource for the upload.
     if (in_buffer)
     {
-      ComPtr<ID3D12Resource> intermediate;
       CD3DX12_HEAP_PROPERTIES type_upload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
       CD3DX12_RESOURCE_DESC intermediate_desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
-      THROW_IF_FAILED(device->CreateCommittedResource(&type_upload, D3D12_HEAP_FLAG_NONE, &intermediate_desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(intermediate.GetAddressOf())));
+      THROW_IF_FAILED(device->CreateCommittedResource(&type_upload, D3D12_HEAP_FLAG_NONE, &intermediate_desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(out_upload_intermediate.GetAddressOf())));
 
       D3D12_SUBRESOURCE_DATA data = {};
       data.pData = in_buffer;
       data.RowPitch = buffer_size;
       data.SlicePitch = data.RowPitch;
 
-      UpdateSubresources(command_list.Get(), out_gpu_resource.Get(), intermediate.Get(), 0, 0, 1, &data);
+      UpdateSubresources(command_list.Get(), out_gpu_resource.Get(), out_upload_intermediate.Get(), 0, 0, 1, &data);
     }
   }
 
   void fdx12::upload_vertex_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state)
   {
-    upload_buffer_resource(device, command_list, out_render_state.vertex_list_size, out_render_state.vertex_list.data(), out_render_state.vertex_buffer);
+    upload_buffer_resource(device, command_list, out_render_state.vertex_list_size, out_render_state.vertex_list.data(), out_render_state.index_buffer_upload, out_render_state.vertex_buffer);
     
     out_render_state.vertex_buffer_view.BufferLocation = out_render_state.vertex_buffer->GetGPUVirtualAddress();
     out_render_state.vertex_buffer_view.SizeInBytes = out_render_state.vertex_list_size;
@@ -305,7 +376,7 @@ namespace engine
 
   void fdx12::upload_index_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state)
   {
-    upload_buffer_resource(device, command_list, out_render_state.face_list_size, out_render_state.face_list.data(), out_render_state.index_buffer);
+    upload_buffer_resource(device, command_list, out_render_state.face_list_size, out_render_state.face_list.data(), out_render_state.index_buffer_upload, out_render_state.index_buffer);
     
     out_render_state.index_buffer_view.BufferLocation = out_render_state.index_buffer->GetGPUVirtualAddress();
     out_render_state.index_buffer_view.Format = DXGI_FORMAT_R32_UINT;

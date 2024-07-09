@@ -15,14 +15,14 @@ namespace editor
     return static_cast<feditor_app*>(fapplication::instance);  
   }
   
-  void feditor_window::init(WNDPROC wnd_proc, const ComPtr<ID3D12Device>& in_device, const ComPtr<IDXGIFactory4>& in_factory, const ComPtr<ID3D12CommandQueue>& in_command_queue)
+  void feditor_window::init(WNDPROC wnd_proc, ComPtr<ID3D12Device> device, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue)
   {
-    fwindow::init(wnd_proc, in_device, in_factory, in_command_queue);
+    fwindow::init(wnd_proc,  device, factory,  command_queue);
     
     ImGui::StyleColorsClassic();
     
     ImGui_ImplWin32_Init(hwnd);
-    ImGui_ImplDX12_Init(in_device.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM, srv_descriptor_heap.Get(), srv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), srv_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
+    ImGui_ImplDX12_Init( device.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM, srv_descriptor_heap.Get(), srv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), srv_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
     
     get_editor_app()->load_window_state();
   }
@@ -58,7 +58,7 @@ namespace editor
     ImGui::Render();
   }
 
-  void feditor_window::render(const ComPtr<ID3D12GraphicsCommandList>& command_list)
+  void feditor_window::render(ComPtr<ID3D12GraphicsCommandList> command_list)
   {
     fwindow::render(command_list);
 

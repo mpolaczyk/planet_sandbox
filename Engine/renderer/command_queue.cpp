@@ -7,17 +7,17 @@
 
 namespace engine
 {
-  void fcommand_queue::init(const ComPtr<ID3D12Device>& in_device, int num_backbuffers)
+  void fcommand_queue::init(ComPtr<ID3D12Device> device, uint32_t in_back_buffer_count)
   {
-    fdx12::create_command_queue(in_device, command_queue);
-    fdx12::create_command_list(in_device, num_backbuffers, command_list, command_allocator);
-    fdx12::create_synchronisation(in_device, num_backbuffers, last_fence_value, fence, fence_event, fence_value);
-    back_buffer_count = num_backbuffers;
+    fdx12::create_command_queue(device, command_queue);
+    fdx12::create_command_list(device, in_back_buffer_count, command_list, command_allocator);
+    fdx12::create_synchronisation(device, in_back_buffer_count, last_fence_value, fence, fence_event, fence_value);
+    back_buffer_count = in_back_buffer_count;
   }
 
   void fcommand_queue::cleanup()
   {
-    for(int n = 0; n < back_buffer_count; n++)
+    for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       command_allocator[n].Reset();
     }
@@ -58,14 +58,14 @@ namespace engine
     return command_queue;
   }
 
-  ComPtr<ID3D12GraphicsCommandList> fcommand_queue::get_command_list(int back_buffer_id) const
+  ComPtr<ID3D12GraphicsCommandList> fcommand_queue::get_command_list(uint32_t back_buffer_id) const
   {
     command_allocator[back_buffer_id]->Reset();
     command_list->Reset(command_allocator[back_buffer_id].Get(), nullptr);
     return command_list;
   }
 
-  uint64_t fcommand_queue::execute_command_list(int back_buffer_id)
+  uint64_t fcommand_queue::execute_command_list(uint32_t back_buffer_id)
   {
     /// TODO: validate if value < number fo back buffers and if this buffer was requested in get_command_list
     command_list->Close();

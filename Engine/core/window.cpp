@@ -2,11 +2,8 @@
 #include <dxgi1_6.h>
 #include "d3d12.h"
 #include "d3dx12/d3dx12_root_signature.h"
-#include "d3dx12/d3dx12_core.h"
 
 #include "core/window.h"
-
-#include <DirectXColors.h>
 
 #include "core/application.h"
 #include "core/exceptions.h"
@@ -27,31 +24,33 @@ namespace engine
     ::ShowWindow(hwnd, SW_HIDE);
   }
 
-  void fwindow::init(WNDPROC wnd_proc, const ComPtr<ID3D12Device>& in_device, const ComPtr<IDXGIFactory4>& in_factory, const ComPtr<ID3D12CommandQueue>& in_command_queue)
+  void fwindow::init(WNDPROC wnd_proc, ComPtr<ID3D12Device> device, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue)
   {
     wc = {sizeof(WNDCLASSEX), CS_CLASSDC, wnd_proc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, get_name(), NULL};
     ::RegisterClassEx(&wc);
     hwnd = ::CreateWindow(wc.lpszClassName, get_name(), WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
     
-    screen_tearing = fdx12::enable_screen_tearing(in_factory);
-    fdx12::create_swap_chain(hwnd, in_factory, in_command_queue, back_buffer_count, screen_tearing, swap_chain);
-    fdx12::create_render_target(in_device, swap_chain, back_buffer_count, rtv_descriptor_heap, rtv_descriptor_size, rtv);
-    fdx12::create_shader_resource(in_device, srv_descriptor_heap);
+    screen_tearing = fdx12::enable_screen_tearing(factory);
+
+    fdx12::create_swap_chain(hwnd, factory, command_queue, back_buffer_count, screen_tearing, swap_chain);
+
+    fdx12::create_render_target_descriptor_heap(device, back_buffer_count, rtv_descriptor_heap);
+    fdx12::create_depth_stencil_descriptor_heap(device, dsv_descriptor_heap);
+    fdx12::create_shader_resource_descriptor_heap(device, srv_descriptor_heap);
   }
 
-  void fwindow::render(const ComPtr<ID3D12GraphicsCommandList>& command_list)
+  void fwindow::render(ComPtr<ID3D12GraphicsCommandList> command_list)
   {
+    ComPtr<ID3D12Device2> device = fapplication::instance->device;
+
     fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, rtv_descriptor_size);
-    command_list->OMSetRenderTargets(1, &rtv_handle, FALSE, nullptr);
-    command_list->ClearRenderTargetView(rtv_handle, DirectX::Colors::LightSlateGray, 0, nullptr);
     
-    CD3DX12_VIEWPORT viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height));
-    command_list->RSSetViewports(1, &viewport);
-
-    CD3DX12_RECT scissor_rect = CD3DX12_RECT(0, 0, static_cast<LONG>(width), static_cast<LONG>(height));
-    command_list->RSSetScissorRects(1, &scissor_rect);
+    fdx12::clear_render_target(device, command_list, rtv_descriptor_heap, back_buffer_index);
+    fdx12::clear_depth_stencil(command_list, dsv_descriptor_heap);
+    
+    fdx12::set_render_targets(device, command_list, dsv_descriptor_heap, rtv_descriptor_heap, back_buffer_index);
+    fdx12::set_viewport(command_list, width, height);
+    fdx12::set_scissor(command_list, width, height);
     
     command_list->SetDescriptorHeaps(1, srv_descriptor_heap.GetAddressOf());
 
@@ -64,7 +63,6 @@ namespace engine
     }
 
     fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-
   }
   
   void fwindow::present()
@@ -76,44 +74,40 @@ namespace engine
     back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
   }
   
-  void fwindow::resize(const ComPtr<ID3D12Device>& in_device, uint32_t in_width, uint32_t in_height)
+  void fwindow::resize(const ComPtr<ID3D12Device> device, uint32_t in_width, uint32_t in_height)
   {
     if(in_width == 0 || in_height == 0) { return; }
     if(in_width == width && in_height == height) { return; }
     
-    // Release resources
-    for(uint32_t n = 0; n < back_buffer_count; n++)
-    {
-      rtv[n].Reset();
-    }
-
-    // Resize
-    THROW_IF_FAILED(swap_chain->ResizeBuffers(0, in_width, in_height, DXGI_FORMAT_UNKNOWN, 0))
-
-    back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
-
-    // Create resources
-    {
-      CD3DX12_CPU_DESCRIPTOR_HANDLE handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
-      for(uint32_t n = 0; n < back_buffer_count; n++)
-      {
-        THROW_IF_FAILED(swap_chain->GetBuffer(n, IID_PPV_ARGS(&rtv[n])))
-        in_device->CreateRenderTargetView(rtv[n].Get(), nullptr, handle);
-        handle.Offset(rtv_descriptor_size);
-      }
-    }
     width = in_width;
     height = in_height;
+
+    if(rtv.size() == back_buffer_count)
+    {
+      for(uint32_t n = 0; n < back_buffer_count; n++)
+      {
+        DX_RELEASE(rtv[n]);
+      }
+      rtv.clear();
+    }
+    DX_RELEASE(dsv);
+
+    fdx12::resize_swap_chain(swap_chain, back_buffer_count, width, height);
+    back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
+    fdx12::create_render_target(device, swap_chain, rtv_descriptor_heap, back_buffer_count, rtv);
+    fdx12::create_depth_stencil(device, dsv_descriptor_heap, width, height, dsv);
   }
   
   void fwindow::cleanup()
   {
+    DX_RELEASE(swap_chain);
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
-      rtv[n].Reset();
+      DX_RELEASE(rtv[n]);
     }
-    DX_RELEASE(swap_chain);
     DX_RELEASE(rtv_descriptor_heap);
+    DX_RELEASE(dsv);
+    DX_RELEASE(dsv_descriptor_heap);
     DX_RELEASE(srv_descriptor_heap);
 
     ::DestroyWindow(hwnd);

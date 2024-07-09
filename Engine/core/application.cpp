@@ -82,7 +82,7 @@ namespace engine
     window->init(WndProc, device, factory, command_queue->get_command_queue());
     window->show();
 
-    LOG_INFO("Loading done, starting the main loop");
+    LOG_INFO("Init done, starting the main loop");
   }
 
   void fapplication::main_loop()
