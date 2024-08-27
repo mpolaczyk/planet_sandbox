@@ -16,7 +16,8 @@ struct ID3D12GraphicsCommandList;
 namespace engine
 {
   class hscene;
-
+  class fwindow;
+  
   // The responsibility of this class is to render to a texture
   class ENGINE_API rrenderer_base : public oobject
   {
@@ -31,6 +32,7 @@ namespace engine
 
     const hscene* scene = nullptr;
     const hhittable_base* selected_object = nullptr;
+    fwindow* window = nullptr;
 
     fscene_acceleration scene_acceleration;
     
@@ -43,18 +45,13 @@ namespace engine
     int output_height = 1080;
 
     // Main public interface
-    void render_frame(const ComPtr<ID3D12GraphicsCommandList>& command_list, const hscene* in_scene, const hhittable_base* in_selected_object = nullptr);    // TODO rename to draw
+    void render_frame(ComPtr<ID3D12GraphicsCommandList> command_list, fwindow* in_window, const hscene* in_scene, const hhittable_base* in_selected_object = nullptr);    // TODO rename to draw
     double get_render_time_ms() const { return render_time_ms; }
-    //virtual ComPtr<ID3D11Texture2D> get_output_texture() const = 0;
-    //virtual ComPtr<ID3D11Texture2D> get_output_depth() const = 0;
-    //virtual ComPtr<ID3D11ShaderResourceView> get_output_srv() const = 0;
-    //virtual ComPtr<ID3D11RenderTargetView> get_output_rtv() const = 0;
-    //virtual ComPtr<ID3D11DepthStencilView> get_output_dsv() const = 0;
     
   protected:
     virtual bool can_render();
     virtual void init() = 0;
-    virtual void render_frame_impl(const ComPtr<ID3D12GraphicsCommandList>& command_list) = 0;
+    virtual void render_frame_internal(ComPtr<ID3D12GraphicsCommandList> command_list) = 0;
     virtual void create_output_texture(bool cleanup = false) = 0;
     
     double render_time_ms = 0.0;

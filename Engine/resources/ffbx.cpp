@@ -292,8 +292,8 @@ namespace engine
         object->set_display_name(display_name.str());
         object->mesh_asset_ptr.set_name(mesh_name);
         object->material_asset_ptr.set_name("default");
-        object->origin = fvec3(0, 0, 0);
-        object->rotation = fvec3(0, 0, 0);
+        object->origin = fvec3(0.0f, 0.0f, 0.0f);
+        object->rotation = fvec3(0.0f, 0.0f, 0.0f);
         object->scale = fvec3(scale, scale, scale);
         object->load_resources();
 

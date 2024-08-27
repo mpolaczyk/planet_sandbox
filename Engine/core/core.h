@@ -31,6 +31,7 @@
 #define USE_TLAS 1
 #endif
 
+#define RENDER_IMGUI 1
 
 #ifdef BUILD_DLL
 #define ENGINE_API __declspec(dllexport)

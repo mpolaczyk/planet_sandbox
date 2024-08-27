@@ -31,10 +31,18 @@ namespace engine
     virtual const wchar_t* get_name() const = 0;
     virtual void cleanup();
 
-    static constexpr uint32_t back_buffer_count = 3;
+    static constexpr uint32_t back_buffer_count = 2;
 
     int get_back_buffer_index() const { return back_buffer_index; }
 
+    ComPtr<IDXGISwapChain4> swap_chain;
+    ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap;
+    std::vector<ComPtr<ID3D12Resource>> rtv;
+    ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap;
+    ComPtr<ID3D12Resource> dsv;
+    ComPtr<ID3D12DescriptorHeap> main_descriptor_heap; // srv, cbv, uav
+    std::vector<ComPtr<ID3D12Resource>> cbv;
+    
   protected:
     HWND hwnd;
     WNDCLASSEX wc;
@@ -43,13 +51,6 @@ namespace engine
     bool vsync = true;
     int width = 1920;
     int height = 1080;
-    
-    ComPtr<IDXGISwapChain4> swap_chain;
-    ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap;
-    ComPtr<ID3D12DescriptorHeap> srv_descriptor_heap;
-    ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap;
-    std::vector<ComPtr<ID3D12Resource>> rtv;
-    ComPtr<ID3D12Resource> dsv;
     
     int back_buffer_index = 0;
   };

@@ -105,9 +105,10 @@ namespace engine
       window->update();
       window->draw();
 
-      ComPtr<ID3D12GraphicsCommandList> command_list = command_queue->get_command_list(window->get_back_buffer_index());
+      const int back_buffer_index = window->get_back_buffer_index();
+      ComPtr<ID3D12GraphicsCommandList> command_list = command_queue->get_command_list(back_buffer_index);
       window->render(command_list);
-      uint64_t fence_value = command_queue->execute_command_list(window->get_back_buffer_index());
+      uint64_t fence_value = command_queue->execute_command_list(back_buffer_index);
       window->present();
       command_queue->wait_for_fence_value(fence_value);
     }

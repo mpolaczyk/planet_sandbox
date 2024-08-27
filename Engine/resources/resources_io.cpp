@@ -37,12 +37,12 @@ namespace engine
   const unsigned int assimp_import_flags =
     aiProcess_CalcTangentSpace |
     aiProcess_Triangulate |
-    aiProcess_SortByPType |
-    aiProcess_PreTransformVertices |
+    aiProcess_ImproveCacheLocality |
+      aiProcess_SortByPType |
+    //aiProcess_PreTransformVertices |
     aiProcess_GenNormals |
     aiProcess_GenUVCoords |
-    aiProcess_OptimizeMeshes |
-    aiProcess_Debone |
+    //aiProcess_Debone |
     aiProcess_ValidateDataStructure |
     aiProcess_GenBoundingBoxes;
 
@@ -77,13 +77,15 @@ namespace engine
     if(ai_scene && ai_scene->HasMeshes())
     {
       const aiMesh* ai_mesh = ai_scene->mMeshes[0];
-      assert(ai_mesh->HasPositions());
-      assert(ai_mesh->HasNormals());
-
+      if(!ai_mesh->HasPositions() || !ai_mesh->HasNormals() || ai_mesh->mPrimitiveTypes != aiPrimitiveType_TRIANGLE)
+      {
+        LOG_WARN("Failed to parse object file: {0}", file_name);
+        return false;
+      }
       // Vertex list
       {
         std::vector<fvertex_data>& vertex_list = out_static_mesh->render_state.vertex_list;
-        vertex_list.reserve(ai_mesh->mNumVertices);
+        vertex_list.reserve(ai_mesh->mNumVertices); // powinno być 36
         for(size_t i = 0; i < vertex_list.capacity(); ++i)
         {
           fvertex_data vertex;

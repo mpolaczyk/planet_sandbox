@@ -26,8 +26,8 @@ namespace engine
     bool is_resource_online = false;
     ComPtr<ID3D12Resource> vertex_buffer;
     ComPtr<ID3D12Resource> index_buffer;
-    ComPtr<ID3D12Resource> vertex_buffer_upload;
-    ComPtr<ID3D12Resource> index_buffer_upload;
+    ComPtr<ID3D12Resource> vertex_buffer_upload;  // TODO remove?
+    ComPtr<ID3D12Resource> index_buffer_upload;   // TODO remove?
     D3D12_VERTEX_BUFFER_VIEW vertex_buffer_view;
     D3D12_INDEX_BUFFER_VIEW index_buffer_view;
   };

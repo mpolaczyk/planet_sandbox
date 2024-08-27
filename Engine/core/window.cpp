@@ -36,7 +36,14 @@ namespace engine
 
     fdx12::create_render_target_descriptor_heap(device, back_buffer_count, rtv_descriptor_heap);
     fdx12::create_depth_stencil_descriptor_heap(device, dsv_descriptor_heap);
-    fdx12::create_shader_resource_descriptor_heap(device, srv_descriptor_heap);
+    fdx12::create_main_descriptor_heap(device, main_descriptor_heap);
+    for(uint32_t n = 0; n < back_buffer_count; n++)
+    {
+      ComPtr<ID3D12Resource> resource;
+      fdx12::create_upload_resource(device, 1024*64, resource);
+      resource->SetName(L"Constant Buffer Upload Resource");
+      cbv.push_back(resource);
+    }
   }
 
   void fwindow::render(ComPtr<ID3D12GraphicsCommandList> command_list)
@@ -52,13 +59,13 @@ namespace engine
     fdx12::set_viewport(command_list, width, height);
     fdx12::set_scissor(command_list, width, height);
     
-    command_list->SetDescriptorHeaps(1, srv_descriptor_heap.GetAddressOf());
+    command_list->SetDescriptorHeaps(1, main_descriptor_heap.GetAddressOf());
 
     if(hscene* scene_root = fapplication::instance->scene_root)
     {
       if(rrenderer_base* renderer = scene_root->renderer)
       {
-        renderer->render_frame(command_list, scene_root, nullptr);  // TODO selected object
+        renderer->render_frame(command_list, this, scene_root, nullptr);  // TODO selected object
       }
     }
 
@@ -104,11 +111,12 @@ namespace engine
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       DX_RELEASE(rtv[n]);
+      DX_RELEASE(cbv[n])
     }
+    DX_RELEASE(main_descriptor_heap);
     DX_RELEASE(rtv_descriptor_heap);
     DX_RELEASE(dsv);
     DX_RELEASE(dsv_descriptor_heap);
-    DX_RELEASE(srv_descriptor_heap);
 
     ::DestroyWindow(hwnd);
     ::UnregisterClass(wc.lpszClassName, wc.hInstance);

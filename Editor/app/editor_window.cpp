@@ -20,10 +20,14 @@ namespace editor
     fwindow::init(wnd_proc,  device, factory,  command_queue);
     
     ImGui::StyleColorsClassic();
-    
     ImGui_ImplWin32_Init(hwnd);
-    ImGui_ImplDX12_Init( device.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM, srv_descriptor_heap.Get(), srv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), srv_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
+    ImGui_ImplDX12_Init( device.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM,
+      main_descriptor_heap.Get(),
+      main_descriptor_heap->GetCPUDescriptorHandleForHeapStart(),
+      main_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
     
+    // TO FIX - it crashes in second frame because imgui knows only the first descriptor heap, second frame uses the second one...
+    // Or use one descriptor heap... wierd
     get_editor_app()->load_window_state();
   }
 
@@ -47,6 +51,7 @@ namespace editor
     ImGui_ImplDX12_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
+
 #ifndef IMGUI_DISABLE_DEMO_WINDOWS
     if (0) { ImGui::ShowDemoWindow(); }
 #endif
@@ -54,18 +59,18 @@ namespace editor
     draw_editor_window(editor_window_model);
     //draw_output_window(output_window_model);
     draw_scene_window(scene_window_model);
-
-    ImGui::Render();
   }
 
   void feditor_window::render(ComPtr<ID3D12GraphicsCommandList> command_list)
   {
     fwindow::render(command_list);
-
-    fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     
-    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), command_list.Get());
+    fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
+    ImGui::Render();
+#if RENDER_IMGUI
+    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), command_list.Get());
+#endif
     fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
   }
 

@@ -54,7 +54,7 @@ namespace engine
   protected:
     virtual bool can_render() override;
     virtual void init() override;
-    virtual void render_frame_impl(const ComPtr<ID3D12GraphicsCommandList>& command_list) override;
+    virtual void render_frame_internal(ComPtr<ID3D12GraphicsCommandList> command_list) override;
     virtual void create_output_texture(bool cleanup = false) override;
   };
 }

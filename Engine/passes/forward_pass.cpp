@@ -44,16 +44,14 @@ namespace engine
       XMFLOAT4X4 model_world; // 64 Used to transform the vertex position from object space to world space
       XMFLOAT4X4 inverse_transpose_model_world; // 64 Used to transform the vertex normal from object space to world space
       XMFLOAT4X4 model_world_view_projection; // 64 Used to transform the vertex position from object space to projected clip space
-      XMFLOAT4 object_id; // 16
-      uint32_t material_id; // 4
-      uint32_t is_selected; // 4
-      int32_t padding[2]; // 8
+      //XMFLOAT4 object_id; // 16
+      //uint32_t material_id; // 4
+      //uint32_t is_selected; // 4
+      //int32_t padding[2]; // 8
     };
 
     ALIGNED_STRUCT_END(fobject_data)
   }
-
-
   
   void fforward_pass::init()
   {
@@ -61,12 +59,37 @@ namespace engine
 
     // Root signature
     {
-      std::vector<CD3DX12_ROOT_PARAMETER1> root_parameters;
-      CD3DX12_ROOT_PARAMETER1 temp;
-      temp.InitAsConstants(sizeof(XMMATRIX) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
-      root_parameters.push_back(temp);
+      constexpr int num_ranges = 1;
+      D3D12_DESCRIPTOR_RANGE descriptor_ranges[num_ranges];
+      descriptor_ranges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+      descriptor_ranges[0].NumDescriptors = 1;
+      descriptor_ranges[0].BaseShaderRegister = 0;
+      descriptor_ranges[0].RegisterSpace = 0;
+      descriptor_ranges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-      fdx12::create_root_signature(device, root_parameters, root_signature);
+      D3D12_ROOT_DESCRIPTOR_TABLE descriptor_table;
+      descriptor_table.NumDescriptorRanges = num_ranges;
+      descriptor_table.pDescriptorRanges = &descriptor_ranges[0];
+
+      std::vector<D3D12_ROOT_PARAMETER> root_parameters;
+      {
+        D3D12_ROOT_PARAMETER temp;
+        temp.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+        temp.DescriptorTable = descriptor_table;
+        temp.ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+        root_parameters.push_back(temp);
+      }
+      
+      D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags =
+        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+
+      // TODO convert this to CD3DX12_ROOT_PARAMETER::InitAsDescriptorTable
+      
+      fdx12::create_root_signature(device, root_parameters, root_signature_flags, root_signature);
     }
 
     // Pipeline state
@@ -83,6 +106,7 @@ namespace engine
       rtv_formats.NumRenderTargets = 1;
       rtv_formats.RTFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 
+      // Pipeline state object
       fpipeline_state_stream pipeline_state_stream;
       pipeline_state_stream.root_signature = root_signature.Get();
       pipeline_state_stream.input_layout = { input_element_desc, _countof(input_element_desc) };
@@ -91,42 +115,57 @@ namespace engine
       pipeline_state_stream.pixel_shader = CD3DX12_SHADER_BYTECODE(pixel_shader->blob.Get());
       pipeline_state_stream.dsv_format = DXGI_FORMAT_D32_FLOAT;
       pipeline_state_stream.rtv_formats = rtv_formats;
-      
       fdx12::create_pipeline_state(device, pipeline_state_stream, pipeline_state);
     }
-    
-    //{
-    //  D3D11_INPUT_ELEMENT_DESC input_element_desc[] =
-    //  {
-    //    {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    //    {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    //    {"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    //    {"BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    //    {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0}
-    //  };
-    //  dx.create_input_layout(input_element_desc, ARRAYSIZE(input_element_desc), vertex_shader->blob, input_layout);
-    //}
-    //dx.create_sampler_state(sampler_state);
-    //dx.create_constant_buffer(sizeof(fobject_data), object_constant_buffer);
-    //dx.create_constant_buffer(sizeof(fframe_data), frame_constant_buffer);
-    //dx.create_rasterizer_state(rasterizer_state);
-    //dx.create_depth_stencil_state(depth_stencil_state);
   }
   
-  void fforward_pass::draw(const ComPtr<ID3D12GraphicsCommandList>& command_list)
+  void fforward_pass::draw(ComPtr<ID3D12GraphicsCommandList> command_list)
   {
     ComPtr<ID3D12Device2> device = fapplication::instance->device;
     
     command_list->SetPipelineState(pipeline_state.Get());
     command_list->SetGraphicsRootSignature(root_signature.Get());
-    command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);  // Duplicate setting? Pipeline state already has one
+    command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);  // TODO Duplicate setting? Pipeline state already has one
+
+    const int back_buffer_index = window->get_back_buffer_index();
+    command_list->SetGraphicsRootDescriptorTable(0, window->main_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
     
     for(hstatic_mesh* sm : scene_acceleration->meshes)
     {
+      // Update per-object constant buffer
+      {
+        const XMMATRIX translation_matrix = XMMatrixTranslation(sm->origin.x, sm->origin.y, sm->origin.z);
+        const XMMATRIX rotation_matrix =
+            XMMatrixRotationX(XMConvertToRadians(sm->rotation.x))
+          * XMMatrixRotationY(XMConvertToRadians(sm->rotation.y))
+          * XMMatrixRotationZ(XMConvertToRadians(sm->rotation.z));
+        const XMMATRIX scale_matrix = XMMatrixScaling(sm->scale.x, sm->scale.y, sm->scale.z);
+        const XMMATRIX world_matrix = scale_matrix * rotation_matrix * translation_matrix;
+      
+        const XMMATRIX inverse_transpose_model_world = XMMatrixTranspose(XMMatrixInverse(nullptr, world_matrix));
+        const XMMATRIX model_world_view_projection = XMMatrixMultiply(world_matrix, XMLoadFloat4x4(&scene->camera_config.view_projection));
+      
+        fobject_data object_data;
+        XMStoreFloat4x4(&object_data.model_world, world_matrix);
+        XMStoreFloat4x4(&object_data.inverse_transpose_model_world, inverse_transpose_model_world);
+        XMStoreFloat4x4(&object_data.model_world_view_projection, model_world_view_projection);
+        
+        D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
+        cbv_desc.BufferLocation = window->cbv[back_buffer_index]->GetGPUVirtualAddress();
+        cbv_desc.SizeInBytes = (sizeof(fobject_data) + 255) & ~255;    // CB size is required to be 256-byte aligned.
+        device->CreateConstantBufferView(&cbv_desc, window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+
+        CD3DX12_RANGE read_range(0, 0);
+        UINT8* object_data_gpu_ptr;
+        THROW_IF_FAILED(window->cbv[back_buffer_index]->Map(0, &read_range, reinterpret_cast<void**>(&object_data_gpu_ptr)));
+        memcpy(object_data_gpu_ptr, &object_data, sizeof(fobject_data));
+      }
+      
+      // Update vertex and index buffers
       astatic_mesh* sma = sm->mesh_asset_ptr.get();
       if(sma == nullptr) { continue; }
       fstatic_mesh_render_state& smrs = sma->render_state;
-
+      
       if(!smrs.is_resource_online)
       {
         fdx12::upload_vertex_buffer(device, command_list, smrs);
@@ -136,10 +175,7 @@ namespace engine
       command_list->IASetIndexBuffer(&smrs.index_buffer_view);
 
       command_list->DrawIndexedInstanced(smrs.num_vertices, 1, 0, 0, 0);
-      
     }
-    
-
     
     //fdx12& dx = fdx12::instance();
     //

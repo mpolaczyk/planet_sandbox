@@ -13,7 +13,7 @@ namespace engine
   void fonb::build_from_w(const fvec3& in_w)
   {
     w = fmath::normalize(in_w);
-    fvec3 a = (fabs(w.x) > 0.9f) ? fvec3(0, 1, 0) : fvec3(1, 0, 0);
+    fvec3 a = (fabs(w.x) > 0.9f) ? fvec3(0.0f, 1.0f, 0.0f) : fvec3(1.0f, 0.0f, 0.0f);
     v = fmath::normalize(fmath::cross(w, a));
     u = fmath::cross(w, v);
   }

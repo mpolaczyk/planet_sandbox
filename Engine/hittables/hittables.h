@@ -22,9 +22,9 @@ namespace engine
     };
 
     // Persistent members
-    fvec3 origin = fvec3(0, 0, 0);
-    fvec3 scale = fvec3(1, 1, 1);
-    fvec3 rotation = fvec3(0, 0, 0); // degrees
+    fvec3 origin = fvec3(0.0f, 0.0f, 0.0f);
+    fvec3 scale = fvec3(1.0f, 1.0f, 1.0f);
+    fvec3 rotation = fvec3(0.0f, 0.0f, 0.0f); // degrees
 
     // Runtime members
     faabb bounding_box;

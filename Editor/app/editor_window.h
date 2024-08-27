@@ -57,7 +57,7 @@ namespace editor
     float distance_to_center_of_scene = 0.0f;
     bool output_window_is_clicked = false;
     bool output_window_is_hovered = false;
-    uint8_t output_window_cursor_color[3];
+    uint8_t output_window_cursor_color[3] = {0};
     
   };
 }

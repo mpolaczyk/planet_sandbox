@@ -67,9 +67,9 @@ namespace engine
     // Everything happens in the frame
   }
 
-  void rgpu_deferred_sync::render_frame_impl(const ComPtr<ID3D12GraphicsCommandList>& command_list)
+  void rgpu_deferred_sync::render_frame_internal(ComPtr<ID3D12GraphicsCommandList> command_list)
   {
-    gbuffer_pass.copy_input(&gbuffer_vertex_shader_asset.get()->render_state, &gbuffer_pixel_shader_asset.get()->render_state,
+    gbuffer_pass.copy_input(window, &gbuffer_vertex_shader_asset.get()->render_state, &gbuffer_pixel_shader_asset.get()->render_state,
       &scene_acceleration, scene, selected_object,
       output_width, output_height,
       default_material_asset);
@@ -77,7 +77,7 @@ namespace engine
     gbuffer_pass.init();
     gbuffer_pass.draw(command_list);
     
-    deferred_lighting_pass.copy_input(&lighting_vertex_shader_asset.get()->render_state, &lighting_pixel_shader_asset.get()->render_state,
+    deferred_lighting_pass.copy_input(window, &lighting_vertex_shader_asset.get()->render_state, &lighting_pixel_shader_asset.get()->render_state,
       &scene_acceleration, scene, selected_object,
       output_width, output_height,
       default_material_asset);

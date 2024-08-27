@@ -166,6 +166,9 @@ namespace engine
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     desc.NodeMask = 0;
     THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.GetAddressOf())))
+#if BUILD_DEBUG
+    out_descriptor_heap->SetName(L"Render Target Descriptor Heap");
+#endif
   }
   
   void fdx12::create_render_target(ComPtr<ID3D12Device> device, ComPtr<IDXGISwapChain4> swap_chain, ComPtr<ID3D12DescriptorHeap> descriptor_heap, uint32_t back_buffer_count, std::vector<ComPtr<ID3D12Resource>>& out_rtv)
@@ -179,6 +182,9 @@ namespace engine
       ComPtr<ID3D12Resource> back_buffer;
       THROW_IF_FAILED(swap_chain->GetBuffer(n, IID_PPV_ARGS(back_buffer.GetAddressOf())))
       device->CreateRenderTargetView(back_buffer.Get(), nullptr, handle);
+#if BUILD_DEBUG
+      back_buffer->SetName(L"Render Target Resource");
+#endif
       out_rtv.push_back(back_buffer);
       handle.Offset(static_cast<int>(descriptor_size));
     }
@@ -191,6 +197,9 @@ namespace engine
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&out_descriptor_heap)));
+#if BUILD_DEBUG
+    out_descriptor_heap->SetName(L"Depth Stencil Descriptor Heap");
+#endif
   }
 
   void fdx12::resize_swap_chain(ComPtr<IDXGISwapChain4> swap_chain, uint32_t back_buffer_count, uint32_t width, uint32_t height)
@@ -216,15 +225,22 @@ namespace engine
     desc.Texture2D.MipSlice = 0;
     desc.Flags = D3D12_DSV_FLAG_NONE;
     device->CreateDepthStencilView(out_dsv.Get(), &desc, descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+
+#if BUILD_DEBUG
+    out_dsv->SetName(L"Depth Stencil Resource");
+#endif
   }
 
-  void fdx12::create_shader_resource_descriptor_heap(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap>& out_srv_descriptor_heap)
+  void fdx12::create_main_descriptor_heap(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap>& out_main_descriptor_heap)
   {
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = 1;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_srv_descriptor_heap.GetAddressOf())))
+    THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_main_descriptor_heap.GetAddressOf())))
+#if BUILD_DEBUG
+    out_main_descriptor_heap->SetName(L"Main Descriptor Heap");
+#endif
   }
 
   void fdx12::create_command_list(ComPtr<ID3D12Device> device, uint32_t back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators)
@@ -256,31 +272,16 @@ namespace engine
     }
   }
 
-  void fdx12::create_root_signature(ComPtr<ID3D12Device> device, const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, ComPtr<ID3D12RootSignature>& out_root_signature)
+  void fdx12::create_root_signature(ComPtr<ID3D12Device> device, const std::vector<D3D12_ROOT_PARAMETER>& root_parameters, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, ComPtr<ID3D12RootSignature>& out_root_signature)
   {
-    D3D12_FEATURE_DATA_ROOT_SIGNATURE root_signature_feature_data = {};
-    root_signature_feature_data.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-    if (FAILED(device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &root_signature_feature_data, sizeof(root_signature_feature_data))))
-    {
-      root_signature_feature_data.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-    }
-      
-    // Allow input layout and deny unnecessary access to certain pipeline stages.
-    D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags =
-        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
-    
-    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC root_signature_desc;
-    root_signature_desc.Init_1_1(root_parameters.size(), root_parameters.data(), 0, nullptr, root_signature_flags);
+    CD3DX12_ROOT_SIGNATURE_DESC root_signature_desc;
+    root_signature_desc.Init(root_parameters.size(), root_parameters.data(), 0, nullptr, root_signature_flags);
       
     // Serialize the root signature.
     ComPtr<ID3DBlob> root_signature_blob;
     ComPtr<ID3DBlob> error_blob;
-    THROW_IF_FAILED(D3DX12SerializeVersionedRootSignature(&root_signature_desc, root_signature_feature_data.HighestVersion, root_signature_blob.GetAddressOf(), error_blob.GetAddressOf()));
-    // TODO: read error_blob
+    THROW_IF_FAILED(D3D12SerializeRootSignature(&root_signature_desc, D3D_ROOT_SIGNATURE_VERSION_1, root_signature_blob.GetAddressOf(), error_blob.GetAddressOf()));
+    // TODO: don't THROW_IF_FAILED, read error_blob
     
     // Create the root signature.
     THROW_IF_FAILED(device->CreateRootSignature(0, root_signature_blob->GetBufferPointer(), root_signature_blob->GetBufferSize(), IID_PPV_ARGS(out_root_signature.GetAddressOf())));
@@ -340,18 +341,21 @@ namespace engine
 
   void fdx12::upload_buffer_resource(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, size_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource)
   {
-    // Create a committed resource for the GPU resource in a default heap.
-    CD3DX12_HEAP_PROPERTIES type_default = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-    CD3DX12_RESOURCE_DESC destination_desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size, D3D12_RESOURCE_FLAG_NONE);
-    THROW_IF_FAILED(device->CreateCommittedResource(&type_default, D3D12_HEAP_FLAG_NONE, &destination_desc, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(out_gpu_resource.GetAddressOf())));
-    
-    // Create an committed resource for the upload.
     if (in_buffer)
     {
-      CD3DX12_HEAP_PROPERTIES type_upload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-      CD3DX12_RESOURCE_DESC intermediate_desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
-      THROW_IF_FAILED(device->CreateCommittedResource(&type_upload, D3D12_HEAP_FLAG_NONE, &intermediate_desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(out_upload_intermediate.GetAddressOf())));
+      const CD3DX12_HEAP_PROPERTIES type_default = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+      const CD3DX12_HEAP_PROPERTIES type_upload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+      const CD3DX12_RESOURCE_DESC destination_desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size, D3D12_RESOURCE_FLAG_NONE);
+      const CD3DX12_RESOURCE_DESC intermediate_desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
 
+      // Create a committed resource for the GPU resource in a default heap.
+      THROW_IF_FAILED(device->CreateCommittedResource(&type_default, D3D12_HEAP_FLAG_NONE, &destination_desc, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(out_gpu_resource.GetAddressOf())));
+      // TODO: use create_default_resource(device, buffer_size, out_gpu_resource);
+      
+      // Create an committed resource for the upload.
+      THROW_IF_FAILED(device->CreateCommittedResource(&type_upload, D3D12_HEAP_FLAG_NONE, &intermediate_desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(out_upload_intermediate.GetAddressOf())));
+      // TODO use: create_upload_resource(device, buffer_size, out_upload_intermediate);
+      
       D3D12_SUBRESOURCE_DATA data = {};
       data.pData = in_buffer;
       data.RowPitch = buffer_size;
@@ -359,6 +363,32 @@ namespace engine
 
       UpdateSubresources(command_list.Get(), out_gpu_resource.Get(), out_upload_intermediate.Get(), 0, 0, 1, &data);
     }
+  }
+
+  void fdx12::create_upload_resource(ComPtr<ID3D12Device> device, size_t buffer_size, ComPtr<ID3D12Resource>& out_resource)
+  {
+    const CD3DX12_HEAP_PROPERTIES type_upload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+    const CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
+    THROW_IF_FAILED(device->CreateCommittedResource(
+      &type_upload,
+      D3D12_HEAP_FLAG_NONE,
+      &desc,
+      D3D12_RESOURCE_STATE_GENERIC_READ,
+      nullptr,
+      IID_PPV_ARGS(out_resource.GetAddressOf())));
+  }
+
+  void fdx12::create_default_resource(ComPtr<ID3D12Device> device, size_t buffer_size, ComPtr<ID3D12Resource>& out_resource)
+  {
+    const CD3DX12_HEAP_PROPERTIES type_default = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+    const CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size, D3D12_RESOURCE_FLAG_NONE);
+    THROW_IF_FAILED(device->CreateCommittedResource(
+      &type_default,
+      D3D12_HEAP_FLAG_NONE,
+      &desc,
+      D3D12_RESOURCE_STATE_COMMON,
+      nullptr,
+      IID_PPV_ARGS(out_resource.GetAddressOf())));
   }
 
   void fdx12::upload_vertex_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state)
@@ -371,6 +401,9 @@ namespace engine
 
     resource_barrier(command_list, out_render_state.vertex_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
+#if BUILD_DEBUG
+    out_render_state.vertex_buffer->SetName(L"Vertex Buffer");
+#endif
     out_render_state.is_resource_online = true;
   }
 
@@ -383,7 +416,10 @@ namespace engine
     out_render_state.index_buffer_view.SizeInBytes = out_render_state.face_list_size;
 
     resource_barrier(command_list, out_render_state.index_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER);
-
+    
+#if BUILD_DEBUG
+    out_render_state.index_buffer->SetName(L"Index Buffer");
+#endif
     out_render_state.is_resource_online = true;
   }
   

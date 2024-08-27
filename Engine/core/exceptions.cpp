@@ -112,7 +112,12 @@ namespace engine
                                        (LPWSTR)&message, 0, nullptr);
     if(!result)
     {
-      oss << "Failed formatting windows error message";
+      oss << "Failed formatting windows error message. Put a breakpoint in fwin32_error::get_error_description";
+      // TODO this does not capture call stack properly, error is meaningless, I do break jsut to see the context
+#if BUILD_DEBUG
+      __debugbreak();
+      system("pause");
+#endif
     }
     else
     {

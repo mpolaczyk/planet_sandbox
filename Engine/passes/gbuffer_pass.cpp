@@ -50,7 +50,7 @@ namespace engine
     //dx.create_depth_stencil_state(depth_stencil_state);
   }
 
-  void fgbuffer_pass::draw(const ComPtr<ID3D12GraphicsCommandList>& command_list)
+  void fgbuffer_pass::draw(ComPtr<ID3D12GraphicsCommandList> command_list)
   {
 //    for(int i = 0; i < egbuffer_type::count; i++)
 //    {

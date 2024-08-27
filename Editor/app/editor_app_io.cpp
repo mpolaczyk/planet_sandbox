@@ -46,16 +46,16 @@ namespace editor
         });
     }
 
-    LOG_INFO("Loading: static meshes");
-    {
-      std::vector<std::string> mesh_names = fio::discover_mesh_files(false);
-      concurrency::parallel_for_each(begin(mesh_names), end(mesh_names),
-        [&](const std::string& name)
-        {
-          astatic_mesh* temp = astatic_mesh::spawn();
-          astatic_mesh::load(temp, name);
-        });
-    }
+    //LOG_INFO("Loading: static meshes");
+    //{
+    //  std::vector<std::string> mesh_names = fio::discover_mesh_files(false);
+    //  concurrency::parallel_for_each(begin(mesh_names), end(mesh_names),
+    //    [&](const std::string& name)
+    //    {
+    //      astatic_mesh* temp = astatic_mesh::spawn();
+    //      astatic_mesh::load(temp, name);
+    //    });
+    //}
 
     LOG_INFO("Loading: pixel shaders");
     {

@@ -16,6 +16,9 @@ namespace engine
     explicit constexpr fvec3(float in_x, float in_y, float in_z) : e{in_x, in_y, in_z}
     {
     }
+    explicit constexpr fvec3(double in_x, double in_y, double in_z) : e{static_cast<float>(in_x), static_cast<float>(in_y), static_cast<float>(in_z)}
+    {
+    }
 #if USE_SIMD
     explicit fvec3(float f) { R128 = _mm_set_ps1(f); }
     explicit fvec3(const __m128& r128) { R128 = r128; }

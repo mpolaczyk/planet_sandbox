@@ -36,7 +36,7 @@ namespace engine
     float l_in = luminance(c_in);
     if(l_in == 0.0f)
     {
-      return fvec3(0, 0, 0);
+      return fvec3(0.0f, 0.0f, 0.0f);
     }
     return c_in * (l_out / l_in);
   }

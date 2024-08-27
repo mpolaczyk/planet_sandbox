@@ -18,7 +18,7 @@ namespace engine
   struct fgbuffer_pass : fpass_base
   {
     virtual void init() override;
-    virtual void draw(const ComPtr<ID3D12GraphicsCommandList>& command_list) override;
+    virtual void draw(ComPtr<ID3D12GraphicsCommandList> command_list) override;
     virtual void create_output_texture(bool cleanup = false) override;
     
     // Output

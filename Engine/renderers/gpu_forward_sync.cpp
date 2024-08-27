@@ -39,7 +39,7 @@ namespace engine
   
   void rgpu_forward_sync::init()
   {
-    forward_pass.copy_input(&vertex_shader_asset.get()->render_state, &pixel_shader_asset.get()->render_state,
+    forward_pass.copy_input(window, &vertex_shader_asset.get()->render_state, &pixel_shader_asset.get()->render_state,
       &scene_acceleration, scene, selected_object,
       output_width, output_height,
       default_material_asset);
@@ -47,9 +47,9 @@ namespace engine
     forward_pass.init();
   }
 
-  void rgpu_forward_sync::render_frame_impl(const ComPtr<ID3D12GraphicsCommandList>& command_list)
+  void rgpu_forward_sync::render_frame_internal(ComPtr<ID3D12GraphicsCommandList> command_list)
   {
-    forward_pass.copy_input(&vertex_shader_asset.get()->render_state, &pixel_shader_asset.get()->render_state,
+    forward_pass.copy_input(window, &vertex_shader_asset.get()->render_state, &pixel_shader_asset.get()->render_state,
       &scene_acceleration, scene, selected_object,
       output_width, output_height,
       default_material_asset);
