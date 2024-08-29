@@ -11,7 +11,7 @@
       "look_from": {
         "x": 0.0,
         "y": 0.0,
-        "z": -20.0
+        "z": -10.0
       },
       "pitch": 0.0,
       "yaw": 0.0
@@ -25,41 +25,16 @@
     "objects": [
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "ico3",
-        "material_asset": {
-          "name": "red"
-        },
-        "mesh_asset": {
-          "name": "icosphere3"
-        },
-        "origin": {
-          "x": 4.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "torus",
+        "custom_display_name": "icosphere4",
         "material_asset": {
           "name": "green"
         },
         "mesh_asset": {
-          "name": "torus"
+          "name": "icosphere4"
         },
         "origin": {
           "x": 0.0,
-          "y": 4.0,
+          "y": 0.0,
           "z": 0.0
         },
         "rotation": {
@@ -68,34 +43,9 @@
           "z": 0.0
         },
         "scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "suzanne",
-        "material_asset": {
-          "name": "white"
-        },
-        "mesh_asset": {
-          "name": "suzanne"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 250.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 13.0
-        },
-        "scale": {
-          "x": 70.0,
-          "y": 70.0,
-          "z": 70.0
+          "x": 2.0,
+          "y": 2.0,
+          "z": 2.0
         }
       },
       {
@@ -154,131 +104,6 @@
           "linear_attenuation": 0.09000000357627869,
           "quadratic_attenuation": 0.009999999776482582,
           "spot_angle": 1.5707963705062866
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "ico4",
-        "material_asset": {
-          "name": "blue"
-        },
-        "mesh_asset": {
-          "name": "icosphere4"
-        },
-        "origin": {
-          "x": -4.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "torusknot1",
-        "material_asset": {
-          "name": "white"
-        },
-        "mesh_asset": {
-          "name": "torusknot1"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": -90.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 0.5,
-          "y": 0.5,
-          "z": 0.5
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "torusknot2",
-        "material_asset": {
-          "name": "white"
-        },
-        "mesh_asset": {
-          "name": "torusknot2"
-        },
-        "origin": {
-          "x": 8.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": -90.0,
-          "y": 0.0,
-          "z": 90.0
-        },
-        "scale": {
-          "x": 0.5,
-          "y": 0.5,
-          "z": 0.5
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "torusknot3",
-        "material_asset": {
-          "name": "white"
-        },
-        "mesh_asset": {
-          "name": "torusknot3"
-        },
-        "origin": {
-          "x": -8.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": 90.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 0.5,
-          "y": 0.5,
-          "z": 0.5
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "ico5",
-        "material_asset": {
-          "name": "default"
-        },
-        "mesh_asset": {
-          "name": "sphere"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": -6.0,
-          "z": 0.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 2.0,
-          "y": 2.0,
-          "z": 2.0
         }
       },
       {

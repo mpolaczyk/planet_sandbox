@@ -59,37 +59,13 @@ namespace engine
 
     // Root signature
     {
-      constexpr int num_ranges = 1;
-      D3D12_DESCRIPTOR_RANGE descriptor_ranges[num_ranges];
-      descriptor_ranges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-      descriptor_ranges[0].NumDescriptors = 1;
-      descriptor_ranges[0].BaseShaderRegister = 0;
-      descriptor_ranges[0].RegisterSpace = 0;
-      descriptor_ranges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-      D3D12_ROOT_DESCRIPTOR_TABLE descriptor_table;
-      descriptor_table.NumDescriptorRanges = num_ranges;
-      descriptor_table.pDescriptorRanges = &descriptor_ranges[0];
-
-      std::vector<D3D12_ROOT_PARAMETER> root_parameters;
+      std::vector<CD3DX12_ROOT_PARAMETER1> root_parameters;
       {
-        D3D12_ROOT_PARAMETER temp;
-        temp.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-        temp.DescriptorTable = descriptor_table;
-        temp.ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-        root_parameters.push_back(temp);
+        CD3DX12_ROOT_PARAMETER1 param;
+        param.InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC);
+        root_parameters.push_back(param);
       }
-      
-      D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags =
-        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
-
-      // TODO convert this to CD3DX12_ROOT_PARAMETER::InitAsDescriptorTable
-      
-      fdx12::create_root_signature(device, root_parameters, root_signature_flags, root_signature);
+      fdx12::create_root_signature(device, root_parameters, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature);
     }
 
     // Pipeline state
@@ -128,10 +104,15 @@ namespace engine
     command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);  // TODO Duplicate setting? Pipeline state already has one
 
     const int back_buffer_index = window->get_back_buffer_index();
-    command_list->SetGraphicsRootDescriptorTable(0, window->main_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
+
+    D3D12_GPU_VIRTUAL_ADDRESS cbv_gpu_addr = window->cbv[back_buffer_index]->GetGPUVirtualAddress();
+    command_list->SetGraphicsRootConstantBufferView(0, cbv_gpu_addr);
     
     for(hstatic_mesh* sm : scene_acceleration->meshes)
     {
+      astatic_mesh* sma = sm->mesh_asset_ptr.get();
+      if(sma == nullptr) { continue; }
+      
       // Update per-object constant buffer
       {
         const XMMATRIX translation_matrix = XMMatrixTranslation(sm->origin.x, sm->origin.y, sm->origin.z);
@@ -153,17 +134,16 @@ namespace engine
         D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
         cbv_desc.BufferLocation = window->cbv[back_buffer_index]->GetGPUVirtualAddress();
         cbv_desc.SizeInBytes = (sizeof(fobject_data) + 255) & ~255;    // CB size is required to be 256-byte aligned.
-        device->CreateConstantBufferView(&cbv_desc, window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+        device->CreateConstantBufferView(&cbv_desc, window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart()); // TODO check if it already exists
 
         CD3DX12_RANGE read_range(0, 0);
         UINT8* object_data_gpu_ptr;
         THROW_IF_FAILED(window->cbv[back_buffer_index]->Map(0, &read_range, reinterpret_cast<void**>(&object_data_gpu_ptr)));
         memcpy(object_data_gpu_ptr, &object_data, sizeof(fobject_data));
+        window->cbv[back_buffer_index]->Unmap(0, nullptr);
       }
       
       // Update vertex and index buffers
-      astatic_mesh* sma = sm->mesh_asset_ptr.get();
-      if(sma == nullptr) { continue; }
       fstatic_mesh_render_state& smrs = sma->render_state;
       
       if(!smrs.is_resource_online)

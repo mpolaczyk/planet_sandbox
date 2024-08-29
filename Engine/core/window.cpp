@@ -5,10 +5,13 @@
 
 #include "core/window.h"
 
+#include <format>
+
 #include "core/application.h"
 #include "core/exceptions.h"
 #include "renderer/dx12_lib.h"
 #include "renderer/renderer_base.h"
+#include "renderer/command_queue.h"
 #include "hittables/scene.h"
 
 namespace engine
@@ -33,21 +36,28 @@ namespace engine
     screen_tearing = fdx12::enable_screen_tearing(factory);
 
     fdx12::create_swap_chain(hwnd, factory, command_queue, back_buffer_count, screen_tearing, swap_chain);
-
     fdx12::create_render_target_descriptor_heap(device, back_buffer_count, rtv_descriptor_heap);
     fdx12::create_depth_stencil_descriptor_heap(device, dsv_descriptor_heap);
-    fdx12::create_main_descriptor_heap(device, main_descriptor_heap);
+    fdx12::create_cbv_srv_uav_descriptor_heap(device, main_descriptor_heap);
+#if BUILD_DEBUG
+    main_descriptor_heap->SetName(L"Main Descriptor Heap");
+#endif
+    
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       ComPtr<ID3D12Resource> resource;
-      fdx12::create_upload_resource(device, 1024*64, resource);
-      resource->SetName(L"Constant Buffer Upload Resource");
+      fdx12::create_upload_resource(device, 1024*64, resource); // TODO sizeof(fobject_data)
       cbv.push_back(resource);
+#if BUILD_DEBUG
+      std::string name = std::format("Constant Buffer Upload Resource {}", n);
+      resource->SetName(std::wstring(name.begin(), name.end()).c_str());
+#endif
     }
   }
 
-  void fwindow::render(ComPtr<ID3D12GraphicsCommandList> command_list)
+  void fwindow::render(const fcommand_queue* command_queue)
   {
+    ComPtr<ID3D12GraphicsCommandList> command_list = command_queue->get_command_list(ecommand_list_type::main, back_buffer_index);
     ComPtr<ID3D12Device2> device = fapplication::instance->device;
 
     fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);

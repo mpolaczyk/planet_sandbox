@@ -11,12 +11,13 @@ struct ID3D12RootSignature;
 struct ID3D12DescriptorHeap;
 struct ID3D12Resource;
 struct ID3D12CommandQueue;
-struct ID3D12GraphicsCommandList;
 
 using Microsoft::WRL::ComPtr;
 
 namespace engine
 {
+  struct fcommand_queue;
+  
   class ENGINE_API fwindow
   {
   public:   
@@ -25,7 +26,7 @@ namespace engine
     virtual void init(WNDPROC wnd_proc, ComPtr<ID3D12Device> device, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue);
     virtual void update() = 0;
     virtual void draw() = 0;
-    virtual void render(ComPtr<ID3D12GraphicsCommandList> command_list);
+    virtual void render(const fcommand_queue* command_queue);
     void present();
     void resize(const ComPtr<ID3D12Device> device, uint32_t width, uint32_t height);
     virtual const wchar_t* get_name() const = 0;

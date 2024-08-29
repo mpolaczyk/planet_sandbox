@@ -37,12 +37,12 @@ namespace engine
   const unsigned int assimp_import_flags =
     aiProcess_CalcTangentSpace |
     aiProcess_Triangulate |
-    aiProcess_ImproveCacheLocality |
-      aiProcess_SortByPType |
-    //aiProcess_PreTransformVertices |
+    aiProcess_SortByPType |
+    aiProcess_PreTransformVertices |
     aiProcess_GenNormals |
     aiProcess_GenUVCoords |
-    //aiProcess_Debone |
+    aiProcess_OptimizeMeshes |
+    aiProcess_Debone |
     aiProcess_ValidateDataStructure |
     aiProcess_GenBoundingBoxes;
 
@@ -85,7 +85,7 @@ namespace engine
       // Vertex list
       {
         std::vector<fvertex_data>& vertex_list = out_static_mesh->render_state.vertex_list;
-        vertex_list.reserve(ai_mesh->mNumVertices); // powinno być 36
+        vertex_list.reserve(ai_mesh->mNumVertices);
         for(size_t i = 0; i < vertex_list.capacity(); ++i)
         {
           fvertex_data vertex;

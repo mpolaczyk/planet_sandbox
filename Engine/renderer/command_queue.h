@@ -12,10 +12,22 @@ struct ID3D12GraphicsCommandList;
 struct ID3D12Fence;
 
 using Microsoft::WRL::ComPtr;
-using std::vector;
 
 namespace engine
-{ 
+{
+  enum ecommand_list_type : int
+  {
+    main = 0,
+    ui,
+    num
+  };
+
+  struct ENGINE_API fcommand_pair
+  {
+    std::vector<ComPtr<ID3D12CommandAllocator>> command_allocator;  // For backbuffers
+    ComPtr<ID3D12GraphicsCommandList> command_list;
+  };
+  
   struct ENGINE_API fcommand_queue
   {
   public:
@@ -28,18 +40,18 @@ namespace engine
     void flush();
 
     ComPtr<ID3D12CommandQueue> get_command_queue() const;
-    ComPtr<ID3D12GraphicsCommandList> get_command_list(uint32_t back_buffer_id) const;
-    uint64_t execute_command_list(uint32_t back_buffer_id);
+    void reset_command_lists(uint32_t back_buffer_id);
+    ComPtr<ID3D12GraphicsCommandList> get_command_list(ecommand_list_type type, uint32_t back_buffer_id) const;
+    uint64_t execute_command_lists(uint32_t back_buffer_id);
     
   private: 
     ComPtr<ID3D12CommandQueue> command_queue;
-    vector<ComPtr<ID3D12CommandAllocator>> command_allocator;
-    ComPtr<ID3D12GraphicsCommandList> command_list;
+    std::vector<fcommand_pair> command_pair; // index is ecommand_list_type
     
     uint32_t back_buffer_count = 0;
     HANDLE fence_event = nullptr;
     ComPtr<ID3D12Fence> fence;  
-    vector<uint64_t> fence_value = {};
+    std::vector<uint64_t> fence_value = {};
     uint64_t last_fence_value = 0;
   };
 }

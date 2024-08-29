@@ -1,4 +1,6 @@
 #include <d3d12.h>
+#include <iostream>
+#include <format>
 
 #include "command_queue.h"
 
@@ -9,21 +11,43 @@ namespace engine
 {
   void fcommand_queue::init(ComPtr<ID3D12Device> device, uint32_t in_back_buffer_count)
   {
-    fdx12::create_command_queue(device, command_queue);
-    fdx12::create_command_list(device, in_back_buffer_count, command_list, command_allocator);
-    fdx12::create_synchronisation(device, in_back_buffer_count, last_fence_value, fence, fence_event, fence_value);
     back_buffer_count = in_back_buffer_count;
+    fdx12::create_command_queue(device, command_queue);
+    for(int i = 0; i < ecommand_list_type::num; i++)
+    {
+      fcommand_pair temp;
+      fdx12::create_command_list(device, back_buffer_count, temp.command_list, temp.command_allocator);
+      for(uint32_t n = 0; n < back_buffer_count; n++)
+      {
+        std::string allocator_name = std::format("Command allocator type {} back buffer count {}", i, n);
+        temp.command_allocator[n]->SetName(std::wstring(allocator_name.begin(), allocator_name.end()).c_str());
+
+        std::string list_name = std::format("Command list type {}", i);
+        temp.command_list->SetName(std::wstring(list_name.begin(), list_name.end()).c_str());
+      }      
+      command_pair.push_back(temp);
+    }
+    fdx12::create_synchronisation(device, back_buffer_count, last_fence_value, fence, fence_event, fence_value);
   }
 
   void fcommand_queue::cleanup()
   {
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
-      command_allocator[n].Reset();
+      reset_command_lists(n);
     }
-    DX_RELEASE(command_queue);
-    DX_RELEASE(command_list);
-    DX_RELEASE(fence);
+    
+    for(int i = 0; i < ecommand_list_type::num; i++)
+    {
+      fcommand_pair& pair = command_pair[i];
+      DX_RELEASE(pair.command_list)
+      for(uint32_t n = 0; n < back_buffer_count; n++)
+      {
+        DX_RELEASE(pair.command_allocator[n])
+      }      
+    }
+    DX_RELEASE(command_queue)
+    DX_RELEASE(fence)
     CloseHandle(fence_event);
   }
 
@@ -44,7 +68,7 @@ namespace engine
   uint64_t fcommand_queue::signal()
   {
     uint64_t value_for_signal = ++last_fence_value;
-    THROW_IF_FAILED(command_queue->Signal(fence.Get(), value_for_signal));
+    THROW_IF_FAILED(command_queue->Signal(fence.Get(), value_for_signal))
     return value_for_signal;
   }
 
@@ -58,19 +82,31 @@ namespace engine
     return command_queue;
   }
 
-  ComPtr<ID3D12GraphicsCommandList> fcommand_queue::get_command_list(uint32_t back_buffer_id) const
+  void fcommand_queue::reset_command_lists(uint32_t back_buffer_id)
   {
-    command_allocator[back_buffer_id]->Reset();
-    command_list->Reset(command_allocator[back_buffer_id].Get(), nullptr);
-    return command_list;
+    for(int i = 0; i < ecommand_list_type::num; i++)
+    {
+      fcommand_pair& pair = command_pair[i];
+      pair.command_allocator[back_buffer_id]->Reset();
+      pair.command_list->Reset(pair.command_allocator[back_buffer_id].Get(), nullptr);
+    }
   }
 
-  uint64_t fcommand_queue::execute_command_list(uint32_t back_buffer_id)
+  ComPtr<ID3D12GraphicsCommandList> fcommand_queue::get_command_list(ecommand_list_type type, uint32_t back_buffer_id) const
   {
-    /// TODO: validate if value < number fo back buffers and if this buffer was requested in get_command_list
-    command_list->Close();
-    ID3D12CommandList* const command_lists[] = {command_list.Get()};
-    command_queue->ExecuteCommandLists(_countof(command_lists), command_lists);
+    return command_pair[type].command_list;
+  }
+
+  uint64_t fcommand_queue::execute_command_lists(uint32_t back_buffer_id)
+  {
+    std::vector<ID3D12CommandList*> command_list_ptr;
+    for(int i = 0; i < ecommand_list_type::num; i++)
+    {
+      ID3D12GraphicsCommandList* temp = command_pair[i].command_list.Get();
+      temp->Close();
+      command_list_ptr.push_back(temp);
+    }
+    command_queue->ExecuteCommandLists(ecommand_list_type::num, command_list_ptr.data());
 
     fence_value[back_buffer_id] = signal();
     return fence_value[back_buffer_id];

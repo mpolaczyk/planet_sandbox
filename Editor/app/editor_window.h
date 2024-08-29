@@ -6,6 +6,7 @@
 namespace engine
 {
   class hscene;
+  struct fcommand_queue;
 }
 
 namespace editor
@@ -20,7 +21,7 @@ namespace editor
     virtual void cleanup() override;
     virtual void update() override;
     virtual void draw() override;
-    virtual void render(ComPtr<ID3D12GraphicsCommandList> command_list) override;
+    virtual void render(const engine::fcommand_queue* command_queue) override;
 
     void handle_input();
     void update_default_spawn_position();
@@ -58,6 +59,8 @@ namespace editor
     bool output_window_is_clicked = false;
     bool output_window_is_hovered = false;
     uint8_t output_window_cursor_color[3] = {0};
+
+    ComPtr<ID3D12DescriptorHeap> ui_descriptor_heap; // srv, cbv, uav
     
   };
 }

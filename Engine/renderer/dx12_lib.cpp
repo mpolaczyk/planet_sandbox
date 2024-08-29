@@ -231,16 +231,13 @@ namespace engine
 #endif
   }
 
-  void fdx12::create_main_descriptor_heap(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap>& out_main_descriptor_heap)
+  void fdx12::create_cbv_srv_uav_descriptor_heap(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap)
   {
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = 1;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_main_descriptor_heap.GetAddressOf())))
-#if BUILD_DEBUG
-    out_main_descriptor_heap->SetName(L"Main Descriptor Heap");
-#endif
+    THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.GetAddressOf())))
   }
 
   void fdx12::create_command_list(ComPtr<ID3D12Device> device, uint32_t back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators)
@@ -272,19 +269,25 @@ namespace engine
     }
   }
 
-  void fdx12::create_root_signature(ComPtr<ID3D12Device> device, const std::vector<D3D12_ROOT_PARAMETER>& root_parameters, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, ComPtr<ID3D12RootSignature>& out_root_signature)
+  void fdx12::create_root_signature(ComPtr<ID3D12Device> device, const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, ComPtr<ID3D12RootSignature>& out_root_signature)
   {
-    CD3DX12_ROOT_SIGNATURE_DESC root_signature_desc;
-    root_signature_desc.Init(root_parameters.size(), root_parameters.data(), 0, nullptr, root_signature_flags);
+    D3D12_FEATURE_DATA_ROOT_SIGNATURE feature_data = {};
+    feature_data.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+    if (FAILED(device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &feature_data, sizeof(feature_data))))
+    {
+      feature_data.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+    }
       
     // Serialize the root signature.
     ComPtr<ID3DBlob> root_signature_blob;
     ComPtr<ID3DBlob> error_blob;
-    THROW_IF_FAILED(D3D12SerializeRootSignature(&root_signature_desc, D3D_ROOT_SIGNATURE_VERSION_1, root_signature_blob.GetAddressOf(), error_blob.GetAddressOf()));
-    // TODO: don't THROW_IF_FAILED, read error_blob
+    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC root_signature_desc;
+    root_signature_desc.Init_1_1(root_parameters.size(), root_parameters.data(), 0, nullptr, root_signature_flags);
     
-    // Create the root signature.
+    THROW_IF_FAILED(D3DX12SerializeVersionedRootSignature(&root_signature_desc, feature_data.HighestVersion, root_signature_blob.GetAddressOf(), error_blob.GetAddressOf()));
     THROW_IF_FAILED(device->CreateRootSignature(0, root_signature_blob->GetBufferPointer(), root_signature_blob->GetBufferSize(), IID_PPV_ARGS(out_root_signature.GetAddressOf())));
+
+    out_root_signature->SetName(L"Root Signature");
   }
 
   void fdx12::create_pipeline_state(ComPtr<ID3D12Device2> device, fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state)
