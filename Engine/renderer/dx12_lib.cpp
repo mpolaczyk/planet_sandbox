@@ -166,9 +166,6 @@ namespace engine
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     desc.NodeMask = 0;
     THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.GetAddressOf())))
-#if BUILD_DEBUG
-    out_descriptor_heap->SetName(L"Render Target Descriptor Heap");
-#endif
   }
   
   void fdx12::create_render_target(ComPtr<ID3D12Device> device, ComPtr<IDXGISwapChain4> swap_chain, ComPtr<ID3D12DescriptorHeap> descriptor_heap, uint32_t back_buffer_count, std::vector<ComPtr<ID3D12Resource>>& out_rtv)
@@ -182,9 +179,6 @@ namespace engine
       ComPtr<ID3D12Resource> back_buffer;
       THROW_IF_FAILED(swap_chain->GetBuffer(n, IID_PPV_ARGS(back_buffer.GetAddressOf())))
       device->CreateRenderTargetView(back_buffer.Get(), nullptr, handle);
-#if BUILD_DEBUG
-      back_buffer->SetName(L"Render Target Resource");
-#endif
       out_rtv.push_back(back_buffer);
       handle.Offset(static_cast<int>(descriptor_size));
     }
@@ -197,9 +191,6 @@ namespace engine
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&out_descriptor_heap)));
-#if BUILD_DEBUG
-    out_descriptor_heap->SetName(L"Depth Stencil Descriptor Heap");
-#endif
   }
 
   void fdx12::resize_swap_chain(ComPtr<IDXGISwapChain4> swap_chain, uint32_t back_buffer_count, uint32_t width, uint32_t height)
@@ -225,10 +216,6 @@ namespace engine
     desc.Texture2D.MipSlice = 0;
     desc.Flags = D3D12_DSV_FLAG_NONE;
     device->CreateDepthStencilView(out_dsv.Get(), &desc, descriptor_heap->GetCPUDescriptorHandleForHeapStart());
-
-#if BUILD_DEBUG
-    out_dsv->SetName(L"Depth Stencil Resource");
-#endif
   }
 
   void fdx12::create_cbv_srv_uav_descriptor_heap(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap)
@@ -286,8 +273,6 @@ namespace engine
     
     THROW_IF_FAILED(D3DX12SerializeVersionedRootSignature(&root_signature_desc, feature_data.HighestVersion, root_signature_blob.GetAddressOf(), error_blob.GetAddressOf()));
     THROW_IF_FAILED(device->CreateRootSignature(0, root_signature_blob->GetBufferPointer(), root_signature_blob->GetBufferSize(), IID_PPV_ARGS(out_root_signature.GetAddressOf())));
-
-    out_root_signature->SetName(L"Root Signature");
   }
 
   void fdx12::create_pipeline_state(ComPtr<ID3D12Device2> device, fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state)
@@ -403,10 +388,7 @@ namespace engine
     out_render_state.vertex_buffer_view.StrideInBytes = out_render_state.vertex_stride;
 
     resource_barrier(command_list, out_render_state.vertex_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-
-#if BUILD_DEBUG
-    out_render_state.vertex_buffer->SetName(L"Vertex Buffer");
-#endif
+    
     out_render_state.is_resource_online = true;
   }
 
@@ -420,9 +402,6 @@ namespace engine
 
     resource_barrier(command_list, out_render_state.index_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER);
     
-#if BUILD_DEBUG
-    out_render_state.index_buffer->SetName(L"Index Buffer");
-#endif
     out_render_state.is_resource_online = true;
   }
   

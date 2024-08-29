@@ -1,6 +1,8 @@
 
 #include "forward_pass.h"
 
+#include <format>
+
 #include "d3dx12/d3dx12.h"
 #include "d3dx12/d3dx12_root_signature.h"
 
@@ -66,6 +68,9 @@ namespace engine
         root_parameters.push_back(param);
       }
       fdx12::create_root_signature(device, root_parameters, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature);
+#if BUILD_DEBUG
+      root_signature->SetName(L"Root signature forward pass");
+#endif
     }
 
     // Pipeline state
@@ -92,6 +97,9 @@ namespace engine
       pipeline_state_stream.dsv_format = DXGI_FORMAT_D32_FLOAT;
       pipeline_state_stream.rtv_formats = rtv_formats;
       fdx12::create_pipeline_state(device, pipeline_state_stream, pipeline_state);
+#if BUILD_DEBUG
+      pipeline_state->SetName(L"Pipeline state forward pass");
+#endif
     }
   }
   
@@ -150,6 +158,16 @@ namespace engine
       {
         fdx12::upload_vertex_buffer(device, command_list, smrs);
         fdx12::upload_index_buffer(device, command_list, smrs);
+#if BUILD_DEBUG
+        {
+          std::string mesh_name = sm->get_display_name();
+          std::string asset_name = sma->file_name;
+          std::string vertex_name = std::format("Vertex buffer: asset {} hittable {}", mesh_name, asset_name);
+          smrs.vertex_buffer->SetName(std::wstring(vertex_name.begin(), vertex_name.end()).c_str());
+          std::string index_name = std::format("Index buffer: asset {} hittable {}", mesh_name, asset_name);
+          smrs.index_buffer->SetName(std::wstring(index_name.begin(), index_name.end()).c_str());
+        }
+#endif
       }
       command_list->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list->IASetIndexBuffer(&smrs.index_buffer_view);

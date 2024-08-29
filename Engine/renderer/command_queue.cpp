@@ -17,14 +17,15 @@ namespace engine
     {
       fcommand_pair temp;
       fdx12::create_command_list(device, back_buffer_count, temp.command_list, temp.command_allocator);
+#if BUILD_DEBUG
       for(uint32_t n = 0; n < back_buffer_count; n++)
       {
-        std::string allocator_name = std::format("Command allocator type {} back buffer count {}", i, n);
+        std::string allocator_name = std::format("Command allocator: type {} back buffer count {}", i, n);
+        std::string list_name = std::format("Command list: type {}", i);
         temp.command_allocator[n]->SetName(std::wstring(allocator_name.begin(), allocator_name.end()).c_str());
-
-        std::string list_name = std::format("Command list type {}", i);
         temp.command_list->SetName(std::wstring(list_name.begin(), list_name.end()).c_str());
-      }      
+      }
+#endif
       command_pair.push_back(temp);
     }
     fdx12::create_synchronisation(device, back_buffer_count, last_fence_value, fence, fence_event, fence_value);

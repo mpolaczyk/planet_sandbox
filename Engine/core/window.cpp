@@ -40,7 +40,9 @@ namespace engine
     fdx12::create_depth_stencil_descriptor_heap(device, dsv_descriptor_heap);
     fdx12::create_cbv_srv_uav_descriptor_heap(device, main_descriptor_heap);
 #if BUILD_DEBUG
-    main_descriptor_heap->SetName(L"Main Descriptor Heap");
+    rtv_descriptor_heap->SetName(L"Render target descriptor heap");
+    dsv_descriptor_heap->SetName(L"Depth stencil descriptor heap");
+    main_descriptor_heap->SetName(L"Main descriptor heap");
 #endif
     
     for(uint32_t n = 0; n < back_buffer_count; n++)
@@ -49,7 +51,7 @@ namespace engine
       fdx12::create_upload_resource(device, 1024*64, resource); // TODO sizeof(fobject_data)
       cbv.push_back(resource);
 #if BUILD_DEBUG
-      std::string name = std::format("Constant Buffer Upload Resource {}", n);
+      std::string name = std::format("Constant buffer upload resource: back buffer {}", n);
       resource->SetName(std::wstring(name.begin(), name.end()).c_str());
 #endif
     }
@@ -113,6 +115,14 @@ namespace engine
     back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
     fdx12::create_render_target(device, swap_chain, rtv_descriptor_heap, back_buffer_count, rtv);
     fdx12::create_depth_stencil(device, dsv_descriptor_heap, width, height, dsv);
+#if BUILD_DEBUG
+    for(uint32_t n = 0; n < back_buffer_count; n++)
+    {
+      std::string rtv_name = std::format("Render target resource: back buffer {}", n);
+      rtv[n]->SetName(std::wstring(rtv_name.begin(), rtv_name.end()).c_str());
+    }
+    dsv->SetName(L"Depth stencil resource");
+#endif
   }
   
   void fwindow::cleanup()
