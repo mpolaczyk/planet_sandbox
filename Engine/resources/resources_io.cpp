@@ -77,7 +77,7 @@ namespace engine
     if(ai_scene && ai_scene->HasMeshes())
     {
       const aiMesh* ai_mesh = ai_scene->mMeshes[0];
-      if(!ai_mesh->HasPositions() || !ai_mesh->HasNormals())// || ai_mesh->mPrimitiveTypes != aiPrimitiveType_TRIANGLE)
+      if(!ai_mesh->HasPositions() || !ai_mesh->HasNormals() || ai_mesh->mPrimitiveTypes != aiPrimitiveType_TRIANGLE)
       {
         LOG_WARN("Failed to parse object file: {0}", file_name);
         return false;
