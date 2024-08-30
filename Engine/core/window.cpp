@@ -48,7 +48,7 @@ namespace engine
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       ComPtr<ID3D12Resource> resource;
-      fdx12::create_upload_resource(device, 1024*64, resource); // TODO sizeof(fobject_data)
+      fdx12::create_upload_resource(device, 1024, resource);
       cbv.push_back(resource);
 #if BUILD_DEBUG
       std::string name = std::format("Constant buffer upload resource: back buffer {}", n);

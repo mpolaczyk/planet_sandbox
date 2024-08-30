@@ -381,7 +381,7 @@ namespace engine
 
   void fdx12::upload_vertex_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state)
   {
-    upload_buffer_resource(device, command_list, out_render_state.vertex_list_size, out_render_state.vertex_list.data(), out_render_state.index_buffer_upload, out_render_state.vertex_buffer);
+    upload_buffer_resource(device, command_list, out_render_state.vertex_list_size, out_render_state.vertex_list.data(), out_render_state.vertex_buffer_upload, out_render_state.vertex_buffer);
     
     out_render_state.vertex_buffer_view.BufferLocation = out_render_state.vertex_buffer->GetGPUVirtualAddress();
     out_render_state.vertex_buffer_view.SizeInBytes = out_render_state.vertex_list_size;
