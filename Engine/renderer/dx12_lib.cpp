@@ -327,7 +327,7 @@ namespace engine
     command_list->ResourceBarrier(1, &resource_barrier);
   }
 
-  void fdx12::upload_buffer_resource(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, size_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource)
+  void fdx12::upload_buffer_resource(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, int64_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource)
   {
     if (in_buffer)
     {
@@ -335,14 +335,9 @@ namespace engine
       const CD3DX12_HEAP_PROPERTIES type_upload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
       const CD3DX12_RESOURCE_DESC destination_desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size, D3D12_RESOURCE_FLAG_NONE);
       const CD3DX12_RESOURCE_DESC intermediate_desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
-
-      // Create a committed resource for the GPU resource in a default heap.
-      THROW_IF_FAILED(device->CreateCommittedResource(&type_default, D3D12_HEAP_FLAG_NONE, &destination_desc, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(out_gpu_resource.GetAddressOf())));
-      // TODO: use create_default_resource(device, buffer_size, out_gpu_resource);
       
-      // Create an committed resource for the upload.
-      THROW_IF_FAILED(device->CreateCommittedResource(&type_upload, D3D12_HEAP_FLAG_NONE, &intermediate_desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(out_upload_intermediate.GetAddressOf())));
-      // TODO use: create_upload_resource(device, buffer_size, out_upload_intermediate);
+      create_default_resource(device, buffer_size, out_gpu_resource);
+      create_upload_resource(device, buffer_size, out_upload_intermediate);
       
       D3D12_SUBRESOURCE_DATA data = {};
       data.pData = in_buffer;
@@ -353,7 +348,7 @@ namespace engine
     }
   }
 
-  void fdx12::create_upload_resource(ComPtr<ID3D12Device> device, size_t buffer_size, ComPtr<ID3D12Resource>& out_resource)
+  void fdx12::create_upload_resource(ComPtr<ID3D12Device> device, int64_t buffer_size, ComPtr<ID3D12Resource>& out_resource)
   {
     const CD3DX12_HEAP_PROPERTIES type_upload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
     const CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
@@ -366,7 +361,7 @@ namespace engine
       IID_PPV_ARGS(out_resource.GetAddressOf())));
   }
 
-  void fdx12::create_default_resource(ComPtr<ID3D12Device> device, size_t buffer_size, ComPtr<ID3D12Resource>& out_resource)
+  void fdx12::create_default_resource(ComPtr<ID3D12Device> device, int64_t buffer_size, ComPtr<ID3D12Resource>& out_resource)
   {
     const CD3DX12_HEAP_PROPERTIES type_default = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
     const CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size, D3D12_RESOURCE_FLAG_NONE);
@@ -381,11 +376,13 @@ namespace engine
 
   void fdx12::upload_vertex_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state)
   {
-    upload_buffer_resource(device, command_list, out_render_state.vertex_list_size, out_render_state.vertex_list.data(), out_render_state.vertex_buffer_upload, out_render_state.vertex_buffer);
+    const int64_t vertex_list_size = out_render_state.vertex_list.size() * sizeof(fvertex_data);
+    
+    upload_buffer_resource(device, command_list, vertex_list_size, out_render_state.vertex_list.data(), out_render_state.vertex_buffer_upload, out_render_state.vertex_buffer);
     
     out_render_state.vertex_buffer_view.BufferLocation = out_render_state.vertex_buffer->GetGPUVirtualAddress();
-    out_render_state.vertex_buffer_view.SizeInBytes = out_render_state.vertex_list_size;
-    out_render_state.vertex_buffer_view.StrideInBytes = out_render_state.vertex_stride;
+    out_render_state.vertex_buffer_view.SizeInBytes = vertex_list_size;
+    out_render_state.vertex_buffer_view.StrideInBytes = sizeof(fvertex_data);
 
     resource_barrier(command_list, out_render_state.vertex_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
     
@@ -394,11 +391,13 @@ namespace engine
 
   void fdx12::upload_index_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state)
   {
-    upload_buffer_resource(device, command_list, out_render_state.face_list_size, out_render_state.face_list.data(), out_render_state.index_buffer_upload, out_render_state.index_buffer);
+    const int64_t face_list_size = out_render_state.face_list.size() * sizeof(fface_data); 
+
+    upload_buffer_resource(device, command_list, face_list_size, out_render_state.face_list.data(), out_render_state.index_buffer_upload, out_render_state.index_buffer);
     
     out_render_state.index_buffer_view.BufferLocation = out_render_state.index_buffer->GetGPUVirtualAddress();
     out_render_state.index_buffer_view.Format = DXGI_FORMAT_R32_UINT;
-    out_render_state.index_buffer_view.SizeInBytes = out_render_state.face_list_size;
+    out_render_state.index_buffer_view.SizeInBytes = face_list_size;
 
     resource_barrier(command_list, out_render_state.index_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER);
     

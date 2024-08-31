@@ -15,19 +15,14 @@ namespace engine
   {
     // Offline data
     std::vector<fvertex_data> vertex_list;
-    unsigned int num_vertices;
-    unsigned int vertex_list_size;
-    unsigned int vertex_stride;
     std::vector<fface_data> face_list;
-    unsigned int num_faces;
-    unsigned int face_list_size;
     
     // Present when resource is uploaded to GPU
     bool is_resource_online = false;
     ComPtr<ID3D12Resource> vertex_buffer;
     ComPtr<ID3D12Resource> index_buffer;
-    ComPtr<ID3D12Resource> vertex_buffer_upload;  // TODO remove?
-    ComPtr<ID3D12Resource> index_buffer_upload;   // TODO remove?
+    ComPtr<ID3D12Resource> vertex_buffer_upload;  // TODO System resource, duplicates vertex_list. Clean vertex_list when this is set?
+    ComPtr<ID3D12Resource> index_buffer_upload;   // TODO System resource, duplicates index_list. Clean index_list when this is set?
     D3D12_VERTEX_BUFFER_VIEW vertex_buffer_view;
     D3D12_INDEX_BUFFER_VIEW index_buffer_view;
   };

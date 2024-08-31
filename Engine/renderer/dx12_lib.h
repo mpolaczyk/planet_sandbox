@@ -89,8 +89,8 @@ namespace engine
     static void create_synchronisation(ComPtr<ID3D12Device> device, uint32_t back_buffer_count, uint64_t initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values);
     static void create_root_signature(ComPtr<ID3D12Device> device, const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters,  D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, ComPtr<ID3D12RootSignature>& out_root_signature);
     static void create_pipeline_state(ComPtr<ID3D12Device2> device, fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state);
-    static void create_upload_resource(ComPtr<ID3D12Device> device, size_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
-    static void create_default_resource(ComPtr<ID3D12Device> device, size_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
+    static void create_upload_resource(ComPtr<ID3D12Device> device, int64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
+    static void create_default_resource(ComPtr<ID3D12Device> device, int64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
 
     static void resize_swap_chain(ComPtr<IDXGISwapChain4> swap_chain, uint32_t backbuffer_count, uint32_t width, uint32_t height);
     
@@ -104,7 +104,7 @@ namespace engine
     static void report_live_objects();
     
     static void resource_barrier(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after);
-    static void upload_buffer_resource(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, size_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource);
+    static void upload_buffer_resource(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, int64_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource);
     static void upload_vertex_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state);
     static void upload_index_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state);
     

@@ -117,12 +117,12 @@ namespace engine
 
     //D3D12_GPU_VIRTUAL_ADDRESS cbv_gpu_addr = window->cbv[back_buffer_index]->GetGPUVirtualAddress();
     //command_list->SetGraphicsRootConstantBufferView(0, cbv_gpu_addr);
-//
+    //
     //D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
     //cbv_desc.BufferLocation = window->cbv[back_buffer_index]->GetGPUVirtualAddress();
     //cbv_desc.SizeInBytes = (sizeof(fobject_data) + 255) & ~255;    // CB size is required to be 256-byte aligned.
     //device->CreateConstantBufferView(&cbv_desc, window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart()); // TODO check if it already exists
-//
+    //
     //CD3DX12_RANGE read_range(0, 0);
     //UINT8* object_data_gpu_ptr;
     //THROW_IF_FAILED(window->cbv[back_buffer_index]->Map(0, &read_range, reinterpret_cast<void**>(&object_data_gpu_ptr)));
@@ -133,8 +133,7 @@ namespace engine
     std::vector<hstatic_mesh*>& buffer_meshes = scene_acceleration->meshes;
     std::vector<astatic_mesh*>& buffer_assets = scene_acceleration->assets;
     std::vector<fobject_data> buffer_object_data;
-    fobject_data blank;
-    buffer_object_data.resize(buffers_num, blank);
+    buffer_object_data.resize(buffers_num, fobject_data());
 
     // Calculate per-object root constant
     for(uint32_t i = 0; i < buffers_num; i++)
@@ -186,7 +185,7 @@ namespace engine
       const fstatic_mesh_render_state& smrs = buffer_assets[i]->render_state;
       command_list->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list->IASetIndexBuffer(&smrs.index_buffer_view);
-      command_list->DrawIndexedInstanced(smrs.num_vertices, 1, 0, 0, 0);
+      command_list->DrawIndexedInstanced(smrs.vertex_list.size(), 1, 0, 0, 0);
     }
     
     //fdx12& dx = fdx12::instance();

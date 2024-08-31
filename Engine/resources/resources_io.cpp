@@ -85,10 +85,10 @@ namespace engine
       // Vertex list
       {
         std::vector<fvertex_data>& vertex_list = out_static_mesh->render_state.vertex_list;
-        vertex_list.reserve(ai_mesh->mNumVertices);
+        vertex_list.resize(ai_mesh->mNumVertices, fvertex_data());
         for(size_t i = 0; i < vertex_list.capacity(); ++i)
         {
-          fvertex_data vertex;
+          fvertex_data& vertex = vertex_list[i];
           vertex.position = {ai_mesh->mVertices[i].x, ai_mesh->mVertices[i].y, ai_mesh->mVertices[i].z};
           vertex.normal = {ai_mesh->mNormals[i].x, ai_mesh->mNormals[i].y, ai_mesh->mNormals[i].z};
           if(ai_mesh->HasTangentsAndBitangents())
@@ -100,25 +100,22 @@ namespace engine
           {
             vertex.uv = {ai_mesh->mTextureCoords[0][i].x, ai_mesh->mTextureCoords[0][i].y};
           }
-          vertex_list.push_back(vertex);
         }
-        out_static_mesh->render_state.num_vertices = vertex_list.size();
-        out_static_mesh->render_state.vertex_list_size = vertex_list.size() * sizeof(fvertex_data);
-        out_static_mesh->render_state.vertex_stride = sizeof(fvertex_data);
       }
 
       // Face list
       {
         std::vector<fface_data>& face_list = out_static_mesh->render_state.face_list;
-        face_list.reserve(ai_mesh->mNumFaces);
+        face_list.resize(ai_mesh->mNumFaces, fface_data());
         for(size_t i = 0; i < face_list.capacity(); ++i)
         {
           assert(ai_mesh->mFaces[i].mNumIndices == 3);
-          const aiFace& ai_face = ai_mesh->mFaces[i];
-          face_list.push_back(std::move(fface_data(ai_face.mIndices[0], ai_face.mIndices[1], ai_face.mIndices[2])));
+
+          fface_data& face = face_list[i];
+          face.v1 = ai_mesh->mFaces[i].mIndices[0];
+          face.v2 = ai_mesh->mFaces[i].mIndices[1];
+          face.v3 = ai_mesh->mFaces[i].mIndices[2];
         }
-        out_static_mesh->render_state.num_faces = face_list.size();
-        out_static_mesh->render_state.face_list_size = face_list.size() * sizeof(fface_data);
       }
 
       // Bounding box

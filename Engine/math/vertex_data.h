@@ -43,17 +43,6 @@ namespace engine
   typedef uint32_t fface_data_type; // Remember to match what is in IASetIndexBuffer
   struct ENGINE_API fface_data
   {
-    fface_data() = default;
-    fface_data(const fface_data&) = default;
-    fface_data& operator=(const fface_data&) = default;
-    fface_data(fface_data&&) = default;
-    fface_data& operator=(fface_data&&) = default;
-
-    fface_data(fface_data_type in_v1, fface_data_type in_v2, fface_data_type in_v3)
-      : v1(in_v1), v2(in_v2), v3(in_v3)
-    {
-    }
-
     fface_data_type v1 = 0;
     fface_data_type v2 = 0;
     fface_data_type v3 = 0;
