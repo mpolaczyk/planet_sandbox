@@ -21,6 +21,7 @@ namespace engine
     lights.reserve(max_lights);
 
     meshes.clear();
+    assets.clear();
   }
 
   void fscene_acceleration::build(const std::vector<hhittable_base*>& objects)
@@ -30,8 +31,13 @@ namespace engine
       if(hittable->get_class() == hstatic_mesh::get_class_static())
       {
         hstatic_mesh* mesh = static_cast<hstatic_mesh*>(hittable);
+        astatic_mesh* mesh_asset = mesh->mesh_asset_ptr.get();
+        if(!mesh_asset)
+        {
+          continue;
+        }
         meshes.push_back(mesh);
-        volatile const astatic_mesh* mesh_asset = mesh->mesh_asset_ptr.get();
+        assets.push_back(mesh_asset);
         const amaterial* material = mesh->material_asset_ptr.get();
         if(material && !material_map.contains(material))
         {

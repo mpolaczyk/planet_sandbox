@@ -4,6 +4,7 @@
 
 namespace engine
 {
+  class astatic_mesh;
   class amaterial;
   class hstatic_mesh;
   class hlight;
@@ -31,6 +32,7 @@ namespace engine
 
     // All static meshes on the scene
     std::vector<hstatic_mesh*> meshes;
+    std::vector<astatic_mesh*> assets;
 
     // All lights on the scene
     std::vector<const hlight*> lights;

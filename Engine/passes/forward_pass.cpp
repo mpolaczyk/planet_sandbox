@@ -9,6 +9,7 @@
 #include "core/application.h"
 #include "core/exceptions.h"
 #include "core/window.h"
+#include "engine/log.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
 #include "math/math.h"
@@ -51,7 +52,7 @@ namespace engine
       //uint32_t is_selected; // 4
       //int32_t padding[2]; // 8
     };
-
+    static_assert(sizeof(fobject_data)/4 < 64); // "Root Constant size is greater than 64 DWORDs. Additional indirection may be added by the driver."
     ALIGNED_STRUCT_END(fobject_data)
   }
   
@@ -64,7 +65,8 @@ namespace engine
       std::vector<CD3DX12_ROOT_PARAMETER1> root_parameters;
       {
         CD3DX12_ROOT_PARAMETER1 param;
-        param.InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC);
+        param.InitAsConstants(sizeof(fobject_data) / 4, 0);
+        //param.InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC);
         root_parameters.push_back(param);
       }
       fdx12::create_root_signature(device, root_parameters, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature);
@@ -113,55 +115,61 @@ namespace engine
 
     const int back_buffer_index = window->get_back_buffer_index();
 
-    D3D12_GPU_VIRTUAL_ADDRESS cbv_gpu_addr = window->cbv[back_buffer_index]->GetGPUVirtualAddress();
-    command_list->SetGraphicsRootConstantBufferView(0, cbv_gpu_addr);
-    
-    for(hstatic_mesh* sm : scene_acceleration->meshes)
-    {
-      astatic_mesh* sma = sm->mesh_asset_ptr.get();
-      if(sma == nullptr) { continue; }
-      
-      // Update per-object constant buffer
-      {
-        const XMMATRIX translation_matrix = XMMatrixTranslation(sm->origin.x, sm->origin.y, sm->origin.z);
-        const XMMATRIX rotation_matrix =
-            XMMatrixRotationX(XMConvertToRadians(sm->rotation.x))
-          * XMMatrixRotationY(XMConvertToRadians(sm->rotation.y))
-          * XMMatrixRotationZ(XMConvertToRadians(sm->rotation.z));
-        const XMMATRIX scale_matrix = XMMatrixScaling(sm->scale.x, sm->scale.y, sm->scale.z);
-        const XMMATRIX world_matrix = scale_matrix * rotation_matrix * translation_matrix;
-      
-        const XMMATRIX inverse_transpose_model_world = XMMatrixTranspose(XMMatrixInverse(nullptr, world_matrix));
-        const XMMATRIX model_world_view_projection = XMMatrixMultiply(world_matrix, XMLoadFloat4x4(&scene->camera_config.view_projection));
-      
-        fobject_data object_data;
-        XMStoreFloat4x4(&object_data.model_world, world_matrix);
-        XMStoreFloat4x4(&object_data.inverse_transpose_model_world, inverse_transpose_model_world);
-        XMStoreFloat4x4(&object_data.model_world_view_projection, model_world_view_projection);
-        
-        D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
-        cbv_desc.BufferLocation = window->cbv[back_buffer_index]->GetGPUVirtualAddress();
-        cbv_desc.SizeInBytes = (sizeof(fobject_data) + 255) & ~255;    // CB size is required to be 256-byte aligned.
-        device->CreateConstantBufferView(&cbv_desc, window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart()); // TODO check if it already exists
+    //D3D12_GPU_VIRTUAL_ADDRESS cbv_gpu_addr = window->cbv[back_buffer_index]->GetGPUVirtualAddress();
+    //command_list->SetGraphicsRootConstantBufferView(0, cbv_gpu_addr);
+//
+    //D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
+    //cbv_desc.BufferLocation = window->cbv[back_buffer_index]->GetGPUVirtualAddress();
+    //cbv_desc.SizeInBytes = (sizeof(fobject_data) + 255) & ~255;    // CB size is required to be 256-byte aligned.
+    //device->CreateConstantBufferView(&cbv_desc, window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart()); // TODO check if it already exists
+//
+    //CD3DX12_RANGE read_range(0, 0);
+    //UINT8* object_data_gpu_ptr;
+    //THROW_IF_FAILED(window->cbv[back_buffer_index]->Map(0, &read_range, reinterpret_cast<void**>(&object_data_gpu_ptr)));
+    //memcpy(object_data_gpu_ptr, &object_data, sizeof(fobject_data));
+    //window->cbv[back_buffer_index]->Unmap(0, nullptr);
 
-        CD3DX12_RANGE read_range(0, 0);
-        UINT8* object_data_gpu_ptr;
-        THROW_IF_FAILED(window->cbv[back_buffer_index]->Map(0, &read_range, reinterpret_cast<void**>(&object_data_gpu_ptr)));
-        memcpy(object_data_gpu_ptr, &object_data, sizeof(fobject_data));
-        window->cbv[back_buffer_index]->Unmap(0, nullptr);
-      }
+    const uint32_t buffers_num = scene_acceleration->meshes.size();
+    std::vector<hstatic_mesh*>& buffer_meshes = scene_acceleration->meshes;
+    std::vector<astatic_mesh*>& buffer_assets = scene_acceleration->assets;
+    std::vector<fobject_data> buffer_object_data;
+    fobject_data blank;
+    buffer_object_data.resize(buffers_num, blank);
+
+    // Calculate per-object root constant
+    for(uint32_t i = 0; i < buffers_num; i++)
+    {
+      const hstatic_mesh* sm = buffer_meshes[i];
       
-      // Update vertex and index buffers
-      fstatic_mesh_render_state& smrs = sma->render_state;
+      const XMMATRIX translation_matrix = XMMatrixTranslation(sm->origin.x, sm->origin.y, sm->origin.z);
+      const XMMATRIX rotation_matrix =
+          XMMatrixRotationX(XMConvertToRadians(sm->rotation.x))
+        * XMMatrixRotationY(XMConvertToRadians(sm->rotation.y))
+        * XMMatrixRotationZ(XMConvertToRadians(sm->rotation.z));
+      const XMMATRIX scale_matrix = XMMatrixScaling(sm->scale.x, sm->scale.y, sm->scale.z);
+      const XMMATRIX world_matrix = scale_matrix * rotation_matrix * translation_matrix;
+      const XMMATRIX inverse_transpose_model_world = XMMatrixTranspose(XMMatrixInverse(nullptr, world_matrix));
+      const XMMATRIX model_world_view_projection = XMMatrixMultiply(world_matrix, XMLoadFloat4x4(&scene->camera_config.view_projection));
       
+      fobject_data& object_data = buffer_object_data[i];
+      XMStoreFloat4x4(&object_data.model_world, world_matrix);
+      XMStoreFloat4x4(&object_data.inverse_transpose_model_world, inverse_transpose_model_world);
+      XMStoreFloat4x4(&object_data.model_world_view_projection, model_world_view_projection);
+    }
+
+    // Update vertex and index buffers
+    for(uint32_t i = 0; i < buffers_num; i++)
+    {
+      fstatic_mesh_render_state& smrs = buffer_assets[i]->render_state;
       if(!smrs.is_resource_online)
       {
         fdx12::upload_vertex_buffer(device, command_list, smrs);
         fdx12::upload_index_buffer(device, command_list, smrs);
 #if BUILD_DEBUG
         {
+          hstatic_mesh* sm = buffer_meshes[i];
           std::string mesh_name = sm->get_display_name();
-          std::string asset_name = sma->file_name;
+          std::string asset_name = buffer_assets[i]->file_name;
           std::string vertex_name = std::format("Vertex buffer: asset {} hittable {}", mesh_name, asset_name);
           smrs.vertex_buffer->SetName(std::wstring(vertex_name.begin(), vertex_name.end()).c_str());
           std::string index_name = std::format("Index buffer: asset {} hittable {}", mesh_name, asset_name);
@@ -169,9 +177,15 @@ namespace engine
         }
 #endif
       }
+    }
+
+    // Draw
+    for(uint32_t i = 0; i < buffers_num; i++)
+    {
+      command_list->SetGraphicsRoot32BitConstants(0, sizeof(fobject_data)/4, &buffer_object_data[i], 0);
+      const fstatic_mesh_render_state& smrs = buffer_assets[i]->render_state;
       command_list->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list->IASetIndexBuffer(&smrs.index_buffer_view);
-
       command_list->DrawIndexedInstanced(smrs.num_vertices, 1, 0, 0, 0);
     }
     
