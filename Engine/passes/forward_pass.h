@@ -22,11 +22,10 @@ namespace engine
     int show_normals = 0;
     int show_object_id = 0;
     
-    // private:
-    //   ComPtr<ID3D11Buffer> frame_constant_buffer;
-    //   ComPtr<ID3D11Buffer> object_constant_buffer;
+    private:
     
     ComPtr<ID3DBlob> vertex_shader_blob;
     ComPtr<ID3DBlob> pixel_shader_blob;
+    std::vector<ComPtr<ID3D12Resource>> cbv;  // index is back buffer id
   };
 }

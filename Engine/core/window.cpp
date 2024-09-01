@@ -44,17 +44,6 @@ namespace engine
     dsv_descriptor_heap->SetName(L"Depth stencil descriptor heap");
     main_descriptor_heap->SetName(L"Main descriptor heap");
 #endif
-    
-    for(uint32_t n = 0; n < back_buffer_count; n++)
-    {
-      ComPtr<ID3D12Resource> resource;
-      fdx12::create_upload_resource(device, 1024, resource);
-      cbv.push_back(resource);
-#if BUILD_DEBUG
-      std::string name = std::format("Constant buffer upload resource: back buffer {}", n);
-      resource->SetName(std::wstring(name.begin(), name.end()).c_str());
-#endif
-    }
   }
 
   void fwindow::render(const fcommand_queue* command_queue)
@@ -131,7 +120,6 @@ namespace engine
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       DX_RELEASE(rtv[n]);
-      DX_RELEASE(cbv[n])
     }
     DX_RELEASE(main_descriptor_heap);
     DX_RELEASE(rtv_descriptor_heap);

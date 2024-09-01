@@ -29,13 +29,13 @@ namespace engine
     {
       XMFLOAT4 camera_position; // 16
       XMFLOAT4 ambient_light; // 16
-      int32_t show_emissive; // 4    // TODO pack bits
-      int32_t show_ambient; // 4
-      int32_t show_specular; // 4
-      int32_t show_diffuse; // 4
-      int32_t show_normals; // 4
-      int32_t show_object_id; // 4
-      int32_t padding[2]; // 8
+      //int32_t show_emissive; // 4    // TODO pack bits
+      //int32_t show_ambient; // 4
+      //int32_t show_specular; // 4
+      //int32_t show_diffuse; // 4
+      //int32_t show_normals; // 4
+      //int32_t show_object_id; // 4
+      //int32_t padding[2]; // 8
       flight_properties lights[MAX_LIGHTS]; // 80xN
       fmaterial_properties materials[MAX_MATERIALS]; // 80xN
     };
@@ -48,9 +48,9 @@ namespace engine
       XMFLOAT4X4 inverse_transpose_model_world; // 64 Used to transform the vertex normal from object space to world space
       XMFLOAT4X4 model_world_view_projection; // 64 Used to transform the vertex position from object space to projected clip space
       //XMFLOAT4 object_id; // 16
-      //uint32_t material_id; // 4
+      uint32_t material_id; // 4
       //uint32_t is_selected; // 4
-      //int32_t padding[2]; // 8
+      int32_t padding[3]; // 12
     };
     static_assert(sizeof(fobject_data)/4 < 64); // "Root Constant size is greater than 64 DWORDs. Additional indirection may be added by the driver."
     ALIGNED_STRUCT_END(fobject_data)
@@ -60,13 +60,29 @@ namespace engine
   {
     ComPtr<ID3D12Device2> device = fapplication::instance->device;
 
+    // Constant buffer
+    {
+      for(uint32_t n = 0; n < window->back_buffer_count; n++)
+      {
+        ComPtr<ID3D12Resource> resource;
+        fdx12::create_upload_resource(device, fdx12::align_size_to(sizeof(fframe_data), 255), resource);
+        cbv.push_back(resource);
+#if BUILD_DEBUG
+        std::string name = std::format("Constant buffer upload resource: back buffer {}", n);
+        resource->SetName(std::wstring(name.begin(), name.end()).c_str());
+#endif
+      }
+    }
+    
     // Root signature
     {
       std::vector<CD3DX12_ROOT_PARAMETER1> root_parameters;
       {
         CD3DX12_ROOT_PARAMETER1 param;
         param.InitAsConstants(sizeof(fobject_data) / 4, 0);
-        //param.InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC);
+        root_parameters.push_back(param);
+        
+        param.InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC);
         root_parameters.push_back(param);
       }
       fdx12::create_root_signature(device, root_parameters, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature);
@@ -112,30 +128,40 @@ namespace engine
     command_list->SetPipelineState(pipeline_state.Get());
     command_list->SetGraphicsRootSignature(root_signature.Get());
     command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);  // TODO Duplicate setting? Pipeline state already has one
+    
+    // Root descriptor argument
+    {
+      const int back_buffer_index = window->get_back_buffer_index();
 
-    const int back_buffer_index = window->get_back_buffer_index();
-
-    //D3D12_GPU_VIRTUAL_ADDRESS cbv_gpu_addr = window->cbv[back_buffer_index]->GetGPUVirtualAddress();
-    //command_list->SetGraphicsRootConstantBufferView(0, cbv_gpu_addr);
-    //
-    //D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
-    //cbv_desc.BufferLocation = window->cbv[back_buffer_index]->GetGPUVirtualAddress();
-    //cbv_desc.SizeInBytes = (sizeof(fobject_data) + 255) & ~255;    // CB size is required to be 256-byte aligned.
-    //device->CreateConstantBufferView(&cbv_desc, window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart()); // TODO check if it already exists
-    //
-    //CD3DX12_RANGE read_range(0, 0);
-    //UINT8* object_data_gpu_ptr;
-    //THROW_IF_FAILED(window->cbv[back_buffer_index]->Map(0, &read_range, reinterpret_cast<void**>(&object_data_gpu_ptr)));
-    //memcpy(object_data_gpu_ptr, &object_data, sizeof(fobject_data));
-    //window->cbv[back_buffer_index]->Unmap(0, nullptr);
-
+      fframe_data frame_data;
+      frame_data.camera_position = XMFLOAT4(scene->camera_config.location.e);
+      frame_data.ambient_light = scene->ambient_light_color;
+      memcpy(&frame_data.lights, &scene_acceleration->lights, MAX_LIGHTS * sizeof(flight_properties));
+      memcpy(&frame_data.materials, &scene_acceleration->materials, MAX_MATERIALS * sizeof(fmaterial_properties));
+      
+      D3D12_GPU_VIRTUAL_ADDRESS cbv_gpu_addr = cbv[back_buffer_index]->GetGPUVirtualAddress();
+      command_list->SetGraphicsRootConstantBufferView(1, cbv_gpu_addr);
+    
+      D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
+      cbv_desc.BufferLocation = cbv[back_buffer_index]->GetGPUVirtualAddress();
+      cbv_desc.SizeInBytes = fdx12::align_size_to(sizeof(fframe_data), 255);    // CB size is required to be 256-byte aligned.
+      device->CreateConstantBufferView(&cbv_desc, window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart()); // TODO check if it already exists
+    
+      CD3DX12_RANGE read_range(0, 0);
+      UINT8* object_data_gpu_ptr;
+      THROW_IF_FAILED(cbv[back_buffer_index]->Map(0, &read_range, reinterpret_cast<void**>(&object_data_gpu_ptr)));
+      memcpy(object_data_gpu_ptr, &frame_data, sizeof(fobject_data));
+      cbv[back_buffer_index]->Unmap(0, nullptr);
+    }
+    
+    // Continuous buffers
     const uint32_t buffers_num = scene_acceleration->meshes.size();
     std::vector<hstatic_mesh*>& buffer_meshes = scene_acceleration->meshes;
     std::vector<astatic_mesh*>& buffer_assets = scene_acceleration->assets;
     std::vector<fobject_data> buffer_object_data;
     buffer_object_data.resize(buffers_num, fobject_data());
 
-    // Calculate per-object root constant
+    // Calculate per-object root constant arguments
     for(uint32_t i = 0; i < buffers_num; i++)
     {
       const hstatic_mesh* sm = buffer_meshes[i];
@@ -154,6 +180,11 @@ namespace engine
       XMStoreFloat4x4(&object_data.model_world, world_matrix);
       XMStoreFloat4x4(&object_data.inverse_transpose_model_world, inverse_transpose_model_world);
       XMStoreFloat4x4(&object_data.model_world_view_projection, model_world_view_projection);
+      object_data.material_id = 0;
+      if(const amaterial* material = sm->material_asset_ptr.get())
+      {
+         object_data.material_id = scene_acceleration->material_map.at(material);
+      }
     }
 
     // Update vertex and index buffers

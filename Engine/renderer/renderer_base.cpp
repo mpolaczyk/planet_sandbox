@@ -42,7 +42,7 @@ namespace engine
     {
       fscope_timer benchmark_renderer("Render", &render_time_us);
       
-      scene_acceleration.clean(MAX_LIGHTS, MAX_MATERIALS);
+      scene_acceleration.clean();
       scene_acceleration.build(scene->objects);
       if(!scene_acceleration.validate())
       {

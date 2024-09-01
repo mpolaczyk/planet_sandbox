@@ -6,19 +6,14 @@
 
 namespace engine
 {
-  void fscene_acceleration::clean(int in_max_lights, int in_max_materials)
+  void fscene_acceleration::clean()
   {
-    max_materials = in_max_materials;
     next_material_id = 0;
     material_map.clear();
-    material_map.reserve(max_materials);
-    materials.clear();
-    materials.reserve(max_materials);
+    memset(materials, 0, sizeof(fmaterial_properties)*MAX_MATERIALS);
 
-    max_lights = in_max_lights;
     next_light_id = 0;
-    lights.clear();
-    lights.reserve(max_lights);
+    memset(lights, 0, sizeof(flight_properties)*MAX_LIGHTS);
 
     meshes.clear();
     assets.clear();
@@ -41,9 +36,16 @@ namespace engine
         const amaterial* material = mesh->material_asset_ptr.get();
         if(material && !material_map.contains(material))
         {
-          material_map.insert(std::pair<const amaterial*, uint32_t>(material, next_material_id));
-          materials.push_back(material);
-          next_material_id++;
+          if(next_material_id < MAX_MATERIALS)
+          {
+            material_map.insert(std::pair<const amaterial*, uint32_t>(material, next_material_id));
+            materials[next_material_id] = material->properties;
+            next_material_id++;
+          }
+          else
+          {
+            LOG_ERROR("Maximum materials limit reached.");
+          }
         }
       }
       else if(hittable->get_class() == hlight::get_class_static())
@@ -51,8 +53,15 @@ namespace engine
         const hlight* light = static_cast<const hlight*>(hittable);
         if(light->properties.enabled)
         {
-          lights.push_back(light);
-          next_light_id++;
+          if(next_light_id < MAX_LIGHTS)
+          {
+            lights[next_light_id] = light->properties;
+            next_light_id++;
+          }
+          else
+          {
+            LOG_ERROR("Maximum lights limit reached.");
+          }
         }
       }
     }
@@ -60,45 +69,11 @@ namespace engine
 
   bool fscene_acceleration::validate() const
   {
-    if(next_material_id > max_materials)
-    {
-      LOG_ERROR("Maximum materials limit reached.");
-      return false;
-    }
-    if(next_light_id > max_lights)
-    {
-      LOG_ERROR("Maximum lights limit reached.");
-      return false;
-    }
-    if(lights.size() == 0)
+    if(next_light_id == 0)
     {
       LOG_ERROR("Scene is missing light");
       return false;
     }
     return true; 
-  }
-
-  void fscene_acceleration::get_materials_array(fmaterial_properties* out_materials_array) const
-  {
-    for(uint32_t i = 0; i < max_materials; i++)
-    {
-      out_materials_array[i] = i < next_material_id ? materials[i]->properties : fmaterial_properties();
-    }
-  }
-
-  void fscene_acceleration::get_lights_array(flight_properties* out_lights_array) const
-  {
-    for(uint32_t i = 0; i < max_lights; i++)
-    {
-      if(i < next_light_id)
-      {
-        out_lights_array[i] = lights[i]->properties;
-        out_lights_array[i].position = XMFLOAT4(lights[i]->origin.e);
-      }
-      else
-      {
-        out_lights_array[i] = flight_properties();
-      }
-    }
   }
 }

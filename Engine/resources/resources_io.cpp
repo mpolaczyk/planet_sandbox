@@ -190,7 +190,12 @@ namespace engine
     ComPtr<ID3DBlob> shader_compiler_errors_blob;
     std::wstring wpath = std::wstring(path.begin(), path.end());
     LPCWSTR sw = wpath.c_str();
-    HRESULT result = D3DCompileFromFile(sw, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, entrypoint.c_str(), target.c_str(), 0, 0, out_shader_blob.GetAddressOf(), shader_compiler_errors_blob.GetAddressOf());
+    UINT flags1 = 0;
+#if BUILD_DEBUG
+    flags1 |= D3DCOMPILE_DEBUG;
+    flags1 |= D3DCOMPILE_DEBUG_NAME_FOR_BINARY;
+#endif
+    HRESULT result = D3DCompileFromFile(sw, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, entrypoint.c_str(), target.c_str(), flags1, 0, out_shader_blob.GetAddressOf(), shader_compiler_errors_blob.GetAddressOf());
     if(FAILED(result))
     {
       if(result == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
@@ -207,6 +212,42 @@ namespace engine
       }
       return false;
     }
+
+#if BUILD_DEBUG
+    // Retrieve the debug info part of the shader
+    ComPtr<ID3DBlob> pdb;
+    D3DGetBlobPart(out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize(), D3D_BLOB_PDB, 0, &pdb);
+
+    // Retrieve the suggested name for the debug data file
+    ComPtr<ID3DBlob> pdb_name;
+    D3DGetBlobPart(out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize(), D3D_BLOB_DEBUG_NAME, 0, &pdb_name);
+
+    // This struct represents the first four bytes of the name blob
+    struct shader_debug_name
+    {
+      uint16_t Flags;       // Reserved, must be set to zero
+      uint16_t NameLength;  // Length of the debug name, without null terminator
+      // Followed by NameLength bytes of the UTF-8-encoded name
+      // Followed by a null terminator
+      // Followed by [0-3] zero bytes to align to a 4-byte boundary
+    };
+
+    auto pDebugNameData = (const shader_debug_name*)(pdb_name->GetBufferPointer());
+    auto pName = (const char*)(pDebugNameData + 1);
+    
+    std::string file = fio::get_shader_file_path(pName);
+    FILE* fp = fopen(file.c_str(), "wb");
+    if (fp)
+    {
+      fwrite(pdb->GetBufferPointer(), pdb->GetBufferSize(), 1, fp);
+      fclose(fp);
+    }
+
+    // Strip reflection
+    ComPtr<ID3DBlob> strippedBlob;
+    D3DStripShader(out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize(), D3DCOMPILER_STRIP_REFLECTION_DATA | D3DCOMPILER_STRIP_DEBUG_INFO, &strippedBlob);
+    out_shader_blob = strippedBlob;
+#endif
     return true;
   }
 }

@@ -42,7 +42,6 @@ namespace engine
     ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap;
     ComPtr<ID3D12Resource> dsv;
     ComPtr<ID3D12DescriptorHeap> main_descriptor_heap; // srv, cbv, uav
-    std::vector<ComPtr<ID3D12Resource>> cbv;
     
   protected:
     HWND hwnd;
