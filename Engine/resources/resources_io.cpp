@@ -182,6 +182,8 @@ namespace engine
   }
 
   // https://asawicki.info/news_1719_two_shader_compilers_of_direct3d_12
+  // https://github.com/NVIDIAGameWorks/ShaderMake/blob/470bbc7d0c343bc82c988072ee8a1fb2210647ce/src/ShaderMake.cpp#L988
+  // https://devblogs.microsoft.com/pix/using-automatic-shader-pdb-resolution-in-pix/
   // TODO upgrade to dxc
   bool load_hlsl(const std::string& file_name, const std::string& entrypoint, const std::string& target, ComPtr<ID3D10Blob>& out_shader_blob)
   {
@@ -192,8 +194,9 @@ namespace engine
     LPCWSTR sw = wpath.c_str();
     UINT flags1 = 0;
 #if BUILD_DEBUG
-    flags1 |= D3DCOMPILE_DEBUG;
-    flags1 |= D3DCOMPILE_DEBUG_NAME_FOR_BINARY;
+    flags1 = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_DEBUG_NAME_FOR_BINARY;
+#elif BUILD_RELEASE
+    flags1 = D3DCOMPILE_OPTIMIZATION_LEVEL3 | D3DCOMPILE_WARNINGS_ARE_ERRORS;
 #endif
     HRESULT result = D3DCompileFromFile(sw, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, entrypoint.c_str(), target.c_str(), flags1, 0, out_shader_blob.GetAddressOf(), shader_compiler_errors_blob.GetAddressOf());
     if(FAILED(result))
@@ -225,29 +228,29 @@ namespace engine
     // This struct represents the first four bytes of the name blob
     struct shader_debug_name
     {
-      uint16_t Flags;       // Reserved, must be set to zero
-      uint16_t NameLength;  // Length of the debug name, without null terminator
-      // Followed by NameLength bytes of the UTF-8-encoded name
+      uint16_t flags;       // Reserved, must be set to zero
+      uint16_t name_length;  // Length of the debug name, without null terminator
+      // Followed by name_length bytes of the UTF-8-encoded name
       // Followed by a null terminator
       // Followed by [0-3] zero bytes to align to a 4-byte boundary
     };
 
-    auto pDebugNameData = (const shader_debug_name*)(pdb_name->GetBufferPointer());
-    auto pName = (const char*)(pDebugNameData + 1);
+    auto debug_name_data = (const shader_debug_name*)(pdb_name->GetBufferPointer());
+    auto name = (const char*)(debug_name_data + 1);
     
-    std::string file = fio::get_shader_file_path(pName);
+    std::string file = fio::get_shader_file_path(name);
     FILE* fp = fopen(file.c_str(), "wb");
     if (fp)
     {
       fwrite(pdb->GetBufferPointer(), pdb->GetBufferSize(), 1, fp);
       fclose(fp);
     }
-
-    // Strip reflection
-    ComPtr<ID3DBlob> strippedBlob;
-    D3DStripShader(out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize(), D3DCOMPILER_STRIP_REFLECTION_DATA | D3DCOMPILER_STRIP_DEBUG_INFO, &strippedBlob);
-    out_shader_blob = strippedBlob;
 #endif
+    //// Strip reflection
+    ComPtr<ID3DBlob> stripped_blob;
+    UINT flags = D3DCOMPILER_STRIP_REFLECTION_DATA | D3DCOMPILER_STRIP_DEBUG_INFO | D3DCOMPILER_STRIP_TEST_BLOBS | D3DCOMPILER_STRIP_PRIVATE_DATA;
+    D3DStripShader(out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize(), flags, &stripped_blob);
+    out_shader_blob = stripped_blob;
     return true;
   }
 }

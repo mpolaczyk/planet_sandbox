@@ -27,5 +27,6 @@ namespace engine
     ComPtr<ID3DBlob> vertex_shader_blob;
     ComPtr<ID3DBlob> pixel_shader_blob;
     std::vector<ComPtr<ID3D12Resource>> cbv;  // index is back buffer id
+    std::vector<uint8_t*> cbv_mapping; // mapped pointer
   };
 }

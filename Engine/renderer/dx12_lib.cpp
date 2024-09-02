@@ -302,16 +302,16 @@ namespace engine
     command_list->RSSetScissorRects(1, &scissor_rect);
   }
 
-  void fdx12::clear_render_target(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> descriptor_heap, uint32_t back_buffer_index)
+  void fdx12::clear_render_target(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap, uint32_t back_buffer_index)
   {
     uint32_t descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, descriptor_size);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, descriptor_size);
     command_list->ClearRenderTargetView(handle, DirectX::Colors::LightSlateGray, 0, nullptr);
   }
 
-  void fdx12::clear_depth_stencil(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> descriptor_heap)
+  void fdx12::clear_depth_stencil(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap)
   {
-    D3D12_CPU_DESCRIPTOR_HANDLE handle = descriptor_heap->GetCPUDescriptorHandleForHeapStart();
+    D3D12_CPU_DESCRIPTOR_HANDLE handle = dsv_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
     command_list->ClearDepthStencilView(handle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
   }
   
@@ -373,6 +373,19 @@ namespace engine
       D3D12_RESOURCE_STATE_COMMON,
       nullptr,
       IID_PPV_ARGS(out_resource.GetAddressOf())));
+  }
+
+  void fdx12::create_const_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap> cbv_descriptor_heap, int32_t buffer_size, uint32_t register_index, uint8_t** out_mapping_ptr, ComPtr<ID3D12Resource>& out_resource)
+  {
+    fdx12::create_upload_resource(device, fdx12::align_size_to(buffer_size, 255), out_resource);
+    
+    D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
+    cbv_desc.BufferLocation = out_resource->GetGPUVirtualAddress();
+    cbv_desc.SizeInBytes = fdx12::align_size_to(buffer_size, 255);
+    device->CreateConstantBufferView(&cbv_desc, cbv_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+
+    CD3DX12_RANGE read_range(0, 0);
+    THROW_IF_FAILED(out_resource->Map(register_index, &read_range, reinterpret_cast<void**>(out_mapping_ptr)));
   }
 
   void fdx12::upload_vertex_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state)
