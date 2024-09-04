@@ -17,6 +17,7 @@ using Microsoft::WRL::ComPtr;
 namespace engine
 {
   struct fcommand_queue;
+  class hhittable_base;
   
   class ENGINE_API fwindow
   {
@@ -53,5 +54,7 @@ namespace engine
     int height = 1080;
     
     int back_buffer_index = 0;
+    hhittable_base* selected_object = nullptr;
+
   };
 }

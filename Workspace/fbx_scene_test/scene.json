@@ -9,12 +9,12 @@
     "camera_config": {
       "field_of_view": 40.0,
       "look_from": {
-        "x": -0.0004144666309002787,
-        "y": 1.9204881027690135e-05,
-        "z": -20.132564544677734
+        "x": 0.04161088168621063,
+        "y": 0.0,
+        "z": -20.0
       },
-      "pitch": 0.0,
-      "yaw": 0.0
+      "pitch": 0.6710799932479858,
+      "yaw": -0.43722012639045715
     },
     "clear_color": {
       "w": 1.0,
@@ -109,16 +109,16 @@
         "properties": {
           "color": {
             "w": 1.0,
-            "x": 0.29901963472366333,
-            "y": 0.29901963472366333,
-            "z": 0.29901963472366333
+            "x": 0.5098038911819458,
+            "y": 0.5098038911819458,
+            "z": 0.5098038911819458
           },
           "constant_attenuation": 0.5899999737739563,
           "direction": {
             "w": 1.0,
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.10000000149011612
           },
           "enabled": 1,
           "light_type": 1,
@@ -258,16 +258,16 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "ico5",
+        "custom_display_name": "sphere",
         "material_asset": {
-          "name": "default"
+          "name": "white"
         },
         "mesh_asset": {
           "name": "sphere"
         },
         "origin": {
           "x": 0.0,
-          "y": -6.0,
+          "y": -4.0,
           "z": 0.0
         },
         "rotation": {
@@ -276,9 +276,9 @@
           "z": 0.0
         },
         "scale": {
-          "x": 2.0,
-          "y": 2.0,
-          "z": 2.0
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
         }
       },
       {
@@ -286,7 +286,7 @@
         "custom_display_name": "zaroweczka lewo",
         "origin": {
           "x": -8.0,
-          "y": 0.0,
+          "y": -1.0,
           "z": 0.0
         },
         "properties": {
@@ -307,7 +307,7 @@
           "light_type": 0,
           "linear_attenuation": 0.03999999910593033,
           "quadratic_attenuation": 0.0,
-          "spot_angle": 1.5707963705062866
+          "spot_angle": 1.940000057220459
         }
       },
       {
@@ -336,7 +336,7 @@
           "light_type": 0,
           "linear_attenuation": 0.14000000059604645,
           "quadratic_attenuation": 0.0,
-          "spot_angle": 1.5707963705062866
+          "spot_angle": 1.2910000085830688
         }
       }
     ],

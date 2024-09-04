@@ -7493,6 +7493,14 @@ bool ImGui::IsMouseHoveringRect(const ImVec2& r_min, const ImVec2& r_max, bool c
     return true;
 }
 
+// BEGIN PLANET
+bool ImGui::IsMouseHoveringAnyWindow()
+{
+    ImGuiContext& g = *GImGui;
+    return g.HoveredWindow != nullptr;
+}
+// END PLANET
+
 ImGuiKeyData* ImGui::GetKeyData(ImGuiKey key)
 {
     ImGuiContext& g = *GImGui;

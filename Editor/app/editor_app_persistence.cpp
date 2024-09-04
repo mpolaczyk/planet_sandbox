@@ -62,8 +62,6 @@ namespace editor
     nlohmann::json j;
     input_stream >> j;
 
-    TRY_PARSE(float, j, "zoom", get_editor_window()->output_window_model.zoom);
-
     input_stream.close();
   }
 
@@ -72,7 +70,6 @@ namespace editor
     LOG_INFO("Saving: window state");
 
     nlohmann::json j;
-    j["zoom"] = get_editor_window()->output_window_model.zoom;
     std::ofstream o(fio::get_window_file_path().c_str(), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
     if (o.is_open())

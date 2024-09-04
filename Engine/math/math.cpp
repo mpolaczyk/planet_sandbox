@@ -332,6 +332,11 @@ namespace engine
     return fvec3(a.x, a.y, a.z);
   }
 
+  DirectX::XMFLOAT4 fmath::to_xmfloat4(const fvec3& a)
+  {
+    return DirectX::XMFLOAT4(a.x, a.y, a.z, 1.0f);
+  }
+
   DirectX::XMFLOAT4 fmath::uint32_to_colorf(uint32_t value)
   {
     float af = static_cast<float>(static_cast<uint8_t>(value)) / 255.0f;

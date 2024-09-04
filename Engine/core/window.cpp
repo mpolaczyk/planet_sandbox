@@ -66,7 +66,7 @@ namespace engine
     {
       if(rrenderer_base* renderer = scene_root->renderer)
       {
-        renderer->render_frame(command_list, this, scene_root, nullptr);  // TODO selected object
+        renderer->render_frame(command_list, this, scene_root, selected_object);
       }
     }
 

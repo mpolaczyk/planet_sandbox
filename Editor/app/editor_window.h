@@ -28,9 +28,7 @@ namespace editor
     
     // Runtime state
     feditor_window_model editor_window_model;
-    foutput_window_model output_window_model;
     fscene_window_model scene_window_model;
-    hhittable_base* selected_object = nullptr;
 
   private:
     static feditor_app* get_editor_app();
@@ -47,18 +45,12 @@ namespace editor
     void draw_camera_panel();
     void draw_scene_panel();
     void draw_scene_objects_panel(fobjects_panel_model& model);
-
-    // Output window
-    void draw_output_window(foutput_window_model& model);
     void draw_new_object_panel(fnew_object_panel_model& model);
     void draw_delete_object_panel(fdelete_object_panel_model& model);
     
     // Runtime state
     fvec3 center_of_scene;
-    float distance_to_center_of_scene = 0.0f;
-    bool output_window_is_clicked = false;
-    bool output_window_is_hovered = false;
-    uint8_t output_window_cursor_color[3] = {0};
+    float distance_to_center_of_scene = 0.0f;    
 
     ComPtr<ID3D12DescriptorHeap> ui_descriptor_heap; // srv, cbv, uav
     

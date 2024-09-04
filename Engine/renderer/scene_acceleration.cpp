@@ -3,6 +3,7 @@
 #include "engine/log.h"
 #include "hittables/light.h"
 #include "hittables/static_mesh.h"
+#include "math/math.h"
 
 namespace engine
 {
@@ -56,6 +57,7 @@ namespace engine
           if(next_light_id < MAX_LIGHTS)
           {
             lights[next_light_id] = light->properties;
+            lights[next_light_id].position = fmath::to_xmfloat4(light->origin);
             next_light_id++;
           }
           else

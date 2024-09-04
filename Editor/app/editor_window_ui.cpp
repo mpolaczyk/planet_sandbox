@@ -255,24 +255,6 @@ namespace editor
     }
   }
 
-  void feditor_window::draw_output_window(foutput_window_model& model)
-  {
-    //if (state.scene_root->renderer->get_output_texture())
-    //{
-    //  ImGui::Begin("OUTPUT", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-    //  ImGui::InputFloat("Zoom", &model.zoom, 0.1f);
-    //  const rrenderer_base* renderer = state.scene_root->renderer;
-    //  ImVec2 size = ImVec2(renderer->output_width * model.zoom, renderer->output_height * model.zoom);
-    //  ImGui::Image((ImTextureID)renderer->get_output_srv().Get(), size, ImVec2(0, 0), ImVec2(1, 1));
-    //
-    //  state.output_window_is_clicked = ImGui::IsItemClicked(ImGuiMouseButton_Left);
-    //  state.output_window_is_hovered = ImGui::IsItemHovered();
-    //  get_color_under_cursor(state.output_window_cursor_color[0], state.output_window_cursor_color[1], state.output_window_cursor_color[2]);
-    //
-    //  ImGui::End();
-    //}
-  }
-
   void feditor_window::draw_new_object_panel(fnew_object_panel_model& model)
   {
     if (ImGui::Button("Add new"))
@@ -369,16 +351,21 @@ void feditor_window::update_default_spawn_position()
     // I do it this way because imported mesh data is bonkers. Mesh instances are merged together across the whole scene.
     // All of them have origin 0,0,0.
     // Line-box hit detection will not work properly. Line-mesh - no time for that.
-    if (output_window_is_hovered && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+    
+    if (!ImGui::IsMouseHoveringAnyWindow() && ImGui::IsMouseDown(ImGuiMouseButton_Left))
     {
       get_editor_app()->scene_root->renderer->show_object_id = 1;
 
+      // First frame resets the selection, second frame sets a new one, third highlights the selected object
       std::vector<hstatic_mesh*> meshes = REG.get_all_by_type<hstatic_mesh>();
       bool found = false;
       for (hstatic_mesh* m : meshes)
       {
         XMUINT4 hash = fmath::uint32_to_colori(m->get_hash());
 
+        uint8_t output_window_cursor_color[3] = {0};
+        get_color_under_cursor(output_window_cursor_color[0], output_window_cursor_color[1], output_window_cursor_color[2]);
+        
         if (output_window_cursor_color[0] == hash.x
           && output_window_cursor_color[1] == hash.y
           && output_window_cursor_color[2] == hash.z)

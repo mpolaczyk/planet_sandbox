@@ -73,9 +73,4 @@ namespace editor
   {
     fmaterials_panel_model rp_model;
   };
-
-  struct foutput_window_model
-  {
-    float zoom = 1.0f;
-  };
 }

@@ -29,13 +29,13 @@ namespace engine
     {
       XMFLOAT4 camera_position; // 16
       XMFLOAT4 ambient_light; // 16
-      //int32_t show_emissive; // 4    // TODO pack bits
-      //int32_t show_ambient; // 4
-      //int32_t show_specular; // 4
-      //int32_t show_diffuse; // 4
-      //int32_t show_normals; // 4
-      //int32_t show_object_id; // 4
-      //int32_t padding[2]; // 8
+      int32_t show_emissive; // 4    // TODO pack bits
+      int32_t show_ambient; // 4
+      int32_t show_specular; // 4
+      int32_t show_diffuse; // 4
+      int32_t show_normals; // 4
+      int32_t show_object_id; // 4
+      int32_t padding[2]; // 8
       flight_properties lights[MAX_LIGHTS]; // 80xN
       fmaterial_properties materials[MAX_MATERIALS]; // 80xN
     };
@@ -47,10 +47,10 @@ namespace engine
       XMFLOAT4X4 model_world; // 64 Used to transform the vertex position from object space to world space
       XMFLOAT4X4 inverse_transpose_model_world; // 64 Used to transform the vertex normal from object space to world space
       XMFLOAT4X4 model_world_view_projection; // 64 Used to transform the vertex position from object space to projected clip space
-      //XMFLOAT4 object_id; // 16
+      XMFLOAT4 object_id; // 16
       uint32_t material_id; // 4
-      //uint32_t is_selected; // 4
-      int32_t padding[3]; // 12
+      uint32_t is_selected; // 4
+      int32_t padding[2]; // 8
     };
     static_assert(sizeof(fobject_data)/4 < 64); // "Root Constant size is greater than 64 DWORDs. Additional indirection may be added by the driver."
     ALIGNED_STRUCT_END(fobject_data)
@@ -136,15 +136,22 @@ namespace engine
     command_list->SetGraphicsRootSignature(root_signature.Get());
     command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);  // TODO Duplicate setting? Pipeline state already has one
     
-    // Root descriptor argument
+    // Calculate per-frame root descriptor argument
     {
       const int back_buffer_index = window->get_back_buffer_index();
 
       fframe_data frame_data;
       frame_data.camera_position = XMFLOAT4(scene->camera_config.location.e);
       frame_data.ambient_light = scene->ambient_light_color;
+      frame_data.show_ambient = show_ambient;
+      frame_data.show_diffuse = show_diffuse;
+      frame_data.show_emissive = show_emissive;
+      frame_data.show_normals = show_normals;
+      frame_data.show_object_id = show_object_id;
+      frame_data.show_specular = show_specular;
       memcpy(&frame_data.lights, &scene_acceleration->lights, MAX_LIGHTS * sizeof(flight_properties));
       memcpy(&frame_data.materials, &scene_acceleration->materials, MAX_MATERIALS * sizeof(fmaterial_properties));
+      
       memcpy(cbv_mapping[back_buffer_index], &frame_data, sizeof(fframe_data));
 
       command_list->SetGraphicsRootConstantBufferView(1, cbv[back_buffer_index]->GetGPUVirtualAddress());
@@ -181,6 +188,8 @@ namespace engine
       {
          object_data.material_id = scene_acceleration->material_map.at(material);
       }
+      object_data.is_selected = selected_object == sm ? 1 : 0;
+      object_data.object_id = fmath::uint32_to_colorf(sm->get_hash());
     }
 
     // Update vertex and index buffers
