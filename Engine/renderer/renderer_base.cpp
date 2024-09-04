@@ -37,21 +37,15 @@ namespace engine
       init();
       init_done = true;
     }
-
-    uint64_t render_time_us;
+      
+    scene_acceleration.clean();
+    scene_acceleration.build(scene->objects);
+    if(!scene_acceleration.validate())
     {
-      fscope_timer benchmark_renderer("Render", &render_time_us);
-      
-      scene_acceleration.clean();
-      scene_acceleration.build(scene->objects);
-      if(!scene_acceleration.validate())
-      {
-        return;
-      }
-      
-      render_frame_internal(command_list);
+      return;
     }
-    render_time_ms = static_cast<double>(render_time_us) / 1000;
+    
+    render_frame_internal(command_list);
   }
 
   bool rrenderer_base::can_render()

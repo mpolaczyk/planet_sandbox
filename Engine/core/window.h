@@ -26,8 +26,7 @@ namespace engine
     void hide() const;
     virtual void init(WNDPROC wnd_proc, ComPtr<ID3D12Device> device, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue);
     virtual void update() = 0;
-    virtual void draw() = 0;
-    virtual void render(const fcommand_queue* command_queue);
+    virtual void draw(const fcommand_queue* command_queue);
     void present();
     void resize(const ComPtr<ID3D12Device> device, uint32_t width, uint32_t height);
     virtual const wchar_t* get_name() const = 0;

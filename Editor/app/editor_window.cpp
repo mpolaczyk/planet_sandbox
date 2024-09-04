@@ -53,7 +53,7 @@ namespace editor
     update_default_spawn_position();
   }
 
-  void feditor_window::draw()
+  void feditor_window::draw(const engine::fcommand_queue* command_queue)
   {
     ImGui_ImplDX12_NewFrame();
     ImGui_ImplWin32_NewFrame();
@@ -65,11 +65,8 @@ namespace editor
 
     draw_editor_window(editor_window_model);
     draw_scene_window(scene_window_model);
-  }
 
-  void feditor_window::render(const fcommand_queue* command_queue)
-  {
-    fwindow::render(command_queue);
+    fwindow::draw(command_queue);
     
     ComPtr<ID3D12GraphicsCommandList> command_list = command_queue->get_command_list(ecommand_list_type::ui, back_buffer_index);
     ComPtr<ID3D12Device2> device = fapplication::instance->device;

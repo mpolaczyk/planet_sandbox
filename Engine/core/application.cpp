@@ -17,7 +17,12 @@
 namespace engine
 {
   fapplication* fapplication::instance = nullptr;
-
+  ftimer_instance fapplication::stat_frame_time;
+  ftimer_instance fapplication::stat_update_time;
+  ftimer_instance fapplication::stat_draw_time;
+  ftimer_instance fapplication::stat_render_time;
+  uint64_t fapplication::frame_counter;
+  
   LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   {
     return fapplication::instance->wnd_proc(hWnd, msg, wParam, lParam);
@@ -89,6 +94,8 @@ namespace engine
   {
     while(is_running)
     {
+      fscope_timer frame_timer(stat_frame_time);
+
       MSG msg;
       while(::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
       {
@@ -101,29 +108,44 @@ namespace engine
       }
       if(!is_running) break;
 
-      update();
-      window->update();
-      window->draw();
-
       const int back_buffer_index = window->get_back_buffer_index();
-      command_queue->reset_command_lists(back_buffer_index);
-      window->render(command_queue.get());
-      uint64_t fence_value = command_queue->execute_command_lists(back_buffer_index);
-      window->present();
-      command_queue->wait_for_fence_value(fence_value);
+      
+      {
+        fscope_timer update_timer(stat_update_time);
+        update();
+      }
+      {
+        fscope_timer draw_timer(stat_draw_time);
+        draw(back_buffer_index);
+      }
+      {
+        fscope_timer render_timer(stat_render_time);
+        render(back_buffer_index);
+      }
     }
   }
 
   void fapplication::update()
   {
-    //const ImGuiIO& io = ImGui::GetIO();
-    //app_delta_time_ms = io.DeltaTime * 1000.0f;
-    render_delta_time_ms = static_cast<float>(scene_root->renderer->get_render_time_ms());
-
     if(scene_root != nullptr && scene_root->renderer != nullptr)
     {
-      scene_root->camera_config.update(render_delta_time_ms / 1000.0f, scene_root->renderer->output_width, scene_root->renderer->output_height);
+      scene_root->camera_config.update(stat_frame_time.get_last_time_ms(), scene_root->renderer->output_width, scene_root->renderer->output_height);
     }
+    window->update();
+  }
+
+  void fapplication::draw(int back_buffer_index)
+  {
+    command_queue->reset_command_lists(back_buffer_index);
+    window->draw(command_queue.get());
+  }
+
+  void fapplication::render(int back_buffer_index)
+  {
+    uint64_t fence_value = command_queue->execute_command_lists(back_buffer_index);
+    window->present();
+    command_queue->wait_for_fence_value(fence_value);   // TODO CPU waits for GPU, make it async
+    frame_counter++;
   }
   
   void fapplication::cleanup()

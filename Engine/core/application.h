@@ -5,6 +5,7 @@
 
 #include "core/core.h"
 #include "math/camera.h"
+#include "profile/benchmark.h"
 
 struct ID3D12Device2;
 
@@ -20,16 +21,20 @@ namespace engine
   {
   public:
     static fapplication* instance;
+    static ftimer_instance stat_frame_time;
+    static ftimer_instance stat_update_time;
+    static ftimer_instance stat_draw_time;
+    static ftimer_instance stat_render_time;
+    static uint64_t frame_counter;
 
     virtual LRESULT wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     virtual void init(const char* project_name);
     virtual void update();
+    virtual void draw(int back_buffer_index);
+    virtual void render(int back_buffer_index);
     virtual void cleanup();
 
     void main_loop();
-
-    float app_delta_time_ms = 0.0f;
-    float render_delta_time_ms = 0.0f;
     
     hscene* scene_root = nullptr;
     fcamera camera;

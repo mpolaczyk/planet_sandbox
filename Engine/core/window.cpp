@@ -46,7 +46,7 @@ namespace engine
 #endif
   }
 
-  void fwindow::render(const fcommand_queue* command_queue)
+  void fwindow::draw(const fcommand_queue* command_queue)
   {
     ComPtr<ID3D12GraphicsCommandList> command_list = command_queue->get_command_list(ecommand_list_type::main, back_buffer_index);
     ComPtr<ID3D12Device2> device = fapplication::instance->device;

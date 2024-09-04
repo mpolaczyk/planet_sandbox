@@ -20,8 +20,7 @@ namespace editor
     virtual const wchar_t* get_name() const override { return L"Editor"; }
     virtual void cleanup() override;
     virtual void update() override;
-    virtual void draw() override;
-    virtual void render(const engine::fcommand_queue* command_queue) override;
+    virtual void draw(const engine::fcommand_queue* command_queue) override;
 
     void handle_input();
     void update_default_spawn_position();

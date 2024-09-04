@@ -46,15 +46,12 @@ namespace engine
 
     // Main public interface
     void render_frame(ComPtr<ID3D12GraphicsCommandList> command_list, fwindow* in_window, const hscene* in_scene, const hhittable_base* in_selected_object = nullptr);    // TODO rename to draw
-    double get_render_time_ms() const { return render_time_ms; }
     
   protected:
     virtual bool can_render();
     virtual void init() = 0;
     virtual void render_frame_internal(ComPtr<ID3D12GraphicsCommandList> command_list) = 0;
     virtual void create_output_texture(bool cleanup = false) = 0;
-    
-    double render_time_ms = 0.0;
     
   private:
     bool init_done = false;

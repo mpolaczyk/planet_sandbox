@@ -28,8 +28,12 @@ namespace editor
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "STATS");
     ImGui::Separator();
-    ImGui::Text("Application %.3f ms/frame", get_editor_app()->app_delta_time_ms);
-    ImGui::Text("Renderer %.3f ms/frame", get_editor_app()->render_delta_time_ms);
+    ImGui::Text("Update %.3f ms", fapplication::stat_update_time.get_last_time_ms());
+    ImGui::Text("Draw %.3f ms", fapplication::stat_draw_time.get_last_time_ms());
+    ImGui::Text("Render %.3f ms", fapplication::stat_render_time.get_last_time_ms());
+    float frame_time = fapplication::stat_frame_time.get_last_time_ms();
+    float fps = 1.0f/frame_time*1000.0f;
+    ImGui::Text("Frame %.3f ms  %.2f FPS", frame_time, fps);
     draw_hotkeys_panel();
     draw_materials_panel(model.rp_model);
     draw_object_registry_panel();
