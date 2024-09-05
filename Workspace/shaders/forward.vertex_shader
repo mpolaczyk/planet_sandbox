@@ -1,5 +1,5 @@
 {
   "shader_file_name": "forward.hlsl",
   "entrypoint" : "vs_main",
-  "target": "vs_5_0"
+  "target": "vs_5_1"
 }

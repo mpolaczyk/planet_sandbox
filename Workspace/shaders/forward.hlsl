@@ -25,10 +25,7 @@ struct fvs_output
   float2 uv           : TEXCOORD2;
 };
 
-//Texture2D texture0 : register(t0);
-//sampler sampler0 : register(s0);
-
-cbuffer fobject_data : register(b0)
+struct fobject_data 
 {
   matrix model_world;
   matrix inverse_transpose_model_world;
@@ -38,7 +35,7 @@ cbuffer fobject_data : register(b0)
   int is_selected;
 };
 
-cbuffer fframe_data : register(b1)
+struct fframe_data
 {
   float4 camera_position;     // 16
   float4 ambient_light;       // 16
@@ -53,34 +50,41 @@ cbuffer fframe_data : register(b1)
   fmaterial_properties materials[MAX_MATERIALS];    // 80xN
 };
 
+//Texture2D texture0 : register(t0);
+//sampler sampler0 : register(s0);
+
+ConstantBuffer<fobject_data> object_data : register(b0);
+ConstantBuffer<fframe_data> frame_data : register(b1);
+
 flight_components compute_light(float4 P, float3 N, float specular_power)
 {
-  const float3 V = normalize(camera_position - P).xyz;
+  const float3 V = normalize(frame_data.camera_position - P).xyz;
 
   flight_components final_light = { {0, 0, 0, 0}, {0, 0, 0, 0} };
-
+  
   [unroll]
   for( int i = 0; i < MAX_LIGHTS; ++i )
   {
-    if(!lights[i].enabled)
+    const flight_properties light = frame_data.lights[i];
+    if(!light.enabled)
       continue;
         
     flight_components delta_light = { {0, 0, 0, 0}, {0, 0, 0, 0} };
-    switch(lights[i].light_type)
+    switch(light.light_type)
     {
     case DIRECTIONAL_LIGHT:
       {
-        delta_light = directional_light(lights[i], V, P, N, specular_power);
+        delta_light = directional_light(light, V, P, N, specular_power);
       }
       break;
     case POINT_LIGHT: 
       {
-        delta_light = point_light(lights[i], V, P, N, specular_power);
+        delta_light = point_light(light, V, P, N, specular_power);
       }
       break;
     case SPOT_LIGHT:
       {
-        delta_light = spot_light(lights[i], V, P, N, specular_power);
+        delta_light = spot_light(light, V, P, N, specular_power);
       }
       break;
     }
@@ -97,26 +101,26 @@ flight_components compute_light(float4 P, float3 N, float specular_power)
 fvs_output vs_main(fvs_input input)
 {
   fvs_output output;
-  output.position_cs    = mul(model_world_view_projection, float4(input.position, 1.0f));
-  output.position_ws    = mul(model_world, float4(input.position, 1.0f));
-  output.normal_ws      = normalize(mul((float3x3)inverse_transpose_model_world, input.normal));
+  output.position_cs    = mul(object_data.model_world_view_projection, float4(input.position, 1.0f));
+  output.position_ws    = mul(object_data.model_world, float4(input.position, 1.0f));
+  output.normal_ws      = normalize(mul((float3x3)object_data.inverse_transpose_model_world, input.normal));
   output.uv             = input.uv;
   return output;
 }
 
 float4 ps_main(fvs_output input) : SV_Target
 {
-  if(show_normals)
+  if(frame_data.show_normals)
   {
     return float4(input.normal_ws * 0.5 + 0.5, 1);
   }
-  else if(show_object_id)
+  else if(frame_data.show_object_id)
   {
-    return object_id;
+    return object_data.object_id;
   }
   else
   {
-    const fmaterial_properties material = materials[material_id];
+    const fmaterial_properties material = frame_data.materials[object_data.material_id];
     
     const flight_components light_final = compute_light(input.position_ws, input.normal_ws, material.specular_power);
     
@@ -127,14 +131,14 @@ float4 ps_main(fvs_output input) : SV_Target
     //}
     
     const float4 selection_emissive = { 0.5, 0.5, 0.5, 1 };
-    float4 emissive = max(material.emissive, is_selected * selection_emissive);
-    float4 ambient = material.ambient * ambient_light;
+    float4 emissive = max(material.emissive, object_data.is_selected * selection_emissive);
+    float4 ambient = material.ambient * frame_data.ambient_light;
     float4 diffuse = material.diffuse * light_final.diffuse;
     float4 specular = material.specular * light_final.specular;
     
     return tex_color * (emissive 
-                      + ambient * show_ambient 
-                      + diffuse * show_diffuse
-                      + specular * show_specular);
+                      + ambient * frame_data.show_ambient 
+                      + diffuse * frame_data.show_diffuse
+                      + specular * frame_data.show_specular);
   }
 }
