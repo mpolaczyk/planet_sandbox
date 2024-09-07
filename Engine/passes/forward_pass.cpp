@@ -36,8 +36,6 @@ namespace engine
       int32_t show_normals; // 4
       int32_t show_object_id; // 4
       int32_t padding[2]; // 8
-      flight_properties lights[MAX_LIGHTS]; // 80xN
-      fmaterial_properties materials[MAX_MATERIALS]; // 80xN
     };
 
     ALIGNED_STRUCT_END(fframe_data)
@@ -55,27 +53,60 @@ namespace engine
     static_assert(sizeof(fobject_data)/4 < 64); // "Root Constant size is greater than 64 DWORDs. Additional indirection may be added by the driver."
     ALIGNED_STRUCT_END(fobject_data)
   }
+
+  enum root_parameter_type
+  {
+    constants = 0,
+    cbv_frame_data,
+    srv_lights_data,
+    srv_materials_data,
+    num
+  };
   
   void fforward_pass::init()
   {
     ComPtr<ID3D12Device2> device = fapplication::instance->device;
 
-    // Constant buffer
+    // Create frame data CBV
     {
       // https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-constant-buffers-root-descriptor-tables#c0
       for(uint32_t n = 0; n < window->back_buffer_count; n++)
       {
         ComPtr<ID3D12Resource> resource;
         uint8_t* mapping = nullptr;
-
         fdx12::create_const_buffer(device, window->main_descriptor_heap, sizeof(fframe_data), 0, &mapping, resource);
-
 #if BUILD_DEBUG
-        std::string name = std::format("Constant buffer upload resource: back buffer {}", n);
+        std::string name = std::format("CBV frame data upload resource: back buffer {}", n);
         resource->SetName(std::wstring(name.begin(), name.end()).c_str());
 #endif
-        cbv_mapping.push_back(mapping);
-        cbv.push_back(resource);
+        cbv_frame_data.push_back(resource);
+      }
+    }
+
+    // Create light and material data SRV
+    {
+      for(uint32_t n = 0; n < window->back_buffer_count; n++)
+      {
+        {
+          ComPtr<ID3D12Resource> resource;
+          uint8_t* mapping = nullptr;
+          fdx12::create_shader_resource_buffer(device, window->main_descriptor_heap, sizeof(flight_properties) * MAX_LIGHTS, 0, &mapping, resource);
+          srv_lights_data.push_back(resource);
+#if BUILD_DEBUG
+          std::string name = std::format("SRV lights data upload resource: back buffer {}", n);
+          resource->SetName(std::wstring(name.begin(), name.end()).c_str());
+#endif
+        }
+        {
+          ComPtr<ID3D12Resource> resource;
+          uint8_t* mapping = nullptr;
+          fdx12::create_shader_resource_buffer(device, window->main_descriptor_heap, sizeof(fmaterial_properties) * MAX_MATERIALS, 0, &mapping, resource);
+          srv_materials_data.push_back(resource);
+#if BUILD_DEBUG
+          std::string name = std::format("SRV materials data upload resource: back buffer {}", n);
+          resource->SetName(std::wstring(name.begin(), name.end()).c_str());
+#endif
+        }
       }
     }
     
@@ -84,13 +115,13 @@ namespace engine
       // https://asawicki.info/news_1754_direct3d_12_long_way_to_access_data
       
       std::vector<CD3DX12_ROOT_PARAMETER1> root_parameters;
+      const CD3DX12_ROOT_PARAMETER1 param = {};
+      root_parameters.resize(root_parameter_type::num, param);
       {
-        CD3DX12_ROOT_PARAMETER1 param;
-        param.InitAsConstants(sizeof(fobject_data) / 4, 0);
-        root_parameters.push_back(param);
-        
-        param.InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC);
-        root_parameters.push_back(param);
+        root_parameters[root_parameter_type::constants].InitAsConstants(sizeof(fobject_data) / 4, 0, 0);
+        root_parameters[root_parameter_type::cbv_frame_data].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC);
+        root_parameters[root_parameter_type::srv_lights_data].InitAsShaderResourceView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC);
+        root_parameters[root_parameter_type::srv_materials_data].InitAsShaderResourceView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC);
       }
       fdx12::create_root_signature(device, root_parameters, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature);
 #if BUILD_DEBUG
@@ -134,12 +165,12 @@ namespace engine
     
     command_list->SetPipelineState(pipeline_state.Get());
     command_list->SetGraphicsRootSignature(root_signature.Get());
-    command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);  // TODO Duplicate setting? Pipeline state already has one
-    
-    // Calculate per-frame root descriptor argument
-    {
-      const int back_buffer_index = window->get_back_buffer_index();
+    command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+    const int back_buffer_index = window->get_back_buffer_index();
+    
+    // Calculate per-frame root descriptor arguments
+    {
       fframe_data frame_data;
       frame_data.camera_position = XMFLOAT4(scene->camera_config.location.e);
       frame_data.ambient_light = scene->ambient_light_color;
@@ -149,21 +180,40 @@ namespace engine
       frame_data.show_normals = show_normals;
       frame_data.show_object_id = show_object_id;
       frame_data.show_specular = show_specular;
-      memcpy(&frame_data.lights, &scene_acceleration->lights, MAX_LIGHTS * sizeof(flight_properties));
-      memcpy(&frame_data.materials, &scene_acceleration->materials, MAX_MATERIALS * sizeof(fmaterial_properties));
-      
-      memcpy(cbv_mapping[back_buffer_index], &frame_data, sizeof(fframe_data));
-
-      command_list->SetGraphicsRootConstantBufferView(1, cbv[back_buffer_index]->GetGPUVirtualAddress());
+      fdx12::update_buffer(cbv_frame_data[back_buffer_index], sizeof(fframe_data), &frame_data);
+      fdx12::update_buffer(srv_lights_data[back_buffer_index], sizeof(flight_properties) * MAX_LIGHTS, &scene_acceleration->lights);
+      fdx12::update_buffer(srv_materials_data[back_buffer_index], sizeof(fmaterial_properties) * MAX_MATERIALS, &scene_acceleration->materials);
     }
     
     // Continuous buffers
     const uint32_t buffers_num = scene_acceleration->meshes.size();
-    std::vector<hstatic_mesh*>& buffer_meshes = scene_acceleration->meshes;
-    std::vector<astatic_mesh*>& buffer_assets = scene_acceleration->assets;
+    const std::vector<hstatic_mesh*>& buffer_meshes = scene_acceleration->meshes;
+    const std::vector<astatic_mesh*>& buffer_assets = scene_acceleration->assets;
     std::vector<fobject_data> buffer_object_data;
     buffer_object_data.resize(buffers_num, fobject_data());
 
+    // Update vertex and index buffers
+    for(uint32_t i = 0; i < buffers_num; i++)
+    {
+      fstatic_mesh_render_state& smrs = buffer_assets[i]->render_state;
+      if(!smrs.is_resource_online)
+      {
+        fdx12::upload_vertex_buffer(device, command_list, smrs);
+        fdx12::upload_index_buffer(device, command_list, smrs);
+#if BUILD_DEBUG
+        {
+          const hstatic_mesh* sm = buffer_meshes[i];
+          std::string mesh_name = sm->get_display_name();
+          std::string asset_name = buffer_assets[i]->file_name;
+          std::string vertex_name = std::format("Vertex buffer: asset {} hittable {}", mesh_name, asset_name);
+          smrs.vertex_buffer->SetName(std::wstring(vertex_name.begin(), vertex_name.end()).c_str());
+          std::string index_name = std::format("Index buffer: asset {} hittable {}", mesh_name, asset_name);
+          smrs.index_buffer->SetName(std::wstring(index_name.begin(), index_name.end()).c_str());
+        }
+#endif
+      }
+    }
+    
     // Calculate per-object root constant arguments
     for(uint32_t i = 0; i < buffers_num; i++)
     {
@@ -192,33 +242,15 @@ namespace engine
       object_data.object_id = fmath::uint32_to_colorf(sm->get_hash());
     }
 
-    // Update vertex and index buffers
-    for(uint32_t i = 0; i < buffers_num; i++)
-    {
-      fstatic_mesh_render_state& smrs = buffer_assets[i]->render_state;
-      if(!smrs.is_resource_online)
-      {
-        fdx12::upload_vertex_buffer(device, command_list, smrs);
-        fdx12::upload_index_buffer(device, command_list, smrs);
-#if BUILD_DEBUG
-        {
-          hstatic_mesh* sm = buffer_meshes[i];
-          std::string mesh_name = sm->get_display_name();
-          std::string asset_name = buffer_assets[i]->file_name;
-          std::string vertex_name = std::format("Vertex buffer: asset {} hittable {}", mesh_name, asset_name);
-          smrs.vertex_buffer->SetName(std::wstring(vertex_name.begin(), vertex_name.end()).c_str());
-          std::string index_name = std::format("Index buffer: asset {} hittable {}", mesh_name, asset_name);
-          smrs.index_buffer->SetName(std::wstring(index_name.begin(), index_name.end()).c_str());
-        }
-#endif
-      }
-    }
-
     // Draw
     for(uint32_t i = 0; i < buffers_num; i++)
     {
-      command_list->SetGraphicsRoot32BitConstants(0, sizeof(fobject_data)/4, &buffer_object_data[i], 0);
       const fstatic_mesh_render_state& smrs = buffer_assets[i]->render_state;
+
+      command_list->SetGraphicsRoot32BitConstants(root_parameter_type::constants, sizeof(fobject_data)/4, &buffer_object_data[i], 0);
+      command_list->SetGraphicsRootConstantBufferView(root_parameter_type::cbv_frame_data, cbv_frame_data[back_buffer_index]->GetGPUVirtualAddress());
+      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::srv_lights_data, srv_lights_data[back_buffer_index]->GetGPUVirtualAddress());
+      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::srv_materials_data, srv_materials_data[back_buffer_index]->GetGPUVirtualAddress());
       command_list->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list->IASetIndexBuffer(&smrs.index_buffer_view);
       command_list->DrawIndexedInstanced(smrs.vertex_list.size(), 1, 0, 0, 0);

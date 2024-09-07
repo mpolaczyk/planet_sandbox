@@ -64,8 +64,13 @@ namespace engine
     static void create_pipeline_state(ComPtr<ID3D12Device2> device, fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state);
     static void create_upload_resource(ComPtr<ID3D12Device> device, int64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
     static void create_default_resource(ComPtr<ID3D12Device> device, int64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
-    static void create_const_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap> cbv_descriptor_heap, int32_t buffer_size, uint32_t register_index, uint8_t** out_mapping_ptr, ComPtr<ID3D12Resource>& out_resource);
+    static void create_const_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap> descriptor_heap, int64_t buffer_size, uint32_t register_index, uint8_t** out_mapping_ptr, ComPtr<ID3D12Resource>& out_resource);
 
+    static void update_buffer(ComPtr<ID3D12Resource> resource, int64_t buffer_size, const void* in_buffer);
+
+    static void create_shader_resource_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap> descriptor_heap, int32_t buffer_size, uint32_t register_index, uint8_t** out_mapping_ptr, ComPtr<ID3D12Resource>& out_resource);
+
+    
     static void resize_swap_chain(ComPtr<IDXGISwapChain4> swap_chain, uint32_t backbuffer_count, uint32_t width, uint32_t height);
     
     static void set_render_targets(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap, ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap, int back_buffer_index);

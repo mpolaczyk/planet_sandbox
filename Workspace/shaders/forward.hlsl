@@ -46,15 +46,12 @@ struct fframe_data
   int show_normals;			      // 4
   int show_object_id;         // 4
   int2 padding;				        // 8
-  flight_properties lights[MAX_LIGHTS];             // 80xN
-  fmaterial_properties materials[MAX_MATERIALS];    // 80xN
 };
-
-//Texture2D texture0 : register(t0);
-//sampler sampler0 : register(s0);
 
 ConstantBuffer<fobject_data> object_data : register(b0);
 ConstantBuffer<fframe_data> frame_data : register(b1);
+StructuredBuffer<flight_properties> lights_data : register(t0);
+StructuredBuffer<fmaterial_properties> materials_data : register(t1);
 
 flight_components compute_light(float4 P, float3 N, float specular_power)
 {
@@ -65,7 +62,7 @@ flight_components compute_light(float4 P, float3 N, float specular_power)
   [unroll]
   for( int i = 0; i < MAX_LIGHTS; ++i )
   {
-    const flight_properties light = frame_data.lights[i];
+    const flight_properties light = lights_data[i];
     if(!light.enabled)
       continue;
         
@@ -120,7 +117,7 @@ float4 ps_main(fvs_output input) : SV_Target
   }
   else
   {
-    const fmaterial_properties material = frame_data.materials[object_data.material_id];
+    const fmaterial_properties material = materials_data[object_data.material_id];
     
     const flight_components light_final = compute_light(input.position_ws, input.normal_ws, material.specular_power);
     
