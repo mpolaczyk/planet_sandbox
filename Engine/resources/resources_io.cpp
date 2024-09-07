@@ -245,12 +245,13 @@ namespace engine
       fwrite(pdb->GetBufferPointer(), pdb->GetBufferSize(), 1, fp);
       fclose(fp);
     }
-#endif
-    //// Strip reflection
+#elif BUILD_RELEASE
+    // Strip reflection
     ComPtr<ID3DBlob> stripped_blob;
     UINT flags = D3DCOMPILER_STRIP_REFLECTION_DATA | D3DCOMPILER_STRIP_DEBUG_INFO | D3DCOMPILER_STRIP_TEST_BLOBS | D3DCOMPILER_STRIP_PRIVATE_DATA;
     D3DStripShader(out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize(), flags, &stripped_blob);
     out_shader_blob = stripped_blob;
+#endif
     return true;
   }
 }
