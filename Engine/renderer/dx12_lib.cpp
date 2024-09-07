@@ -8,6 +8,7 @@
 #include <DirectXColors.h>
 
 #include "d3d12.h"
+#include "assets/texture.h"
 #include "d3dx12/d3dx12_root_signature.h"
 #include "d3dx12/d3dx12_barriers.h"
 #include "d3dx12/d3dx12_resource_helpers.h"
@@ -73,6 +74,27 @@ namespace engine
     }
 
     *out_adapter = adapter1.Detach();
+  }
+
+  DXGI_SAMPLE_DESC fdx12::get_multisample_quality_levels(ComPtr<ID3D12Device> device, DXGI_FORMAT format, UINT num_samples, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags)
+  {
+    DXGI_SAMPLE_DESC desc = { 1, 0 };
+
+    D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS quality_levels;
+    quality_levels.Format           = format;
+    quality_levels.SampleCount      = 1;
+    quality_levels.Flags            = flags;
+    quality_levels.NumQualityLevels = 0;
+
+    while (quality_levels.SampleCount <= num_samples
+        && SUCCEEDED(device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &quality_levels, sizeof(D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS)))
+        && quality_levels.NumQualityLevels > 0)
+    {
+      desc.Count   = quality_levels.SampleCount;
+      desc.Quality = quality_levels.NumQualityLevels - 1;
+      quality_levels.SampleCount *= 2;
+    }
+    return desc;
   }
 
   void fdx12::enable_debug_layer()
@@ -256,7 +278,7 @@ namespace engine
     }
   }
 
-  void fdx12::create_root_signature(ComPtr<ID3D12Device> device, const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, ComPtr<ID3D12RootSignature>& out_root_signature)
+  void fdx12::create_root_signature(ComPtr<ID3D12Device> device, const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, const std::vector<CD3DX12_STATIC_SAMPLER_DESC>& static_samplers, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, ComPtr<ID3D12RootSignature>& out_root_signature)
   {
     D3D12_FEATURE_DATA_ROOT_SIGNATURE feature_data = {};
     feature_data.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
@@ -269,7 +291,7 @@ namespace engine
     ComPtr<ID3DBlob> root_signature_blob;
     ComPtr<ID3DBlob> error_blob;
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC root_signature_desc;
-    root_signature_desc.Init_1_1(root_parameters.size(), root_parameters.data(), 0, nullptr, root_signature_flags);
+    root_signature_desc.Init_1_1(root_parameters.size(), root_parameters.data(), static_samplers.size(), static_samplers.data(), root_signature_flags);
     
     THROW_IF_FAILED(D3DX12SerializeVersionedRootSignature(&root_signature_desc, feature_data.HighestVersion, root_signature_blob.GetAddressOf(), error_blob.GetAddressOf()));
     // LOG_ERROR("Root signature. {0}", static_cast<const char*>(error_blob->GetBufferPointer()));
@@ -324,7 +346,7 @@ namespace engine
 
   void fdx12::resource_barrier(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after)
   {
-    CD3DX12_RESOURCE_BARRIER resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource.Get(), state_before, state_after);
+    const CD3DX12_RESOURCE_BARRIER resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource.Get(), state_before, state_after);
     command_list->ResourceBarrier(1, &resource_barrier);
   }
 
@@ -439,7 +461,66 @@ namespace engine
     
     out_render_state.is_resource_online = true;
   }
-  
+
+  void fdx12::upload_texture_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> descriptor_heap, atexture* texture)
+  {
+    ftexture_render_state& trs = texture->render_state;
+    
+    // Describe and create a Texture2D.
+    D3D12_RESOURCE_DESC texture_desc = {};
+    texture_desc.MipLevels = 1;
+    texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // TODO move to texture, make persistent
+    texture_desc.Width = texture->width;
+    texture_desc.Height = texture->height;
+    texture_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+    texture_desc.DepthOrArraySize = 1;
+    texture_desc.SampleDesc.Count = 1;
+    texture_desc.SampleDesc.Quality = 0;
+    texture_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+
+    CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
+    THROW_IF_FAILED(device->CreateCommittedResource(
+      &default_heap,
+      D3D12_HEAP_FLAG_NONE,
+      &texture_desc,
+      D3D12_RESOURCE_STATE_COPY_DEST,
+      nullptr,
+      IID_PPV_ARGS(&trs.texture_buffer)));
+
+    const UINT64 buffer_size = GetRequiredIntermediateSize(trs.texture_buffer.Get(), 0, 1);
+
+    // Create the GPU upload buffer.
+    CD3DX12_HEAP_PROPERTIES upload_heap(D3D12_HEAP_TYPE_UPLOAD);
+    const CD3DX12_RESOURCE_DESC destination_desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
+
+    THROW_IF_FAILED(device->CreateCommittedResource(
+        &upload_heap,
+        D3D12_HEAP_FLAG_NONE,
+        &destination_desc,
+        D3D12_RESOURCE_STATE_GENERIC_READ,
+        nullptr,
+        IID_PPV_ARGS(&trs.texture_buffer_upload)));
+
+    // Copy data to the intermediate upload heap and then schedule a copy 
+    // from the upload heap to the Texture2D.
+    D3D12_SUBRESOURCE_DATA texture_data = {};
+    texture_data.pData = trs.is_hdr ? reinterpret_cast<void*>(trs.data_hdr.data()) : trs.data_ldr.data();
+    texture_data.RowPitch = texture->width * texture->desired_channels * (trs.is_hdr ? sizeof(float) : sizeof(uint8_t));
+    texture_data.SlicePitch = texture_data.RowPitch * texture->height;
+
+    UpdateSubresources(command_list.Get(), trs.texture_buffer.Get(), trs.texture_buffer_upload.Get(), 0, 0, 1, &texture_data);
+    resource_barrier(command_list, trs.texture_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    
+    // Describe and create a SRV for the texture.
+    D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
+    srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srv_desc.Format = texture_desc.Format;
+    srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    srv_desc.Texture2D.MipLevels = 1;
+    device->CreateShaderResourceView(texture->render_state.texture_buffer.Get(), &srv_desc, descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+
+    trs.is_resource_online = true;
+  }
 
   //void fdx12::create_input_layout(const D3D11_INPUT_ELEMENT_DESC* input_element_desc, uint32_t input_element_desc_size, const ComPtr<ID3D10Blob>& vertex_shader_blob, ComPtr<ID3D11InputLayout>& input_layout) const
   //{

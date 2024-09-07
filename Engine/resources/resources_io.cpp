@@ -133,51 +133,42 @@ namespace engine
     return true;
   }
 
-  bool load_img(const std::string& file_name, int desired_channels, atexture* out_texture)
+  bool load_img(const std::string& file_name, int desired_channels, atexture* out_texture)  // TODO file name and desired channels is alreadyu in the texture asset, remove arguments
   {
     assert(out_texture);
 
     std::string path = fio::get_texture_file_path(file_name.c_str());
 
-    int num_channels = 0;
-    bool is_hdr = static_cast<bool>(stbi_is_hdr(path.c_str()));
-    uint8_t* data_ldr = nullptr;
-    float* data_hdr = nullptr;
-    int bytes_per_row = 0;
-    const void* buffer = nullptr;
-
-    if(is_hdr)
+    int num_channels = 0; // TODO figure out why this is not in use
+    out_texture->render_state.is_hdr = static_cast<bool>(stbi_is_hdr(path.c_str()));
+    
+    if(out_texture->render_state.is_hdr)
     {
-      data_hdr = stbi_loadf(path.c_str(), &out_texture->width, &out_texture->height, &num_channels, desired_channels);
+      float* data_hdr = stbi_loadf(path.c_str(), &out_texture->width, &out_texture->height, &num_channels, desired_channels);
+      int32_t elements_total = out_texture->desired_channels * out_texture->width * out_texture->height;
       if(data_hdr == nullptr)
       {
         LOG_ERROR("Texture file: {0} failed to open", path);
-        delete buffer;
         return false;
       }
-      buffer = static_cast<const void*>(data_hdr);
-      bytes_per_row = out_texture->desired_channels * sizeof(float) * out_texture->width;
+      out_texture->render_state.data_hdr.resize(elements_total, 0.0f);
+      std::vector<float> z(data_hdr, data_hdr + elements_total * sizeof(float));
+      out_texture->render_state.data_hdr = z;
+
     }
     else
     {
-      data_ldr = stbi_load(path.c_str(), &out_texture->width, &out_texture->height, &num_channels, desired_channels);
+      uint8_t* data_ldr = stbi_load(path.c_str(), &out_texture->width, &out_texture->height, &num_channels, desired_channels);
+      int32_t elements_total = out_texture->desired_channels * out_texture->width * out_texture->height;
       if(data_ldr == nullptr)
       {
         LOG_ERROR("Texture file: {0} failed to open", path);
-        delete buffer;
         return false;
       }
-      buffer = static_cast<const void*>(data_ldr);
-      bytes_per_row = out_texture->desired_channels * sizeof(uint8_t) * out_texture->width;
+      out_texture->render_state.data_ldr.resize(elements_total, 0);
+      std::vector<uint8_t> z(data_ldr, data_ldr + elements_total * sizeof(uint8_t));
+      out_texture->render_state.data_ldr = z;
     }
-    
-    DXGI_FORMAT format = is_hdr ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
-
-    //fdx12::instance().create_texture(out_texture->width, out_texture->height, format, D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE, out_texture->render_state.texture, bytes_per_row, buffer);
-    
-    //fdx12::instance().create_shader_resource_view(out_texture->render_state.texture, format, D3D11_SRV_DIMENSION_TEXTURE2D, out_texture->render_state.texture_srv);
-    
-    delete buffer;
     return true;
   }
 

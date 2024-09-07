@@ -52,6 +52,9 @@ ConstantBuffer<fobject_data> object_data : register(b0);
 ConstantBuffer<fframe_data> frame_data : register(b1);
 StructuredBuffer<flight_properties> lights_data : register(t0);
 StructuredBuffer<fmaterial_properties> materials_data : register(t1);
+Texture2D texture_data : register(t2);
+SamplerState sampler_obj : register(s0);
+
 
 flight_components compute_light(float4 P, float3 N, float specular_power)
 {
@@ -122,10 +125,10 @@ float4 ps_main(fvs_output input) : SV_Target
     const flight_components light_final = compute_light(input.position_ws, input.normal_ws, material.specular_power);
     
     float4 tex_color = { 1, 1, 1, 1 };
-    //if (material.use_texture)
-    //{
-    //  tex_color = texture0.Sample(sampler0, input.uv);
-    //}
+    if (material.use_texture)
+    {
+      tex_color = texture_data.Sample(sampler_obj, input.uv);
+    }
     
     const float4 selection_emissive = { 0.5, 0.5, 0.5, 1 };
     float4 emissive = max(material.emissive, object_data.is_selected * selection_emissive);

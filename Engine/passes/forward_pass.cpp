@@ -22,7 +22,10 @@
 namespace engine
 {
   using namespace DirectX;
-  
+
+  // Based on multiple training projects:
+  // https://github.com/jpvanoosten/LearningDirectX12/tree/main/samples
+  // https://github.com/microsoft/DirectX-Graphics-Samples/tree/master/Samples/Desktop
   namespace
   {
     ALIGNED_STRUCT_BEGIN(fframe_data)
@@ -60,6 +63,7 @@ namespace engine
     cbv_frame_data,
     srv_lights_data,
     srv_materials_data,
+    texture,
     num
   };
   
@@ -118,12 +122,22 @@ namespace engine
       const CD3DX12_ROOT_PARAMETER1 param = {};
       root_parameters.resize(root_parameter_type::num, param);
       {
+        // TODO This is overkill as it all get copied for each draw call. Use descriptor table instead
+
+        CD3DX12_DESCRIPTOR_RANGE1 texture_range(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+
         root_parameters[root_parameter_type::constants].InitAsConstants(sizeof(fobject_data) / 4, 0, 0);
-        root_parameters[root_parameter_type::cbv_frame_data].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC);
-        root_parameters[root_parameter_type::srv_lights_data].InitAsShaderResourceView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC);
-        root_parameters[root_parameter_type::srv_materials_data].InitAsShaderResourceView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC);
+        root_parameters[root_parameter_type::cbv_frame_data].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC); // TODO PIXEL ONLY
+        root_parameters[root_parameter_type::srv_lights_data].InitAsShaderResourceView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC); // TODO PIXEL ONLY
+        root_parameters[root_parameter_type::srv_materials_data].InitAsShaderResourceView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC); // TODO PIXEL ONLY
+        root_parameters[root_parameter_type::texture].InitAsDescriptorTable(1, &texture_range, D3D12_SHADER_VISIBILITY_PIXEL);
       }
-      fdx12::create_root_signature(device, root_parameters, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature);
+
+      std::vector<CD3DX12_STATIC_SAMPLER_DESC> static_sampers;
+      CD3DX12_STATIC_SAMPLER_DESC sampler_desc(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
+      static_sampers.push_back(sampler_desc);
+      
+      fdx12::create_root_signature(device, root_parameters, static_sampers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature);
 #if BUILD_DEBUG
       root_signature->SetName(L"Root signature forward pass");
 #endif
@@ -138,10 +152,13 @@ namespace engine
         { "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
       };
-    
+
+      DXGI_FORMAT back_buffer_format = DXGI_FORMAT_R8G8B8A8_UNORM;
+      DXGI_FORMAT depth_buffer_format = DXGI_FORMAT_D32_FLOAT;
+
       D3D12_RT_FORMAT_ARRAY rtv_formats = {};
       rtv_formats.NumRenderTargets = 1;
-      rtv_formats.RTFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+      rtv_formats.RTFormats[0] = back_buffer_format;
 
       // Pipeline state object
       fpipeline_state_stream pipeline_state_stream;
@@ -150,7 +167,7 @@ namespace engine
       pipeline_state_stream.primitive_topology_type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
       pipeline_state_stream.vertex_shader = CD3DX12_SHADER_BYTECODE(vertex_shader->blob.Get());
       pipeline_state_stream.pixel_shader = CD3DX12_SHADER_BYTECODE(pixel_shader->blob.Get());
-      pipeline_state_stream.dsv_format = DXGI_FORMAT_D32_FLOAT;
+      pipeline_state_stream.dsv_format = depth_buffer_format;
       pipeline_state_stream.rtv_formats = rtv_formats;
       fdx12::create_pipeline_state(device, pipeline_state_stream, pipeline_state);
 #if BUILD_DEBUG
@@ -192,6 +209,8 @@ namespace engine
     std::vector<fobject_data> buffer_object_data;
     buffer_object_data.resize(buffers_num, fobject_data());
 
+    // TODO - upload all used textures here it happens per draw call now
+    
     // Update vertex and index buffers
     for(uint32_t i = 0; i < buffers_num; i++)
     {
@@ -205,10 +224,14 @@ namespace engine
           const hstatic_mesh* sm = buffer_meshes[i];
           std::string mesh_name = sm->get_display_name();
           std::string asset_name = buffer_assets[i]->file_name;
-          std::string vertex_name = std::format("Vertex buffer: asset {} hittable {}", mesh_name, asset_name);
-          smrs.vertex_buffer->SetName(std::wstring(vertex_name.begin(), vertex_name.end()).c_str());
-          std::string index_name = std::format("Index buffer: asset {} hittable {}", mesh_name, asset_name);
-          smrs.index_buffer->SetName(std::wstring(index_name.begin(), index_name.end()).c_str());
+          std::string name = std::format("Vertex buffer: asset {} hittable {}", mesh_name, asset_name);
+          smrs.vertex_buffer->SetName(std::wstring(name.begin(), name.end()).c_str());
+          name = std::format("Index buffer: asset {} hittable {}", mesh_name, asset_name);
+          smrs.index_buffer->SetName(std::wstring(name.begin(), name.end()).c_str());
+          name = std::format("Vertex upload buffer: asset {} hittable {}", mesh_name, asset_name);
+          smrs.vertex_buffer_upload->SetName(std::wstring(name.begin(), name.end()).c_str());
+          name = std::format("Index upload buffer: asset {} hittable {}", mesh_name, asset_name);
+          smrs.index_buffer_upload->SetName(std::wstring(name.begin(), name.end()).c_str());
         }
 #endif
       }
@@ -245,12 +268,39 @@ namespace engine
     // Draw
     for(uint32_t i = 0; i < buffers_num; i++)
     {
+      // Update texture
+      // TODO move it to the continuous buffer, let it be generated by the scene accelerator
+      {
+        //hstatic_mesh* sm = buffer_meshes[i];
+        //amaterial* ma = sm->material_asset_ptr.get();
+        //ma = (ma == nullptr) ? default_material_asset.get() : ma;
+        //atexture* ta = ma->texture_asset_ptr.get();
+        //ta = (ta == nullptr && ma->properties.use_texture) ? default_material_asset.get()->texture_asset_ptr.get() : ta;
+
+        atexture* ta = default_material_asset.get()->texture_asset_ptr.get();
+        
+        if(!ta->render_state.is_resource_online)
+        {
+          fdx12::upload_texture_buffer(device, command_list, window->main_descriptor_heap, ta);
+#if BUILD_DEBUG
+          {
+            std::string texture_name = ta->get_display_name();
+            std::string name = std::format("Texture buffer: {}", texture_name);
+            ta->render_state.texture_buffer->SetName(std::wstring(name.begin(), name.end()).c_str());
+            name = std::format("Texture upload buffer: {}", texture_name);
+            ta->render_state.texture_buffer_upload->SetName(std::wstring(name.begin(), name.end()).c_str());
+          }
+#endif
+        }
+      }
+        // draw calls
       const fstatic_mesh_render_state& smrs = buffer_assets[i]->render_state;
 
       command_list->SetGraphicsRoot32BitConstants(root_parameter_type::constants, sizeof(fobject_data)/4, &buffer_object_data[i], 0);
       command_list->SetGraphicsRootConstantBufferView(root_parameter_type::cbv_frame_data, cbv_frame_data[back_buffer_index]->GetGPUVirtualAddress());
       command_list->SetGraphicsRootShaderResourceView(root_parameter_type::srv_lights_data, srv_lights_data[back_buffer_index]->GetGPUVirtualAddress());
       command_list->SetGraphicsRootShaderResourceView(root_parameter_type::srv_materials_data, srv_materials_data[back_buffer_index]->GetGPUVirtualAddress());
+      command_list->SetGraphicsRootDescriptorTable(root_parameter_type::texture, window->main_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
       command_list->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list->IASetIndexBuffer(&smrs.index_buffer_view);
       command_list->DrawIndexedInstanced(smrs.vertex_list.size(), 1, 0, 0, 0);

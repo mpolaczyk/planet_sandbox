@@ -24,16 +24,16 @@ namespace editor
   {
     using namespace engine;
 
-    LOG_INFO("Loading: textures");
-    {
-      std::vector<std::string> texture_names = fio::discover_texture_files(false);
-      concurrency::parallel_for_each(begin(texture_names), end(texture_names),
-        [&](const std::string& name)
-        {
-          atexture* temp = atexture::spawn();
-          atexture::load(temp, name);
-        });
-    }
+    //LOG_INFO("Loading: textures");
+    //{
+    //  std::vector<std::string> texture_names = fio::discover_texture_files(false);
+    //  concurrency::parallel_for_each(begin(texture_names), end(texture_names),
+    //    [&](const std::string& name)
+    //    {
+    //      atexture* temp = atexture::spawn();
+    //      atexture::load(temp, name);
+    //    });
+    //}
     
     LOG_INFO("Loading: materials");
     {

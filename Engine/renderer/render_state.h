@@ -29,21 +29,24 @@ namespace engine
 
   struct ftexture_render_state
   {
-    //ComPtr<ID3D11Texture2D> texture;
-    //ComPtr<ID3D11ShaderResourceView> texture_srv;
+    // Offline data
+    std::vector<float> data_hdr;
+    std::vector<uint8_t> data_ldr;
+    bool is_hdr;
+
+    // Present when resource is uploaded to GPU
+    bool is_resource_online = false;
+    ComPtr<ID3D12Resource> texture_buffer;
+    ComPtr<ID3D12Resource> texture_buffer_upload; // TODO System resource, duplicates data_*. Clean vertex_list when this is set?
   };
 
   struct fpixel_shader_render_state
   {
     ComPtr<ID3DBlob> blob;
-    //ComPtr<ID3D11PixelShader> shader;
-    //ComPtr<ID3D10Blob> blob;
   };
 
   struct fvertex_shader_render_state
   {
     ComPtr<ID3DBlob> blob;
-    //ComPtr<ID3D11VertexShader> shader;
-    //ComPtr<ID3D10Blob> blob;
   };
 }

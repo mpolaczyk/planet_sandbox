@@ -260,10 +260,10 @@
         "class_name": "hstatic_mesh",
         "custom_display_name": "sphere",
         "material_asset": {
-          "name": "white"
+          "name": "default"
         },
         "mesh_asset": {
-          "name": "sphere"
+          "name": "plane"
         },
         "origin": {
           "x": 0.0,
@@ -271,14 +271,14 @@
           "z": 0.0
         },
         "rotation": {
-          "x": 0.0,
-          "y": 0.0,
+          "x": 90.0,
+          "y": 90.0,
           "z": 0.0
         },
         "scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0
+          "x": 2.0,
+          "y": 2.0,
+          "z": 2.0
         }
       },
       {
@@ -343,7 +343,7 @@
     "renderer": {
       "class_name": "rgpu_forward_sync",
       "default_material_asset": {
-        "name": ""
+        "name": "default"
       },
       "output_height": 1080,
       "output_width": 1920,

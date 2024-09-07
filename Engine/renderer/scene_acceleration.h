@@ -18,7 +18,7 @@ namespace engine
     void build(const std::vector<hhittable_base*>& objects);
     bool validate() const;
 
-    // Map material pointer to material id (sent to gpu)
+    // Map material pointer to material id (index to materials array)
     // Needs to be quick to search
     typedef std::unordered_map<const amaterial*, uint32_t> material_map_type;
     material_map_type material_map;
