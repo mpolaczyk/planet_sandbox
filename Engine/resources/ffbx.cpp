@@ -249,7 +249,7 @@ namespace engine
 
     print_hierarhy(ai_scene->mRootNode, 0);
 
-    for(int i = 0; i < ai_scene->mNumMeshes; i++)
+    for(uint32_t i = 0; i < ai_scene->mNumMeshes; i++)
     {
       // Iterate over scene objects, not geometry assets
       // FBX constains one geometry object per mesh, even if they are the same meshes

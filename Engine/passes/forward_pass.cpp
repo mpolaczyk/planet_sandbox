@@ -104,7 +104,7 @@ namespace engine
       {
         CD3DX12_CPU_DESCRIPTOR_HANDLE handle(window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), cbv_frame_data_heap_index + i, main_descriptor_size);
         ComPtr<ID3D12Resource> resource;
-        fdx12::create_const_buffer(device, handle, sizeof(fframe_data), 0, resource);
+        fdx12::create_const_buffer(device, handle, sizeof(fframe_data), resource);
         cbv_frame_resource.push_back(resource);
         
 #if BUILD_DEBUG
@@ -236,7 +236,7 @@ namespace engine
     }
     
     // Continuous buffers
-    const uint32_t buffers_num = scene_acceleration->meshes.size();
+    const uint32_t buffers_num = static_cast<uint32_t>(scene_acceleration->meshes.size());
     const std::vector<hstatic_mesh*>& buffer_meshes = scene_acceleration->meshes;
     const std::vector<astatic_mesh*>& buffer_assets = scene_acceleration->assets;
     std::vector<fobject_data> buffer_object_data;
@@ -246,7 +246,7 @@ namespace engine
     const UINT descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     CD3DX12_CPU_DESCRIPTOR_HANDLE handle(window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), srv_textures_heap_index, descriptor_size);
 
-    const int32_t num_textures_in_scene = scene_acceleration->textures.size();
+    const uint32_t num_textures_in_scene = static_cast<uint32_t>(scene_acceleration->textures.size());
     auto& textures = scene_acceleration->textures;
     auto* default_texture = default_material_asset.get()->texture_asset_ptr.get();
 
@@ -362,7 +362,7 @@ namespace engine
       command_list->SetGraphicsRootDescriptorTable(root_parameter_type::textures, window->main_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
       command_list->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list->IASetIndexBuffer(&smrs.index_buffer_view);
-      command_list->DrawIndexedInstanced(smrs.vertex_list.size(), 1, 0, 0, 0);
+      command_list->DrawIndexedInstanced(static_cast<uint32_t>(smrs.vertex_list.size()), 1, 0, 0, 0);
     }
   }
 
