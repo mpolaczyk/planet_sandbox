@@ -133,40 +133,39 @@ namespace engine
     return true;
   }
 
-  bool load_img(const std::string& file_name, int desired_channels, atexture* out_texture)  // TODO file name and desired channels is alreadyu in the texture asset, remove arguments
+  bool load_img(const std::string& file_name, atexture* out_texture)
   {
     assert(out_texture);
 
     std::string path = fio::get_texture_file_path(file_name.c_str());
 
-    int num_channels = 0; // TODO figure out why this is not in use
     out_texture->render_state.is_hdr = static_cast<bool>(stbi_is_hdr(path.c_str()));
     
     if(out_texture->render_state.is_hdr)
     {
-      float* data_hdr = stbi_loadf(path.c_str(), &out_texture->width, &out_texture->height, &num_channels, desired_channels);
-      int32_t elements_total = out_texture->desired_channels * out_texture->width * out_texture->height;
+      float* data_hdr = stbi_loadf(path.c_str(), &out_texture->width, &out_texture->height, &out_texture->channels, 4);
+      int32_t elements_total = out_texture->channels * out_texture->width * out_texture->height;
       if(data_hdr == nullptr)
       {
         LOG_ERROR("Texture file: {0} failed to open", path);
         return false;
       }
       out_texture->render_state.data_hdr.resize(elements_total, 0.0f);
-      std::vector<float> z(data_hdr, data_hdr + elements_total * sizeof(float));
+      std::vector<float> z(data_hdr, data_hdr + elements_total);
       out_texture->render_state.data_hdr = z;
 
     }
     else
     {
-      uint8_t* data_ldr = stbi_load(path.c_str(), &out_texture->width, &out_texture->height, &num_channels, desired_channels);
-      int32_t elements_total = out_texture->desired_channels * out_texture->width * out_texture->height;
+      uint8_t* data_ldr = stbi_load(path.c_str(), &out_texture->width, &out_texture->height, &out_texture->channels, 4);
+      int32_t elements_total = out_texture->channels * out_texture->width * out_texture->height;
       if(data_ldr == nullptr)
       {
         LOG_ERROR("Texture file: {0} failed to open", path);
         return false;
       }
       out_texture->render_state.data_ldr.resize(elements_total, 0);
-      std::vector<uint8_t> z(data_ldr, data_ldr + elements_total * sizeof(uint8_t));
+      std::vector<uint8_t> z(data_ldr, data_ldr + elements_total);
       out_texture->render_state.data_ldr = z;
     }
     return true;

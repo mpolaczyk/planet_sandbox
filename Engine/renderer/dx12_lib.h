@@ -71,10 +71,10 @@ namespace engine
     static void create_root_signature(ComPtr<ID3D12Device> device, const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, const std::vector<CD3DX12_STATIC_SAMPLER_DESC>& static_samplers, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, ComPtr<ID3D12RootSignature>& out_root_signature);
     static void create_pipeline_state(ComPtr<ID3D12Device2> device, fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state);
     static void create_upload_resource(ComPtr<ID3D12Device> device, int64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
-    static void create_default_resource(ComPtr<ID3D12Device> device, int64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
-    static void create_const_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap> descriptor_heap, int64_t buffer_size, uint32_t register_index, uint8_t** out_mapping_ptr, ComPtr<ID3D12Resource>& out_resource);
+    static void create_default_resource(ComPtr<ID3D12Device> device, uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
+    static void create_const_buffer(ComPtr<ID3D12Device> device, const D3D12_CPU_DESCRIPTOR_HANDLE& handle, uint64_t buffer_size, uint32_t register_index, ComPtr<ID3D12Resource>& out_resource);
 
-    static void create_shader_resource_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap> descriptor_heap, int32_t buffer_size, uint32_t register_index, uint8_t** out_mapping_ptr, ComPtr<ID3D12Resource>& out_resource);
+    static void create_shader_resource_buffer(ComPtr<ID3D12Device> device, const D3D12_CPU_DESCRIPTOR_HANDLE& handle, uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
 
     
     static void resize_swap_chain(ComPtr<IDXGISwapChain4> swap_chain, uint32_t backbuffer_count, uint32_t width, uint32_t height);
@@ -91,14 +91,14 @@ namespace engine
     static void resource_barrier(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after);
 
     // TODO Check ifthey do the same in the end...
-    static void update_buffer(ComPtr<ID3D12Resource> resource, int64_t buffer_size, const void* in_buffer);
+    static void update_buffer(ComPtr<ID3D12Resource> resource, uint64_t buffer_size, const void* in_buffer);
     static void upload_buffer_resource(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, int64_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource);
     
     static void upload_vertex_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state);
     static void upload_index_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state);
     static void upload_texture_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> descriptor_heap, const CD3DX12_CPU_DESCRIPTOR_HANDLE& handle, atexture* texture);
 
-    static int32_t align_size_to(int32_t size, int32_t value)
+    static int64_t align_size_to(uint64_t size, uint64_t value)
     {
       return (size + value) & ~value;
     }

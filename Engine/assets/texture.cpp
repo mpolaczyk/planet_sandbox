@@ -39,7 +39,7 @@ namespace engine
     instance->accept(vdeserialize_object(j));
     instance->set_display_name(name);
 
-    if(!load_img(instance->img_file_name, instance->desired_channels, instance))
+    if(!load_img(instance->img_file_name, instance))
     {
       LOG_ERROR("Failed to load texture file: {0}", instance->img_file_name);
       return false;

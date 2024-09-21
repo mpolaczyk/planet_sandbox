@@ -18,11 +18,11 @@ namespace engine
 
     // JSON persistent
     std::string img_file_name;
-    int desired_channels;
 
     // Image file data
     int width;
     int height;
+    int channels;
     ftexture_render_state render_state;
   };
 }

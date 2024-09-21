@@ -5,10 +5,8 @@
 
 #define MAX_MATERIALS 32
 #define MAX_LIGHTS 16
-#define MAX_TEXTURES 1
-
-static_assert(MAX_TEXTURES < 256);  // uint8_t limit
-static_assert(MAX_MATERIALS < 256); // uint8_t limit
+#define MAX_TEXTURES 2
+#define MAX_MAIN_DESCRIPTORS 1000
 
 namespace engine
 {

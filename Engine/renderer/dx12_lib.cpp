@@ -16,6 +16,7 @@
 #include "core/exceptions.h"
 #include "engine/log.h"
 #include "engine/string_tools.h"
+#include "renderer/aligned_structs.h"
 #include "renderer/pipeline_state.h"
 #include "renderer/render_state.h"
 
@@ -243,7 +244,7 @@ namespace engine
   void fdx12::create_cbv_srv_uav_descriptor_heap(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap)
   {
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-    desc.NumDescriptors = 1;
+    desc.NumDescriptors = MAX_MAIN_DESCRIPTORS;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
     THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.GetAddressOf())))
@@ -384,7 +385,7 @@ namespace engine
       IID_PPV_ARGS(out_resource.GetAddressOf())));
   }
 
-  void fdx12::create_default_resource(ComPtr<ID3D12Device> device, int64_t buffer_size, ComPtr<ID3D12Resource>& out_resource)
+  void fdx12::create_default_resource(ComPtr<ID3D12Device> device, uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource)
   {
     const CD3DX12_HEAP_PROPERTIES type_default = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
     const CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size, D3D12_RESOURCE_FLAG_NONE);
@@ -397,19 +398,21 @@ namespace engine
       IID_PPV_ARGS(out_resource.GetAddressOf())));
   }
 
-  void fdx12::create_const_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap> descriptor_heap, int64_t buffer_size, uint32_t register_index, uint8_t** out_mapping_ptr, ComPtr<ID3D12Resource>& out_resource)
+  void fdx12::create_const_buffer(ComPtr<ID3D12Device> device, const D3D12_CPU_DESCRIPTOR_HANDLE& handle, uint64_t buffer_size, uint32_t register_index, ComPtr<ID3D12Resource>& out_resource)
   {
     // https://logins.github.io/graphics/2020/07/31/DX12ResourceHandling.html#resource-mapping
+
+    uint64_t size_aligned = fdx12::align_size_to(buffer_size, 255);
     
-    fdx12::create_upload_resource(device, fdx12::align_size_to(buffer_size, 255), out_resource);
+    fdx12::create_upload_resource(device, size_aligned, out_resource);
     
     D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
     cbv_desc.BufferLocation = out_resource->GetGPUVirtualAddress();
-    cbv_desc.SizeInBytes = fdx12::align_size_to(buffer_size, 255);
-    device->CreateConstantBufferView(&cbv_desc, descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+    cbv_desc.SizeInBytes = size_aligned;
+    device->CreateConstantBufferView(&cbv_desc, handle);
   }
 
-  void fdx12::update_buffer(ComPtr<ID3D12Resource> resource, int64_t buffer_size, const void* in_buffer)
+  void fdx12::update_buffer(ComPtr<ID3D12Resource> resource, uint64_t buffer_size, const void* in_buffer)
   {
     CD3DX12_RANGE read_range(0, 0);
     uint8_t* mapping = nullptr;
@@ -418,7 +421,7 @@ namespace engine
     resource->Unmap(0, nullptr);
   }
 
-  void fdx12::create_shader_resource_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap> descriptor_heap, int32_t buffer_size, uint32_t register_index, uint8_t** out_mapping_ptr, ComPtr<ID3D12Resource>& out_resource)
+  void fdx12::create_shader_resource_buffer(ComPtr<ID3D12Device> device, const D3D12_CPU_DESCRIPTOR_HANDLE& handle, uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource)
   {
     fdx12::create_upload_resource(device, fdx12::align_size_to(buffer_size, 255), out_resource);
 
@@ -427,9 +430,9 @@ namespace engine
     srv_desc.Format = DXGI_FORMAT_UNKNOWN;
     srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srv_desc.Buffer.NumElements = 1;
-    srv_desc.Buffer.StructureByteStride = buffer_size;
+    srv_desc.Buffer.StructureByteStride = buffer_size;  // TODO aligned size?
     srv_desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-    device->CreateShaderResourceView(out_resource.Get(), &srv_desc, descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+    device->CreateShaderResourceView(out_resource.Get(), &srv_desc, handle);
   }
 
   void fdx12::upload_vertex_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state)
@@ -505,7 +508,7 @@ namespace engine
     // from the upload heap to the Texture2D.
     D3D12_SUBRESOURCE_DATA texture_data = {};
     texture_data.pData = trs.is_hdr ? reinterpret_cast<void*>(trs.data_hdr.data()) : trs.data_ldr.data();
-    texture_data.RowPitch = texture->width * texture->desired_channels * (trs.is_hdr ? sizeof(float) : sizeof(uint8_t));
+    texture_data.RowPitch = texture->width * texture->channels * (trs.is_hdr ? sizeof(float) : sizeof(uint8_t));
     texture_data.SlicePitch = texture_data.RowPitch * texture->height;
 
     UpdateSubresources(command_list.Get(), trs.texture_buffer.Get(), trs.texture_buffer_upload.Get(), 0, 0, 1, &texture_data);

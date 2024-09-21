@@ -84,44 +84,59 @@ namespace engine
       can_render = false;
       return;
     }
+
+    // Build the main heap indexes
+    const uint32_t main_descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    cbv_frame_data_heap_index = 0;
+    srv_lights_heap_index = cbv_frame_data_heap_index + window->back_buffer_count;
+    srv_materials_heap_index = srv_lights_heap_index + window->back_buffer_count;
+    srv_textures_heap_index = srv_materials_heap_index + window->back_buffer_count;
+    if(MAX_TEXTURES + window->back_buffer_count * (MAX_MATERIALS + MAX_LIGHTS) > MAX_MAIN_DESCRIPTORS)
+    {
+      LOG_ERROR("Invalid main heap layout.");
+      return;
+    }
     
     // Create frame data CBV
     {
       // https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-constant-buffers-root-descriptor-tables#c0
-      for(uint32_t n = 0; n < window->back_buffer_count; n++)
+      for(uint32_t i = 0; i < window->back_buffer_count; i++)
       {
+        CD3DX12_CPU_DESCRIPTOR_HANDLE handle(window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), cbv_frame_data_heap_index + i, main_descriptor_size);
         ComPtr<ID3D12Resource> resource;
-        uint8_t* mapping = nullptr;
-        fdx12::create_const_buffer(device, window->main_descriptor_heap, sizeof(fframe_data), 0, &mapping, resource);
+        fdx12::create_const_buffer(device, handle, sizeof(fframe_data), 0, resource);
+        cbv_frame_resource.push_back(resource);
+        
 #if BUILD_DEBUG
-        std::string name = std::format("CBV frame data upload resource: back buffer {}", n);
+        std::string name = std::format("CBV frame data upload resource: back buffer {}", i);
         resource->SetName(std::wstring(name.begin(), name.end()).c_str());
 #endif
-        cbv_frame_data.push_back(resource);
       }
     }
 
     // Create light and material data SRV
     {
-      for(uint32_t n = 0; n < window->back_buffer_count; n++)
+      for(uint32_t i = 0; i < window->back_buffer_count; i++)
       {
         {
+          CD3DX12_CPU_DESCRIPTOR_HANDLE handle(window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), srv_lights_heap_index + i, main_descriptor_size);
           ComPtr<ID3D12Resource> resource;
-          uint8_t* mapping = nullptr;
-          fdx12::create_shader_resource_buffer(device, window->main_descriptor_heap, sizeof(flight_properties) * MAX_LIGHTS, 0, &mapping, resource);
-          srv_lights_data.push_back(resource);
+          fdx12::create_shader_resource_buffer(device, handle, sizeof(flight_properties) * MAX_LIGHTS, resource);
+          srv_lights_resource.push_back(resource);
+          
 #if BUILD_DEBUG
-          std::string name = std::format("SRV lights data upload resource: back buffer {}", n);
+          std::string name = std::format("SRV lights data upload resource: back buffer {}", i);
           resource->SetName(std::wstring(name.begin(), name.end()).c_str());
 #endif
         }
         {
+          CD3DX12_CPU_DESCRIPTOR_HANDLE handle(window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), srv_materials_heap_index + i, main_descriptor_size);
           ComPtr<ID3D12Resource> resource;
-          uint8_t* mapping = nullptr;
-          fdx12::create_shader_resource_buffer(device, window->main_descriptor_heap, sizeof(fmaterial_properties) * MAX_MATERIALS, 0, &mapping, resource);
-          srv_materials_data.push_back(resource);
+          fdx12::create_shader_resource_buffer(device, handle, sizeof(fmaterial_properties) * MAX_MATERIALS, resource);
+          srv_materials_resource.push_back(resource);
+          
 #if BUILD_DEBUG
-          std::string name = std::format("SRV materials data upload resource: back buffer {}", n);
+          std::string name = std::format("SRV materials data upload resource: back buffer {}", i);
           resource->SetName(std::wstring(name.begin(), name.end()).c_str());
 #endif
         }
@@ -136,20 +151,17 @@ namespace engine
       const CD3DX12_ROOT_PARAMETER1 param = {};
       root_parameters.resize(root_parameter_type::num, param);
       {
-        // TODO This is overkill as it all get copied for each draw call (frame data, lights, materials). Push them to descriptor table instead
-        // This will blow up the main heap as we need descriptors for frame data, materials and lights for each frame
-        // And resources will have to be mapped to GPU memory
-
         const uint8_t register_b0 = 0;
         const uint8_t register_b1 = 1;
+        root_parameters[root_parameter_type::object_data].InitAsConstants(sizeof(fobject_data) / 4, register_b0, 0);
+        root_parameters[root_parameter_type::frame_data].InitAsConstantBufferView(register_b1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+
         const uint8_t register_t0 = 0;
         const uint8_t register_t1 = 1;
         const uint8_t register_t2 = 2;
-        root_parameters[root_parameter_type::object_data].InitAsConstants(sizeof(fobject_data) / 4, register_b0, 0);
-        root_parameters[root_parameter_type::frame_data].InitAsConstantBufferView(register_b1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
         root_parameters[root_parameter_type::lights].InitAsShaderResourceView(register_t0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
         root_parameters[root_parameter_type::materials].InitAsShaderResourceView(register_t1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-        CD3DX12_DESCRIPTOR_RANGE1 texture_range(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, MAX_TEXTURES, register_t2, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+        CD3DX12_DESCRIPTOR_RANGE1 texture_range(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, MAX_TEXTURES, register_t2, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, srv_textures_heap_index);
         root_parameters[root_parameter_type::textures].InitAsDescriptorTable(1, &texture_range, D3D12_SHADER_VISIBILITY_PIXEL);
       }
 
@@ -218,9 +230,9 @@ namespace engine
       frame_data.show_normals = show_normals;
       frame_data.show_object_id = show_object_id;
       frame_data.show_specular = show_specular;
-      fdx12::update_buffer(cbv_frame_data[back_buffer_index], sizeof(fframe_data), &frame_data);
-      fdx12::update_buffer(srv_lights_data[back_buffer_index], sizeof(flight_properties) * MAX_LIGHTS, &scene_acceleration->lights);
-      fdx12::update_buffer(srv_materials_data[back_buffer_index], sizeof(fmaterial_properties) * MAX_MATERIALS, &scene_acceleration->materials);
+      fdx12::update_buffer(cbv_frame_resource[back_buffer_index], sizeof(fframe_data), &frame_data);
+      fdx12::update_buffer(srv_lights_resource[back_buffer_index], sizeof(flight_properties) * MAX_LIGHTS, &scene_acceleration->lights);
+      fdx12::update_buffer(srv_materials_resource[back_buffer_index], sizeof(fmaterial_properties) * MAX_MATERIALS, &scene_acceleration->materials);
     }
     
     // Continuous buffers
@@ -231,22 +243,28 @@ namespace engine
     buffer_object_data.resize(buffers_num, fobject_data());
 
     // Upload all textures from the scene
-    const UINT cbv_srv_descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-    CD3DX12_CPU_DESCRIPTOR_HANDLE srv_handle(window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), 0, cbv_srv_descriptor_size);
+    const UINT descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), srv_textures_heap_index, descriptor_size);
 
     const int32_t num_textures_in_scene = scene_acceleration->textures.size();
     auto& textures = scene_acceleration->textures;
     auto* default_texture = default_material_asset.get()->texture_asset_ptr.get();
+
+    if(!default_texture->render_state.is_resource_online)
+    {
+      fdx12::upload_texture_buffer(device, command_list, window->main_descriptor_heap, handle, default_texture);
+      handle.Offset(descriptor_size);
+    }
     
-    for(uint32_t i = 0; i < MAX_TEXTURES; i++)
+    for(uint32_t i = 0; i < MAX_TEXTURES-1; i++)
     {
       if(i < num_textures_in_scene && textures[i] != default_texture)
       {
         atexture* texture = textures[i];
         if(!texture->render_state.is_resource_online)
         {
-          fdx12::upload_texture_buffer(device, command_list, window->main_descriptor_heap, srv_handle, texture);
-          srv_handle.Offset(cbv_srv_descriptor_size);
+          fdx12::upload_texture_buffer(device, command_list, window->main_descriptor_heap, handle, texture);
+          handle.Offset(descriptor_size);
         
 #if BUILD_DEBUG
           {
@@ -261,10 +279,15 @@ namespace engine
       }
       else
       {
-        // TODO, the problem is that heap needs MAX_TEXTURES descriptors set, even if I don't use any textures. Use default texture!
-        // But it crashes when trying to upload default texture once again...
-        fdx12::upload_texture_buffer(device, command_list, window->main_descriptor_heap, srv_handle, default_texture);
-        srv_handle.Offset(cbv_srv_descriptor_size);
+        // Describe and create a SRV for the texture.
+        D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
+        srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        srv_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // TODO hardcoded, read from texture asset
+        srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+        srv_desc.Texture2D.MipLevels = 1;
+        device->CreateShaderResourceView(default_texture->render_state.texture_buffer.Get(), &srv_desc, handle);
+        
+        handle.Offset(descriptor_size);
       }
     }
     
@@ -330,26 +353,12 @@ namespace engine
     // Draw
     for(uint32_t i = 0; i < buffers_num; i++)
     {
-      // Update texture
-      // TODO move it to the continuous buffer, let it be generated by the scene accelerator
-      {
-        //hstatic_mesh* sm = buffer_meshes[i];
-        //amaterial* ma = sm->material_asset_ptr.get();
-        //ma = (ma == nullptr) ? default_material_asset.get() : ma;
-        //atexture* ta = ma->texture_asset_ptr.get();
-        //ta = (ta == nullptr && ma->properties.use_texture) ? default_material_asset.get()->texture_asset_ptr.get() : ta;
-
-        //atexture* ta = default_material_asset.get()->texture_asset_ptr.get();
-        
-        
-      }
-        // draw calls
       const fstatic_mesh_render_state& smrs = buffer_assets[i]->render_state;
 
       command_list->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, sizeof(fobject_data)/4, &buffer_object_data[i], 0);
-      command_list->SetGraphicsRootConstantBufferView(root_parameter_type::frame_data, cbv_frame_data[back_buffer_index]->GetGPUVirtualAddress());
-      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::lights, srv_lights_data[back_buffer_index]->GetGPUVirtualAddress());
-      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::materials, srv_materials_data[back_buffer_index]->GetGPUVirtualAddress());
+      command_list->SetGraphicsRootConstantBufferView(root_parameter_type::frame_data, cbv_frame_resource[back_buffer_index]->GetGPUVirtualAddress());
+      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::lights, srv_lights_resource[back_buffer_index]->GetGPUVirtualAddress());
+      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::materials, srv_materials_resource[back_buffer_index]->GetGPUVirtualAddress());
       command_list->SetGraphicsRootDescriptorTable(root_parameter_type::textures, window->main_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
       command_list->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list->IASetIndexBuffer(&smrs.index_buffer_view);

@@ -26,8 +26,14 @@ namespace engine
     
     ComPtr<ID3DBlob> vertex_shader_blob;
     ComPtr<ID3DBlob> pixel_shader_blob;
-    std::vector<ComPtr<ID3D12Resource>> cbv_frame_data;  // index is back buffer id
-    std::vector<ComPtr<ID3D12Resource>> srv_lights_data;
-    std::vector<ComPtr<ID3D12Resource>> srv_materials_data;
+    std::vector<ComPtr<ID3D12Resource>> cbv_frame_resource;  // index is back buffer id
+    std::vector<ComPtr<ID3D12Resource>> srv_lights_resource;
+    std::vector<ComPtr<ID3D12Resource>> srv_materials_resource;
+
+    // Main heap structure
+    uint32_t cbv_frame_data_heap_index = 0;
+    uint32_t srv_lights_heap_index = 0;
+    uint32_t srv_materials_heap_index = 0;
+    uint32_t srv_textures_heap_index = 0;
   };
 }

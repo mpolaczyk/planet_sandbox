@@ -15,7 +15,7 @@ namespace engine
 
     next_texture_id = 0;
     texture_map.clear();
-    textures.empty();
+    textures.clear();
     
     next_light_id = 0;
     memset(lights, 0, sizeof(flight_properties)*MAX_LIGHTS);

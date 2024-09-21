@@ -35,7 +35,6 @@ namespace engine
 
   void vserialize_object::visit(atexture& object) const
   {
-    j["desired_channels"] = object.desired_channels;
     j["img_file_name"] = object.img_file_name;
   }
 
@@ -145,8 +144,6 @@ namespace engine
 
   void vdeserialize_object::visit(atexture& object) const
   {
-    TRY_PARSE(int, j, "desired_channels", object.desired_channels);
-
     TRY_PARSE(std::string, j, "img_file_name", object.img_file_name);
   }
 
