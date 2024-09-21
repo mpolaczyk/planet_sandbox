@@ -12,10 +12,6 @@ namespace engine
   
   bool rgpu_forward_sync::can_render()
   {
-    if(!rrenderer_base::can_render())
-    {
-      return false;
-    }
     if(vertex_shader_asset.get() == nullptr)
     {
       vertex_shader_asset.set_name("forward");
@@ -34,7 +30,7 @@ namespace engine
         return false;
       }
     }
-    return true;
+    return forward_pass.get_can_render() && rrenderer_base::can_render();
   }
   
   void rgpu_forward_sync::init()

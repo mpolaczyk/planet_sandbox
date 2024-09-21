@@ -1,8 +1,8 @@
 #include "phong.hlsl"
 #include "material_properties.hlsl"
 
-#define MAX_MATERIALS 32
 #define MAX_LIGHTS 16
+#define MAX_MATERIALS 32
 
 #define POINT_LIGHT 0
 #define DIRECTIONAL_LIGHT 1
@@ -32,7 +32,8 @@ struct fobject_data
   matrix model_world_view_projection;
   float4 object_id;
   uint material_id;
-  int is_selected;
+  uint texture_id;
+  uint is_selected;
 };
 
 struct fframe_data
@@ -52,7 +53,7 @@ ConstantBuffer<fobject_data> object_data : register(b0);
 ConstantBuffer<fframe_data> frame_data : register(b1);
 StructuredBuffer<flight_properties> lights_data : register(t0);
 StructuredBuffer<fmaterial_properties> materials_data : register(t1);
-Texture2D texture_data : register(t2);
+Texture2D texture_data[] : register(t2);
 SamplerState sampler_obj : register(s0);
 
 
@@ -127,18 +128,15 @@ float4 ps_main(fvs_output input) : SV_Target
     float4 tex_color = { 1, 1, 1, 1 };
     if (material.use_texture)
     {
-      tex_color = texture_data.Sample(sampler_obj, input.uv);
+      tex_color = texture_data[object_data.texture_id].Sample(sampler_obj, input.uv);
     }
     
     const float4 selection_emissive = { 0.5, 0.5, 0.5, 1 };
     float4 emissive = max(material.emissive, object_data.is_selected * selection_emissive);
-    float4 ambient = material.ambient * frame_data.ambient_light;
-    float4 diffuse = material.diffuse * light_final.diffuse;
-    float4 specular = material.specular * light_final.specular;
+    float4 ambient = material.ambient * frame_data.ambient_light * frame_data.show_ambient;
+    float4 diffuse = material.diffuse * light_final.diffuse * frame_data.show_diffuse;
+    float4 specular = material.specular * light_final.specular * frame_data.show_specular;
     
-    return tex_color * (emissive 
-                      + ambient * frame_data.show_ambient 
-                      + diffuse * frame_data.show_diffuse
-                      + specular * frame_data.show_specular);
+    return tex_color * (emissive + ambient + diffuse + specular);
   }
 }

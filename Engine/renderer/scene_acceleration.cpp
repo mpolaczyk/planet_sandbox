@@ -13,6 +13,10 @@ namespace engine
     material_map.clear();
     memset(materials, 0, sizeof(fmaterial_properties)*MAX_MATERIALS);
 
+    next_texture_id = 0;
+    texture_map.clear();
+    textures.empty();
+    
     next_light_id = 0;
     memset(lights, 0, sizeof(flight_properties)*MAX_LIGHTS);
 
@@ -34,7 +38,7 @@ namespace engine
         }
         meshes.push_back(mesh);
         assets.push_back(mesh_asset);
-        const amaterial* material = mesh->material_asset_ptr.get();
+        amaterial* material = mesh->material_asset_ptr.get();
         if(material && !material_map.contains(material))
         {
           if(next_material_id < MAX_MATERIALS)
@@ -46,6 +50,20 @@ namespace engine
           else
           {
             LOG_ERROR("Maximum materials limit reached.");
+          }
+        }
+        atexture* texture = material->texture_asset_ptr.get();
+        if(texture && !texture_map.contains(texture))
+        {
+          if(next_texture_id < MAX_TEXTURES)
+          {
+            texture_map.insert(std::pair<const atexture*, uint32_t>(texture, next_texture_id));
+            textures.push_back(texture);
+            next_texture_id++;
+          }
+          else
+          {
+            LOG_ERROR("Maximum textures limit reached.");
           }
         }
       }

@@ -60,7 +60,6 @@ namespace engine
     fdx12::set_viewport(command_list, width, height);
     fdx12::set_scissor(command_list, width, height);
     
-    command_list->SetDescriptorHeaps(1, main_descriptor_heap.GetAddressOf());
 
     if(hscene* scene_root = fapplication::instance->scene_root)
     {

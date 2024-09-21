@@ -37,7 +37,13 @@ namespace engine
       init();
       init_done = true;
     }
-      
+
+    if(!can_render())
+    {
+      // Second check as something could've gone wrong in init()
+      return;
+    }
+    
     scene_acceleration.clean();
     scene_acceleration.build(scene->objects);
     if(!scene_acceleration.validate())

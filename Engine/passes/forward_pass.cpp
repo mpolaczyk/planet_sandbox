@@ -49,9 +49,10 @@ namespace engine
       XMFLOAT4X4 inverse_transpose_model_world; // 64 Used to transform the vertex normal from object space to world space
       XMFLOAT4X4 model_world_view_projection; // 64 Used to transform the vertex position from object space to projected clip space
       XMFLOAT4 object_id; // 16
-      uint32_t material_id; // 4
-      uint32_t is_selected; // 4
-      int32_t padding[2]; // 8
+      uint8_t material_id; // 1
+      uint8_t texture_id;  // 1
+      uint8_t is_selected; // 1
+      uint8_t padding[13]; // 1
     };
     static_assert(sizeof(fobject_data)/4 < 64); // "Root Constant size is greater than 64 DWORDs. Additional indirection may be added by the driver."
     ALIGNED_STRUCT_END(fobject_data)
@@ -59,11 +60,11 @@ namespace engine
 
   enum root_parameter_type
   {
-    constants = 0,
-    cbv_frame_data,
-    srv_lights_data,
-    srv_materials_data,
-    texture,
+    object_data = 0,
+    frame_data,
+    lights,
+    materials,
+    textures,
     num
   };
   
@@ -71,6 +72,19 @@ namespace engine
   {
     ComPtr<ID3D12Device2> device = fapplication::instance->device;
 
+    if(!vertex_shader->blob)
+    {
+      LOG_ERROR("Failed to load vertex shader.");
+      can_render = false;
+      return;
+    }
+    if(!pixel_shader->blob)
+    {
+      LOG_ERROR("Failed to load index shader.");
+      can_render = false;
+      return;
+    }
+    
     // Create frame data CBV
     {
       // https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-constant-buffers-root-descriptor-tables#c0
@@ -122,15 +136,21 @@ namespace engine
       const CD3DX12_ROOT_PARAMETER1 param = {};
       root_parameters.resize(root_parameter_type::num, param);
       {
-        // TODO This is overkill as it all get copied for each draw call. Use descriptor table instead
+        // TODO This is overkill as it all get copied for each draw call (frame data, lights, materials). Push them to descriptor table instead
+        // This will blow up the main heap as we need descriptors for frame data, materials and lights for each frame
+        // And resources will have to be mapped to GPU memory
 
-        CD3DX12_DESCRIPTOR_RANGE1 texture_range(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-
-        root_parameters[root_parameter_type::constants].InitAsConstants(sizeof(fobject_data) / 4, 0, 0);
-        root_parameters[root_parameter_type::cbv_frame_data].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC); // TODO PIXEL ONLY
-        root_parameters[root_parameter_type::srv_lights_data].InitAsShaderResourceView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC); // TODO PIXEL ONLY
-        root_parameters[root_parameter_type::srv_materials_data].InitAsShaderResourceView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC); // TODO PIXEL ONLY
-        root_parameters[root_parameter_type::texture].InitAsDescriptorTable(1, &texture_range, D3D12_SHADER_VISIBILITY_PIXEL);
+        const uint8_t register_b0 = 0;
+        const uint8_t register_b1 = 1;
+        const uint8_t register_t0 = 0;
+        const uint8_t register_t1 = 1;
+        const uint8_t register_t2 = 2;
+        root_parameters[root_parameter_type::object_data].InitAsConstants(sizeof(fobject_data) / 4, register_b0, 0);
+        root_parameters[root_parameter_type::frame_data].InitAsConstantBufferView(register_b1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+        root_parameters[root_parameter_type::lights].InitAsShaderResourceView(register_t0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+        root_parameters[root_parameter_type::materials].InitAsShaderResourceView(register_t1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+        CD3DX12_DESCRIPTOR_RANGE1 texture_range(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, MAX_TEXTURES, register_t2, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+        root_parameters[root_parameter_type::textures].InitAsDescriptorTable(1, &texture_range, D3D12_SHADER_VISIBILITY_PIXEL);
       }
 
       std::vector<CD3DX12_STATIC_SAMPLER_DESC> static_sampers;
@@ -179,9 +199,10 @@ namespace engine
   void fforward_pass::draw(ComPtr<ID3D12GraphicsCommandList> command_list)
   {
     ComPtr<ID3D12Device2> device = fapplication::instance->device;
-    
-    command_list->SetPipelineState(pipeline_state.Get());
+
     command_list->SetGraphicsRootSignature(root_signature.Get());
+    command_list->SetDescriptorHeaps(1, window->main_descriptor_heap.GetAddressOf());
+    command_list->SetPipelineState(pipeline_state.Get());
     command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     const int back_buffer_index = window->get_back_buffer_index();
@@ -209,7 +230,43 @@ namespace engine
     std::vector<fobject_data> buffer_object_data;
     buffer_object_data.resize(buffers_num, fobject_data());
 
-    // TODO - upload all used textures here it happens per draw call now
+    // Upload all textures from the scene
+    const UINT cbv_srv_descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE srv_handle(window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), 0, cbv_srv_descriptor_size);
+
+    const int32_t num_textures_in_scene = scene_acceleration->textures.size();
+    auto& textures = scene_acceleration->textures;
+    auto* default_texture = default_material_asset.get()->texture_asset_ptr.get();
+    
+    for(uint32_t i = 0; i < MAX_TEXTURES; i++)
+    {
+      if(i < num_textures_in_scene && textures[i] != default_texture)
+      {
+        atexture* texture = textures[i];
+        if(!texture->render_state.is_resource_online)
+        {
+          fdx12::upload_texture_buffer(device, command_list, window->main_descriptor_heap, srv_handle, texture);
+          srv_handle.Offset(cbv_srv_descriptor_size);
+        
+#if BUILD_DEBUG
+          {
+            std::string texture_name = texture->get_display_name();
+            std::string name = std::format("Texture buffer: {}", texture_name);
+            texture->render_state.texture_buffer->SetName(std::wstring(name.begin(), name.end()).c_str());
+            name = std::format("Texture upload buffer: {}", texture_name);
+            texture->render_state.texture_buffer_upload->SetName(std::wstring(name.begin(), name.end()).c_str());
+          }
+#endif
+        }
+      }
+      else
+      {
+        // TODO, the problem is that heap needs MAX_TEXTURES descriptors set, even if I don't use any textures. Use default texture!
+        // But it crashes when trying to upload default texture once again...
+        fdx12::upload_texture_buffer(device, command_list, window->main_descriptor_heap, srv_handle, default_texture);
+        srv_handle.Offset(cbv_srv_descriptor_size);
+      }
+    }
     
     // Update vertex and index buffers
     for(uint32_t i = 0; i < buffers_num; i++)
@@ -257,9 +314,14 @@ namespace engine
       XMStoreFloat4x4(&object_data.inverse_transpose_model_world, inverse_transpose_model_world);
       XMStoreFloat4x4(&object_data.model_world_view_projection, model_world_view_projection);
       object_data.material_id = 0;
+      object_data.texture_id = 0;
       if(const amaterial* material = sm->material_asset_ptr.get())
       {
          object_data.material_id = scene_acceleration->material_map.at(material);
+        if(const atexture* texture = material->texture_asset_ptr.get())
+        {
+          object_data.texture_id = scene_acceleration->texture_map.at(texture);
+        }
       }
       object_data.is_selected = selected_object == sm ? 1 : 0;
       object_data.object_id = fmath::uint32_to_colorf(sm->get_hash());
@@ -277,30 +339,18 @@ namespace engine
         //atexture* ta = ma->texture_asset_ptr.get();
         //ta = (ta == nullptr && ma->properties.use_texture) ? default_material_asset.get()->texture_asset_ptr.get() : ta;
 
-        atexture* ta = default_material_asset.get()->texture_asset_ptr.get();
+        //atexture* ta = default_material_asset.get()->texture_asset_ptr.get();
         
-        if(!ta->render_state.is_resource_online)
-        {
-          fdx12::upload_texture_buffer(device, command_list, window->main_descriptor_heap, ta);
-#if BUILD_DEBUG
-          {
-            std::string texture_name = ta->get_display_name();
-            std::string name = std::format("Texture buffer: {}", texture_name);
-            ta->render_state.texture_buffer->SetName(std::wstring(name.begin(), name.end()).c_str());
-            name = std::format("Texture upload buffer: {}", texture_name);
-            ta->render_state.texture_buffer_upload->SetName(std::wstring(name.begin(), name.end()).c_str());
-          }
-#endif
-        }
+        
       }
         // draw calls
       const fstatic_mesh_render_state& smrs = buffer_assets[i]->render_state;
 
-      command_list->SetGraphicsRoot32BitConstants(root_parameter_type::constants, sizeof(fobject_data)/4, &buffer_object_data[i], 0);
-      command_list->SetGraphicsRootConstantBufferView(root_parameter_type::cbv_frame_data, cbv_frame_data[back_buffer_index]->GetGPUVirtualAddress());
-      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::srv_lights_data, srv_lights_data[back_buffer_index]->GetGPUVirtualAddress());
-      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::srv_materials_data, srv_materials_data[back_buffer_index]->GetGPUVirtualAddress());
-      command_list->SetGraphicsRootDescriptorTable(root_parameter_type::texture, window->main_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
+      command_list->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, sizeof(fobject_data)/4, &buffer_object_data[i], 0);
+      command_list->SetGraphicsRootConstantBufferView(root_parameter_type::frame_data, cbv_frame_data[back_buffer_index]->GetGPUVirtualAddress());
+      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::lights, srv_lights_data[back_buffer_index]->GetGPUVirtualAddress());
+      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::materials, srv_materials_data[back_buffer_index]->GetGPUVirtualAddress());
+      command_list->SetGraphicsRootDescriptorTable(root_parameter_type::textures, window->main_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
       command_list->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list->IASetIndexBuffer(&smrs.index_buffer_view);
       command_list->DrawIndexedInstanced(smrs.vertex_list.size(), 1, 0, 0, 0);

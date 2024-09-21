@@ -462,7 +462,7 @@ namespace engine
     out_render_state.is_resource_online = true;
   }
 
-  void fdx12::upload_texture_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> descriptor_heap, atexture* texture)
+  void fdx12::upload_texture_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> descriptor_heap, const CD3DX12_CPU_DESCRIPTOR_HANDLE& handle, atexture* texture)
   {
     ftexture_render_state& trs = texture->render_state;
     
@@ -517,7 +517,7 @@ namespace engine
     srv_desc.Format = texture_desc.Format;
     srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
     srv_desc.Texture2D.MipLevels = 1;
-    device->CreateShaderResourceView(texture->render_state.texture_buffer.Get(), &srv_desc, descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+    device->CreateShaderResourceView(texture->render_state.texture_buffer.Get(), &srv_desc, handle);
 
     trs.is_resource_online = true;
   }

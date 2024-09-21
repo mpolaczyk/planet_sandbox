@@ -47,11 +47,12 @@ namespace engine
       output_height = in_output_height;
       default_material_asset = in_default_material;
     }
+    bool get_can_render() const { return can_render; }
     
   protected:
     // Input
     const fpixel_shader_render_state* pixel_shader = nullptr;
-    const fvertex_shader_render_state* vertex_shader = nullptr;
+    const fvertex_shader_render_state*  vertex_shader = nullptr;
     fscene_acceleration* scene_acceleration = nullptr;
     const hscene* scene = nullptr;
     const hhittable_base* selected_object = nullptr;
@@ -61,5 +62,7 @@ namespace engine
     fsoft_asset_ptr<amaterial> default_material_asset;
     ComPtr<ID3D12RootSignature> root_signature;
     ComPtr<ID3D12PipelineState> pipeline_state;
+
+    bool can_render = true;
   };
 }

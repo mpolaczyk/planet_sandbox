@@ -25,6 +25,7 @@ struct CD3DX12_ROOT_PARAMETER1;
 struct CD3DX12_STATIC_SAMPLER_DESC;
 struct D3D12_CPU_DESCRIPTOR_HANDLE;
 struct DXGI_SAMPLE_DESC;
+struct CD3DX12_CPU_DESCRIPTOR_HANDLE;
 enum D3D12_RESOURCE_STATES;
 enum D3D12_ROOT_SIGNATURE_FLAGS;
 enum DXGI_FORMAT;
@@ -95,7 +96,7 @@ namespace engine
     
     static void upload_vertex_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state);
     static void upload_index_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state);
-    static void upload_texture_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> descriptor_heap, atexture* texture);
+    static void upload_texture_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> descriptor_heap, const CD3DX12_CPU_DESCRIPTOR_HANDLE& handle, atexture* texture);
 
     static int32_t align_size_to(int32_t size, int32_t value)
     {
