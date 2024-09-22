@@ -112,8 +112,9 @@ namespace editor
     fui_helper::color_edit4("Diffuse", object.properties.diffuse);
     fui_helper::color_edit4("Specular", object.properties.specular);
     ImGui::DragFloat("Specular power", &object.properties.specular_power, 0.1f, 1.0f, 100.0f);
-    fui_helper::check_box("Use texture", object.properties.use_texture);
-    if (object.properties.use_texture)
+    int use_texture = object.texture_asset_ptr.get_name() != "";
+    fui_helper::check_box("Use texture", use_texture);
+    if (use_texture)
     {
       fselection_combo_model<atexture> model;
       model.objects = REG.get_all_by_type<const atexture>();
@@ -123,6 +124,10 @@ namespace editor
       {
         object.texture_asset_ptr.set_name(model.selected_object->file_name);
       }
+    }
+    else
+    {
+      object.texture_asset_ptr.set_name("");
     }
   }
 

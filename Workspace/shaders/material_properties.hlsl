@@ -9,6 +9,6 @@ struct fmaterial_properties
   float4 specular;        // 16
   //
   float specular_power;     // 4
-  int use_texture;          // 4
+  int texture_id;          // 4
   int2 padding;         // 8
 };

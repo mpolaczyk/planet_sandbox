@@ -15,21 +15,21 @@ namespace engine
 {
   using namespace DirectX;
 
-  namespace
-  {
-    ALIGNED_STRUCT_BEGIN(fobject_data)
-    {
-      XMFLOAT4X4 model_world; // 64 
-      XMFLOAT4X4 inverse_transpose_model_world; // 64 
-      XMFLOAT4X4 model_world_view_projection; // 64
-      XMFLOAT4 object_id; // 16
-      uint32_t material_id; // 4
-      uint32_t is_selected; // 4
-      int32_t padding[2]; // 8
-    };
-
-    ALIGNED_STRUCT_END(fobject_data)
-  }
+  //namespace
+  //{
+  //  ALIGNED_STRUCT_BEGIN(fobject_data)
+  //  {
+  //    XMFLOAT4X4 model_world; // 64 
+  //    XMFLOAT4X4 inverse_transpose_model_world; // 64 
+  //    XMFLOAT4X4 model_world_view_projection; // 64
+  //    XMFLOAT4 object_id; // 16
+  //    uint32_t material_id; // 4
+  //    uint32_t is_selected; // 4
+  //    int32_t padding[2]; // 8
+  //  };
+  //
+  //  ALIGNED_STRUCT_END(fobject_data)
+  //}
   
   void fgbuffer_pass::init()
   {

@@ -30,7 +30,7 @@ namespace engine
     rrenderer_base(rrenderer_base&&) = delete;
     rrenderer_base& operator=(rrenderer_base&&) = delete;
 
-    const hscene* scene = nullptr;
+    hscene* scene = nullptr;
     const hhittable_base* selected_object = nullptr;
     fwindow* window = nullptr;
 
@@ -45,7 +45,7 @@ namespace engine
     int output_height = 1080;
 
     // Main public interface
-    void render_frame(ComPtr<ID3D12GraphicsCommandList> command_list, fwindow* in_window, const hscene* in_scene, const hhittable_base* in_selected_object = nullptr);    // TODO rename to draw
+    void render_frame(ComPtr<ID3D12GraphicsCommandList> command_list, fwindow* in_window, hscene* in_scene, const hhittable_base* in_selected_object = nullptr);    // TODO rename to draw
     
   protected:
     virtual bool can_render();

@@ -387,8 +387,6 @@ namespace engine
 
           import_material_from_unity_2022_3_urp(material, material_object->properties);
 
-          material_object->properties.use_texture = false;
-
           amaterial::save(material_object);
           amaterial::load(material_object, material_name);
         }

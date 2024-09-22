@@ -12,7 +12,7 @@ namespace engine
   OBJECT_DEFINE(rrenderer_base, oobject, Renderer base)
   OBJECT_DEFINE_NOSPAWN(rrenderer_base)
 
-  void rrenderer_base::render_frame(ComPtr<ID3D12GraphicsCommandList> command_list, fwindow* in_window, const hscene* in_scene, const hhittable_base* in_selected_object)
+  void rrenderer_base::render_frame(ComPtr<ID3D12GraphicsCommandList> command_list, fwindow* in_window, hscene* in_scene, const hhittable_base* in_selected_object)
   {
     scene = in_scene;
     selected_object = in_selected_object;
@@ -44,8 +44,7 @@ namespace engine
       return;
     }
     
-    scene_acceleration.clean();
-    scene_acceleration.build(scene->objects);
+    scene_acceleration.build(scene, default_material_asset.get());
     if(!scene_acceleration.validate())
     {
       return;

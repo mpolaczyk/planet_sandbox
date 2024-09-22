@@ -24,8 +24,7 @@
       "y": 0.9166666865348816,
       "z": 0.9166666865348816
     },
-    "specular_power": 15.300000190734863,
-    "use_texture": 0
+    "specular_power": 15.300000190734863
   },
   "texture_asset": {
     "name": ""

@@ -12,23 +12,23 @@ namespace engine
 {
   using namespace DirectX;
 
-  namespace
-  {
-    ALIGNED_STRUCT_BEGIN(fframe_data)
-    {
-      DirectX::XMFLOAT4 camera_position; // 16
-      XMFLOAT4 ambient_light; // 16
-      XMFLOAT4X4 model_world_view_projection; // 64
-      int32_t show_position_ws; // 4    // TODO pack bits
-      int32_t show_normal_ws; // 4
-      int32_t show_tex_color; // 4
-      int32_t show_object_id; // 4
-      flight_properties lights[MAX_LIGHTS]; // 80xN
-      fmaterial_properties materials[MAX_MATERIALS]; // 80xN
-    };
-
-    ALIGNED_STRUCT_END(fframe_data)
-  }
+  //namespace
+  //{
+  //  ALIGNED_STRUCT_BEGIN(fframe_data)
+  //  {
+  //    DirectX::XMFLOAT4 camera_position; // 16
+  //    XMFLOAT4 ambient_light; // 16
+  //    XMFLOAT4X4 model_world_view_projection; // 64
+  //    int32_t show_position_ws; // 4    // TODO pack bits
+  //    int32_t show_normal_ws; // 4
+  //    int32_t show_tex_color; // 4
+  //    int32_t show_object_id; // 4
+  //    flight_properties lights[MAX_LIGHTS]; // 80xN
+  //    fmaterial_properties materials[MAX_MATERIALS]; // 80xN
+  //  };
+  //
+  //  ALIGNED_STRUCT_END(fframe_data)
+  //}
 
   void fdeferred_lighting_pass::init()
   {

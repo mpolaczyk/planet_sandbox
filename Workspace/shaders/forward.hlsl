@@ -32,7 +32,6 @@ struct fobject_data
   matrix model_world_view_projection;
   float4 object_id;
   uint material_id;
-  uint texture_id;
   uint is_selected;
 };
 
@@ -126,9 +125,9 @@ float4 ps_main(fvs_output input) : SV_Target
     const flight_components light_final = compute_light(input.position_ws, input.normal_ws, material.specular_power);
     
     float4 tex_color = { 1, 1, 1, 1 };
-    if (material.use_texture)
+    if (material.texture_id != -1)
     {
-      tex_color = texture_data[object_data.texture_id].Sample(sampler_obj, input.uv);
+      tex_color = texture_data[material.texture_id].Sample(sampler_obj, input.uv);
     }
     
     const float4 selection_emissive = { 0.5, 0.5, 0.5, 1 };

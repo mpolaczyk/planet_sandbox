@@ -10,6 +10,7 @@
 #include "core/exceptions.h"
 #include "core/window.h"
 #include "engine/log.h"
+#include "hittables/light.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
 #include "math/math.h"
@@ -26,38 +27,6 @@ namespace engine
   // Based on multiple training projects:
   // https://github.com/jpvanoosten/LearningDirectX12/tree/main/samples
   // https://github.com/microsoft/DirectX-Graphics-Samples/tree/master/Samples/Desktop
-  namespace
-  {
-    ALIGNED_STRUCT_BEGIN(fframe_data)
-    {
-      XMFLOAT4 camera_position; // 16
-      XMFLOAT4 ambient_light; // 16
-      int32_t show_emissive; // 4    // TODO pack bits
-      int32_t show_ambient; // 4
-      int32_t show_specular; // 4
-      int32_t show_diffuse; // 4
-      int32_t show_normals; // 4
-      int32_t show_object_id; // 4
-      int32_t padding[2]; // 8
-    };
-
-    ALIGNED_STRUCT_END(fframe_data)
-
-    ALIGNED_STRUCT_BEGIN(fobject_data)
-    {
-      XMFLOAT4X4 model_world; // 64 Used to transform the vertex position from object space to world space
-      XMFLOAT4X4 inverse_transpose_model_world; // 64 Used to transform the vertex normal from object space to world space
-      XMFLOAT4X4 model_world_view_projection; // 64 Used to transform the vertex position from object space to projected clip space
-      XMFLOAT4 object_id; // 16
-      uint8_t material_id; // 1
-      uint8_t texture_id;  // 1
-      uint8_t is_selected; // 1
-      uint8_t padding[13]; // 1
-    };
-    static_assert(sizeof(fobject_data)/4 < 64); // "Root Constant size is greater than 64 DWORDs. Additional indirection may be added by the driver."
-    ALIGNED_STRUCT_END(fobject_data)
-  }
-
   enum root_parameter_type
   {
     object_data = 0,
@@ -218,8 +187,18 @@ namespace engine
     command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     const int back_buffer_index = window->get_back_buffer_index();
+    const uint32_t N = static_cast<uint32_t>(scene_acceleration->h_meshes.size());
     
-    // Calculate per-frame root descriptor arguments
+    // Process object data
+    for(uint32_t i = 0; i < N; i++)
+    {
+      fobject_data& object_data = scene_acceleration->object_buffer[i];
+      const hstatic_mesh* sm = scene_acceleration->h_meshes[i];
+      object_data.is_selected = selected_object == sm ? 1 : 0;
+      object_data.object_id = fmath::uint32_to_colorf(sm->get_hash());
+    }
+
+    // Process frame data CBV
     {
       fframe_data frame_data;
       frame_data.camera_position = XMFLOAT4(scene->camera_config.location.e);
@@ -231,79 +210,81 @@ namespace engine
       frame_data.show_object_id = show_object_id;
       frame_data.show_specular = show_specular;
       fdx12::update_buffer(cbv_frame_resource[back_buffer_index], sizeof(fframe_data), &frame_data);
-      fdx12::update_buffer(srv_lights_resource[back_buffer_index], sizeof(flight_properties) * MAX_LIGHTS, &scene_acceleration->lights);
-      fdx12::update_buffer(srv_materials_resource[back_buffer_index], sizeof(fmaterial_properties) * MAX_MATERIALS, &scene_acceleration->materials);
     }
-    
-    // Continuous buffers
-    const uint32_t buffers_num = static_cast<uint32_t>(scene_acceleration->meshes.size());
-    const std::vector<hstatic_mesh*>& buffer_meshes = scene_acceleration->meshes;
-    const std::vector<astatic_mesh*>& buffer_assets = scene_acceleration->assets;
-    std::vector<fobject_data> buffer_object_data;
-    buffer_object_data.resize(buffers_num, fobject_data());
 
-    // Upload all textures from the scene
-    const UINT descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), srv_textures_heap_index, descriptor_size);
-
-    const uint32_t num_textures_in_scene = static_cast<uint32_t>(scene_acceleration->textures.size());
-    auto& textures = scene_acceleration->textures;
-    auto* default_texture = default_material_asset.get()->texture_asset_ptr.get();
-
-    if(!default_texture->render_state.is_resource_online)
+    // Process light and material SRVs
     {
-      fdx12::upload_texture_buffer(device, command_list, window->main_descriptor_heap, handle, default_texture);
-      handle.Offset(descriptor_size);
+      const std::vector<flight_properties>& lights_buffer = scene_acceleration->lights_buffer;
+      const std::vector<fmaterial_properties>& materials_buffer = scene_acceleration->materials_buffer;
+    
+      fdx12::update_buffer(srv_lights_resource[back_buffer_index], sizeof(flight_properties) * MAX_LIGHTS, lights_buffer.data());
+      fdx12::update_buffer(srv_materials_resource[back_buffer_index], sizeof(fmaterial_properties) * MAX_MATERIALS, materials_buffer.data());
     }
-    
-    for(uint32_t i = 0; i < MAX_TEXTURES-1; i++)
+
+    // Process texture SRVs
     {
-      if(i < num_textures_in_scene && textures[i] != default_texture)
+      const uint32_t num_textures_in_scene = static_cast<uint32_t>(scene_acceleration->a_textures.size());
+      const uint8_t descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+      CD3DX12_CPU_DESCRIPTOR_HANDLE handle(window->main_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), srv_textures_heap_index, descriptor_size);
+      
+      // Upload default texture first
+      atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
+      if(!default_texture->render_state.is_resource_online)
       {
-        atexture* texture = textures[i];
-        if(!texture->render_state.is_resource_online)
+        fdx12::upload_texture_buffer(device, command_list, window->main_descriptor_heap, handle, default_texture);
+        handle.Offset(descriptor_size);
+      }
+
+      // Upload other textures, add descriptor if they are already uploaded
+      for(uint32_t i = 0; i < MAX_TEXTURES-1; i++)
+      {
+        if(i < num_textures_in_scene && scene_acceleration->a_textures[i] != default_texture)
         {
-          fdx12::upload_texture_buffer(device, command_list, window->main_descriptor_heap, handle, texture);
-          handle.Offset(descriptor_size);
+          atexture* texture = scene_acceleration->a_textures[i];
+          if(!texture->render_state.is_resource_online)
+          {
+            fdx12::upload_texture_buffer(device, command_list, window->main_descriptor_heap, handle, texture);
+            handle.Offset(descriptor_size);
         
 #if BUILD_DEBUG
-          {
-            std::string texture_name = texture->get_display_name();
-            std::string name = std::format("Texture buffer: {}", texture_name);
-            texture->render_state.texture_buffer->SetName(std::wstring(name.begin(), name.end()).c_str());
-            name = std::format("Texture upload buffer: {}", texture_name);
-            texture->render_state.texture_buffer_upload->SetName(std::wstring(name.begin(), name.end()).c_str());
-          }
+            {
+              std::string texture_name = texture->get_display_name();
+              std::string name = std::format("Texture buffer: {}", texture_name);
+              texture->render_state.texture_buffer->SetName(std::wstring(name.begin(), name.end()).c_str());
+              name = std::format("Texture upload buffer: {}", texture_name);
+              texture->render_state.texture_buffer_upload->SetName(std::wstring(name.begin(), name.end()).c_str());
+            }
 #endif
+          }
         }
-      }
-      else
-      {
-        // Describe and create a SRV for the texture.
-        D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
-        srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        srv_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // TODO hardcoded, read from texture asset
-        srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-        srv_desc.Texture2D.MipLevels = 1;
-        device->CreateShaderResourceView(default_texture->render_state.texture_buffer.Get(), &srv_desc, handle);
+        else
+        {
+          // Describe and create a SRV for the texture.
+          D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
+          srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+          srv_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // TODO hardcoded, read from texture asset
+          srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+          srv_desc.Texture2D.MipLevels = 1;
+          device->CreateShaderResourceView(default_texture->render_state.texture_buffer.Get(), &srv_desc, handle);
         
-        handle.Offset(descriptor_size);
+          handle.Offset(descriptor_size);
+        }
       }
     }
     
     // Update vertex and index buffers
-    for(uint32_t i = 0; i < buffers_num; i++)
+    for(uint32_t i = 0; i < N; i++)
     {
-      fstatic_mesh_render_state& smrs = buffer_assets[i]->render_state;
+      hstatic_mesh* mesh = scene_acceleration->h_meshes[i];
+      fstatic_mesh_render_state& smrs = mesh->mesh_asset_ptr.get()->render_state;
       if(!smrs.is_resource_online)
       {
         fdx12::upload_vertex_buffer(device, command_list, smrs);
         fdx12::upload_index_buffer(device, command_list, smrs);
 #if BUILD_DEBUG
         {
-          const hstatic_mesh* sm = buffer_meshes[i];
-          std::string mesh_name = sm->get_display_name();
-          std::string asset_name = buffer_assets[i]->file_name;
+          std::string mesh_name = mesh->get_display_name();
+          std::string asset_name = mesh->mesh_asset_ptr.get()->file_name;
           std::string name = std::format("Vertex buffer: asset {} hittable {}", mesh_name, asset_name);
           smrs.vertex_buffer->SetName(std::wstring(name.begin(), name.end()).c_str());
           name = std::format("Index buffer: asset {} hittable {}", mesh_name, asset_name);
@@ -317,45 +298,12 @@ namespace engine
       }
     }
     
-    // Calculate per-object root constant arguments
-    for(uint32_t i = 0; i < buffers_num; i++)
-    {
-      const hstatic_mesh* sm = buffer_meshes[i];
-      
-      const XMMATRIX translation_matrix = XMMatrixTranslation(sm->origin.x, sm->origin.y, sm->origin.z);
-      const XMMATRIX rotation_matrix =
-          XMMatrixRotationX(XMConvertToRadians(sm->rotation.x))
-        * XMMatrixRotationY(XMConvertToRadians(sm->rotation.y))
-        * XMMatrixRotationZ(XMConvertToRadians(sm->rotation.z));
-      const XMMATRIX scale_matrix = XMMatrixScaling(sm->scale.x, sm->scale.y, sm->scale.z);
-      const XMMATRIX world_matrix = scale_matrix * rotation_matrix * translation_matrix;
-      const XMMATRIX inverse_transpose_model_world = XMMatrixTranspose(XMMatrixInverse(nullptr, world_matrix));
-      const XMMATRIX model_world_view_projection = XMMatrixMultiply(world_matrix, XMLoadFloat4x4(&scene->camera_config.view_projection));
-      
-      fobject_data& object_data = buffer_object_data[i];
-      XMStoreFloat4x4(&object_data.model_world, world_matrix);
-      XMStoreFloat4x4(&object_data.inverse_transpose_model_world, inverse_transpose_model_world);
-      XMStoreFloat4x4(&object_data.model_world_view_projection, model_world_view_projection);
-      object_data.material_id = 0;
-      object_data.texture_id = 0;
-      if(const amaterial* material = sm->material_asset_ptr.get())
-      {
-         object_data.material_id = scene_acceleration->material_map.at(material);
-        if(const atexture* texture = material->texture_asset_ptr.get())
-        {
-          object_data.texture_id = scene_acceleration->texture_map.at(texture);
-        }
-      }
-      object_data.is_selected = selected_object == sm ? 1 : 0;
-      object_data.object_id = fmath::uint32_to_colorf(sm->get_hash());
-    }
-
     // Draw
-    for(uint32_t i = 0; i < buffers_num; i++)
+    for(uint32_t i = 0; i < N; i++)
     {
-      const fstatic_mesh_render_state& smrs = buffer_assets[i]->render_state;
+      const fstatic_mesh_render_state& smrs = scene_acceleration->h_meshes[i]->mesh_asset_ptr.get()->render_state;
 
-      command_list->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, sizeof(fobject_data)/4, &buffer_object_data[i], 0);
+      command_list->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, sizeof(fobject_data)/4, &scene_acceleration->object_buffer[i], 0);
       command_list->SetGraphicsRootConstantBufferView(root_parameter_type::frame_data, cbv_frame_resource[back_buffer_index]->GetGPUVirtualAddress());
       command_list->SetGraphicsRootShaderResourceView(root_parameter_type::lights, srv_lights_resource[back_buffer_index]->GetGPUVirtualAddress());
       command_list->SetGraphicsRootShaderResourceView(root_parameter_type::materials, srv_materials_resource[back_buffer_index]->GetGPUVirtualAddress());

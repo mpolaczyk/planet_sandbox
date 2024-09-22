@@ -152,7 +152,6 @@ namespace engine
     j["diffuse"] = fpersistence::serialize(value.diffuse);
     j["specular"] = fpersistence::serialize(value.specular);
     j["specular_power"] = value.specular_power;
-    j["use_texture"] = value.use_texture;
     return j;
   }
 
@@ -167,6 +166,5 @@ namespace engine
     nlohmann::json jspecular;
     if(TRY_PARSE(nlohmann::json, j, "specular", jspecular)) { fpersistence::deserialize(jspecular, out_value.specular); }
     TRY_PARSE(float, j, "specular_power", out_value.specular_power);
-    TRY_PARSE(int, j, "use_texture", out_value.use_texture);
   }
 }

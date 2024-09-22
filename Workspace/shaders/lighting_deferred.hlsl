@@ -125,10 +125,10 @@ float4 ps_main(fvs_output input) : SV_Target
 
     const flight_components light_final = compute_light(position_ws, normal_ws, material.specular_power);
 
-    if (material.use_texture)
-    {
-      tex_color = tex_color_texture.Sample(sampler0, input.uv).xyzw;
-    }
+    //if (material.use_texture)
+    //{
+    //  tex_color = tex_color_texture.Sample(sampler0, input.uv).xyzw;
+    //}
     
     const float4 selection_emissive = { 0.5, 0.5, 0.5, 1 };
     float4 emissive = max(material.emissive, is_selected * selection_emissive);
