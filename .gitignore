@@ -1,6 +1,7 @@
 .vs
 .idea
 *.pdb
+*.cso
 *.ilk
 *.log
 *.recipe

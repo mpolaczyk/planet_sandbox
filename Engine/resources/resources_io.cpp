@@ -29,6 +29,7 @@
 
 #include "assets/mesh.h"
 #include "assets/texture.h"
+#include "engine/string_tools.h"
 #include "renderer/dx12_lib.h"
 
 
@@ -177,11 +178,11 @@ namespace engine
   // TODO upgrade to dxc
   bool load_hlsl(const std::string& file_name, const std::string& entrypoint, const std::string& target, ComPtr<ID3D10Blob>& out_shader_blob)
   {
-    std::string path = fio::get_shader_file_path(file_name.c_str());
+    std::string hlsl_path = fio::get_shader_file_path(file_name.c_str());
 
     ComPtr<ID3DBlob> shader_compiler_errors_blob;
-    std::wstring wpath = std::wstring(path.begin(), path.end());
-    LPCWSTR sw = wpath.c_str();
+    std::wstring whlsl_path = std::wstring(hlsl_path.begin(), hlsl_path.end());
+    LPCWSTR sw = whlsl_path.c_str();
     UINT flags1 = D3DCOMPILE_ENABLE_UNBOUNDED_DESCRIPTOR_TABLES;
 #if BUILD_DEBUG
     flags1 |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_DEBUG_NAME_FOR_BINARY;
@@ -205,35 +206,39 @@ namespace engine
       }
       return false;
     }
-
-#if BUILD_DEBUG
-    // Retrieve the debug info part of the shader
-    ComPtr<ID3DBlob> pdb;
-    D3DGetBlobPart(out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize(), D3D_BLOB_PDB, 0, &pdb);
-
-    // Retrieve the suggested name for the debug data file
-    ComPtr<ID3DBlob> pdb_name;
-    D3DGetBlobPart(out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize(), D3D_BLOB_DEBUG_NAME, 0, &pdb_name);
-
-    // This struct represents the first four bytes of the name blob
-    struct shader_debug_name
-    {
-      uint16_t flags;       // Reserved, must be set to zero
-      uint16_t name_length;  // Length of the debug name, without null terminator
-      // Followed by name_length bytes of the UTF-8-encoded name
-      // Followed by a null terminator
-      // Followed by [0-3] zero bytes to align to a 4-byte boundary
-    };
-
-    auto debug_name_data = (const shader_debug_name*)(pdb_name->GetBufferPointer());
-    auto name = (const char*)(debug_name_data + 1);
     
-    std::string file = fio::get_shader_file_path(name);
-    FILE* fp = fopen(file.c_str(), "wb");
-    if (fp)
+    const char* pdb_file_name = nullptr;
+#if BUILD_DEBUG
+    // Save the PDB file
     {
-      fwrite(pdb->GetBufferPointer(), pdb->GetBufferSize(), 1, fp);
-      fclose(fp);
+      // Retrieve the debug info part of the shader
+      ComPtr<ID3DBlob> pdb;
+      D3DGetBlobPart(out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize(), D3D_BLOB_PDB, 0, &pdb);
+      
+      // Retrieve the suggested name for the debug data file
+      ComPtr<ID3DBlob> pdb_name;
+      D3DGetBlobPart(out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize(), D3D_BLOB_DEBUG_NAME, 0, &pdb_name);
+      
+      // This struct represents the first four bytes of the name blob
+      struct shader_debug_name
+      {
+        uint16_t flags;       // Reserved, must be set to zero
+        uint16_t name_length;  // Length of the debug name, without null terminator
+        // Followed by name_length bytes of the UTF-8-encoded name
+        // Followed by a null terminator
+        // Followed by [0-3] zero bytes to align to a 4-byte boundary
+      };
+      
+      auto debug_name_data = (const shader_debug_name*)(pdb_name->GetBufferPointer());
+      pdb_file_name = (const char*)(debug_name_data + 1);
+    
+      std::string file = fio::get_shader_file_path(pdb_file_name);
+      FILE* fp = fopen(file.c_str(), "wb");
+      if (fp)
+      {
+        fwrite(pdb->GetBufferPointer(), pdb->GetBufferSize(), 1, fp);
+        fclose(fp);
+      }
     }
 #elif BUILD_RELEASE
     // Strip reflection
@@ -242,6 +247,18 @@ namespace engine
     D3DStripShader(out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize(), flags, &stripped_blob);
     out_shader_blob = stripped_blob;
 #endif
+
+    // Save CSO to the disk
+    {
+      if(pdb_file_name)
+      {
+        std::string file = fio::get_shader_file_path(pdb_file_name);
+        std::size_t index = file.find_last_of(".");
+        file.replace(index, 4, ".cso");
+        std::wstring cso_file = std::wstring(file.begin(), file.end());
+        D3DWriteBlobToFile(out_shader_blob.Get(), cso_file.c_str(), true);
+      }
+    }
     return true;
   }
 }
