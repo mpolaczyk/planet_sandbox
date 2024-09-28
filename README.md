@@ -35,6 +35,8 @@ DirectX 12
 
 [DirectX 12 Agility SDK] 1.614
 
+[DirectX Shader Compiler] v1.8.2407
+
 [ocornut/imgui] v1.87
 
 [nlohmann/json] v3.10.5
@@ -65,3 +67,4 @@ DirectX 12
    [openfbx]: <https://github.com/nem0/OpenFBX>
    [Cozy Kitchen]: <https://www.blender.org/download/demo-files>
    [DirectX 12 Agility SDK]: <https://www.nuget.org/packages/Microsoft.Direct3D.D3D12/1.614.0>
+   [DirectX Shader Compiler]: <https://github.com/microsoft/DirectXShaderCompiler/releases/tag/v1.8.2407>
