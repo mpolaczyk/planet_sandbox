@@ -43,7 +43,7 @@ namespace engine
     instance->accept(vdeserialize_object(j));
     instance->set_display_name(name);
 
-    if(!load_hlsl(instance->shader_file_name, instance->entrypoint, instance->target, instance->render_state.blob))
+    if(!load_hlsl_dxc(instance->shader_file_name, instance->entrypoint, instance->target, instance->render_state.blob))
     {
       DX_RELEASE(instance->render_state.blob)
       return false;

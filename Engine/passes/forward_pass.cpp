@@ -162,12 +162,14 @@ namespace engine
       rtv_formats.RTFormats[0] = back_buffer_format;
 
       // Pipeline state object
+      IDxcBlob* vs_blob = vertex_shader->blob.Get();
+      IDxcBlob* ps_blob = pixel_shader->blob.Get();
       fpipeline_state_stream pipeline_state_stream;
       pipeline_state_stream.root_signature = root_signature.Get();
       pipeline_state_stream.input_layout = { input_element_desc, _countof(input_element_desc) };
       pipeline_state_stream.primitive_topology_type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-      pipeline_state_stream.vertex_shader = CD3DX12_SHADER_BYTECODE(vertex_shader->blob.Get());
-      pipeline_state_stream.pixel_shader = CD3DX12_SHADER_BYTECODE(pixel_shader->blob.Get());
+      pipeline_state_stream.vertex_shader = CD3DX12_SHADER_BYTECODE(vs_blob->GetBufferPointer(), vs_blob->GetBufferSize());
+      pipeline_state_stream.pixel_shader = CD3DX12_SHADER_BYTECODE(ps_blob->GetBufferPointer(), ps_blob->GetBufferSize());
       pipeline_state_stream.dsv_format = depth_buffer_format;
       pipeline_state_stream.rtv_formats = rtv_formats;
       fdx12::create_pipeline_state(device, pipeline_state_stream, pipeline_state);

@@ -1,5 +1,5 @@
 {
   "shader_file_name": "forward.hlsl",
   "entrypoint" : "ps_main",
-  "target": "ps_5_1"
+  "target": "ps_6_0"
 }

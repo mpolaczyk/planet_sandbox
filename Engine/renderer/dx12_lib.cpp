@@ -142,6 +142,9 @@ namespace engine
 
   void fdx12::create_device(ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12Device2>& out_device)
   {
+    const UUID experimental_features[] = { D3D12ExperimentalShaderModels };
+    THROW_IF_FAILED(D3D12EnableExperimentalFeatures(1, experimental_features, nullptr, nullptr));
+    
     ComPtr<IDXGIAdapter1> adapter1;
     get_hw_adapter(factory.Get(), &adapter1);
     DXGI_ADAPTER_DESC adapter_desc;
@@ -303,6 +306,11 @@ namespace engine
   {
     const D3D12_PIPELINE_STATE_STREAM_DESC pipeline_state_stream_desc(sizeof(fpipeline_state_stream), &pipeline_state_stream);
     THROW_IF_FAILED(device->CreatePipelineState(&pipeline_state_stream_desc, IID_PPV_ARGS(out_pipeline_state.GetAddressOf())));
+  }
+
+  void fdx12::create_pipeline_state(ComPtr<ID3D12Device2> device, const D3D12_GRAPHICS_PIPELINE_STATE_DESC& pso_desc, ComPtr<ID3D12PipelineState>& out_pipeline_state)
+  {
+    THROW_IF_FAILED(device->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(out_pipeline_state.GetAddressOf())));
   }
 
   void fdx12::set_render_targets(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap, ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap, int back_buffer_index)
@@ -512,6 +520,42 @@ namespace engine
     device->CreateShaderResourceView(texture->render_state.texture_buffer.Get(), &srv_desc, handle);
 
     trs.is_resource_online = true;
+  }
+
+  bool fdx12::get_dxc_blob(ComPtr<IDxcResult> result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlob>& out_blob)
+  {
+    if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), nullptr)))
+    {
+      LOG_ERROR("Unable to find blob {0}", static_cast<int32_t>(blob_type));
+      return false;
+    }
+    return true;
+  }
+
+  bool fdx12::get_dxc_blob(ComPtr<IDxcResult> result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlobUtf8>& out_blob)
+  {
+    if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), nullptr)))
+    {
+      LOG_ERROR("Unable to find blob {0}", static_cast<int32_t>(blob_type));
+      return false;
+    }
+    return true;
+  } 
+  
+  bool fdx12::save_dxc_blob(ComPtr<IDxcBlob> blob, const char* path)
+  {
+    FILE* file = nullptr;
+    std::wstring w_path = fstring_tools::to_utf16(path);
+    errno_t open_result = _wfopen_s(&file, w_path.c_str(), L"wb");
+    if(open_result != 0)
+    {
+      // See https://learn.microsoft.com/en-us/cpp/c-runtime-library/errno-constants
+      LOG_ERROR("Failed to write blob. Error code {0}", static_cast<int32_t>(open_result));
+      return false;
+    }
+    fwrite(blob->GetBufferPointer(), blob->GetBufferSize(), 1, file);
+    fclose(file);
+    return true;
   }
 
   //void fdx12::create_input_layout(const D3D11_INPUT_ELEMENT_DESC* input_element_desc, uint32_t input_element_desc_size, const ComPtr<ID3D10Blob>& vertex_shader_blob, ComPtr<ID3D11InputLayout>& input_layout) const

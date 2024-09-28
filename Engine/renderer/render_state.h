@@ -2,9 +2,9 @@
 
 #include <vector>
 #include <wrl/client.h>
-
 #include "d3d12.h"
-#include "d3dx12/d3dx12_core.h"
+#include "dxcapi.h"
+
 #include "math/vertex_data.h"
 
 namespace engine
@@ -42,11 +42,11 @@ namespace engine
 
   struct fpixel_shader_render_state
   {
-    ComPtr<ID3DBlob> blob;
+    ComPtr<IDxcBlob> blob;
   };
 
   struct fvertex_shader_render_state
   {
-    ComPtr<ID3DBlob> blob;
+    ComPtr<IDxcBlob> blob;
   };
 }
