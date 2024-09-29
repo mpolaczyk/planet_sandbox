@@ -524,9 +524,10 @@ namespace engine
 
   bool fdx12::get_dxc_blob(ComPtr<IDxcResult> result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlob>& out_blob)
   {
-    if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), nullptr)))
+    ComPtr<IDxcBlobUtf16> name = nullptr;
+    if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), name.GetAddressOf())) && out_blob != nullptr)
     {
-      LOG_ERROR("Unable to find blob {0}", static_cast<int32_t>(blob_type));
+      LOG_ERROR("Unable to get blob {0}", static_cast<int32_t>(blob_type));
       return false;
     }
     return true;
@@ -534,9 +535,10 @@ namespace engine
 
   bool fdx12::get_dxc_blob(ComPtr<IDxcResult> result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlobUtf8>& out_blob)
   {
-    if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), nullptr)))
+    ComPtr<IDxcBlobUtf16> name = nullptr;
+    if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), name.GetAddressOf())) && out_blob != nullptr)
     {
-      LOG_ERROR("Unable to find blob {0}", static_cast<int32_t>(blob_type));
+      LOG_ERROR("Unable to get blob {0}", static_cast<int32_t>(blob_type));
       return false;
     }
     return true;

@@ -181,12 +181,6 @@ namespace engine
     ComPtr<IDxcIncludeHandler> include_handler;
     const std::string shader_directory = fio::get_shaders_dir();
     const std::string hlsl_path = fio::get_shader_file_path(file_name.c_str());
-
-    std::string pdb_path = hlsl_path;
-    pdb_path.replace(hlsl_path.find_last_of("."), 4, ".pdb");
-
-    std::string obj_path = hlsl_path;
-    obj_path.replace(hlsl_path.find_last_of("."), 4, ".cso");
     
     std::vector<LPCWSTR> arguments;
     std::wstring w_file_name = fstring_tools::to_utf16(file_name);
@@ -267,7 +261,25 @@ namespace engine
     }
     
 #if BUILD_DEBUG
+
+    // Find shader hash
+    ComPtr<IDxcBlob> hash = nullptr;
+    std::string hash_str;
+    char hash_string[32] = {'\0'};
+    if(fdx12::get_dxc_blob(dxc_result, DXC_OUT_SHADER_HASH, hash) && hash != nullptr)
+    {
+      auto* pHashBuf = static_cast<DxcShaderHash*>(hash->GetBufferPointer());
+      
+      for(size_t i = 0; i < _countof(pHashBuf->HashDigest); ++i)
+      {
+        snprintf(hash_string + i, 16, "%X", pHashBuf->HashDigest[i]);
+      }
+      hash_str = std::string(hash_string);
+      LOG_INFO("Hash: {0}", hash_str);
+    }
+    
     // Save object file
+    std::string obj_path = fio::get_shader_file_path(hash_string) + ".bin";
     if(!fdx12::save_dxc_blob(out_shader_blob, obj_path.c_str()))
     {
       return false;
@@ -281,6 +293,7 @@ namespace engine
     }
 
     // Save debug symbols
+    std::string pdb_path = fio::get_shader_file_path(hash_string) + ".pdb";
     if(!fdx12::save_dxc_blob(pdb_blob, pdb_path.c_str()))
     {
       return false;
