@@ -30,6 +30,9 @@ struct D3D12_GRAPHICS_PIPELINE_STATE_DESC;
 struct IDxcResult;
 struct IDxcBlobUtf8;
 struct IDxcBlob;
+struct IDxcIncludeHandler;
+struct IDxcCompiler3;
+struct IDxcUtils;
 enum D3D12_RESOURCE_STATES;
 enum D3D12_ROOT_SIGNATURE_FLAGS;
 enum DXGI_FORMAT;
@@ -104,6 +107,8 @@ namespace engine
     static void upload_index_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state);
     static void upload_texture_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> descriptor_heap, const CD3DX12_CPU_DESCRIPTOR_HANDLE& handle, atexture* texture);
 
+    static bool load_shader_from_cache(ComPtr<IDxcUtils> utils, const char* file_path, ComPtr<IDxcBlob>& out_shader_blob);
+    static bool load_and_compile_shader(ComPtr<IDxcUtils> utils, ComPtr<IDxcCompiler3> compiler, ComPtr<IDxcIncludeHandler> include_handler, const char* file_path, const std::vector<LPCWSTR>& arguments, ComPtr<IDxcResult>& out_result);
     static bool get_dxc_blob(ComPtr<IDxcResult> result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlob>& out_blob);
     static bool get_dxc_blob(ComPtr<IDxcResult> result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlobUtf8>& out_blob);
     static bool save_dxc_blob(ComPtr<IDxcBlob> blob, const char* path);

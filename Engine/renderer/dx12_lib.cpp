@@ -6,14 +6,18 @@
 #include <dxgi1_6.h>
 #pragma comment(lib, "dxguid.lib")
 #include <DirectXColors.h>
+#include <fstream>
 
 #include "d3d12.h"
+#pragma comment(lib, "dxcompiler.lib")
+#include "dxcapi.h"
 #include "assets/texture.h"
 #include "d3dx12/d3dx12_root_signature.h"
 #include "d3dx12/d3dx12_barriers.h"
 #include "d3dx12/d3dx12_resource_helpers.h"
 
 #include "core/exceptions.h"
+#include "engine/io.h"
 #include "engine/log.h"
 #include "engine/string_tools.h"
 #include "renderer/aligned_structs.h"
@@ -521,24 +525,64 @@ namespace engine
 
     trs.is_resource_online = true;
   }
+  
+  bool fdx12::load_shader_from_cache(ComPtr<IDxcUtils> utils, const char* file_path, ComPtr<IDxcBlob>& out_shader_blob)
+  {
+    const std::wstring w_file_path = fstring_tools::to_utf16(file_path);
+
+    // Load shader source
+    ComPtr<IDxcBlobEncoding> blob;
+    if(FAILED(utils->LoadFile(w_file_path.c_str(), nullptr, blob.GetAddressOf())))
+    {
+      LOG_WARN("Unable to find shader in cache or load failed.");
+      return false;
+    }
+    out_shader_blob = blob;
+    return true;
+  }
+
+  bool fdx12::load_and_compile_shader(ComPtr<IDxcUtils> utils, ComPtr<IDxcCompiler3> compiler, ComPtr<IDxcIncludeHandler> include_handler, const char* file_path, const std::vector<LPCWSTR>& arguments, ComPtr<IDxcResult>& out_result)
+  {
+    const std::wstring w_file_path = fstring_tools::to_utf16(file_path);
+    
+    // Load shader source
+    ComPtr<IDxcBlobEncoding> source_blob;
+    if(FAILED(utils->LoadFile(w_file_path.c_str(), nullptr, source_blob.GetAddressOf())))
+    {
+      LOG_ERROR("Could not compile shader, failed to load file.");
+      return false;
+    }
+
+    // Compile shader source
+    DxcBuffer source;   
+    source.Ptr = source_blob->GetBufferPointer();
+    source.Size = source_blob->GetBufferSize();
+    source.Encoding = DXC_CP_ACP;
+    if(FAILED(compiler->Compile(&source, const_cast<LPCWSTR*>(arguments.data()), arguments.size(), include_handler.Get(), IID_PPV_ARGS(out_result.GetAddressOf()))))
+    {
+      LOG_ERROR("Could not compile shader, failed to compile");
+      return false;
+    }
+    return true;
+  }
 
   bool fdx12::get_dxc_blob(ComPtr<IDxcResult> result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlob>& out_blob)
   {
     ComPtr<IDxcBlobUtf16> name = nullptr;
     if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), name.GetAddressOf())) && out_blob != nullptr)
     {
-      LOG_ERROR("Unable to get blob {0}", static_cast<int32_t>(blob_type));
+      LOG_ERROR("Unable to get dxc blob {0}", static_cast<int32_t>(blob_type));
       return false;
     }
     return true;
   }
-
+  
   bool fdx12::get_dxc_blob(ComPtr<IDxcResult> result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlobUtf8>& out_blob)
   {
     ComPtr<IDxcBlobUtf16> name = nullptr;
     if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), name.GetAddressOf())) && out_blob != nullptr)
     {
-      LOG_ERROR("Unable to get blob {0}", static_cast<int32_t>(blob_type));
+      LOG_ERROR("Unable to get dxc blob {0}", static_cast<int32_t>(blob_type));
       return false;
     }
     return true;
@@ -552,7 +596,7 @@ namespace engine
     if(open_result != 0)
     {
       // See https://learn.microsoft.com/en-us/cpp/c-runtime-library/errno-constants
-      LOG_ERROR("Failed to write blob. Error code {0}", static_cast<int32_t>(open_result));
+      LOG_ERROR("Failed to write dxc blob. Error code {0}", static_cast<int32_t>(open_result));
       return false;
     }
     fwrite(blob->GetBufferPointer(), blob->GetBufferSize(), 1, file);

@@ -172,19 +172,35 @@ namespace engine
     return true;
   }
 
+  bool load_shader_cache(const std::string& file_name, ComPtr<IDxcBlob>& out_shader_blob)
+  {
+    ComPtr<IDxcUtils> utils;
+    if(FAILED(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&utils))))
+    {
+      LOG_ERROR("Failed to create dxc utils instance.");
+      return false;
+    }
+    const std::string cso_path = fio::get_shader_file_path(file_name.c_str());
+    if(!fdx12::load_shader_from_cache(utils, cso_path.c_str(), out_shader_blob))
+    {
+      return false;
+    }
+    LOG_INFO("Loaded from cache.");
+    return true;
+  }
+  
   // https://github.com/microsoft/DirectXShaderCompiler/wiki/Using-dxc.exe-and-dxcompiler.dll
   // https://simoncoenen.com/blog/programming/graphics/DxcCompiling
-  bool load_hlsl_dxc(const std::string& file_name, const std::string& entrypoint, const std::string& target, ComPtr<IDxcBlob>& out_shader_blob)
+  bool load_hlsl_dxc(const std::string& file_name, const std::string& entrypoint, const std::string& target, ComPtr<IDxcBlob>& out_shader_blob, std::string& out_hash)
   {
     ComPtr<IDxcUtils> utils;
     ComPtr<IDxcCompiler3> compiler;
     ComPtr<IDxcIncludeHandler> include_handler;
     const std::string shader_directory = fio::get_shaders_dir();
-    const std::string hlsl_path = fio::get_shader_file_path(file_name.c_str());
+    const std::string file_path = fio::get_shader_file_path(file_name.c_str());
     
     std::vector<LPCWSTR> arguments;
     std::wstring w_file_name = fstring_tools::to_utf16(file_name);
-    std::wstring w_hlsl_path = fstring_tools::to_utf16(hlsl_path);
     std::wstring w_entrypoint = fstring_tools::to_utf16(entrypoint);
     std::wstring w_target = fstring_tools::to_utf16(target);
     std::wstring w_shader_directory = fstring_tools::to_utf16(shader_directory);
@@ -199,43 +215,31 @@ namespace engine
     arguments.push_back(L"-Od");            // Disable optimizations
     arguments.push_back(L"-Zi");            // Enable debug information
     arguments.push_back(L"-Zss");           // Create hash using source information
+    arguments.push_back(L"-WX");            // Warnings as errors
 #endif
     
     // Initialize the dxc
     // TODO: compiler and utils does not have to be created for each invocation
     if(FAILED(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&utils))))
     {
-      LOG_ERROR("Could not compile shader, failed to create dxc utils instance.");
+      LOG_ERROR("Failed to create dxc utils instance.");
       return false;
     }
     if(FAILED(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&compiler))))
     {
-      LOG_ERROR("Could not compile shader, failed to create dxc instance.");
+      LOG_ERROR("Failed to create dxc instance.");
       return false;
     }
     if(FAILED(utils->CreateDefaultIncludeHandler(&include_handler)))
     {
-      LOG_ERROR("Could not compile shader, failed to create dxc include handler.");
+      LOG_ERROR("Failed to create dxc include handler.");
       return false;
     }
 
-    // Load shader source
-    ComPtr<IDxcBlobEncoding> source_blob;
-    if(FAILED(utils->LoadFile(w_hlsl_path.c_str(), nullptr, source_blob.GetAddressOf())))
-    {
-      LOG_ERROR("Could not compile shader, failed to load file.");
-      return false;
-    }
-
-    // Compile shader source
-    DxcBuffer source;   
-    source.Ptr = source_blob->GetBufferPointer();
-    source.Size = source_blob->GetBufferSize();
-    source.Encoding = DXC_CP_ACP;
+    // Load hlsl and compile shader
     ComPtr<IDxcResult> dxc_result;
-    if(FAILED(compiler->Compile(&source, arguments.data(), arguments.size(), include_handler.Get(), IID_PPV_ARGS(dxc_result.GetAddressOf()))))
+    if(!fdx12::load_and_compile_shader(utils, compiler, include_handler, file_path.c_str(), arguments, dxc_result))
     {
-      LOG_ERROR("Could not compile shader, failed to create dxc utils instance.");
       return false;
     }
 
@@ -250,7 +254,7 @@ namespace engine
     dxc_result->GetStatus(&hr);
     if (FAILED(hr))
     {
-      LOG_ERROR("Could not compile shader, compilation failed.");
+      LOG_ERROR("Shader compilation failed.");
       return false;
     }
     
@@ -264,18 +268,17 @@ namespace engine
 
     // Find shader hash
     ComPtr<IDxcBlob> hash = nullptr;
-    std::string hash_str;
     char hash_string[32] = {'\0'};
     if(fdx12::get_dxc_blob(dxc_result, DXC_OUT_SHADER_HASH, hash) && hash != nullptr)
     {
-      auto* pHashBuf = static_cast<DxcShaderHash*>(hash->GetBufferPointer());
+      auto* hash_buffer = static_cast<DxcShaderHash*>(hash->GetBufferPointer());
       
-      for(size_t i = 0; i < _countof(pHashBuf->HashDigest); ++i)
+      for(size_t i = 0; i < _countof(hash_buffer->HashDigest); ++i)
       {
-        snprintf(hash_string + i, 16, "%X", pHashBuf->HashDigest[i]);
+        snprintf(hash_string + i, 16, "%X", hash_buffer->HashDigest[i]);
       }
-      hash_str = std::string(hash_string);
-      LOG_INFO("Hash: {0}", hash_str);
+      out_hash = std::string(hash_string) + ".bin";
+      LOG_INFO("Hash: {0}", out_hash);
     }
     
     // Save object file
