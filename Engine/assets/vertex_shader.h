@@ -17,10 +17,12 @@ namespace engine
     OBJECT_DECLARE_VISITOR
 
     // JSON persistent
+    // TODO: All of this can be moved to the parent class
     std::string shader_file_name;
     std::string entrypoint;
     std::string target;
-
+    std::string cache_file_name;
+    
     // Runtime
     fvertex_shader_render_state render_state;
   };

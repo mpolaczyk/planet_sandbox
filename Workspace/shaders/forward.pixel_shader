@@ -1,5 +1,6 @@
 {
+  "cache_file_name": "E8EE1C5985E531290.bin",
+  "entrypoint": "ps_main",
   "shader_file_name": "forward.hlsl",
-  "entrypoint" : "ps_main",
   "target": "ps_6_0"
 }
