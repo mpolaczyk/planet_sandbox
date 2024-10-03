@@ -146,15 +146,45 @@ namespace engine
 
   void fdx12::create_device(ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12Device2>& out_device)
   {
-    const UUID experimental_features[] = { D3D12ExperimentalShaderModels };
-    THROW_IF_FAILED(D3D12EnableExperimentalFeatures(1, experimental_features, nullptr, nullptr));
+    const D3D_SHADER_MODEL required_shader_model = D3D_SHADER_MODEL_6_0;                
+    const D3D_FEATURE_LEVEL required_feature_level = D3D_FEATURE_LEVEL_12_0;            
+    
+    //const UUID experimental_features[] = { D3D12ExperimentalShaderModels };
+    //THROW_IF_FAILED(D3D12EnableExperimentalFeatures(1, experimental_features, nullptr, nullptr));
     
     ComPtr<IDXGIAdapter1> adapter1;
-    get_hw_adapter(factory.Get(), &adapter1);
+    get_hw_adapter(factory.Get(), &adapter1, true);
     DXGI_ADAPTER_DESC adapter_desc;
     adapter1->GetDesc(&adapter_desc);
     LOG_INFO("Graphics Device: {0}", fstring_tools::to_utf8(adapter_desc.Description));
-    THROW_IF_FAILED((D3D12CreateDevice(adapter1.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(out_device.GetAddressOf()))))
+    
+    ComPtr<ID3D12Device2> temp_device;  // Used only to check feature level and shader model
+    THROW_IF_FAILED((D3D12CreateDevice(adapter1.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(temp_device.GetAddressOf()))))
+
+    // Check shader model
+    {
+      D3D12_FEATURE_DATA_SHADER_MODEL shader_model = { required_shader_model };
+      if (FAILED(temp_device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL, &shader_model, sizeof(shader_model))) || (shader_model.HighestShaderModel < required_shader_model))
+      {
+        throw std::runtime_error("Shader model is not high enough!");
+      }
+    }
+
+    // Check feature support and create highest possible device
+    {
+      const D3D_FEATURE_LEVEL feature_levels[] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_2 };
+      
+      D3D12_FEATURE_DATA_FEATURE_LEVELS feature_level = {};
+      feature_level.pFeatureLevelsRequested = feature_levels;
+      feature_level.NumFeatureLevels = _countof(feature_levels);
+      
+      if(FAILED(temp_device->CheckFeatureSupport(D3D12_FEATURE_FEATURE_LEVELS, &feature_level, sizeof(feature_level))) || feature_level.MaxSupportedFeatureLevel < required_feature_level)
+      {
+        throw std::runtime_error("Feature level is not high enough!");
+      }
+      
+      THROW_IF_FAILED((D3D12CreateDevice(adapter1.Get(), feature_level.MaxSupportedFeatureLevel, IID_PPV_ARGS(out_device.GetAddressOf()))));
+    }
   }
 
   void fdx12::create_command_queue(ComPtr<ID3D12Device> device, ComPtr<ID3D12CommandQueue>& out_command_queue)
