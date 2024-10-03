@@ -2,12 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="app\app.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
-    <ClCompile Include="app\ui\app_ui.cpp">
-      <Filter>app\ui</Filter>
-    </ClCompile>
     <ClCompile Include="third_party\imgui_v1.87\imgui.cpp">
       <Filter>third_party\imgui</Filter>
     </ClCompile>
@@ -26,19 +20,18 @@
     <ClCompile Include="third_party\imgui_v1.87\imgui_widgets.cpp">
       <Filter>third_party\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="app\json\app_persistence.cpp" />
-    <ClCompile Include="app\json\ui_persistence.cpp" />
     <ClCompile Include="app\ui\draw_edit_panel.cpp" />
     <ClCompile Include="app\editor_app.cpp" />
     <ClCompile Include="editor_main.cpp" />
     <ClCompile Include="app\ui\ui_helper.cpp" />
     <ClCompile Include="third_party\imgui_v1.87\backends\imgui_impl_dx12.cpp" />
+    <ClCompile Include="app\editor_app_io.cpp" />
+    <ClCompile Include="app\editor_app_persistence.cpp" />
+    <ClCompile Include="app\editor_window.cpp" />
+    <ClCompile Include="app\editor_window_ui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="app\app.h">
-      <Filter>app</Filter>
-    </ClInclude>
     <ClInclude Include="third_party\imgui_v1.87\imconfig.h">
       <Filter>third_party\imgui</Filter>
     </ClInclude>
@@ -60,12 +53,12 @@
     <ClInclude Include="third_party\imgui_v1.87\imstb_truetype.h">
       <Filter>third_party\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="app\json\ui_persistence.h" />
     <ClInclude Include="app\ui\draw_edit_panel.h" />
     <ClInclude Include="app\ui\ui.h" />
     <ClInclude Include="app\editor_app.h" />
     <ClInclude Include="app\ui\ui_helper.h" />
     <ClInclude Include="third_party\imgui_v1.87\backends\imgui_impl_dx12.h" />
+    <ClInclude Include="app\editor_window.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="gfx">
@@ -89,8 +82,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
-    <None Include="..\Workspace\Content\Shaders\gpu_renderer_common.hlsl" />
-    <None Include="..\Workspace\Content\Shaders\gpu_renderer_ps.hlsl" />
-    <None Include="..\Workspace\Content\Shaders\gpu_renderer_vs.hlsl" />
   </ItemGroup>
 </Project>

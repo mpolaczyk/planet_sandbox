@@ -70,6 +70,9 @@
     <ClInclude Include="renderer\aligned_structs.h" />
     <ClInclude Include="renderer\scene_acceleration.h" />
     <ClInclude Include="resources\assimp_logger.h" />
+    <ClInclude Include="core\window.h" />
+    <ClInclude Include="renderer\command_queue.h" />
+    <ClInclude Include="renderer\pipeline_state.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -127,5 +130,7 @@
     <ClCompile Include="passes\gbuffer_pass.cpp" />
     <ClCompile Include="renderer\scene_acceleration.cpp" />
     <ClCompile Include="resources\assimp_logger.cpp" />
+    <ClCompile Include="core\window.cpp" />
+    <ClCompile Include="renderer\command_queue.cpp" />
   </ItemGroup>
 </Project>

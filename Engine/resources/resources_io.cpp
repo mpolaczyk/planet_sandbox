@@ -13,8 +13,9 @@
 #include "third_party/stb_image.h"
 
 #include <d3d11_1.h>
-//#include <d3dcompiler.h>  // fxc
-#include "dxcapi.h"         // dxc
+#pragma comment(lib, "dxcompiler.lib")
+#include "dxcapi.h"
+#include "d3d12shader.h"
 
 #include "assimp/DefaultLogger.hpp"
 #include "assimp/Importer.hpp"
@@ -191,6 +192,7 @@ namespace engine
   
   // https://github.com/microsoft/DirectXShaderCompiler/wiki/Using-dxc.exe-and-dxcompiler.dll
   // https://simoncoenen.com/blog/programming/graphics/DxcCompiling
+  // https://youtu.be/tyyKeTsdtmo?t=1132
   bool load_hlsl_dxc(const std::string& file_name, const std::string& entrypoint, const std::string& target, ComPtr<IDxcBlob>& out_shader_blob, std::string& out_hash)
   {
     ComPtr<IDxcUtils> utils;
@@ -220,6 +222,7 @@ namespace engine
     
     // Initialize the dxc
     // TODO: compiler and utils does not have to be created for each invocation
+    //       but keep in mind thread safety: utils, compiler and include handler needs to exist per thread
     if(FAILED(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&utils))))
     {
       LOG_ERROR("Failed to create dxc utils instance.");
