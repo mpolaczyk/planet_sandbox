@@ -198,14 +198,14 @@ namespace engine
     ComPtr<IDxcUtils> utils;
     ComPtr<IDxcCompiler3> compiler;
     ComPtr<IDxcIncludeHandler> include_handler;
-    const std::string shader_directory = fio::get_shaders_dir();
-    const std::string file_path = fio::get_shader_file_path(file_name.c_str());
-    
-    std::vector<LPCWSTR> arguments;
+
+    std::string file_path = fio::get_shader_file_path(file_name.c_str());
     std::wstring w_file_name = fstring_tools::to_utf16(file_name);
+    std::wstring w_shader_directory = fstring_tools::to_utf16(fio::get_shaders_dir());
     std::wstring w_entrypoint = fstring_tools::to_utf16(entrypoint);
     std::wstring w_target = fstring_tools::to_utf16(target);
-    std::wstring w_shader_directory = fstring_tools::to_utf16(shader_directory);
+    
+    std::vector<LPCWSTR> arguments;
     arguments.push_back(w_file_name.c_str());
     arguments.push_back(L"-E");
     arguments.push_back(w_entrypoint.c_str());
@@ -214,12 +214,12 @@ namespace engine
     arguments.push_back(L"-I");
     arguments.push_back(w_shader_directory.c_str());
 #if BUILD_DEBUG
-    arguments.push_back(L"-Od");            // Disable optimizations
-    arguments.push_back(L"-Zi");            // Enable debug information
-    arguments.push_back(L"-Zss");           // Create hash using source information
-    arguments.push_back(L"-WX");            // Warnings as errors
-#endif
-    
+    arguments.push_back(DXC_ARG_SKIP_OPTIMIZATIONS);
+    arguments.push_back(DXC_ARG_DEBUG);
+    arguments.push_back(DXC_ARG_DEBUG_NAME_FOR_SOURCE);
+    arguments.push_back(DXC_ARG_WARNINGS_ARE_ERRORS);
+#endif      
+
     // Initialize the dxc
     // TODO: compiler and utils does not have to be created for each invocation
     //       but keep in mind thread safety: utils, compiler and include handler needs to exist per thread
@@ -280,12 +280,12 @@ namespace engine
       {
         snprintf(hash_string + i, 16, "%X", hash_buffer->HashDigest[i]);
       }
-      out_hash = std::string(hash_string) + ".bin";
-      LOG_INFO("Hash: {0}", out_hash);
+      out_hash = std::string(hash_string) + ".cso";
+      LOG_INFO("Hash: {0}", hash_string);
     }
     
     // Save object file
-    std::string obj_path = fio::get_shader_file_path(hash_string) + ".bin";
+    std::string obj_path = fio::get_shader_file_path(hash_string) + ".cso";
     if(!fdx12::save_dxc_blob(out_shader_blob, obj_path.c_str()))
     {
       return false;

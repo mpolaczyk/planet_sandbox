@@ -71,15 +71,15 @@ namespace engine
     {
       return true;
     }
-    std::string new_cache;
-    if(!load_hlsl_dxc(instance->shader_file_name, instance->entrypoint, instance->target, instance->render_state.blob, new_cache))
+    std::string new_cache_file_name;
+    if(!load_hlsl_dxc(instance->shader_file_name, instance->entrypoint, instance->target, instance->render_state.blob, new_cache_file_name))
     {
       DX_RELEASE(instance->render_state.blob)
       return false;
     }
-    if(new_cache != "" && instance->cache_file_name != new_cache)
+    if(new_cache_file_name != "" && instance->cache_file_name != new_cache_file_name)
     {
-      instance->cache_file_name = new_cache;
+      instance->cache_file_name = new_cache_file_name;
       apixel_shader::save(instance);
     }
     LOG_INFO("Compilation successful.");
