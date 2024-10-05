@@ -27,7 +27,7 @@ namespace engine
   // Based on multiple training projects:
   // https://github.com/jpvanoosten/LearningDirectX12/tree/main/samples
   // https://github.com/microsoft/DirectX-Graphics-Samples/tree/master/Samples/Desktop
-  enum root_parameter_type
+  enum root_parameter_type : int
   {
     object_data = 0,
     frame_data,
@@ -119,21 +119,20 @@ namespace engine
       std::vector<CD3DX12_ROOT_PARAMETER1> root_parameters;
       const CD3DX12_ROOT_PARAMETER1 param = {};
       root_parameters.resize(root_parameter_type::num, param);
-      {
-        const uint8_t register_b0 = 0;
-        const uint8_t register_b1 = 1;
-        root_parameters[root_parameter_type::object_data].InitAsConstants(sizeof(fobject_data) / 4, register_b0, 0);
-        root_parameters[root_parameter_type::frame_data].InitAsConstantBufferView(register_b1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-
-        const uint8_t register_t0 = 0;
-        const uint8_t register_t1 = 1;
-        const uint8_t register_t2 = 2;
-        root_parameters[root_parameter_type::lights].InitAsShaderResourceView(register_t0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-        root_parameters[root_parameter_type::materials].InitAsShaderResourceView(register_t1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-        CD3DX12_DESCRIPTOR_RANGE1 texture_range(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, MAX_TEXTURES, register_t2, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, srv_textures_heap_index);
-        root_parameters[root_parameter_type::textures].InitAsDescriptorTable(1, &texture_range, D3D12_SHADER_VISIBILITY_PIXEL);
-      }
-
+      
+      const uint8_t register_b0 = 0;
+      const uint8_t register_b1 = 1;
+      root_parameters[root_parameter_type::object_data].InitAsConstants(sizeof(fobject_data) / 4, register_b0, 0);
+      root_parameters[root_parameter_type::frame_data].InitAsConstantBufferView(register_b1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+      
+      const uint8_t register_t0 = 0;
+      const uint8_t register_t1 = 1;
+      const uint8_t register_t2 = 2;
+      root_parameters[root_parameter_type::lights].InitAsShaderResourceView(register_t0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+      root_parameters[root_parameter_type::materials].InitAsShaderResourceView(register_t1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+      CD3DX12_DESCRIPTOR_RANGE1 texture_range(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, MAX_TEXTURES, register_t2, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, srv_textures_heap_index);
+      root_parameters[root_parameter_type::textures].InitAsDescriptorTable(1, &texture_range, D3D12_SHADER_VISIBILITY_PIXEL);
+      
       std::vector<CD3DX12_STATIC_SAMPLER_DESC> static_sampers;
       CD3DX12_STATIC_SAMPLER_DESC sampler_desc(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
       static_sampers.push_back(sampler_desc);

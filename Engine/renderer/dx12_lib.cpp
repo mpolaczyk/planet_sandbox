@@ -326,14 +326,23 @@ namespace engine
     }
       
     // Serialize the root signature.
-    ComPtr<ID3DBlob> root_signature_blob;
+    ComPtr<ID3DBlob> root_signature_serialized;
     ComPtr<ID3DBlob> error_blob;
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC root_signature_desc;
     root_signature_desc.Init_1_1(static_cast<uint32_t>(root_parameters.size()), root_parameters.data(), static_cast<uint32_t>(static_samplers.size()), static_samplers.data(), root_signature_flags);
-    
-    THROW_IF_FAILED(D3DX12SerializeVersionedRootSignature(&root_signature_desc, feature_data.HighestVersion, root_signature_blob.GetAddressOf(), error_blob.GetAddressOf()));
-    // LOG_ERROR("Root signature. {0}", static_cast<const char*>(error_blob->GetBufferPointer()));
-    THROW_IF_FAILED(device->CreateRootSignature(0, root_signature_blob->GetBufferPointer(), root_signature_blob->GetBufferSize(), IID_PPV_ARGS(out_root_signature.GetAddressOf())));
+
+    HRESULT hr;
+    hr = D3DX12SerializeVersionedRootSignature(&root_signature_desc, feature_data.HighestVersion, root_signature_serialized.GetAddressOf(), error_blob.GetAddressOf());
+    if(FAILED(hr))
+    {
+      LOG_ERROR("Root signature serialization failed. HR = {0}", fwin32_error::get_error_description(hr));  // TODO fix this crap
+    }
+    if (error_blob)
+    {
+      LOG_ERROR("Root signature serialization failed. {0}", static_cast<const char*>(error_blob->GetBufferPointer()));
+    }
+
+    THROW_IF_FAILED(device->CreateRootSignature(0, root_signature_serialized->GetBufferPointer(), root_signature_serialized->GetBufferSize(), IID_PPV_ARGS(out_root_signature.GetAddressOf())));
   }
 
   void fdx12::create_pipeline_state(ComPtr<ID3D12Device2> device, fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state)
