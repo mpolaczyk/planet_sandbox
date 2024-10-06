@@ -49,4 +49,9 @@ namespace engine
   {
     s_console_logger->critical(fmt);
   }
+
+  void flogger::flush()
+  {
+    s_console_logger->flush();
+  }
 }

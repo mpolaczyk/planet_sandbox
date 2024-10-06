@@ -35,7 +35,8 @@ namespace engine
     static constexpr uint32_t back_buffer_count = 2;
 
     int get_back_buffer_index() const { return back_buffer_index; }
-
+    HWND get_window_handle() const { return hwnd; }
+    
     ComPtr<IDXGISwapChain4> swap_chain;
     ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap;
     std::vector<ComPtr<ID3D12Resource>> rtv;

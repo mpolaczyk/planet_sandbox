@@ -10,6 +10,8 @@
 
 #include "d3d12.h"
 #pragma comment(lib, "dxcompiler.lib")
+#include <sstream>
+
 #include "dxcapi.h"
 #include "assets/texture.h"
 #include "d3dx12/d3dx12_root_signature.h"
@@ -330,18 +332,25 @@ namespace engine
     ComPtr<ID3DBlob> error_blob;
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC root_signature_desc;
     root_signature_desc.Init_1_1(static_cast<uint32_t>(root_parameters.size()), root_parameters.data(), static_cast<uint32_t>(static_samplers.size()), static_samplers.data(), root_signature_flags);
-
+    
     HRESULT hr;
     hr = D3DX12SerializeVersionedRootSignature(&root_signature_desc, feature_data.HighestVersion, root_signature_serialized.GetAddressOf(), error_blob.GetAddressOf());
+    bool do_throw = false;
+    std::ostringstream oss;
     if(FAILED(hr))
     {
-      LOG_ERROR("Root signature serialization failed. HR = {0}", fwin32_error::get_error_description(hr));  // TODO fix this crap
+      oss << "Root signature serialization failed. ";
+      do_throw = true;
     }
     if (error_blob)
     {
-      LOG_ERROR("Root signature serialization failed. {0}", static_cast<const char*>(error_blob->GetBufferPointer()));
+      oss << static_cast<const char*>(error_blob->GetBufferPointer());
+      do_throw = true;
     }
-
+    if(do_throw)
+    {
+      throw fhresult_exception(hr, oss.str());
+    }
     THROW_IF_FAILED(device->CreateRootSignature(0, root_signature_serialized->GetBufferPointer(), root_signature_serialized->GetBufferSize(), IID_PPV_ARGS(out_root_signature.GetAddressOf())));
   }
 

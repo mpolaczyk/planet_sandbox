@@ -122,6 +122,7 @@ namespace engine
         fscope_timer render_timer(stat_render_time);
         render(back_buffer_index);
       }
+      LOG_FLUSH
     }
   }
 
@@ -161,5 +162,6 @@ namespace engine
 #ifdef BUILD_DEBUG
     fdx12::report_live_objects();
 #endif
+    LOG_FLUSH
   }
 }
