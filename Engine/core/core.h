@@ -31,6 +31,8 @@
 #define USE_TLAS 1
 #endif
 
+#define USE_NSIGHT_AFTERMATH 1
+
 #define RENDER_IMGUI 1
 
 #ifdef BUILD_DLL

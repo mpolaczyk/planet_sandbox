@@ -59,7 +59,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;BUILD_DLL;PLATFORM_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\spdlog-1.x\include;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)third_party\json-3.10.5\include;$(ProjectDir)third_party\assimp\include;$(ProjectDir)third_party\dxc_2024_07_31\inc;$(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\spdlog-1.x\include;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)third_party\json-3.10.5\include;$(ProjectDir)third_party\assimp\include;$(ProjectDir)third_party\dxc_2024_07_31\inc;$(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\include;$(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\include</AdditionalIncludeDirectories>
       <FloatingPointExceptions>true</FloatingPointExceptions>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -69,7 +69,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d12.lib;dxgi.lib;dbghelp.lib;$(ProjectDir)third_party\dxc_2024_07_31\lib\x64\dxcompiler.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;$(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;dbghelp.lib;$(ProjectDir)third_party\dxc_2024_07_31\lib\x64\dxcompiler.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;$(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.lib;$(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64\GFSDK_Aftermath_Lib.x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
     </Link>
@@ -79,7 +79,8 @@ copy $(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.dll $(SolutionD
 copy $(ProjectDir)third_party\dxc_2024_07_31\bin\x64\dxcompiler.dll $(SolutionDir)$(Platform)\$(Configuration)\dxcompiler.dll
 copy $(ProjectDir)third_party\dxc_2024_07_31\bin\x64\dxil.dll $(SolutionDir)$(Platform)\$(Configuration)\dxil.dll
 mkdir $(SolutionDir)$(Platform)\$(Configuration)\D3D12
-copy $(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\bin\x64\D3D12Core.dll $(SolutionDir)$(Platform)\$(Configuration)\D3D12\D3D12Core.dll</Command>
+copy $(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\bin\x64\D3D12Core.dll $(SolutionDir)$(Platform)\$(Configuration)\D3D12\D3D12Core.dll
+copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64\GFSDK_Aftermath_Lib.x64.dll $(SolutionDir)$(Platform)\$(Configuration)\x64GFSDK_Aftermath_Lib.x64.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -91,7 +92,7 @@ copy $(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\bin\x64\D3D12C
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;BUILD_DLL;PLATFORM_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)third_party\spdlog-1.x\include;$(ProjectDir)third_party\json-3.10.5\include;$(ProjectDir)third_party\assimp\include;$(ProjectDir)third_party\dxc_2024_07_31\inc;$(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)third_party\spdlog-1.x\include;$(ProjectDir)third_party\json-3.10.5\include;$(ProjectDir)third_party\assimp\include;$(ProjectDir)third_party\dxc_2024_07_31\inc;$(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\include;$(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <FloatingPointModel>Fast</FloatingPointModel>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -103,7 +104,7 @@ copy $(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\bin\x64\D3D12C
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d12.lib;dxgi.lib;dbghelp.lib;$(ProjectDir)third_party\dxc_2024_07_31\lib\x64\dxcompiler.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;$(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;dbghelp.lib;$(ProjectDir)third_party\dxc_2024_07_31\lib\x64\dxcompiler.lib;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\bin\x64\WinPixEventRuntime.lib;$(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.lib;$(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64\GFSDK_Aftermath_Lib.x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
     </Link>
@@ -113,7 +114,8 @@ copy $(ProjectDir)third_party\assimp\lib\Release\assimp-vc143-mt.dll $(SolutionD
 copy $(ProjectDir)third_party\dxc_2024_07_31\bin\x64\dxcompiler.dll $(SolutionDir)$(Platform)\$(Configuration)\dxcompiler.dll
 copy $(ProjectDir)third_party\dxc_2024_07_31\bin\x64\dxil.dll $(SolutionDir)$(Platform)\$(Configuration)\dxil.dll
 mkdir $(SolutionDir)$(Platform)\$(Configuration)\D3D12
-copy $(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\bin\x64\D3D12Core.dll $(SolutionDir)$(Platform)\$(Configuration)\D3D12\D3D12Core.dll</Command>
+copy $(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\bin\x64\D3D12Core.dll $(SolutionDir)$(Platform)\$(Configuration)\D3D12\D3D12Core.dll
+copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64\GFSDK_Aftermath_Lib.x64.dll $(SolutionDir)$(Platform)\$(Configuration)\x64GFSDK_Aftermath_Lib.x64.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
