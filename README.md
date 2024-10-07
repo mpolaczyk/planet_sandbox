@@ -35,6 +35,8 @@ DirectX 12
 
 [Nsight Aftermath SDK] v2024.2.0.24200
 
+[Nsight Aftermath SDK Samples] v2023.2
+
 [DirectX 12 Agility SDK] v1.614
 
 [DirectX Shader Compiler] v1.8.2407
@@ -70,4 +72,5 @@ DirectX 12
    [Cozy Kitchen]: <https://www.blender.org/download/demo-files>
    [DirectX 12 Agility SDK]: <https://www.nuget.org/packages/Microsoft.Direct3D.D3D12/1.614.0>
    [DirectX Shader Compiler]: <https://github.com/microsoft/DirectXShaderCompiler/releases/tag/v1.8.2407>
-   [Nsight Aftermath SDK]: <https://github.com/NVIDIA/nsight-aftermath-samples/tree/master>
+   [Nsight Aftermath SDK Samples]: <https://github.com/NVIDIA/nsight-aftermath-samples/releases/tag/2023.2>
+   [Nsight Aftermath SDK]: <https://developer.nvidia.com/nsight-aftermath>
