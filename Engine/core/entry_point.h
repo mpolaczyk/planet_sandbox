@@ -16,24 +16,7 @@ namespace engine
   extern fwindow* create_window();
 }
 
-//void on_terminate() 
-//{
-//  LOG_CRITICAL("Terminating!")
-//  if (auto pe = std::current_exception())
-//  {
-//    try
-//    {
-//      std::rethrow_exception(pe);
-//    }
-//    catch (const std::exception& e)
-//    {
-//      //...
-//    }
-//  }
-//  abort();
-//}
-
-void main_body(int argc, char** argv, fapplication* app)
+void unguarded_main(int argc, char** argv, fapplication* app)
 {
   if (argc == 1)
   {
@@ -54,7 +37,7 @@ void guarded_main(int argc, char** argv, fapplication* app)
 
   try
   {
-    main_body(argc, argv, app);
+    unguarded_main(argc, argv, app);
   }
   catch (const std::exception& e)
   {
@@ -72,16 +55,14 @@ void guarded_main(int argc, char** argv, fapplication* app)
 
 int main(int argc, char** argv)
 {
-  fapplication* app = create_application(); // TODO uniqueptr
+  fapplication* app = create_application();
   fapplication::instance = app;
   app->window.reset(create_window());
-
-  //std::set_terminate(on_terminate); // TODO crash dumps? logs?
 
   if (IsDebuggerPresent())
   {
     // Don't guard code with try/catch block and error handling so that IDE can catch all exceptions
-    main_body(argc, argv, app);
+    unguarded_main(argc, argv, app);
   }
   else
   {
