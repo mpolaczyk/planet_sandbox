@@ -73,6 +73,11 @@
     <ClInclude Include="core\window.h" />
     <ClInclude Include="renderer\command_queue.h" />
     <ClInclude Include="renderer\pipeline_state.h" />
+    <ClInclude Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathGpuCrashTracker.h" />
+    <ClInclude Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathHelpers.h" />
+    <ClInclude Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathShaderDatabase.h" />
+    <ClInclude Include="core\gpu_crash_handler.h" />
+    <ClInclude Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathCommon.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -132,5 +137,8 @@
     <ClCompile Include="resources\assimp_logger.cpp" />
     <ClCompile Include="core\window.cpp" />
     <ClCompile Include="renderer\command_queue.cpp" />
+    <ClCompile Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathGpuCrashTracker.cpp" />
+    <ClCompile Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathShaderDatabase.cpp" />
+    <ClCompile Include="core\gpu_crash_handler.cpp" />
   </ItemGroup>
 </Project>

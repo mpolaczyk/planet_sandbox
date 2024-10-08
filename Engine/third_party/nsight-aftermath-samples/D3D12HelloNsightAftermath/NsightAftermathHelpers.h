@@ -132,7 +132,6 @@ private:
     GFSDK_Aftermath_Result _result = FC;                                                                \
     if (!GFSDK_Aftermath_SUCCEED(_result))                                                              \
     {                                                                                                   \
-        MessageBoxA(0, AftermathException::GetErrorMessage(_result).c_str(), "Aftermath Error", MB_OK); \
         throw AftermathException(_result);                                                              \
     }                                                                                                   \
 }()

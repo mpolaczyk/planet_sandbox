@@ -7,6 +7,10 @@
 #include "math/camera.h"
 #include "profile/benchmark.h"
 
+#if USE_NSIGHT_AFTERMATH
+#include "gpu_crash_handler.h"
+#endif
+
 struct ID3D12Device2;
 
 using Microsoft::WRL::ComPtr;
@@ -44,6 +48,11 @@ namespace engine
     
     ComPtr<ID3D12Device2> device;
     std::shared_ptr<fcommand_queue> command_queue;
+
+  private:
+#if USE_NSIGHT_AFTERMATH
+    fgpu_crash_handler gpu_crash_handler;
+#endif
   };
 
   fapplication* create_application();

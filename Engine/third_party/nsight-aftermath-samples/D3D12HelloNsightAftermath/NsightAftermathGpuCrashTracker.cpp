@@ -22,7 +22,20 @@
 //
 //*********************************************************
 
-#include "stdafx.h"
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers.
+#endif
+
+#include <windows.h>
+
+#include "d3d12.h"
+#include <dxgi1_4.h>
+#include <DirectXMath.h>
+#include "d3dx12/d3dx12.h"
+
+#include <string>
+#include <wrl.h>
+#include <shellapi.h>
 
 #include <fstream>
 #include <iomanip>
@@ -131,7 +144,7 @@ void GpuCrashTracker::OnResolveMarker(const void* pMarkerData, const uint32_t ma
     // using references for all of the m_markerMap accesses ensures that the pointers refer to the persistent data
     for (auto& map : m_markerMap)
     {
-        auto& foundMarker = map.find((uint64_t)pMarkerData);
+        auto foundMarker = map.find((uint64_t)pMarkerData);
         if (foundMarker != map.end())
         {
             const std::string& foundMarkerData = foundMarker->second;

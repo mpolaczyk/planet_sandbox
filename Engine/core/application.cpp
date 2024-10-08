@@ -13,7 +13,6 @@
 #include "renderer/renderer_base.h"
 #include "resources/assimp_logger.h"
 
-
 namespace engine
 {
   fapplication* fapplication::instance = nullptr;
@@ -68,13 +67,24 @@ namespace engine
       LOG_CRITICAL("Invalid workspace directory!");
     }
 
-#if BUILD_DEBUG
-    fdx12::enable_debug_layer();
-#endif
     ComPtr<IDXGIFactory4> factory;
     fdx12::create_factory(factory);
+    
+#if USE_NSIGHT_AFTERMATH
+    gpu_crash_handler.pre_device_initialize(window->back_buffer_count);
+#endif
+    
+#if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH
+fdx12::enable_debug_layer();
+#endif
+    
     fdx12::create_device(factory, device);
-#if BUILD_DEBUG
+
+#if USE_NSIGHT_AFTERMATH
+    gpu_crash_handler.post_device_initialize(device);
+#endif
+    
+#if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH
     fdx12::enable_info_queue(device);
 #endif
 
@@ -82,6 +92,13 @@ namespace engine
     command_queue->init(device, window->back_buffer_count);
     command_queue->flush();
 
+#if USE_NSIGHT_AFTERMATH
+    for (int i = 0; i < window->back_buffer_count; i++)
+    {
+      gpu_crash_handler.create_context_handle(i, command_queue->get_command_list(ecommand_list_type::main, i));
+    }
+#endif
+    
     scene_root = hscene::spawn();
     
     window->init(WndProc, device, factory, command_queue->get_command_queue());
@@ -144,7 +161,7 @@ namespace engine
   void fapplication::render(int back_buffer_index)
   {
     uint64_t fence_value = command_queue->execute_command_lists(back_buffer_index);
-    window->present();
+    window->present(&gpu_crash_handler);
     command_queue->wait_for_fence_value(fence_value);   // TODO CPU waits for GPU, make it async
     frame_counter++;
   }

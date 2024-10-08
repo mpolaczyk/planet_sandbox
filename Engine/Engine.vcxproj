@@ -59,7 +59,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;BUILD_DLL;PLATFORM_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\spdlog-1.x\include;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)third_party\json-3.10.5\include;$(ProjectDir)third_party\assimp\include;$(ProjectDir)third_party\dxc_2024_07_31\inc;$(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\include;$(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\spdlog-1.x\include;$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)third_party\json-3.10.5\include;$(ProjectDir)third_party\assimp\include;$(ProjectDir)third_party\dxc_2024_07_31\inc;$(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\include;$(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\include;$(ProjectDir)third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath</AdditionalIncludeDirectories>
       <FloatingPointExceptions>true</FloatingPointExceptions>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -80,7 +80,7 @@ copy $(ProjectDir)third_party\dxc_2024_07_31\bin\x64\dxcompiler.dll $(SolutionDi
 copy $(ProjectDir)third_party\dxc_2024_07_31\bin\x64\dxil.dll $(SolutionDir)$(Platform)\$(Configuration)\dxil.dll
 mkdir $(SolutionDir)$(Platform)\$(Configuration)\D3D12
 copy $(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\bin\x64\D3D12Core.dll $(SolutionDir)$(Platform)\$(Configuration)\D3D12\D3D12Core.dll
-copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64\GFSDK_Aftermath_Lib.x64.dll $(SolutionDir)$(Platform)\$(Configuration)\x64GFSDK_Aftermath_Lib.x64.dll</Command>
+copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64\GFSDK_Aftermath_Lib.x64.dll $(SolutionDir)$(Platform)\$(Configuration)\GFSDK_Aftermath_Lib.x64.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -92,7 +92,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;BUILD_DLL;PLATFORM_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)third_party\spdlog-1.x\include;$(ProjectDir)third_party\json-3.10.5\include;$(ProjectDir)third_party\assimp\include;$(ProjectDir)third_party\dxc_2024_07_31\inc;$(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\include;$(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)third_party\WinPixEventRuntime.1.0.220124001\Include\WinPixEventRuntime;$(ProjectDir)third_party\spdlog-1.x\include;$(ProjectDir)third_party\json-3.10.5\include;$(ProjectDir)third_party\assimp\include;$(ProjectDir)third_party\dxc_2024_07_31\inc;$(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\include;$(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\include;$(ProjectDir)third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <FloatingPointModel>Fast</FloatingPointModel>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -115,7 +115,7 @@ copy $(ProjectDir)third_party\dxc_2024_07_31\bin\x64\dxcompiler.dll $(SolutionDi
 copy $(ProjectDir)third_party\dxc_2024_07_31\bin\x64\dxil.dll $(SolutionDir)$(Platform)\$(Configuration)\dxil.dll
 mkdir $(SolutionDir)$(Platform)\$(Configuration)\D3D12
 copy $(ProjectDir)third_party\dx12_agility_sdk_1.614\build\native\bin\x64\D3D12Core.dll $(SolutionDir)$(Platform)\$(Configuration)\D3D12\D3D12Core.dll
-copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64\GFSDK_Aftermath_Lib.x64.dll $(SolutionDir)$(Platform)\$(Configuration)\x64GFSDK_Aftermath_Lib.x64.dll</Command>
+copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64\GFSDK_Aftermath_Lib.x64.dll $(SolutionDir)$(Platform)\$(Configuration)\GFSDK_Aftermath_Lib.x64.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -123,6 +123,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClInclude Include="assets\vertex_shader.h" />
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="core\concepts.h" />
+    <ClInclude Include="core\gpu_crash_handler.h" />
     <ClInclude Include="core\window.h" />
     <ClInclude Include="engine\string_tools.h" />
     <ClInclude Include="hittables\hittables.h" />
@@ -187,6 +188,10 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json_fwd.hpp" />
     <ClInclude Include="third_party\libdeflate.h" />
+    <ClInclude Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathCommon.h" />
+    <ClInclude Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathGpuCrashTracker.h" />
+    <ClInclude Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathHelpers.h" />
+    <ClInclude Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathShaderDatabase.h" />
     <ClInclude Include="third_party\ofbx.h" />
     <ClInclude Include="third_party\stb_image.h" />
     <ClInclude Include="third_party\tiny_obj_loader.h" />
@@ -196,6 +201,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClCompile Include="assets\pixel_shader.cpp" />
     <ClCompile Include="assets\vertex_shader.cpp" />
     <ClCompile Include="asset\asset.cpp" />
+    <ClCompile Include="core\gpu_crash_handler.cpp" />
     <ClCompile Include="core\window.cpp" />
     <ClCompile Include="engine\string_tools.cpp" />
     <ClCompile Include="hittables\hittables.cpp" />
@@ -249,6 +255,8 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClCompile Include="resources\ffbx.cpp" />
     <ClCompile Include="resources\resources_io.cpp" />
     <ClCompile Include="third_party\libdeflate.c" />
+    <ClCompile Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathGpuCrashTracker.cpp" />
+    <ClCompile Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathShaderDatabase.cpp" />
     <ClCompile Include="third_party\ofbx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

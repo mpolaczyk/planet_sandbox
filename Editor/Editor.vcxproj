@@ -60,7 +60,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;ImTextureID=ImU64;_UNICODE;UNICODE;PLATFORM_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)engine;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir);$(SolutionDir)engine\third_party\json-3.10.5\include;$(SolutionDir)engine\third_party\dx12_agility_sdk_1.614\build\native\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)engine;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir);$(SolutionDir)engine\third_party\json-3.10.5\include;$(SolutionDir)engine\third_party\dx12_agility_sdk_1.614\build\native\include;$(SolutionDir)engine\third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath;$(SolutionDir)engine\third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\include</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -98,7 +98,7 @@
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>$(SolutionDir)engine;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir);$(SolutionDir)engine\third_party\json-3.10.5\include;$(SolutionDir)engine\third_party\dx12_agility_sdk_1.614\build\native\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)engine;$(ProjectDir)third_party\imgui_v1.87;$(ProjectDir)third_party\imgui_v1.87\backends;$(ProjectDir);$(SolutionDir)engine\third_party\json-3.10.5\include;$(SolutionDir)engine\third_party\dx12_agility_sdk_1.614\build\native\include;$(SolutionDir)engine\third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath;$(SolutionDir)engine\third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\include</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>

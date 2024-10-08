@@ -1,7 +1,6 @@
 
 #include <dxgi1_6.h>
 #include "d3d12.h"
-#include "d3dx12/d3dx12_root_signature.h"
 
 #include "core/window.h"
 
@@ -60,7 +59,6 @@ namespace engine
     fdx12::set_viewport(command_list, width, height);
     fdx12::set_scissor(command_list, width, height);
     
-
     if(hscene* scene_root = fapplication::instance->scene_root)
     {
       if(rrenderer_base* renderer = scene_root->renderer)
@@ -72,12 +70,25 @@ namespace engine
     fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
   }
   
-  void fwindow::present()
+  void fwindow::present(fgpu_crash_handler* gpu_crash_handler)
   {
     uint32_t present_sync = vsync ? 1 : 0;
     uint32_t present_flags = screen_tearing && !vsync ? DXGI_PRESENT_ALLOW_TEARING : 0;
-    THROW_IF_FAILED(swap_chain->Present(present_sync, present_flags))
 
+#if USE_NSIGHT_AFTERMATH
+    HRESULT hr = swap_chain->Present(present_sync, present_flags);
+    if(FAILED(hr))
+    {
+      gpu_crash_handler->wait_for_crash_and_throw(hr);
+    }
+    else
+    {
+      gpu_crash_handler->advance_markers_frame();
+    }
+#else
+    THROW_IF_FAILED(swap_chain->Present(present_sync, present_flags))
+#endif
+    
     back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
   }
   

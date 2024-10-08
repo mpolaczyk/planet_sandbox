@@ -17,6 +17,7 @@ using Microsoft::WRL::ComPtr;
 namespace engine
 {
   struct fcommand_queue;
+  struct fgpu_crash_handler;
   class hhittable_base;
   
   class ENGINE_API fwindow
@@ -27,7 +28,7 @@ namespace engine
     virtual void init(WNDPROC wnd_proc, ComPtr<ID3D12Device> device, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue);
     virtual void update() = 0;
     virtual void draw(const fcommand_queue* command_queue);
-    void present();
+    void present(fgpu_crash_handler* gpu_crash_handler);
     void resize(const ComPtr<ID3D12Device> device, uint32_t width, uint32_t height);
     virtual const wchar_t* get_name() const = 0;
     virtual void cleanup();
@@ -44,7 +45,7 @@ namespace engine
     ComPtr<ID3D12Resource> dsv;
     ComPtr<ID3D12DescriptorHeap> main_descriptor_heap; // srv, cbv, uav
     
-  protected:
+  protected:    
     HWND hwnd;
     WNDCLASSEX wc;
     

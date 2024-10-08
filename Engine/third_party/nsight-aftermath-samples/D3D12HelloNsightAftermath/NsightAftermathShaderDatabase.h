@@ -25,7 +25,7 @@
 #pragma once
 
 #include <map>
-#include <mutex>
+#include <vector>
 
 #include "NsightAftermathHelpers.h"
 

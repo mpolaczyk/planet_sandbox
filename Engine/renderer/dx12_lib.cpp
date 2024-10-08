@@ -140,7 +140,7 @@ namespace engine
   void fdx12::create_factory(ComPtr<IDXGIFactory4>& out_factory4)
   {
     uint32_t factory_flags = 0;
-#if BUILD_DEBUG
+#if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH
     factory_flags |= DXGI_CREATE_FACTORY_DEBUG;
 #endif
     THROW_IF_FAILED(CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(out_factory4.GetAddressOf())))

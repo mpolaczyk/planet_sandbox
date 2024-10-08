@@ -27,6 +27,7 @@
 #include <map>
 #include <mutex>
 
+#include "NsightAftermathCommon.h"
 #include "NsightAftermathHelpers.h"
 #include "NsightAftermathShaderDatabase.h"
 
@@ -37,10 +38,6 @@
 class GpuCrashTracker
 {
 public:
-    // keep four frames worth of marker history
-    const static UINT c_markerFrameHistory = 4;
-    typedef std::array<std::map<uint64_t, std::string>, c_markerFrameHistory> MarkerMap;
-
     GpuCrashTracker(const MarkerMap& markerMap);
     ~GpuCrashTracker();
 
