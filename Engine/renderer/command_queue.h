@@ -40,6 +40,7 @@ namespace engine
     void flush();
 
     ComPtr<ID3D12CommandQueue> get_command_queue() const;
+    void close_command_lists(uint32_t back_buffer_id);
     void reset_command_lists(uint32_t back_buffer_id);
     ComPtr<ID3D12GraphicsCommandList> get_command_list(ecommand_list_type type, uint32_t back_buffer_id) const;
     uint64_t execute_command_lists(uint32_t back_buffer_id);

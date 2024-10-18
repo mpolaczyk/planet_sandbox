@@ -5,7 +5,7 @@
 #include <map>
 #include <string>
 
-// I removed this from NsightAftermathGpuCrashTracker.h do that can be used in other files wothout draging the whole header...
+// I removed this from NsightAftermathGpuCrashTracker.h so that can be used in other files without including the whole header...
 
 // Keep four frames worth of marker history
 const static uint8_t c_markerFrameHistory = 4;

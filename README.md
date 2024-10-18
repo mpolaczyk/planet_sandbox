@@ -33,7 +33,8 @@ Example scene: [Cozy Kitchen] imported from Blender.
 ### Third party dependencies
 DirectX 12
 
-[Nsight Aftermath SDK] v2024.2.0.24200
+[Nsight Aftermath SDK] v2.23 2024.2.0.24200
+NVidia R445 or newer is required
 
 [Nsight Aftermath SDK Samples] v2023.2
 

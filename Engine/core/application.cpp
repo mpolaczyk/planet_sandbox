@@ -75,7 +75,7 @@ namespace engine
 #endif
     
 #if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH
-fdx12::enable_debug_layer();
+    fdx12::enable_debug_layer();
 #endif
     
     fdx12::create_device(factory, device);
@@ -90,14 +90,16 @@ fdx12::enable_debug_layer();
 
     command_queue = std::make_shared<fcommand_queue>();
     command_queue->init(device, window->back_buffer_count);
-    command_queue->flush();
-
+    
 #if USE_NSIGHT_AFTERMATH
     for (int i = 0; i < window->back_buffer_count; i++)
     {
+      // Requires command list to be in a recording state, otherwise it crashes with 0xbad00000
       gpu_crash_handler.create_context_handle(i, command_queue->get_command_list(ecommand_list_type::main, i));
     }
 #endif
+
+    command_queue->flush();
     
     scene_root = hscene::spawn();
     
@@ -154,6 +156,7 @@ fdx12::enable_debug_layer();
 
   void fapplication::draw(int back_buffer_index)
   {
+    command_queue->close_command_lists(back_buffer_index);
     command_queue->reset_command_lists(back_buffer_index);
     window->draw(command_queue.get());
   }
@@ -161,7 +164,11 @@ fdx12::enable_debug_layer();
   void fapplication::render(int back_buffer_index)
   {
     uint64_t fence_value = command_queue->execute_command_lists(back_buffer_index);
+#if USE_NSIGHT_AFTERMATH
     window->present(&gpu_crash_handler);
+#else
+    window->present(nullptr);
+#endif
     command_queue->wait_for_fence_value(fence_value);   // TODO CPU waits for GPU, make it async
     frame_counter++;
   }

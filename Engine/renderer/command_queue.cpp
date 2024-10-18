@@ -83,6 +83,15 @@ namespace engine
     return command_queue;
   }
 
+  void fcommand_queue::close_command_lists(uint32_t back_buffer_id)
+  {
+    for(int i = 0; i < ecommand_list_type::num; i++)
+    {
+      fcommand_pair& pair = command_pair[i];
+      pair.command_list->Close();
+    }
+  }
+  
   void fcommand_queue::reset_command_lists(uint32_t back_buffer_id)
   {
     for(int i = 0; i < ecommand_list_type::num; i++)

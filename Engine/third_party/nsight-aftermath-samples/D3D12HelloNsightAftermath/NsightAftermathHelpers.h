@@ -117,7 +117,7 @@ public:
         case GFSDK_Aftermath_Result_FAIL_D3dDllInterceptionNotSupported:
             return "Aftermath is incompatible with D3D API interception, such as PIX or Nsight Graphics.";
         default:
-            return "Aftermath Error 0x" + std::to_hex_string(result);
+            return "Aftermath Error 0x check GFSDK_Aftermath_Result_Fail in GFSDK_Aftermath_Defines.h" + std::to_hex_string(result);
         }
     }
 
