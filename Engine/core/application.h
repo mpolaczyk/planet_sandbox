@@ -50,7 +50,7 @@ namespace engine
     std::shared_ptr<fcommand_queue> command_queue;
 
 #if USE_NSIGHT_AFTERMATH
-    fgpu_crash_handler gpu_crash_handler;
+    fgpu_crash_tracker gpu_crash_handler;
 #endif
   };
 

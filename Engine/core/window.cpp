@@ -70,7 +70,7 @@ namespace engine
     fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
   }
   
-  void fwindow::present(fgpu_crash_handler* gpu_crash_handler)
+  void fwindow::present(fgpu_crash_tracker* gpu_crash_handler)
   {
     uint32_t present_sync = vsync ? 1 : 0;
     uint32_t present_flags = screen_tearing && !vsync ? DXGI_PRESENT_ALLOW_TEARING : 0;
@@ -79,10 +79,10 @@ namespace engine
     HRESULT hr = swap_chain->Present(present_sync, present_flags);
     if(hr == DXGI_ERROR_DEVICE_RESET || hr == DXGI_ERROR_DEVICE_REMOVED)
     {
-      gpu_crash_handler->wait_for_crash_and_throw(hr);
+      gpu_crash_handler->wait_for_dump_and_throw(hr);
     }
     THROW_IF_FAILED(hr)
-    gpu_crash_handler->advance_markers_frame();
+    gpu_crash_handler->advance_frame();
 #else
     THROW_IF_FAILED(swap_chain->Present(present_sync, present_flags))
 #endif

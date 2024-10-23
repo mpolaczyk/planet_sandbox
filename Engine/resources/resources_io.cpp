@@ -205,6 +205,7 @@ namespace engine
 
     std::string hlsl_file_path = fio::get_shader_file_path(hlsl_file_name.c_str());
     std::string any_file_path = fstring_tools::remove_file_extension(hlsl_file_path) + "_" + entrypoint;
+    std::string any_file_name = fstring_tools::remove_file_extension(hlsl_file_name) + "_" + entrypoint;
     std::wstring w_file_name = fstring_tools::to_utf16(hlsl_file_name);
     std::wstring w_shader_directory = fstring_tools::to_utf16(fio::get_shaders_dir());
     std::wstring w_entrypoint = fstring_tools::to_utf16(entrypoint);
@@ -274,16 +275,17 @@ namespace engine
 
     // Register shader and get the hash
     {
-      const D3D12_SHADER_BYTECODE shader{ out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize() };
-
-      uint64_t shader_hash = fapplication::instance->gpu_crash_handler.crash_tracker.m_shaderDatabase.AddShaderBinary(shader);
+#if USE_NSIGHT_AFTERMATH
+      uint64_t shader_hash = fapplication::instance->gpu_crash_handler.add_shader_binary(out_shader_blob.Get());
       std::ostringstream oss;
       oss << shader_hash;
       out_hash = oss.str();
+#else
+      out_hash = any_file_name;
+#endif
     }
     
     // Save object file
-    //std::string obj_path = any_file_path + ".cso";
     std::string obj_path = fio::get_shaders_dir() + out_hash + ".cso";
     if(!fdx12::save_dxc_blob(out_shader_blob, obj_path.c_str()))
     {
@@ -299,15 +301,12 @@ namespace engine
     }
 
     // Register shader debug name
-    std::string debug_name;
-    {
-      const D3D12_SHADER_BYTECODE shader{ out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize() };
-      debug_name = fapplication::instance->gpu_crash_handler.crash_tracker.m_shaderDatabase.AddSourceShaderDebugData(shader, pdb_blob->GetBufferPointer(), pdb_blob->GetBufferSize());
-    }
-    
+#if USE_NSIGHT_AFTERMATH
+    std::string pdb_path = fio::get_shaders_dir() + fapplication::instance->gpu_crash_handler.add_source_shader_debug_data(out_shader_blob.Get(), pdb_blob.Get());
+#else
+    std::string pdb_path = any_file_path + ".pdb";
+#endif
     // Save debug symbols
-    //std::string pdb_path = any_file_path + ".pdb";
-    std::string pdb_path = fio::get_shaders_dir() + debug_name;
     if(!fdx12::save_dxc_blob(pdb_blob, pdb_path.c_str()))
     {
       return false;
