@@ -13,5 +13,6 @@ namespace engine
 
     static void replace(std::string& str, const std::string& from, const std::string& to);
     static bool contains(const std::string& str, const std::string& pattern);
+    static std::string remove_file_extension(const std::string& filename);
   };
 }

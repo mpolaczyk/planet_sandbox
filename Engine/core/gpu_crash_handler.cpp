@@ -6,20 +6,21 @@
 
 #include "NsightAftermathHelpers.h"
 #include "NsightAftermathGpuCrashTracker.h"
+#include "engine/io.h"
 
 namespace engine
 {
   fgpu_crash_handler::fgpu_crash_handler()
-    : m_gpuCrashTracker(m_markerMap)
+    : crash_tracker(marker_map)
   {
   }
 
   void fgpu_crash_handler::pre_device_initialize(int back_buffer_count)
   {
-    m_gpuCrashTracker.Initialize();
+    crash_tracker.Initialize(fio::get_shaders_dir().c_str());
     for(int i = 0; i < back_buffer_count; i++)
     {
-      m_hAftermathCommandListContext.push_back(nullptr);
+      aftermath_command_list_context.push_back(nullptr);
     }
     LOG_INFO("Nsight Aftermath is enabled, disabling the DX12 debug layer!")
   }
@@ -30,13 +31,14 @@ namespace engine
       GFSDK_Aftermath_FeatureFlags_EnableMarkers |
       GFSDK_Aftermath_FeatureFlags_EnableResourceTracking |
       GFSDK_Aftermath_FeatureFlags_CallStackCapturing |
-      GFSDK_Aftermath_FeatureFlags_GenerateShaderDebugInfo;
+      GFSDK_Aftermath_FeatureFlags_GenerateShaderDebugInfo |
+      GFSDK_Aftermath_FeatureFlags_EnableShaderErrorReporting;
     AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_DX12_Initialize(GFSDK_Aftermath_Version_API, flags, device.Get()));
   }
 
   void fgpu_crash_handler::create_context_handle(int back_buffer_index, ComPtr<ID3D12GraphicsCommandList> command_list)
   {
-    AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_DX12_CreateContextHandle(command_list.Get(), &m_hAftermathCommandListContext[back_buffer_index]));
+    AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_DX12_CreateContextHandle(command_list.Get(), &aftermath_command_list_context[back_buffer_index]));
   }
 
   void fgpu_crash_handler::wait_for_crash_and_throw(HRESULT hr)
@@ -79,8 +81,8 @@ namespace engine
 
   void fgpu_crash_handler::advance_markers_frame()
   {
-    m_frameCounter++;
-    m_markerMap[m_frameCounter % c_markerFrameHistory].clear();
+    frame_counter++;
+    marker_map[frame_counter % c_markerFrameHistory].clear();
   }
 
   void fgpu_crash_handler::set_marker(int back_buffer_index, const std::string& markerData, bool appManagedMarker)
@@ -91,13 +93,13 @@ namespace engine
         // The actual "const void* markerData" passed to Aftermath in this case can be any uniquely identifying value that the app can resolve to the marker data later.
         // For this sample, we will use this approach to generating a unique marker value:
         // We keep a ringbuffer with a marker history of the last c_markerFrameHistory frames (currently 4).
-        UINT markerMapIndex = m_frameCounter % c_markerFrameHistory;
-        auto& currentFrameMarkerMap = m_markerMap[markerMapIndex];
+        UINT markerMapIndex = frame_counter % c_markerFrameHistory;
+        auto& currentFrameMarkerMap = marker_map[markerMapIndex];
         // Take the index into the ringbuffer, multiply by 10000, and add the total number of markers logged so far in the current frame, +1 to avoid a value of zero.
         size_t markerID = markerMapIndex * 10000 + currentFrameMarkerMap.size() + 1;
         // This value is the unique identifier we will pass to Aftermath and internally associate with the marker data in the map.
         currentFrameMarkerMap[markerID] = markerData;
-        AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_SetEventMarker(m_hAftermathCommandListContext[back_buffer_index], (void*)markerID, 0));
+        AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_SetEventMarker(aftermath_command_list_context[back_buffer_index], (void*)markerID, 0));
         // For example, if we are on frame 625, markerMapIndex = 625 % 4 = 1...
         // The first marker for the frame will have markerID = 1 * 10000 + 0 + 1 = 10001.
         // The 15th marker for the frame will have markerID = 1 * 10000 + 14 + 1 = 10015.
@@ -109,7 +111,7 @@ namespace engine
     }
     else
     {
-        AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_SetEventMarker(m_hAftermathCommandListContext[back_buffer_index], (void*)markerData.c_str(), (unsigned int)markerData.size() + 1));
+        AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_SetEventMarker(aftermath_command_list_context[back_buffer_index], (void*)markerData.c_str(), (unsigned int)markerData.size() + 1));
     }
   }
 }

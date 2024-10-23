@@ -77,14 +77,12 @@ namespace engine
 
 #if USE_NSIGHT_AFTERMATH
     HRESULT hr = swap_chain->Present(present_sync, present_flags);
-    if(FAILED(hr))
+    if(hr == DXGI_ERROR_DEVICE_RESET || hr == DXGI_ERROR_DEVICE_REMOVED)
     {
       gpu_crash_handler->wait_for_crash_and_throw(hr);
     }
-    else
-    {
-      gpu_crash_handler->advance_markers_frame();
-    }
+    THROW_IF_FAILED(hr)
+    gpu_crash_handler->advance_markers_frame();
 #else
     THROW_IF_FAILED(swap_chain->Present(present_sync, present_flags))
 #endif

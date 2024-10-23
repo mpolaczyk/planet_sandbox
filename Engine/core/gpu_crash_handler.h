@@ -10,7 +10,7 @@ namespace engine
 {
   using Microsoft::WRL::ComPtr;
 
-  // Class basd on D3D12HelloNsightAftermath sample project
+  // Class based on D3D12HelloNsightAftermath sample project
   struct fgpu_crash_handler
   {
     fgpu_crash_handler();
@@ -23,11 +23,11 @@ namespace engine
     void set_marker(int back_buffer_index, const std::string& markerData, bool appManagedMarker);
     
     // App-managed marker functionality
-    uint64_t m_frameCounter;
-    MarkerMap m_markerMap;
+    uint64_t frame_counter;
+    MarkerMap marker_map;
 
     // Nsight Aftermath instrumentation, index - back buffer id
-    std::vector<GFSDK_Aftermath_ContextHandle> m_hAftermathCommandListContext;
-    GpuCrashTracker m_gpuCrashTracker;
+    std::vector<GFSDK_Aftermath_ContextHandle> aftermath_command_list_context;
+    GpuCrashTracker crash_tracker;
   };
 }

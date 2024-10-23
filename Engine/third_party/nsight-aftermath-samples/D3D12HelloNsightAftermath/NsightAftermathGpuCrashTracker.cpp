@@ -67,7 +67,7 @@ GpuCrashTracker::~GpuCrashTracker()
 }
 
 // Initialize the GPU Crash Dump Tracker
-void GpuCrashTracker::Initialize()
+void GpuCrashTracker::Initialize(const char* shader_search_directory)
 {
     // Enable GPU crash dumps and set up the callbacks for crash dump notifications,
     // shader debug information notifications, and providing additional crash

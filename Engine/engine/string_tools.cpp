@@ -35,4 +35,14 @@ namespace engine
   {
     return str.find(pattern) != std::string::npos;
   }
+
+  std::string fstring_tools::remove_file_extension(const std::string& filename)
+  {
+    size_t pos = filename.find_last_of('.');
+    if (pos != std::string::npos && pos != 0)
+    {
+      return filename.substr(0, pos);
+    }
+    return filename;
+  }
 }

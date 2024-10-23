@@ -2,6 +2,7 @@
 
 #include <wrl/client.h>
 #include <vector>
+#include <string>
 
 #include "core/core.h"
 
@@ -99,7 +100,7 @@ namespace engine
     
     static void resource_barrier(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after);
 
-    // TODO Check ifthey do the same in the end...
+    // TODO Check if they do the same in the end...
     static void update_buffer(ComPtr<ID3D12Resource> resource, uint64_t buffer_size, const void* in_buffer);
     static void upload_buffer_resource(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, uint64_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource);
     
@@ -109,6 +110,7 @@ namespace engine
 
     static bool load_shader_from_cache(ComPtr<IDxcUtils> utils, const char* file_path, ComPtr<IDxcBlob>& out_shader_blob);
     static bool load_and_compile_shader(ComPtr<IDxcUtils> utils, ComPtr<IDxcCompiler3> compiler, ComPtr<IDxcIncludeHandler> include_handler, const char* file_path, const std::vector<LPCWSTR>& arguments, ComPtr<IDxcResult>& out_result);
+    static bool get_dxc_hash(ComPtr<IDxcResult> result, std::string& out_hash);
     static bool get_dxc_blob(ComPtr<IDxcResult> result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlob>& out_blob);
     static bool get_dxc_blob(ComPtr<IDxcResult> result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlobUtf8>& out_blob);
     static bool save_dxc_blob(ComPtr<IDxcBlob> blob, const char* path);

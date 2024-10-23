@@ -613,6 +613,23 @@ namespace engine
     return true;
   }
 
+  bool fdx12::get_dxc_hash(ComPtr<IDxcResult> result, std::string& out_hash)
+  {
+    ComPtr<IDxcBlob> hash = nullptr;
+    char hash_string[32] = {'\0'};
+    if(fdx12::get_dxc_blob(result, DXC_OUT_SHADER_HASH, hash) && hash != nullptr)
+    {
+      auto* hash_buffer = static_cast<DxcShaderHash*>(hash->GetBufferPointer());
+      for(size_t i = 0; i < _countof(hash_buffer->HashDigest); ++i)
+      {
+        snprintf(hash_string + i, 16, "%X", hash_buffer->HashDigest[i]);
+      }
+      out_hash = std::string(hash_string);
+      return true;
+    }
+    return false;
+  }
+  
   bool fdx12::get_dxc_blob(ComPtr<IDxcResult> result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlob>& out_blob)
   {
     ComPtr<IDxcBlobUtf16> name = nullptr;

@@ -49,7 +49,6 @@ namespace engine
     ComPtr<ID3D12Device2> device;
     std::shared_ptr<fcommand_queue> command_queue;
 
-  private:
 #if USE_NSIGHT_AFTERMATH
     fgpu_crash_handler gpu_crash_handler;
 #endif

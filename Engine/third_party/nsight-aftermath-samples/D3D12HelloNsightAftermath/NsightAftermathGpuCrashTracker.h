@@ -42,9 +42,9 @@ public:
     ~GpuCrashTracker();
 
     // Initialize the GPU crash dump tracker.
-    void Initialize();
+    void Initialize(const char* shader_search_directory);
 
-private:
+//private:
 
     //*********************************************************
     // Callback handlers for GPU crash dumps and related data.

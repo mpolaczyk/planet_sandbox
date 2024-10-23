@@ -54,117 +54,34 @@ ShaderDatabase::ShaderDatabase()
     : m_shaderBinaries()
     , m_sourceShaderDebugData()
 {
-    // Add shader binaries to database
-    const char* shaderBinaryDirs[] = { SHADERS_DIR, "Shaders" };
-    for (size_t n = 0; n < sizeof(shaderBinaryDirs) / sizeof(const char*); ++n)
-    {
-        const std::string filePattern = std::string(shaderBinaryDirs[n]) + "/*.cso";
-
-        WIN32_FIND_DATAA findData;
-        HANDLE hFind = FindFirstFileA(filePattern.c_str(), &findData);
-        if (hFind != INVALID_HANDLE_VALUE)
-        {
-            do
-            {
-                const std::string filePath = std::string(shaderBinaryDirs[n]) + "/" + findData.cFileName;
-                AddShaderBinary(filePath.c_str());
-            } while (FindNextFileA(hFind, &findData) != 0);
-            FindClose(hFind);
-        }
-    }
-
-    // Add shader debug data to database
-    const char* shaderDebugDataDirs[] = { SHADERS_DIR, "Shaders" };
-    const char* shaderDebugDataFileExts[] = { ".lld", ".pdb" };
-    for (size_t n = 0; n < sizeof(shaderDebugDataDirs) / sizeof(const char*); ++n)
-    {
-        for (size_t m = 0; m < sizeof(shaderDebugDataFileExts) / sizeof(const char*); ++m)
-        {
-            const std::string filePattern = std::string(shaderDebugDataDirs[n]) + "/*" + shaderDebugDataFileExts[m];
-
-            WIN32_FIND_DATAA findData;
-            HANDLE hFind = FindFirstFileA(filePattern.c_str(), &findData);
-            if (hFind != INVALID_HANDLE_VALUE)
-            {
-                do
-                {
-                    const std::string filePath = std::string(shaderDebugDataDirs[n]) + "/" + findData.cFileName;
-                    AddSourceShaderDebugData(filePath.c_str(), findData.cFileName);
-                } while (FindNextFileA(hFind, &findData) != 0);
-                FindClose(hFind);
-            }
-        }
-    }
 }
 
 ShaderDatabase::~ShaderDatabase()
 {
 }
 
-bool ShaderDatabase::ReadFile(const char* filename, std::vector<uint8_t>& data)
+uint64_t ShaderDatabase::AddShaderBinary(const D3D12_SHADER_BYTECODE& shader)
 {
-    std::ifstream fs(filename, std::ios::in | std::ios::binary);
-    if (!fs)
-    {
-        return false;
-    }
+  GFSDK_Aftermath_ShaderBinaryHash hash;
+  AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_GetShaderHash(GFSDK_Aftermath_Version_API, &shader, &hash));
 
-    fs.seekg(0, std::ios::end);
-    data.resize(fs.tellg());
-    fs.seekg(0, std::ios::beg);
-    fs.read(reinterpret_cast<char*>(data.data()), data.size());
-    fs.close();
-
-    return true;
+  uint8_t* buff = static_cast<uint8_t*>(const_cast<void*>(shader.pShaderBytecode));
+  size_t length = shader.BytecodeLength;
+  std::vector<uint8_t> data(buff, buff + length);
+  m_shaderBinaries[hash].swap(data);
+  return hash.hash;
 }
 
-void ShaderDatabase::AddShaderBinary(const char* filePath)
+std::string ShaderDatabase::AddSourceShaderDebugData(const D3D12_SHADER_BYTECODE& shader, const void* pdb_data, size_t pdb_data_size)
 {
-    // Read the shader bytecode from the file
-    std::vector<uint8_t> data;
-    if (!ReadFile(filePath, data))
-    {
-        return;
-    }
+  GFSDK_Aftermath_ShaderDebugName debug_name;
+  AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_GetShaderDebugName(GFSDK_Aftermath_Version_API, &shader, &debug_name));
 
-   // Create shader hashes for the shader bytecode
-    const D3D12_SHADER_BYTECODE shader{ data.data(), data.size() };
-    GFSDK_Aftermath_ShaderBinaryHash shaderHash;
-    AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_GetShaderHash(
-        GFSDK_Aftermath_Version_API,
-        &shader,
-        &shaderHash));
-
-    // Store the data for shader instruction address mapping when decoding GPU crash dumps.
-    // cf. FindShaderBinary()
-    m_shaderBinaries[shaderHash].swap(data);
-}
-
-void ShaderDatabase::AddSourceShaderDebugData(const char* filePath, const char* fileName)
-{
-    // Read the shader debug data from the file
-    std::vector<uint8_t> data;
-    if (!ReadFile(filePath, data))
-    {
-        return;
-    }
-
-    // Populate shader debug name.
-    // The shaders used in this sample are compiled with compiler-generated debug data
-    // file names. That means the debug data file's name matches the corresponding
-    // shader's DebugName.
-    // If shaders are built with user-defined debug data file names, the shader database
-    // must maintain a mapping between the shader DebugName (queried from the shader
-    // binary with GFSDK_Aftermath_GetShaderDebugName()) and the name of the file
-    // containing the corresponding debug data.
-    // Please see the documentation of GFSDK_Aftermath_GpuCrashDump_GenerateJSON() for
-    // additional information.
-    GFSDK_Aftermath_ShaderDebugName debugName;
-    strncpy_s(debugName.name, fileName, sizeof(debugName.name) - 1);
-
-    // Store the data for shader instruction address mapping when decoding GPU crash dumps.
-    // cf. FindSourceShaderDebugData()
-    m_sourceShaderDebugData[debugName].swap(data);
+  uint8_t* buff = static_cast<uint8_t*>(const_cast<void*>(pdb_data));
+  size_t length = pdb_data_size;
+  std::vector<uint8_t> data(buff, buff + length);
+  m_sourceShaderDebugData[debug_name].swap(data);
+  return debug_name.name;
 }
 
 // Find a shader bytecode binary by shader hash.
