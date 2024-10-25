@@ -572,46 +572,6 @@ namespace engine
 
     trs.is_resource_online = true;
   }
-  
-  bool fdx12::load_shader_from_cache(ComPtr<IDxcUtils> utils, const char* file_path, ComPtr<IDxcBlob>& out_shader_blob)
-  {
-    const std::wstring w_file_path = fstring_tools::to_utf16(file_path);
-
-    // Load shader source
-    ComPtr<IDxcBlobEncoding> blob;
-    if(FAILED(utils->LoadFile(w_file_path.c_str(), nullptr, blob.GetAddressOf())))
-    {
-      LOG_WARN("Unable to find shader in cache or load failed.");
-      return false;
-    }
-    out_shader_blob = blob;
-    return true;
-  }
-
-  bool fdx12::load_and_compile_shader(ComPtr<IDxcUtils> utils, ComPtr<IDxcCompiler3> compiler, ComPtr<IDxcIncludeHandler> include_handler, const char* file_path, const std::vector<LPCWSTR>& arguments, ComPtr<IDxcResult>& out_result)
-  {
-    const std::wstring w_file_path = fstring_tools::to_utf16(file_path);
-    
-    // Load shader source
-    ComPtr<IDxcBlobEncoding> source_blob;
-    if(FAILED(utils->LoadFile(w_file_path.c_str(), nullptr, source_blob.GetAddressOf())))
-    {
-      LOG_ERROR("Could not compile shader, failed to load file.");
-      return false;
-    }
-
-    // Compile shader source
-    DxcBuffer source;   
-    source.Ptr = source_blob->GetBufferPointer();
-    source.Size = source_blob->GetBufferSize();
-    source.Encoding = DXC_CP_ACP;
-    if(FAILED(compiler->Compile(&source, const_cast<LPCWSTR*>(arguments.data()), arguments.size(), include_handler.Get(), IID_PPV_ARGS(out_result.GetAddressOf()))))
-    {
-      LOG_ERROR("Could not compile shader, failed to compile");
-      return false;
-    }
-    return true;
-  }
 
   bool fdx12::get_dxc_hash(ComPtr<IDxcResult> result, std::string& out_hash)
   {

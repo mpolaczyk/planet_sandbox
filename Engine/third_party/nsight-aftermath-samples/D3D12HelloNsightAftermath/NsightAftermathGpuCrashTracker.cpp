@@ -28,6 +28,7 @@
 #include "NsightAftermathGpuCrashTracker.h"
 
 #include "dxcapi.h"
+#include "engine/log.h" // WATCH OUT! dependency on the project, but I want logging to be consistent
 
 GpuCrashTracker::~GpuCrashTracker()
 {
@@ -39,7 +40,7 @@ GpuCrashTracker::~GpuCrashTracker()
 
 void GpuCrashTracker::PreDeviceInitialize(int backBufferCount, const char* descriptionAppName)
 {
-    appName = descriptionAppName;
+    m_appName = descriptionAppName;
     for(int i = 0; i < backBufferCount; i++)
     {
       m_CommandListContext.push_back(nullptr);
@@ -120,9 +121,9 @@ void GpuCrashTracker::WaitForDump(std::string& outMsg)
   outMsg = err_msg.str();
 }
 
-uint64_t GpuCrashTracker::AddShaderBinary(IDxcBlob* shader_blob)
+uint64_t GpuCrashTracker::AddShaderBinary(IDxcBlob* shaderBlob)
 {
-  const D3D12_SHADER_BYTECODE shader{ shader_blob->GetBufferPointer(), shader_blob->GetBufferSize() };
+  const D3D12_SHADER_BYTECODE shader{ shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize() };
 
   GFSDK_Aftermath_ShaderBinaryHash hash;
   AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_GetShaderHash(GFSDK_Aftermath_Version_API, &shader, &hash));
@@ -134,15 +135,15 @@ uint64_t GpuCrashTracker::AddShaderBinary(IDxcBlob* shader_blob)
   return hash.hash;
 }
 
-std::string GpuCrashTracker::AddSourceShaderDebugData(IDxcBlob* shader_blob, IDxcBlob* pdb_blob)
+std::string GpuCrashTracker::AddSourceShaderDebugData(IDxcBlob* shaderBlob, IDxcBlob* pdbBlob)
 {
-  const D3D12_SHADER_BYTECODE shader{ shader_blob->GetBufferPointer(), shader_blob->GetBufferSize() };
+  const D3D12_SHADER_BYTECODE shader{ shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize() };
 
   GFSDK_Aftermath_ShaderDebugName debug_name;
   AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_GetShaderDebugName(GFSDK_Aftermath_Version_API, &shader, &debug_name));
 
-  uint8_t* buff = static_cast<uint8_t*>(const_cast<void*>(pdb_blob->GetBufferPointer()));
-  size_t length = pdb_blob->GetBufferSize();
+  uint8_t* buff = static_cast<uint8_t*>(const_cast<void*>(pdbBlob->GetBufferPointer()));
+  size_t length = pdbBlob->GetBufferSize();
   std::vector<uint8_t> data(buff, buff + length);
   m_sourceShaderDebugData[debug_name].swap(data);
   return debug_name.name;
@@ -262,7 +263,7 @@ void GpuCrashTracker::OnCrashDumpDescription(PFN_GFSDK_Aftermath_AddGpuCrashDump
     // Add some basic description about the crash. This is called after the GPU crash happens, but before
     // the actual GPU crash dump callback. The provided data is included in the crash dump and can be
     // retrieved using GFSDK_Aftermath_GpuCrashDump_GetDescription().
-    addDescription(GFSDK_Aftermath_GpuCrashDumpDescriptionKey_ApplicationName, appName);
+    addDescription(GFSDK_Aftermath_GpuCrashDumpDescriptionKey_ApplicationName, m_appName);
 }
 
 void GpuCrashTracker::ResolveMarkerCallback(const void* pMarkerData, const uint32_t markerDataSize, void* pUserData, void** ppResolvedMarkerData, uint32_t* pResolvedMarkerDataSize)
@@ -307,6 +308,7 @@ void GpuCrashTracker::OnShaderDebugInfoLookup(const GFSDK_Aftermath_ShaderDebugI
     if (i_debugInfo == m_shaderDebugInfo.end())
     {
         // Early exit, nothing found. No need to call setShaderDebugInfo.
+        LOG_ERROR("Unable to find shader debug info for identifier {0} {1}", identifier.id[0], identifier.id[1])
         return;
     }
 
@@ -334,6 +336,7 @@ void GpuCrashTracker::OnShaderLookup(const GFSDK_Aftermath_ShaderBinaryHash& sha
     if (!FindShaderBinary(shaderHash, shaderBinary))
     {
         // Early exit, nothing found. No need to call setShaderBinary.
+        LOG_ERROR("Unable to find shader binary for hash {0}", shaderHash.hash)
         return;
     }
 
@@ -359,6 +362,7 @@ void GpuCrashTracker::OnShaderSourceDebugInfoLookup(const GFSDK_Aftermath_Shader
     if (!FindSourceShaderDebugData(shaderDebugName, sourceDebugInfo))
     {
         // Early exit, nothing found. No need to call setShaderBinary.
+        LOG_ERROR("Unable to find shader source debug info for debug name {0}", shaderDebugName.name)
         return;
     }
 

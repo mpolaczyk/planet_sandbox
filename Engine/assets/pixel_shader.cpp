@@ -67,12 +67,12 @@ namespace engine
     instance->accept(vdeserialize_object(j));
     instance->set_display_name(name);
 
-    if(load_shader_cache(instance->cache_file_name, instance->render_state.blob))
+    if(fshader_tools::load_compiled_shader(instance->cache_file_name, instance->render_state.blob))
     {
       return true;
     }
     std::string new_cache_file_name;
-    if(!load_hlsl_dxc(instance->shader_file_name, instance->entrypoint, instance->target, instance->render_state.blob, new_cache_file_name))
+    if(!fshader_tools::load_and_compile_hlsl(instance->shader_file_name, instance->entrypoint, instance->target, instance->render_state.blob, new_cache_file_name))
     {
       DX_RELEASE(instance->render_state.blob)
       return false;

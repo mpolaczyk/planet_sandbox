@@ -12,11 +12,14 @@ namespace engine
 {
   using Microsoft::WRL::ComPtr;
 
-  bool ENGINE_API load_shader_cache(const std::string& file_name, ComPtr<IDxcBlob>& out_shader_blob);
+  struct ENGINE_API fshader_tools
+  {
+    static bool load_compiled_shader(const std::string& file_name, ComPtr<IDxcBlob>& out_shader_blob);
   
-  bool ENGINE_API load_hlsl_dxc(const std::string& hlsl_file_name, const std::string& entrypoint, const std::string& target, ComPtr<IDxcBlob>& out_shader_blob, std::string& out_has);
+    static bool load_and_compile_hlsl(const std::string& hlsl_file_name, const std::string& entrypoint, const std::string& target, ComPtr<IDxcBlob>& out_shader_blob, std::string& out_has);
 
 #if USE_FXC
-  bool ENGINE_API load_hlsl_fxc(const std::string& file_name, const std::string& entrypoint, const std::string& target, ComPtr<ID3D10Blob>& out_shader_blob);
+    static bool ENGINE_API load_hlsl_fxc(const std::string& file_name, const std::string& entrypoint, const std::string& target, ComPtr<ID3D10Blob>& out_shader_blob);
 #endif
+  };
 }

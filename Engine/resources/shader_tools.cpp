@@ -13,8 +13,6 @@
 #include <d3dcompiler.h>
 #endif
 
-#include "NsightAftermathHelpers.h"
-
 #include "engine/log.h"
 #include "engine/io.h"
 #include "math/math.h"
@@ -25,7 +23,7 @@
 
 namespace engine
 {
-  bool load_shader_cache(const std::string& file_name, ComPtr<IDxcBlob>& out_shader_blob)
+  bool fshader_tools::load_compiled_shader(const std::string& name, ComPtr<IDxcBlob>& out_shader_blob)
   {
     ComPtr<IDxcUtils> utils;
     if(FAILED(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&utils))))
@@ -33,33 +31,60 @@ namespace engine
       LOG_ERROR("Failed to create dxc utils instance.");
       return false;
     }
-    const std::string cso_path = fio::get_shader_file_path(file_name.c_str());
-    if(!fdx12::load_shader_from_cache(utils, cso_path.c_str(), out_shader_blob))
+
+    // Load shader object
     {
-      return false;
+      ComPtr<IDxcBlobEncoding> cso_blob;
+      const std::wstring w_cso_path = fstring_tools::to_utf16(fio::get_shader_file_path(name.c_str()) + ".cso");
+      if(FAILED(utils->LoadFile(w_cso_path.c_str(), nullptr, cso_blob.GetAddressOf())))
+      {
+        LOG_INFO("Unable to find shader in cache or load failed.");
+        return false;
+      }
+      out_shader_blob = cso_blob;
+#if USE_NSIGHT_AFTERMATH
+      fapplication::instance->gpu_crash_handler.add_shader_binary(cso_blob.Get());
+#endif
     }
-    LOG_INFO("Loaded from cache.");
+
+    // Load and register pdb file if using aftermath
+#if USE_NSIGHT_AFTERMATH
+    {
+      ComPtr<IDxcBlobEncoding> pdb_blob;
+      const std::wstring w_pdb_path = fstring_tools::to_utf16(fio::get_shader_file_path(name.c_str()) + ".pdb");
+      if(FAILED(utils->LoadFile(w_pdb_path.c_str(), nullptr, pdb_blob.GetAddressOf())))
+      {
+        LOG_INFO("Unable to find shader debug file in cache or load failed.");
+      }
+      else
+      {
+        fapplication::instance->gpu_crash_handler.add_source_shader_debug_data(out_shader_blob.Get(), pdb_blob.Get());
+      }
+    }
+#endif
+    LOG_INFO("Shader loaded from cache.");
     return true;
   }
   
   // https://github.com/microsoft/DirectXShaderCompiler/wiki/Using-dxc.exe-and-dxcompiler.dll
   // https://simoncoenen.com/blog/programming/graphics/DxcCompiling
   // https://youtu.be/tyyKeTsdtmo?t=1132
-  bool load_hlsl_dxc(const std::string& hlsl_file_name, const std::string& entrypoint, const std::string& target, ComPtr<IDxcBlob>& out_shader_blob, std::string& out_hash)
+  bool fshader_tools::load_and_compile_hlsl(const std::string& hlsl_file_name, const std::string& entrypoint, const std::string& target, ComPtr<IDxcBlob>& out_shader_blob, std::string& out_hash)
   {
     ComPtr<IDxcUtils> utils;
     ComPtr<IDxcCompiler3> compiler;
     ComPtr<IDxcIncludeHandler> include_handler;
 
     std::string hlsl_file_path = fio::get_shader_file_path(hlsl_file_name.c_str());
-    std::string any_file_path = fstring_tools::remove_file_extension(hlsl_file_path) + "_" + entrypoint;
-    std::string any_file_name = fstring_tools::remove_file_extension(hlsl_file_name) + "_" + entrypoint;
-    std::wstring w_file_name = fstring_tools::to_utf16(hlsl_file_name);
+    std::string shader_path = fstring_tools::remove_file_extension(hlsl_file_path) + "_" + entrypoint;
+    std::string shader_name = fstring_tools::remove_file_extension(hlsl_file_name) + "_" + entrypoint;
+    out_hash = shader_name;
+    
+    std::vector<LPCWSTR> arguments;
     std::wstring w_shader_directory = fstring_tools::to_utf16(fio::get_shaders_dir());
     std::wstring w_entrypoint = fstring_tools::to_utf16(entrypoint);
     std::wstring w_target = fstring_tools::to_utf16(target);
-    
-    std::vector<LPCWSTR> arguments;
+    std::wstring w_hlsl_file_name = fstring_tools::to_utf16(hlsl_file_name);
     arguments.push_back(L"-E");
     arguments.push_back(w_entrypoint.c_str());
     arguments.push_back(L"-T");
@@ -70,12 +95,12 @@ namespace engine
     arguments.push_back(DXC_ARG_SKIP_OPTIMIZATIONS);
     arguments.push_back(DXC_ARG_DEBUG);
     //arguments.push_back(L"-Qembed_debug"); // Workaround for Aftermath 2024.2. I save DXC_OUT_OBJECT to .cso file, so it will have symbols.
-                                           // Looks like this is related to a bug as confirmed by kleints
-                                           // https://github.com/NVIDIA/nsight-aftermath-samples/pull/3#issuecomment-2435892147
+                                              // Looks like this is related to a bug as confirmed by kleints
+                                              // https://github.com/NVIDIA/nsight-aftermath-samples/pull/3#issuecomment-2435892147
     arguments.push_back(DXC_ARG_WARNINGS_ARE_ERRORS);
 #endif
-    arguments.push_back(w_file_name.c_str());
-
+    arguments.push_back(w_hlsl_file_name.c_str());
+    
     // Initialize the dxc
     // TODO: compiler and utils does not have to be created for each invocation
     //       but keep in mind thread safety: utils, compiler and include handler needs to exist per thread
@@ -97,9 +122,26 @@ namespace engine
 
     // Load hlsl and compile shader
     ComPtr<IDxcResult> dxc_result;
-    if(!fdx12::load_and_compile_shader(utils, compiler, include_handler, hlsl_file_path.c_str(), arguments, dxc_result))
     {
-      return false;
+      // Load shader source
+      ComPtr<IDxcBlobEncoding> source_blob;
+      std::wstring w_hlsl_file_path = fstring_tools::to_utf16(hlsl_file_path);
+      if(FAILED(utils->LoadFile(w_hlsl_file_path.c_str(), nullptr, source_blob.GetAddressOf())))
+      {
+        LOG_ERROR("Could not compile shader, failed to load file.");
+        return false;
+      }
+
+      // Compile shader source
+      DxcBuffer source;   
+      source.Ptr = source_blob->GetBufferPointer();
+      source.Size = source_blob->GetBufferSize();
+      source.Encoding = DXC_CP_ACP;
+      if(FAILED(compiler->Compile(&source, const_cast<LPCWSTR*>(arguments.data()), arguments.size(), include_handler.Get(), IID_PPV_ARGS(dxc_result.GetAddressOf()))))
+      {
+        LOG_ERROR("Could not compile shader, failed to compile");
+        return false;
+      }
     }
 
     // Print warnings and errors, fail if errors
@@ -116,53 +158,29 @@ namespace engine
       LOG_ERROR("Shader compilation failed.");
       return false;
     }
-    
-    // Get object file
-    if(!fdx12::get_dxc_blob(dxc_result, DXC_OUT_OBJECT, out_shader_blob))
-    {
-      return false;
-    }
 
-    // Register shader and get the hash
+    // Object file
     {
+      std::string obj_path = shader_path + ".cso";
+      if(!fdx12::get_dxc_blob(dxc_result, DXC_OUT_OBJECT, out_shader_blob)) { return false; }
+      if(!fdx12::save_dxc_blob(out_shader_blob, obj_path.c_str())) { return false; }
 #if USE_NSIGHT_AFTERMATH
-      uint64_t shader_hash = fapplication::instance->gpu_crash_handler.add_shader_binary(out_shader_blob.Get());
-      std::ostringstream oss;
-      oss << shader_hash;
-      out_hash = oss.str();
-#else
-      out_hash = any_file_name;
+      fapplication::instance->gpu_crash_handler.add_shader_binary(out_shader_blob.Get());
 #endif
     }
-    
-    // Save object file
-    std::string obj_path = fio::get_shaders_dir() + out_hash + ".cso";
-    if(!fdx12::save_dxc_blob(out_shader_blob, obj_path.c_str()))
-    {
-      return false;
-    }
 
+    // Debug symbols
 #if BUILD_DEBUG
-    // Get debug symbols
-    ComPtr<IDxcBlob> pdb_blob;
-    if(!fdx12::get_dxc_blob(dxc_result, DXC_OUT_PDB, pdb_blob))
     {
-      return false;
-    }
-
-    // Register shader debug name
+      ComPtr<IDxcBlob> pdb_blob;
+      std::string pdb_path = shader_path + ".pdb";
+      if(!fdx12::get_dxc_blob(dxc_result, DXC_OUT_PDB, pdb_blob)) { return false; }
+      if(!fdx12::save_dxc_blob(pdb_blob, pdb_path.c_str())) { return false; }
 #if USE_NSIGHT_AFTERMATH
-    std::string pdb_path = fio::get_shaders_dir() + fapplication::instance->gpu_crash_handler.add_source_shader_debug_data(out_shader_blob.Get(), pdb_blob.Get());
-#else
-    std::string pdb_path = any_file_path + ".pdb";
+      fapplication::instance->gpu_crash_handler.add_source_shader_debug_data(out_shader_blob.Get(), pdb_blob.Get());
 #endif
-    // Save debug symbols
-    if(!fdx12::save_dxc_blob(pdb_blob, pdb_path.c_str()))
-    {
-      return false;
+#endif
     }
-#endif
-    
     return true;
   }
 
@@ -170,7 +188,7 @@ namespace engine
   // https://asawicki.info/news_1719_two_shader_compilers_of_direct3d_12
   // https://github.com/NVIDIAGameWorks/ShaderMake/blob/470bbc7d0c343bc82c988072ee8a1fb2210647ce/src/ShaderMake.cpp#L988
   // https://devblogs.microsoft.com/pix/using-automatic-shader-pdb-resolution-in-pix/
-  bool load_hlsl_fxc(const std::string& file_name, const std::string& entrypoint, const std::string& target, ComPtr<ID3D10Blob>& out_shader_blob)
+  bool fshader_tools::load_hlsl_fxc(const std::string& file_name, const std::string& entrypoint, const std::string& target, ComPtr<ID3D10Blob>& out_shader_blob)
   {
     std::string hlsl_path = fio::get_shader_file_path(file_name.c_str());
 

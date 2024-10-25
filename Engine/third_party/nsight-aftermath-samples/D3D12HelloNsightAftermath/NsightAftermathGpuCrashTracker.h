@@ -37,6 +37,7 @@
 struct IDxcBlob;
 
 // Implements GPU crash dump tracking using the Nsight Aftermath API.
+// This class is heavliy modified. All sample functionality is merged here to avoid it's terrible import structure. 
 class GpuCrashTracker
 {
 public:
@@ -49,8 +50,8 @@ public:
   
     void WaitForDump(std::string& outMsg);
 
-    uint64_t AddShaderBinary(IDxcBlob* shader_blob);
-    std::string AddSourceShaderDebugData(IDxcBlob* shader_blob, IDxcBlob* pdb_blob);
+    uint64_t AddShaderBinary(IDxcBlob* shaderBlob);
+    std::string AddSourceShaderDebugData(IDxcBlob* shaderBlob, IDxcBlob* pdbBlob);
   
     void AdvanceFrame();
     void SetMarker(int backBufferIndex, const std::string& markerData, bool appManagedMarker);
@@ -58,7 +59,7 @@ public:
 private:
     bool m_initialized = false;
     mutable std::mutex m_mutex;
-    const char* appName = nullptr;
+    const char* m_appName = nullptr;
   
     // Markers functionality
     static constexpr uint8_t c_markerFrameHistory = 4;
@@ -67,9 +68,9 @@ private:
     std::vector<GFSDK_Aftermath_ContextHandle> m_CommandListContext; // Index - back buffer id
 
     // Shader database functionality
-    std::map<GFSDK_Aftermath_ShaderDebugInfoIdentifier, std::vector<uint8_t>> m_shaderDebugInfo;
-    std::map<GFSDK_Aftermath_ShaderBinaryHash, std::vector<uint8_t>> m_shaderBinaries;
-    std::map<GFSDK_Aftermath_ShaderDebugName, std::vector<uint8_t>> m_sourceShaderDebugData;
+    std::map<GFSDK_Aftermath_ShaderDebugInfoIdentifier, std::vector<uint8_t>> m_shaderDebugInfo;  // Filled automatically in OnShaderDebugInfo
+    std::map<GFSDK_Aftermath_ShaderBinaryHash, std::vector<uint8_t>> m_shaderBinaries;            // Registered by hand in AddShaderBinary
+    std::map<GFSDK_Aftermath_ShaderDebugName, std::vector<uint8_t>> m_sourceShaderDebugData;      // Registered by hand in AddSourceShaderDebugData
   
     // GFSDK_Aftermath_EnableGpuCrashDumps callbacks
     static void CrashDumpCallback(const void* pGpuCrashDump, const uint32_t gpuCrashDumpSize, void* pUserData);
