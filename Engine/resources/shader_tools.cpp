@@ -94,7 +94,7 @@ namespace engine
 #if BUILD_DEBUG
     arguments.push_back(DXC_ARG_SKIP_OPTIMIZATIONS);
     arguments.push_back(DXC_ARG_DEBUG);
-    //arguments.push_back(L"-Qembed_debug"); // Workaround for Aftermath 2024.2. I save DXC_OUT_OBJECT to .cso file, so it will have symbols.
+    arguments.push_back(L"-Qembed_debug"); // Workaround for Aftermath 2024.2. I save DXC_OUT_OBJECT to .cso file, so it will have symbols.
                                               // Looks like this is related to a bug as confirmed by kleints
                                               // https://github.com/NVIDIA/nsight-aftermath-samples/pull/3#issuecomment-2435892147
     arguments.push_back(DXC_ARG_WARNINGS_ARE_ERRORS);
