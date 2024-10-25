@@ -11,7 +11,7 @@
 
 #include "engine/log.h"
 #include "engine/io.h"
-#include "resources/resources_io.h"
+#include "resources/shader_tools.h"
 #include "object/object_registry.h"
 #include "persistence/object_persistence.h"
 

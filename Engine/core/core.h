@@ -32,6 +32,7 @@
 #endif
 
 #define USE_NSIGHT_AFTERMATH 1
+#define USE_FXC 0
 
 #define RENDER_IMGUI 1
 

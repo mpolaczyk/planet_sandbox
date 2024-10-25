@@ -252,6 +252,8 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClCompile Include="profile\stats.cpp" />
     <ClCompile Include="resources\ffbx.cpp" />
     <ClCompile Include="resources\resources_io.cpp" />
+    <ClCompile Include="resources\shader_tools.cpp" />
+    <ClCompile Include="resources\shader_tools.h" />
     <ClCompile Include="third_party\libdeflate.c" />
     <ClCompile Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathGpuCrashTracker.cpp" />
     <ClCompile Include="third_party\ofbx.cpp" />
