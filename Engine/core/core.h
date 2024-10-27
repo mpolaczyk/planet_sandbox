@@ -33,8 +33,9 @@
 
 #define USE_NSIGHT_AFTERMATH 1
 #define USE_FXC 0
+#define FORCE_COMPILE_SHADERS_ON_START 1
 
-#define RENDER_IMGUI 1
+#define RENDER_IMGUI 1  // TODO this is not engine, remove it
 
 #ifdef BUILD_DLL
 #define ENGINE_API __declspec(dllexport)

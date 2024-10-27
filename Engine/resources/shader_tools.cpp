@@ -15,7 +15,6 @@
 
 #include "engine/log.h"
 #include "engine/io.h"
-#include "math/math.h"
 
 #include "core/application.h"
 #include "engine/string_tools.h"
@@ -25,6 +24,9 @@ namespace engine
 {
   bool fshader_tools::load_compiled_shader(const std::string& name, ComPtr<IDxcBlob>& out_shader_blob)
   {
+#if FORCE_COMPILE_SHADERS_ON_START
+    return false;
+#endif
     ComPtr<IDxcUtils> utils;
     if(FAILED(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&utils))))
     {
