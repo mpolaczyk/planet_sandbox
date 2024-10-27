@@ -43,12 +43,7 @@ namespace engine
     ComPtr<ID3D12Resource> texture_buffer_upload; // TODO System resource, duplicates data_*. Clean vertex_list when this is set?
   };
 
-  struct fpixel_shader_render_state
-  {
-    ComPtr<IDxcBlob> blob;
-  };
-
-  struct fvertex_shader_render_state
+  struct fshader_render_state
   {
     ComPtr<IDxcBlob> blob;
   };

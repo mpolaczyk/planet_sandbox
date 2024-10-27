@@ -16,7 +16,7 @@ namespace engine
   public:
     OBJECT_DECLARE(hstatic_mesh, hhittable_base)
     OBJECT_DECLARE_VISITOR
-
+    
     virtual uint32_t get_hash() const override;
     virtual void load_resources() override;
 

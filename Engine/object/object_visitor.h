@@ -19,6 +19,7 @@ namespace engine
   class amaterial;
   class atexture;
   class astatic_mesh;
+  class ashader;
   class avertex_shader;
   class apixel_shader;
   class hhittable_base;
@@ -43,6 +44,7 @@ namespace engine
     virtual void visit(amaterial& object) const { vobject_visitor::invalid_operation(); }
     virtual void visit(atexture& object) const { vobject_visitor::invalid_operation(); }
     virtual void visit(astatic_mesh& object) const { vobject_visitor::invalid_operation(); }
+    virtual void visit(ashader& object) const { vobject_visitor::invalid_operation(); }
     virtual void visit(avertex_shader& object) const { vobject_visitor::invalid_operation(); }
     virtual void visit(apixel_shader& object) const { vobject_visitor::invalid_operation(); }
 

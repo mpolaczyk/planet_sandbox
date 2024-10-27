@@ -17,8 +17,8 @@ namespace engine
 {
   using Microsoft::WRL::ComPtr;
   
-  struct fvertex_shader_render_state;
-  struct fpixel_shader_render_state;
+  struct fshader_render_state;
+  struct fshader_render_state;
   struct fscene_acceleration;
   class fwindow;
   
@@ -32,7 +32,7 @@ namespace engine
     virtual void init() = 0;
     virtual void draw(ComPtr<ID3D12GraphicsCommandList> command_list) = 0;
     virtual void create_output_texture(bool cleanup = false) = 0;
-    virtual void copy_input(fwindow* in_window, const fvertex_shader_render_state* in_vertex_shader, const fpixel_shader_render_state* in_pixel_shader,
+    virtual void copy_input(fwindow* in_window, const fshader_render_state* in_vertex_shader, const fshader_render_state* in_pixel_shader,
       fscene_acceleration* in_scene_acceleration, const hscene* in_scene, const hhittable_base* in_selected_object,
       int in_output_width, int in_output_height,
       fsoft_asset_ptr<amaterial>& in_default_material)
@@ -51,8 +51,8 @@ namespace engine
     
   protected:
     // Input
-    const fpixel_shader_render_state* pixel_shader = nullptr;
-    const fvertex_shader_render_state*  vertex_shader = nullptr;
+    const fshader_render_state* pixel_shader = nullptr;
+    const fshader_render_state*  vertex_shader = nullptr;
     fscene_acceleration* scene_acceleration = nullptr;
     const hscene* scene = nullptr;
     const hhittable_base* selected_object = nullptr;

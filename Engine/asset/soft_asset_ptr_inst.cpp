@@ -17,6 +17,7 @@ namespace engine
   template struct fsoft_asset_ptr<amaterial>;
   template struct fsoft_asset_ptr<atexture>;
 
+  template struct fsoft_asset_ptr<ashader>;
   template struct fsoft_asset_ptr<apixel_shader>;
   template struct fsoft_asset_ptr<avertex_shader>;
 }

@@ -20,6 +20,11 @@ namespace engine
     OBJECT_DECLARE_SAVE(amaterial)
     OBJECT_DECLARE_VISITOR
 
+    virtual const char* get_extension() override
+    {
+      return ".material";
+    }
+
     // JSON persistent
     fmaterial_properties properties;
     fsoft_asset_ptr<atexture> texture_asset_ptr;

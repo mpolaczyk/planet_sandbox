@@ -4,6 +4,7 @@
 #include "assets/mesh.h"
 #include "assets/material.h"
 #include "assets/texture.h"
+#include "assets/shader.h"
 #include "assets/vertex_shader.h"
 #include "assets/pixel_shader.h"
 #include "renderer/renderer_base.h"
@@ -44,6 +45,7 @@ namespace engine
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(astatic_mesh)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(atexture)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(amaterial)
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(ashader)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(avertex_shader)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(apixel_shader)
 
@@ -58,6 +60,7 @@ namespace engine
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(hlight)
 
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(aasset_base)
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(ashader)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(astatic_mesh)
 
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE_COPY(hhittable_base)
@@ -75,8 +78,9 @@ namespace engine
     CLASS_OBJECT_REGISTER(amaterial, aasset_base)
     CLASS_OBJECT_REGISTER(atexture, aasset_base)
     CLASS_OBJECT_REGISTER(astatic_mesh, aasset_base)
-    CLASS_OBJECT_REGISTER(avertex_shader, aasset_base)
-    CLASS_OBJECT_REGISTER(apixel_shader, aasset_base)
+    CLASS_OBJECT_REGISTER(ashader, aasset_base)
+    CLASS_OBJECT_REGISTER(avertex_shader, ashader)
+    CLASS_OBJECT_REGISTER(apixel_shader, ashader)
 
     CLASS_OBJECT_REGISTER(rrenderer_base, oobject)
     CLASS_OBJECT_REGISTER(rgpu_forward_sync, rrenderer_base)

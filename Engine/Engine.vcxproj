@@ -119,7 +119,11 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="assets\shader.h" />
+    <ClInclude Include="assets\material.h" />
+    <ClInclude Include="assets\mesh.h" />
     <ClInclude Include="assets\pixel_shader.h" />
+    <ClInclude Include="assets\texture.h" />
     <ClInclude Include="assets\vertex_shader.h" />
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="core\concepts.h" />
@@ -134,10 +138,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClInclude Include="object\object.h" />
     <ClInclude Include="object\object_defines.h" />
     <ClInclude Include="object\object_registry.h" />
-    <ClInclude Include="assets\material.h" />
-    <ClInclude Include="assets\mesh.h" />
     <ClInclude Include="asset\soft_asset_ptr.h" />
-    <ClInclude Include="assets\texture.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="core\application.h" />
     <ClInclude Include="object\object_visitor.h" />
@@ -196,7 +197,11 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClInclude Include="third_party\WaveFrontReader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="assets\shader.cpp" />
+    <ClCompile Include="assets\material.cpp" />
+    <ClCompile Include="assets\mesh.cpp" />
     <ClCompile Include="assets\pixel_shader.cpp" />
+    <ClCompile Include="assets\texture.cpp" />
     <ClCompile Include="assets\vertex_shader.cpp" />
     <ClCompile Include="asset\asset.cpp" />
     <ClCompile Include="core\gpu_crash_handler.cpp" />
@@ -211,11 +216,8 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClCompile Include="object\object_registry.cpp" />
     <ClCompile Include="object\object_registry_temp.cpp" />
     <ClCompile Include="object\object_registry_inst.cpp" />
-    <ClCompile Include="assets\material.cpp" />
-    <ClCompile Include="assets\mesh.cpp" />
     <ClCompile Include="asset\soft_asset_ptr.cpp" />
     <ClCompile Include="asset\soft_asset_ptr_inst.cpp" />
-    <ClCompile Include="assets\texture.cpp" />
     <ClCompile Include="core\application.cpp" />
     <ClCompile Include="object\object_visitor.cpp" />
     <ClCompile Include="passes\deferred_lighting_pass.cpp" />

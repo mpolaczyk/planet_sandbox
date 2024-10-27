@@ -16,6 +16,11 @@ namespace engine
     OBJECT_DECLARE_SAVE(atexture)
     OBJECT_DECLARE_VISITOR
 
+    virtual const char* get_extension() override
+    {
+      return ".texture";
+    }
+    
     // JSON persistent
     std::string img_file_name;
 

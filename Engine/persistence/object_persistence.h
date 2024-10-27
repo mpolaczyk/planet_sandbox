@@ -19,8 +19,7 @@ namespace engine
     virtual void visit(amaterial& object) const override;
     virtual void visit(atexture& object) const override;
     virtual void visit(astatic_mesh& object) const override;
-    virtual void visit(avertex_shader& object) const override;
-    virtual void visit(apixel_shader& object) const override;
+    virtual void visit(ashader& object) const override;
 
     virtual void visit(hhittable_base& object) const override;
     virtual void visit(hscene& object) const override;
@@ -46,8 +45,7 @@ namespace engine
     virtual void visit(amaterial& object) const override;
     virtual void visit(atexture& object) const override;
     virtual void visit(astatic_mesh& object) const override;
-    virtual void visit(avertex_shader& object) const override;
-    virtual void visit(apixel_shader& object) const override;
+    virtual void visit(ashader& object) const override;
 
     virtual void visit(hhittable_base& object) const override; // TODO remove visitor from the base class
     virtual void visit(hscene& object) const override;

@@ -17,6 +17,11 @@ namespace engine
     OBJECT_DECLARE_SAVE(astatic_mesh)
     OBJECT_DECLARE_VISITOR
 
+    virtual const char* get_extension() override
+    {
+      return ".mesh";
+    }
+    
     // JSON persistent
     std::string obj_file_name;
 

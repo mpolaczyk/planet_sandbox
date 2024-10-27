@@ -43,15 +43,7 @@ namespace engine
     j["obj_file_name"] = object.obj_file_name;
   }
 
-  void vserialize_object::visit(avertex_shader& object) const
-  {
-    j["shader_file_name"] = object.shader_file_name;
-    j["entrypoint"] = object.entrypoint;
-    j["target"] = object.target;
-    j["cache_file_name"] = object.cache_file_name;
-  }
-
-  void vserialize_object::visit(apixel_shader& object) const
+  void vserialize_object::visit(ashader& object) const
   {
     j["shader_file_name"] = object.shader_file_name;
     j["entrypoint"] = object.entrypoint;
@@ -154,22 +146,14 @@ namespace engine
     TRY_PARSE(std::string, j, "obj_file_name", object.obj_file_name);
   }
 
-  void vdeserialize_object::visit(avertex_shader& object) const
+  void vdeserialize_object::visit(ashader& object) const
   {
     TRY_PARSE(std::string, j, "shader_file_name", object.shader_file_name);
     TRY_PARSE(std::string, j, "entrypoint", object.entrypoint);
     TRY_PARSE(std::string, j, "target", object.target);
     TRY_PARSE(std::string, j, "cache_file_name", object.cache_file_name);
   }
-
-  void vdeserialize_object::visit(apixel_shader& object) const
-  {
-    TRY_PARSE(std::string, j, "shader_file_name", object.shader_file_name);
-    TRY_PARSE(std::string, j, "entrypoint", object.entrypoint);
-    TRY_PARSE(std::string, j, "target", object.target);
-    TRY_PARSE(std::string, j, "cache_file_name", object.cache_file_name);
-  }
-
+  
   void vdeserialize_object::visit(hhittable_base& object) const
   {
     nlohmann::json jorigin;
