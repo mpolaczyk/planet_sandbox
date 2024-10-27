@@ -14,13 +14,10 @@ namespace engine
     OBJECT_DECLARE(atexture, aasset_base)
     OBJECT_DECLARE_VISITOR
 
+    virtual const char* get_extension() const override;
+    virtual const char* get_folder() const override;
     virtual bool load(const std::string& name) override;
     virtual void save() override {};
-    
-    virtual const char* get_extension() override
-    {
-      return ".texture";
-    }
     
     // JSON persistent
     std::string img_file_name;

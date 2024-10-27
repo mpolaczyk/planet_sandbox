@@ -13,7 +13,8 @@ namespace engine
   public:
     OBJECT_DECLARE(ashader, aasset_base)
     OBJECT_DECLARE_VISITOR
-
+    
+    virtual const char* get_folder() const override;
     virtual bool load(const std::string& name) override;
     virtual void save() override;
     

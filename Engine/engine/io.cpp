@@ -18,6 +18,31 @@ namespace engine
     project_name = name;
   }
 
+  const char* fio::get_mesh_extension()
+  {
+    return ".mesh";
+  }
+  
+  const char* fio::get_material_extension()
+  {
+    return ".material";
+  }
+  
+  const char* fio::get_texture_extension()
+  {
+    return ".texture";
+  }
+  
+  const char* fio::get_pixel_shader_extension()
+  {
+    return ".pixel_shader";
+  }
+  
+  const char* fio::get_vertex_shader_extension()
+  {
+    return ".vertex_shader";
+  }
+  
   std::string fio::get_working_dir()
   {
     std::string current_dir = std::filesystem::current_path().string();
@@ -165,26 +190,26 @@ namespace engine
 
   std::vector<std::string> fio::discover_material_files(bool include_extension)
   {
-    return discover_files(get_materials_dir(), ".material", include_extension);
+    return discover_files(get_materials_dir(), get_material_extension(), include_extension);
   }
 
   std::vector<std::string> fio::discover_texture_files(bool include_extension)
   {
-    return discover_files(get_textures_dir(), ".texture", include_extension);
+    return discover_files(get_textures_dir(), get_texture_extension(), include_extension);
   }
 
   std::vector<std::string> fio::discover_mesh_files(bool include_extension)
   {
-    return discover_files(get_meshes_dir(), ".mesh", include_extension);
+    return discover_files(get_meshes_dir(), get_mesh_extension(), include_extension);
   }
 
   std::vector<std::string> fio::discover_pixel_shader_files(bool include_extension)
   {
-    return discover_files(get_shaders_dir(), ".pixel_shader", include_extension);
+    return discover_files(get_shaders_dir(), get_pixel_shader_extension(), include_extension);
   }
   
   std::vector<std::string> fio::discover_vertex_shader_files(bool include_extension)
   {
-    return discover_files(get_shaders_dir(), ".vertex_shader", include_extension);
+    return discover_files(get_shaders_dir(), get_vertex_shader_extension(), include_extension);
   }
 }

@@ -21,6 +21,11 @@ namespace engine
   OBJECT_DEFINE_NOSPAWN(ashader)
   OBJECT_DEFINE_VISITOR(ashader)
   
+  const char* ashader::get_folder() const
+  {
+    return fio::get_shaders_dir().c_str();
+  }
+  
   bool ashader::load(const std::string& name)
   {
     aasset_base::load(name);

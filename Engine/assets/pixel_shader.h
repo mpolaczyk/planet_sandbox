@@ -11,10 +11,7 @@ namespace engine
   {
   public:
     OBJECT_DECLARE(apixel_shader, ashader)
-    
-    virtual const char* get_extension() override
-    {
-      return ".pixel_shader";
-    }
+
+    virtual const char* get_extension() const override;
   };
 }

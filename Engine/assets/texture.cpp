@@ -17,6 +17,16 @@ namespace engine
   OBJECT_DEFINE_SPAWN(atexture)
   OBJECT_DEFINE_VISITOR(atexture)
 
+  const char* atexture::get_extension() const
+  {
+    return fio::get_texture_extension();
+  }
+  
+  const char* atexture::get_folder() const
+  {
+    return fio::get_textures_dir().c_str();
+  }
+  
   bool atexture::load(const std::string& name)
   {
     aasset_base::load(name);
@@ -24,7 +34,7 @@ namespace engine
     LOG_DEBUG("Loading texture: {0}", name);
 
     std::ostringstream oss;
-    oss << name << ".texture";
+    oss << name << fio::get_texture_extension();
     const std::string file_path = fio::get_texture_file_path(oss.str().c_str());
     std::ifstream input_stream(file_path.c_str());
     if(input_stream.fail())

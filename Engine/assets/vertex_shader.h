@@ -12,9 +12,6 @@ namespace engine
   public:
     OBJECT_DECLARE(avertex_shader, ashader)
 
-    virtual const char* get_extension() override
-    {
-      return ".vertex_shader";
-    }
+    virtual const char* get_extension() const override;
   };
 }

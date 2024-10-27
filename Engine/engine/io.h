@@ -15,6 +15,13 @@ namespace engine
     static std::string get_project_name();
     static void init(const char* name);
 
+    // Extensions
+    static const char* get_mesh_extension();
+    static const char* get_material_extension();
+    static const char* get_texture_extension();
+    static const char* get_pixel_shader_extension();
+    static const char* get_vertex_shader_extension();
+    
     // Directories
     static std::string get_working_dir();
     static std::string get_workspace_dir();
