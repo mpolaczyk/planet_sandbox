@@ -21,15 +21,14 @@ namespace engine
   OBJECT_DEFINE_NOSPAWN(ashader)
   OBJECT_DEFINE_VISITOR(ashader)
   
-  bool ashader::load(ashader* instance, const std::string& name)
+  bool ashader::load(const std::string& name)
   {
-    aasset_base::load(instance, name);
+    aasset_base::load(name);
 
-    assert(instance);
-    LOG_DEBUG("Loading shader: {0} {1}", name, instance->get_extension());
+    LOG_DEBUG("Loading shader: {0} {1}", name, get_extension());
 
     std::ostringstream oss;
-    oss << name << instance->get_extension();
+    oss << name << get_extension();
     const std::string file_path = fio::get_shader_file_path(oss.str().c_str());
     std::ifstream input_stream(file_path.c_str());
     if(input_stream.fail())
@@ -40,37 +39,35 @@ namespace engine
 
     nlohmann::json j;
     input_stream >> j;
-    instance->accept(vdeserialize_object(j));
-    instance->set_display_name(name);
+    accept(vdeserialize_object(j));
+    set_display_name(name);
 
-    if(fshader_tools::load_compiled_shader(instance->cache_file_name, instance->render_state.blob))
+    if(fshader_tools::load_compiled_shader(cache_file_name, render_state.blob))
     {
       return true;
     }
     std::string new_cache_file_name;
-    if(!fshader_tools::load_and_compile_hlsl(instance->shader_file_name, instance->entrypoint, instance->target, instance->render_state.blob, new_cache_file_name))
+    if(!fshader_tools::load_and_compile_hlsl(shader_file_name, entrypoint, target, render_state.blob, new_cache_file_name))
     {
-      DX_RELEASE(instance->render_state.blob)
+      DX_RELEASE(render_state.blob)
       return false;
     }
-    if(new_cache_file_name != "" && instance->cache_file_name != new_cache_file_name)
+    if(new_cache_file_name != "" && cache_file_name != new_cache_file_name)
     {
-      instance->cache_file_name = new_cache_file_name;
-      apixel_shader::save(instance);
+      cache_file_name = new_cache_file_name;
+      save();
     }
     LOG_INFO("Compilation successful.");
     return true;
   }
 
-  void ashader::save(ashader* object)
+  void ashader::save()
   {
-    assert(object != nullptr);
-
     nlohmann::json j;
-    object->accept(vserialize_object(j));
+    accept(vserialize_object(j));
 
     std::ostringstream oss;
-    oss << object->file_name << object->get_extension();
+    oss << file_name << get_extension();
     std::ofstream o(fio::get_shader_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
     if(o.is_open())
@@ -79,7 +76,7 @@ namespace engine
     }
     else
     {
-      LOG_ERROR("Unable to save shader {0}", oss.str());
+      LOG_ERROR("Unable to save shader: {0}", oss.str());
     }
     o.close();
   }

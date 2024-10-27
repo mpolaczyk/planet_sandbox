@@ -12,9 +12,10 @@ namespace engine
   {
   public:
     OBJECT_DECLARE(ashader, aasset_base)
-    OBJECT_DECLARE_LOAD(ashader)
-    OBJECT_DECLARE_SAVE(ashader)
     OBJECT_DECLARE_VISITOR
+
+    virtual bool load(const std::string& name) override;
+    virtual void save() override;
     
     // JSON persistent
     std::string shader_file_name; // hlsl file

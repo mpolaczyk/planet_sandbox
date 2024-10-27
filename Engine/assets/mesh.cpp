@@ -17,11 +17,10 @@ namespace engine
   OBJECT_DEFINE_SPAWN(astatic_mesh)
   OBJECT_DEFINE_VISITOR(astatic_mesh)
 
-  bool astatic_mesh::load(astatic_mesh* instance, const std::string& name)
+  bool astatic_mesh::load(const std::string& name)
   {
-    aasset_base::load(instance, name);
+    aasset_base::load(name);
 
-    assert(instance);
     LOG_DEBUG("Loading mesh: {0}", name);
 
     std::ostringstream oss;
@@ -30,32 +29,30 @@ namespace engine
     std::ifstream input_stream(file_path.c_str());
     if(input_stream.fail())
     {
-      LOG_ERROR("Unable to open mesh asset: {0}", file_path);
+      LOG_ERROR("Unable to open mesh: {0}", file_path);
       return false;
     }
 
     nlohmann::json j;
     input_stream >> j;
-    instance->accept(vdeserialize_object(j));
-    instance->set_display_name(name);
+    accept(vdeserialize_object(j));
+    set_display_name(name);
 
-    if(!load_obj(instance->obj_file_name, instance))
+    if(!load_obj(obj_file_name, this))
     {
-      LOG_ERROR("Failed to load object file: {0}", instance->obj_file_name);
+      LOG_ERROR("Failed to load mesh: {0}", obj_file_name);
       return false;
     }
     return true;
   }
 
-  void astatic_mesh::save(astatic_mesh* object)
+  void astatic_mesh::save()
   {
-    assert(object != nullptr);
-
     nlohmann::json j;
-    object->accept(vserialize_object(j));
+    accept(vserialize_object(j));
 
     std::ostringstream oss;
-    oss << object->file_name << ".mesh";
+    oss << file_name << ".mesh";
     std::ofstream o(fio::get_mesh_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
     if(o.is_open())
@@ -64,7 +61,7 @@ namespace engine
     }
     else
     {
-      LOG_ERROR("Unable to save file {0}", oss.str());
+      LOG_ERROR("Unable to save mesh: {0}", oss.str());
     }
     o.close();
   }

@@ -278,8 +278,8 @@ namespace engine
         }
         mesh_object->obj_file_name = mesh_obj_file.str();
 
-        astatic_mesh::save(mesh_object);
-        astatic_mesh::load(mesh_object, mesh_name);
+        mesh_object->save();
+        mesh_object->load(mesh_name);
       }
 
       // Scene object - spawn it
@@ -362,8 +362,8 @@ namespace engine
         }
         mesh_object->obj_file_name = mesh_obj_file.str();
 
-        astatic_mesh::save(mesh_object);
-        astatic_mesh::load(mesh_object, mesh_name);
+        mesh_object->save();
+        mesh_object->load(mesh_name);
       }
 
       // Get all materials in a mesh and save json
@@ -387,8 +387,8 @@ namespace engine
 
           import_material_from_unity_2022_3_urp(material, material_object->properties);
 
-          amaterial::save(material_object);
-          amaterial::load(material_object, material_name);
+          material_object->save();
+          material_object->load(material_name);
         }
       }
 

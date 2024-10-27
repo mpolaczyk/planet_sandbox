@@ -12,10 +12,11 @@ namespace engine
   {
   public:
     OBJECT_DECLARE(atexture, aasset_base)
-    OBJECT_DECLARE_LOAD(atexture)
-    OBJECT_DECLARE_SAVE(atexture)
     OBJECT_DECLARE_VISITOR
 
+    virtual bool load(const std::string& name) override;
+    virtual void save() override {};
+    
     virtual const char* get_extension() override
     {
       return ".texture";

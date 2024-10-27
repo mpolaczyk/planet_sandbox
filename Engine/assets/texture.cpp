@@ -17,11 +17,10 @@ namespace engine
   OBJECT_DEFINE_SPAWN(atexture)
   OBJECT_DEFINE_VISITOR(atexture)
 
-  bool atexture::load(atexture* instance, const std::string& name)
+  bool atexture::load(const std::string& name)
   {
-    aasset_base::load(instance, name);
+    aasset_base::load(name);
 
-    assert(instance);
     LOG_DEBUG("Loading texture: {0}", name);
 
     std::ostringstream oss;
@@ -30,18 +29,18 @@ namespace engine
     std::ifstream input_stream(file_path.c_str());
     if(input_stream.fail())
     {
-      LOG_ERROR("Unable to open texture asset: {0}", file_path);
+      LOG_ERROR("Unable to open texture: {0}", file_path);
       return false;
     }
 
     nlohmann::json j;
     input_stream >> j;
-    instance->accept(vdeserialize_object(j));
-    instance->set_display_name(name);
+    accept(vdeserialize_object(j));
+    set_display_name(name);
 
-    if(!load_img(instance->img_file_name, instance))
+    if(!load_img(img_file_name, this))
     {
-      LOG_ERROR("Failed to load texture file: {0}", instance->img_file_name);
+      LOG_ERROR("Failed to load texture: {0}", img_file_name);
       return false;
     }
     return true;

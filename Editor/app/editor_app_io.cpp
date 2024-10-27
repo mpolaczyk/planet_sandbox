@@ -16,7 +16,7 @@ namespace editor
     std::vector<amaterial*> materials = REG.get_all_by_type<amaterial>();
     for (amaterial* m : materials)
     {
-      amaterial::save(m);
+      m->save();
     }
   }
 
@@ -31,7 +31,7 @@ namespace editor
         [&](const std::string& name)
         {
           atexture* temp = atexture::spawn();
-          atexture::load(temp, name);
+          temp->load(name);
         });
     }
     
@@ -42,7 +42,7 @@ namespace editor
         [&](const std::string& name)
         {
           amaterial* temp = amaterial::spawn();
-          amaterial::load(temp, name);
+          temp->load(name);
         });
     }
 
@@ -53,7 +53,7 @@ namespace editor
         [&](const std::string& name)
         {
           astatic_mesh* temp = astatic_mesh::spawn();
-          astatic_mesh::load(temp, name);
+          temp->load(name);
         });
     }
 
@@ -64,7 +64,7 @@ namespace editor
         [&](const std::string& name)
         {
           apixel_shader* temp = apixel_shader::spawn();
-          apixel_shader::load(temp, name);
+          temp->load(name);
         });
     }
 
@@ -75,7 +75,7 @@ namespace editor
         [&](const std::string& name)
         {
           avertex_shader* temp = avertex_shader::spawn();
-          avertex_shader::load(temp, name);
+          temp->load(name);
         });
     }
   }

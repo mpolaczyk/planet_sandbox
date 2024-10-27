@@ -39,7 +39,7 @@ namespace engine
       {
         asset_ptr_temp = T::spawn();
 
-        if(!T::load(asset_ptr_temp, name))
+        if(!asset_ptr_temp->load(name))
         {
           asset_ptr_temp->destroy();
           LOG_ERROR("Unable to find asset: {0}", name);

@@ -13,10 +13,11 @@ namespace engine
   {
   public:
     OBJECT_DECLARE(astatic_mesh, aasset_base)
-    OBJECT_DECLARE_LOAD(astatic_mesh)
-    OBJECT_DECLARE_SAVE(astatic_mesh)
     OBJECT_DECLARE_VISITOR
 
+    virtual bool load(const std::string& name) override;
+    virtual void save() override;
+    
     virtual const char* get_extension() override
     {
       return ".mesh";

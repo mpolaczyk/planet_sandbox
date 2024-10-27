@@ -16,11 +16,10 @@ namespace engine
   OBJECT_DEFINE_SPAWN(amaterial)
   OBJECT_DEFINE_VISITOR(amaterial)
 
-  bool amaterial::load(amaterial* instance, const std::string& name)
+  bool amaterial::load(const std::string& name)
   {
-    aasset_base::load(instance, name);
+    aasset_base::load(name);
 
-    assert(instance);
     LOG_DEBUG("Loading material: {0}", name);
 
     std::ostringstream oss;
@@ -29,27 +28,25 @@ namespace engine
     std::ifstream input_stream(file_path.c_str());
     if(input_stream.fail())
     {
-      LOG_ERROR("Unable to open material asset: {0}", file_path);
+      LOG_ERROR("Unable to open material: {0}", file_path);
       return false;
     }
 
     nlohmann::json j;
     input_stream >> j;
-    instance->accept(vdeserialize_object(j));
-    instance->set_display_name(name);
+    accept(vdeserialize_object(j));
+    set_display_name(name);
 
     return true;
   }
 
-  void amaterial::save(amaterial* object)
+  void amaterial::save()
   {
-    assert(object != nullptr);
-
     nlohmann::json j;
-    object->accept(vserialize_object(j));
+    accept(vserialize_object(j));
 
     std::ostringstream oss;
-    oss << object->file_name << ".material";
+    oss << file_name << ".material";
     std::ofstream o(fio::get_material_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
     if(o.is_open())
@@ -58,7 +55,7 @@ namespace engine
     }
     else
     {
-      LOG_ERROR("Unable to save file {0}", oss.str());
+      LOG_ERROR("Unable to save material: {0}", oss.str());
     }
     o.close();
   }
