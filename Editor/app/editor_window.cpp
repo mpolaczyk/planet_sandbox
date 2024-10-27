@@ -25,7 +25,7 @@ namespace editor
 
     fdx12::create_cbv_srv_uav_descriptor_heap(device, ui_descriptor_heap);
 #if BUILD_DEBUG
-    ui_descriptor_heap->SetName(L"UI descriptor Heap");
+    DX_SET_NAME(ui_descriptor_heap, "UI descriptor Heap");
 #endif
     
     ImGui_ImplDX12_Init( device.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM,

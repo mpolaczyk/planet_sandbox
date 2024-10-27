@@ -39,9 +39,9 @@ namespace engine
     fdx12::create_depth_stencil_descriptor_heap(device, dsv_descriptor_heap);
     fdx12::create_cbv_srv_uav_descriptor_heap(device, main_descriptor_heap);
 #if BUILD_DEBUG
-    rtv_descriptor_heap->SetName(L"Render target descriptor heap");
-    dsv_descriptor_heap->SetName(L"Depth stencil descriptor heap");
-    main_descriptor_heap->SetName(L"Main descriptor heap");
+    DX_SET_NAME(rtv_descriptor_heap, "Render target descriptor heap")
+    DX_SET_NAME(dsv_descriptor_heap, "Depth stencil descriptor heap")
+    DX_SET_NAME(main_descriptor_heap, "Main descriptor heap")
 #endif
   }
 
@@ -115,10 +115,9 @@ namespace engine
 #if BUILD_DEBUG
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
-      std::string rtv_name = std::format("Render target resource: back buffer {}", n);
-      rtv[n]->SetName(std::wstring(rtv_name.begin(), rtv_name.end()).c_str());
+      DX_SET_NAME(rtv[n], "Render target resource: back buffer {}", n)
     }
-    dsv->SetName(L"Depth stencil resource");
+    DX_SET_NAME(dsv, "Depth stencil resource")
 #endif
   }
   

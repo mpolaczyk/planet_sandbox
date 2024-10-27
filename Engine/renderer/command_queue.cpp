@@ -20,10 +20,8 @@ namespace engine
 #if BUILD_DEBUG
       for(uint32_t n = 0; n < back_buffer_count; n++)
       {
-        std::string allocator_name = std::format("Command allocator: type {} back buffer count {}", i, n);
-        std::string list_name = std::format("Command list: type {}", i);
-        temp.command_allocator[n]->SetName(std::wstring(allocator_name.begin(), allocator_name.end()).c_str());
-        temp.command_list->SetName(std::wstring(list_name.begin(), list_name.end()).c_str());
+        DX_SET_NAME(temp.command_allocator[n], "Command allocator: type {} back buffer count {}", i, n)
+        DX_SET_NAME(temp.command_list, "Command list: type {}", i)
       }
 #endif
       command_pair.push_back(temp);

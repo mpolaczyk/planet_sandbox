@@ -77,8 +77,7 @@ namespace engine
         cbv_frame_resource.push_back(resource);
         
 #if BUILD_DEBUG
-        std::string name = std::format("CBV frame data upload resource: back buffer {}", i);
-        resource->SetName(std::wstring(name.begin(), name.end()).c_str());
+        DX_SET_NAME(resource, "CBV frame data upload resource: back buffer {}", i)
 #endif
       }
     }
@@ -94,8 +93,7 @@ namespace engine
           srv_lights_resource.push_back(resource);
           
 #if BUILD_DEBUG
-          std::string name = std::format("SRV lights data upload resource: back buffer {}", i);
-          resource->SetName(std::wstring(name.begin(), name.end()).c_str());
+          DX_SET_NAME(resource, "SRV lights data upload resource: back buffer {}", i)
 #endif
         }
         {
@@ -105,8 +103,7 @@ namespace engine
           srv_materials_resource.push_back(resource);
           
 #if BUILD_DEBUG
-          std::string name = std::format("SRV materials data upload resource: back buffer {}", i);
-          resource->SetName(std::wstring(name.begin(), name.end()).c_str());
+          DX_SET_NAME(resource, "SRV materials data upload resource: back buffer {}", i)
 #endif
         }
       }
@@ -139,7 +136,7 @@ namespace engine
       
       fdx12::create_root_signature(device, root_parameters, static_sampers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature);
 #if BUILD_DEBUG
-      root_signature->SetName(L"Root signature forward pass");
+      DX_SET_NAME(root_signature, "Root signature forward pass")
 #endif
     }
 
@@ -173,7 +170,7 @@ namespace engine
       pipeline_state_stream.rtv_formats = rtv_formats;
       fdx12::create_pipeline_state(device, pipeline_state_stream, pipeline_state);
 #if BUILD_DEBUG
-      pipeline_state->SetName(L"Pipeline state forward pass");
+      DX_SET_NAME(pipeline_state, "Pipeline state forward pass")
 #endif
     }
   }
@@ -248,13 +245,8 @@ namespace engine
             handle.Offset(descriptor_size);
         
 #if BUILD_DEBUG
-            {
-              std::string texture_name = texture->get_display_name();
-              std::string name = std::format("Texture buffer: {}", texture_name);
-              texture->render_state.texture_buffer->SetName(std::wstring(name.begin(), name.end()).c_str());
-              name = std::format("Texture upload buffer: {}", texture_name);
-              texture->render_state.texture_buffer_upload->SetName(std::wstring(name.begin(), name.end()).c_str());
-            }
+            DX_SET_NAME(texture->render_state.texture_buffer, "Texture buffer: {}", texture->get_display_name())
+            DX_SET_NAME(texture->render_state.texture_buffer_upload, "Texture upload buffer: {}", texture->get_display_name())
 #endif
           }
         }
@@ -286,14 +278,10 @@ namespace engine
         {
           std::string mesh_name = mesh->get_display_name();
           std::string asset_name = mesh->mesh_asset_ptr.get()->name;
-          std::string name = std::format("Vertex buffer: asset {} hittable {}", mesh_name, asset_name);
-          smrs.vertex_buffer->SetName(std::wstring(name.begin(), name.end()).c_str());
-          name = std::format("Index buffer: asset {} hittable {}", mesh_name, asset_name);
-          smrs.index_buffer->SetName(std::wstring(name.begin(), name.end()).c_str());
-          name = std::format("Vertex upload buffer: asset {} hittable {}", mesh_name, asset_name);
-          smrs.vertex_buffer_upload->SetName(std::wstring(name.begin(), name.end()).c_str());
-          name = std::format("Index upload buffer: asset {} hittable {}", mesh_name, asset_name);
-          smrs.index_buffer_upload->SetName(std::wstring(name.begin(), name.end()).c_str());
+          DX_SET_NAME(smrs.vertex_buffer, "Vertex buffer: asset {} hittable {}", mesh_name, asset_name)
+          DX_SET_NAME(smrs.vertex_buffer_upload, "Index buffer: asset {} hittable {}", mesh_name, asset_name)
+          DX_SET_NAME(smrs.index_buffer, "Vertex upload buffer: asset {} hittable {}", mesh_name, asset_name)
+          DX_SET_NAME(smrs.index_buffer_upload, "Index upload buffer: asset {} hittable {}", mesh_name, asset_name)
         }
 #endif
       }
@@ -317,23 +305,5 @@ namespace engine
 
   void fforward_pass::create_output_texture(bool cleanup)
   {
-    //if(cleanup)
-    //{
-    //  DX_RELEASE(output_rtv)
-    //  DX_RELEASE(output_srv)
-    //  DX_RELEASE(output_dsv)
-    //  DX_RELEASE(output_texture)
-    //  DX_RELEASE(output_depth)
-    //}
-    //
-    //fdx12& dx = fdx12::instance();
-    //DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    //D3D11_BIND_FLAG bind_flag = static_cast<D3D11_BIND_FLAG>(D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
-    //dx.create_texture(output_width, output_height, format, bind_flag, D3D11_USAGE_DEFAULT, output_texture);
-    //dx.create_shader_resource_view(output_texture, format, D3D11_SRV_DIMENSION_TEXTURE2D, output_srv);
-    //dx.create_render_target_view(output_texture, format, D3D11_RTV_DIMENSION_TEXTURE2D, output_rtv);
-    //
-    //dx.create_texture(output_width, output_height, DXGI_FORMAT_D24_UNORM_S8_UINT, D3D11_BIND_DEPTH_STENCIL, D3D11_USAGE_DEFAULT, output_depth);
-    //dx.create_depth_stencil_view(output_depth, output_width, output_height, output_dsv);
   }
 }
