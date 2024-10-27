@@ -17,12 +17,12 @@ namespace engine
   OBJECT_DEFINE_SPAWN(astatic_mesh)
   OBJECT_DEFINE_VISITOR(astatic_mesh)
 
-  const char* astatic_mesh::get_extension() const
+  std::string astatic_mesh::get_extension() const
   {
-    return fio::get_mesh_extension();
+    return fio::get_mesh_extension().c_str();
   }
   
-  const char* astatic_mesh::get_folder() const
+  std::string astatic_mesh::get_folder() const
   {
     return fio::get_meshes_dir().c_str();
   }
@@ -62,7 +62,7 @@ namespace engine
     accept(vserialize_object(j));
 
     std::ostringstream oss;
-    oss << file_name << fio::get_mesh_extension();
+    oss << name << fio::get_mesh_extension();
     std::ofstream o(fio::get_mesh_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
     if(o.is_open())

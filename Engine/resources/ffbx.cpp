@@ -265,7 +265,7 @@ namespace engine
       // Mesh assset object will be available in the object registry at the end
       {
         astatic_mesh* mesh_object = astatic_mesh::spawn();
-        mesh_object->file_name = mesh_name;
+        mesh_object->name = mesh_name;
 
         // Export obj file
         std::ostringstream mesh_obj_file;
@@ -350,7 +350,7 @@ namespace engine
       // Mesh assset object will be available in the object registry at the end
       {
         astatic_mesh* mesh_object = astatic_mesh::spawn();
-        mesh_object->file_name = mesh_name;
+        mesh_object->name = mesh_name;
 
         // Export obj file
         std::ostringstream mesh_obj_file;
@@ -383,7 +383,7 @@ namespace engine
           g_material_assets.push_back(material_name);
 
           amaterial* material_object = amaterial::spawn();
-          material_object->file_name = "default"; //material_name;
+          material_object->name = "default"; //material_name;
 
           import_material_from_unity_2022_3_urp(material, material_object->properties);
 

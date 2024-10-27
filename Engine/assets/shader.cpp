@@ -21,17 +21,17 @@ namespace engine
   OBJECT_DEFINE_NOSPAWN(ashader)
   OBJECT_DEFINE_VISITOR(ashader)
   
-  const char* ashader::get_folder() const
+  std::string ashader::get_folder() const
   {
     return fio::get_shaders_dir().c_str();
   }
   
   bool ashader::load(const std::string& name)
   {
-    aasset_base::load(name);
-
     LOG_DEBUG("Loading shader: {0} {1}", name, get_extension());
 
+    aasset_base::load(name);
+    
     std::ostringstream oss;
     oss << name << get_extension();
     const std::string file_path = fio::get_shader_file_path(oss.str().c_str());
@@ -72,7 +72,7 @@ namespace engine
     accept(vserialize_object(j));
 
     std::ostringstream oss;
-    oss << file_name << get_extension();
+    oss << name << get_extension();
     std::ofstream o(fio::get_shader_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
     if(o.is_open())

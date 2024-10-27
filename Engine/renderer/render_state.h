@@ -3,8 +3,6 @@
 #include <vector>
 #include <wrl/client.h>
 #include "d3d12.h"
-
-#pragma comment(lib, "dxcompiler.lib")
 #include "dxcapi.h"
 #include "d3d12shader.h"
 

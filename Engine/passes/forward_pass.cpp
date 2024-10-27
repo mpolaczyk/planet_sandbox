@@ -285,7 +285,7 @@ namespace engine
 #if BUILD_DEBUG
         {
           std::string mesh_name = mesh->get_display_name();
-          std::string asset_name = mesh->mesh_asset_ptr.get()->file_name;
+          std::string asset_name = mesh->mesh_asset_ptr.get()->name;
           std::string name = std::format("Vertex buffer: asset {} hittable {}", mesh_name, asset_name);
           smrs.vertex_buffer->SetName(std::wstring(name.begin(), name.end()).c_str());
           name = std::format("Index buffer: asset {} hittable {}", mesh_name, asset_name);

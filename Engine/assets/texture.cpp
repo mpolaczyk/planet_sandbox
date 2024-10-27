@@ -17,12 +17,12 @@ namespace engine
   OBJECT_DEFINE_SPAWN(atexture)
   OBJECT_DEFINE_VISITOR(atexture)
 
-  const char* atexture::get_extension() const
+  std::string atexture::get_extension() const
   {
-    return fio::get_texture_extension();
+    return fio::get_texture_extension().c_str();
   }
   
-  const char* atexture::get_folder() const
+  std::string atexture::get_folder() const
   {
     return fio::get_textures_dir().c_str();
   }

@@ -12,11 +12,12 @@ namespace engine
     OBJECT_DECLARE(aasset_base, oobject)
 
     // Interface mandatory for each asset
-    virtual const char* get_extension() const = 0;
-    virtual const char* get_folder() const = 0; // TODO will be used for saving
+    virtual std::string get_extension() const = 0;
+    virtual std::string get_folder() const = 0;
     virtual bool load(const std::string& name);
     virtual void save();
-    // JSON file name
-    std::string file_name;
+    
+    // JSON persistent
+    std::string name;
   };
 }

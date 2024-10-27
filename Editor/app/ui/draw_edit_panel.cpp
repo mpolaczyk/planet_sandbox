@@ -39,7 +39,7 @@ namespace editor
 
       if (model.selected_object != nullptr)
       {
-        object.mesh_asset_ptr.set_name(model.selected_object->file_name);
+        object.mesh_asset_ptr.set_name(model.selected_object->name);
       }
     }
 
@@ -50,7 +50,7 @@ namespace editor
 
       if (model.selected_object != nullptr)
       {
-        object.material_asset_ptr.set_name(model.selected_object->file_name);
+        object.material_asset_ptr.set_name(model.selected_object->name);
       }
     }
   }
@@ -85,7 +85,7 @@ namespace editor
 
   void vdraw_edit_panel::visit_aasset_base(aasset_base& object) const
   {
-    ImGui::Text("File name: %s", object.file_name.c_str());
+    ImGui::Text("File name: %s", object.name.c_str());
   }
 
   void vdraw_edit_panel::visit_rrenderer_base(rrenderer_base& object) const
@@ -99,7 +99,7 @@ namespace editor
 
       if (model.selected_object != nullptr)
       {
-        object.default_material_asset.set_name(model.selected_object->file_name);
+        object.default_material_asset.set_name(model.selected_object->name);
       }
     }
   }
@@ -122,7 +122,7 @@ namespace editor
 
       if (model.selected_object != nullptr)
       {
-        object.texture_asset_ptr.set_name(model.selected_object->file_name);
+        object.texture_asset_ptr.set_name(model.selected_object->name);
       }
     }
     else
@@ -141,7 +141,7 @@ namespace editor
 
       if (model.selected_object != nullptr)
       {
-        object.pixel_shader_asset.set_name(model.selected_object->file_name);
+        object.pixel_shader_asset.set_name(model.selected_object->name);
       }
     }
     {
@@ -151,7 +151,7 @@ namespace editor
 
       if (model.selected_object != nullptr)
       {
-        object.vertex_shader_asset.set_name(model.selected_object->file_name);
+        object.vertex_shader_asset.set_name(model.selected_object->name);
       }
     }
     
@@ -172,7 +172,7 @@ namespace editor
 
       if (model.selected_object != nullptr)
       {
-        object.gbuffer_pixel_shader_asset.set_name(model.selected_object->file_name);
+        object.gbuffer_pixel_shader_asset.set_name(model.selected_object->name);
       }
     }
     {
@@ -182,7 +182,7 @@ namespace editor
 
       if (model.selected_object != nullptr)
       {
-        object.gbuffer_vertex_shader_asset.set_name(model.selected_object->file_name);
+        object.gbuffer_vertex_shader_asset.set_name(model.selected_object->name);
       }
     }
     {
@@ -192,7 +192,7 @@ namespace editor
 
       if (model.selected_object != nullptr)
       {
-        object.lighting_pixel_shader_asset.set_name(model.selected_object->file_name);
+        object.lighting_pixel_shader_asset.set_name(model.selected_object->name);
       }
     }
     {
@@ -202,7 +202,7 @@ namespace editor
 
       if (model.selected_object != nullptr)
       {
-        object.lighting_vertex_shader_asset.set_name(model.selected_object->file_name);
+        object.lighting_vertex_shader_asset.set_name(model.selected_object->name);
       }
     }
     fui_helper::check_box("Show normal", object.deferred_lighting_pass.show_normal_ws);

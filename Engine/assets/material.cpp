@@ -16,12 +16,12 @@ namespace engine
   OBJECT_DEFINE_SPAWN(amaterial)
   OBJECT_DEFINE_VISITOR(amaterial)
 
-  const char* amaterial::get_extension() const
+  std::string amaterial::get_extension() const
   {
-    return fio::get_material_extension();
+    return fio::get_material_extension().c_str();
   }
   
-  const char* amaterial::get_folder() const
+  std::string amaterial::get_folder() const
   {
     return fio::get_materials_dir().c_str();
   }
@@ -56,7 +56,7 @@ namespace engine
     accept(vserialize_object(j));
 
     std::ostringstream oss;
-    oss << file_name << fio::get_material_extension();
+    oss << name << fio::get_material_extension();
     std::ofstream o(fio::get_material_file_path(oss.str().c_str()), std::ios_base::out | std::ios::binary);
     std::string str = j.dump(2);
     if(o.is_open())

@@ -33,7 +33,7 @@ namespace engine
   {
     if(!is_loaded() && !name.empty())
     {
-      T* asset_ptr_temp = REG.find<T>([=](const T* obj) -> bool { return obj->file_name == name; });
+      T* asset_ptr_temp = REG.find<T>([=](const T* obj) -> bool { return obj->name == name; });
 
       if(asset_ptr_temp == nullptr)
       {

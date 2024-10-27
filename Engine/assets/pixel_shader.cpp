@@ -9,8 +9,8 @@ namespace engine
   OBJECT_DEFINE(apixel_shader, ashader, Pixel shader asset)
   OBJECT_DEFINE_SPAWN(apixel_shader)
 
-  const char* apixel_shader::get_extension() const
+  std::string apixel_shader::get_extension() const
   {
-    return fio::get_pixel_shader_extension();
+    return fio::get_pixel_shader_extension().c_str();
   }
  }

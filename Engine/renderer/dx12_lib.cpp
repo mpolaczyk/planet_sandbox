@@ -4,12 +4,10 @@
 
 #include <dxgidebug.h>
 #include <dxgi1_6.h>
-#pragma comment(lib, "dxguid.lib")
 #include <DirectXColors.h>
 #include <fstream>
 
 #include "d3d12.h"
-#pragma comment(lib, "dxcompiler.lib")
 #include <sstream>
 
 #include "dxcapi.h"

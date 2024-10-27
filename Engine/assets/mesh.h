@@ -14,8 +14,8 @@ namespace engine
     OBJECT_DECLARE(astatic_mesh, aasset_base)
     OBJECT_DECLARE_VISITOR
 
-    virtual const char* get_extension() const override;
-    virtual const char* get_folder() const override;
+    virtual std::string get_extension() const override;
+    virtual std::string get_folder() const override;
     virtual bool load(const std::string& name) override;
     virtual void save() override;
     

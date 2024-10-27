@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "core/core.h"
 
@@ -12,6 +12,6 @@ namespace engine
   public:
     OBJECT_DECLARE(avertex_shader, ashader)
 
-    virtual const char* get_extension() const override;
+    virtual std::string get_extension() const override;
   };
 }

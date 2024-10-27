@@ -6,97 +6,124 @@
 
 namespace engine
 {
-  const char* fio::project_name;
+  std::string fio::project_name;
+  std::string fio::mesh_extension = ".mesh";
+  std::string fio::material_extension = ".material";
+  std::string fio::texture_extension = ".texture";
+  std::string fio::pixel_shader_extension = ".pixel_shader";
+  std::string fio::vertex_shader_extension = ".vertex_shader";
+  std::string fio::working_dir;
+  std::string fio::workspace_dir;
+  std::string fio::project_dir;
+  std::string fio::materials_dir;
+  std::string fio::meshes_dir;
+  std::string fio::textures_dir;
+  std::string fio::shaders_dir;
 
   std::string fio::get_project_name()
   {
     return project_name;
   }
 
-  void fio::init(const char* name)
+  void fio::init(const std::string& name)
   {
     project_name = name;
+    {
+      const std::string current_dir = std::filesystem::current_path().string();
+      std::ostringstream oss;
+      oss << current_dir << "\\";
+      working_dir = oss.str();
+    }
+    {
+      std::ostringstream oss;
+      oss << working_dir << "..\\..\\workspace\\";
+      workspace_dir = oss.str();
+    }
+    {
+      std::ostringstream oss;
+      oss << workspace_dir << project_name << "\\";
+      project_dir = oss.str();
+    }
+    {
+      std::ostringstream oss;
+      oss << project_dir << "materials\\";
+      materials_dir = oss.str();
+    }
+    {
+      std::ostringstream oss;
+      oss << project_dir << "meshes\\";
+      meshes_dir = oss.str();
+    }
+    {
+      std::ostringstream oss;
+      oss << project_dir << "textures\\";
+      textures_dir = oss.str();
+    }
+    {
+      std::ostringstream oss;
+      oss << workspace_dir << "shaders\\";
+      shaders_dir = oss.str();
+    }
   }
 
-  const char* fio::get_mesh_extension()
+  std::string fio::get_mesh_extension()
   {
-    return ".mesh";
+    return mesh_extension;
   }
   
-  const char* fio::get_material_extension()
+  std::string fio::get_material_extension()
   {
-    return ".material";
+    return material_extension;
   }
   
-  const char* fio::get_texture_extension()
+  std::string fio::get_texture_extension()
   {
-    return ".texture";
+    return texture_extension;
   }
   
-  const char* fio::get_pixel_shader_extension()
+  std::string fio::get_pixel_shader_extension()
   {
-    return ".pixel_shader";
+    return pixel_shader_extension;
   }
   
-  const char* fio::get_vertex_shader_extension()
+  std::string fio::get_vertex_shader_extension()
   {
-    return ".vertex_shader";
+    return vertex_shader_extension;
   }
   
   std::string fio::get_working_dir()
   {
-    std::string current_dir = std::filesystem::current_path().string();
-    std::ostringstream oss;
-    oss << current_dir << "\\";
-    return oss.str();
+    return working_dir;
   }
 
   std::string fio::get_workspace_dir()
   {
-    std::string working_dir = get_working_dir();
-    std::ostringstream oss;
-    oss << working_dir << "..\\..\\workspace\\";
-    return oss.str();
+    return workspace_dir;
   }
 
   std::string fio::get_project_dir()
   {
-    std::string workspace_dir = get_workspace_dir();
-    std::ostringstream oss;
-    oss << workspace_dir << project_name << "\\";
-    return oss.str();
+    return project_dir;
   }
 
   std::string fio::get_materials_dir()
   {
-    std::string project_dir = get_project_dir();
-    std::ostringstream oss;
-    oss << project_dir << "Materials\\";
-    return oss.str();
+    return materials_dir;
   }
 
   std::string fio::get_meshes_dir()
   {
-    std::string project_dir = get_project_dir();
-    std::ostringstream oss;
-    oss << project_dir << "meshes\\";
-    return oss.str();
+    return meshes_dir;
   }
 
   std::string fio::get_textures_dir()
   {
-    std::string project_dir = get_project_dir();
-    std::ostringstream oss;
-    oss << project_dir << "textures\\";
-    return oss.str();
+    return textures_dir;
   }
 
   std::string fio::get_shaders_dir()
   {
-    std::string workspace_dir = get_workspace_dir();
-    std::ostringstream oss;
-    oss << workspace_dir << "shaders\\";
-    return oss.str();
+    return shaders_dir;
   }
 
   bool fio::validate_workspace_dir()
