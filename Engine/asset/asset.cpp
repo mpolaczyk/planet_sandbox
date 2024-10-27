@@ -11,9 +11,4 @@ namespace engine
     name = in_name;
     return true;
   }
-
-  void aasset_base::save()
-  {
-    // TODO this is missing, so far file_name is handled in each child class. This is inconsistent, fix it.
-  }
 }

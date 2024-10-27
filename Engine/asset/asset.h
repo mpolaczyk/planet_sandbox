@@ -15,9 +15,9 @@ namespace engine
     virtual std::string get_extension() const = 0;
     virtual std::string get_folder() const = 0;
     virtual bool load(const std::string& name);
-    virtual void save();
+    virtual void save() = 0;
     
-    // JSON persistent
+    // Persistent - part of the file name, not in JSON
     std::string name;
   };
 }
