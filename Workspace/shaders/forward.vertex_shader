@@ -1,5 +1,5 @@
 {
-  "cache_file_name": "359EAC5319298167F.bin",
+  "cache_file_name": "forward_vs_main",
   "entrypoint": "vs_main",
   "shader_file_name": "forward.hlsl",
   "target": "vs_6_0"
