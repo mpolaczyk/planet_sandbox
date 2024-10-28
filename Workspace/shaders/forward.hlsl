@@ -120,14 +120,16 @@ float4 ps_main(fvs_output input) : SV_Target
   }
   else
   {
-    const fmaterial_properties material = materials_data[object_data.material_id];
+    const uint material_id = NonUniformResourceIndex(object_data.material_id);
+    const fmaterial_properties material = materials_data[material_id];
+    const uint texture_id = NonUniformResourceIndex(material.texture_id);
     
     const flight_components light_final = compute_light(input.position_ws, input.normal_ws, material.specular_power);
     
     float4 tex_color = { 1, 1, 1, 1 };
-    if (material.texture_id != -1)
+    if (texture_id != -1)
     {
-      tex_color = texture_data[material.texture_id].Sample(sampler_obj, input.uv);
+      tex_color = texture_data[texture_id].Sample(sampler_obj, input.uv);
     }
     
     const float4 selection_emissive = { 0.5, 0.5, 0.5, 1 };

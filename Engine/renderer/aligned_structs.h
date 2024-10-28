@@ -77,9 +77,8 @@ namespace engine
     XMFLOAT4X4 inverse_transpose_model_world; // 64 Used to transform the vertex normal from object space to world space
     XMFLOAT4X4 model_world_view_projection; // 64 Used to transform the vertex position from object space to projected clip space
     XMFLOAT4 object_id; // 16
-    uint8_t material_id; // 1
-    uint8_t is_selected; // 1
-    uint8_t padding[14]; // 1
+    uint32_t material_id; // 4   // TODO pack bits
+    uint32_t is_selected; // 4
   };
   static_assert(sizeof(fobject_data)/4 < 64); // "Root Constant size is greater than 64 DWORDs. Additional indirection may be added by the driver."
   ALIGNED_STRUCT_END(fobject_data)
