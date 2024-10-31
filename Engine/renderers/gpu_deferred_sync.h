@@ -52,9 +52,9 @@ namespace engine
     fdeferred_lighting_pass deferred_lighting_pass;
     
   protected:
-    virtual bool can_render() override;
+    virtual bool can_draw() override;
     virtual void init() override;
-    virtual void render_frame_internal(ComPtr<ID3D12GraphicsCommandList> command_list) override;
+    virtual void draw_internal(ComPtr<ID3D12GraphicsCommandList> command_list) override;
     virtual void create_output_texture(bool cleanup = false) override;
   };
 }

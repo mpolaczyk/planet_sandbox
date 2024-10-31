@@ -26,6 +26,7 @@ namespace engine
   // Base class for all objects, use like abstract
   class ENGINE_API oobject
   {
+  private:
     friend fobject_registry;
 
   public:
@@ -37,7 +38,8 @@ namespace engine
     oobject& operator=(const oobject&) = default;
     oobject(oobject&&) = delete;
     oobject& operator=(oobject&&) = delete;
-
+    virtual ~oobject() = default;
+    
     int get_runtime_id() const;
 
     virtual uint32_t get_hash() const;

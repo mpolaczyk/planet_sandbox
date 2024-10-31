@@ -1,6 +1,7 @@
 #pragma once
 
 #include <wrl/client.h>
+#include <dxcapi.h>
 
 #include "passes/pass_base.h"
 
@@ -21,11 +22,11 @@ namespace engine
     int show_diffuse = 1;
     int show_normals = 0;
     int show_object_id = 0;
-    
-    private:
-    
-    ComPtr<ID3DBlob> vertex_shader_blob;
-    ComPtr<ID3DBlob> pixel_shader_blob;
+    ComPtr<IDxcBlob> vertex_shader_blob;
+    ComPtr<IDxcBlob> pixel_shader_blob;
+
+  private:
+
     std::vector<ComPtr<ID3D12Resource>> cbv_frame_resource;  // index is back buffer id
     std::vector<ComPtr<ID3D12Resource>> srv_lights_resource;
     std::vector<ComPtr<ID3D12Resource>> srv_materials_resource;

@@ -17,9 +17,9 @@ namespace engine
   OBJECT_DEFINE_SPAWN(rgpu_deferred_sync)
   OBJECT_DEFINE_VISITOR(rgpu_deferred_sync)
 
-  bool rgpu_deferred_sync::can_render()
+  bool rgpu_deferred_sync::can_draw()
   {
-    if(!rrenderer_base::can_render())
+    if(!rrenderer_base::can_draw())
     {
       return false;
     }
@@ -67,20 +67,14 @@ namespace engine
     // Everything happens in the frame
   }
 
-  void rgpu_deferred_sync::render_frame_internal(ComPtr<ID3D12GraphicsCommandList> command_list)
+  void rgpu_deferred_sync::draw_internal(ComPtr<ID3D12GraphicsCommandList> command_list)
   {
-    gbuffer_pass.copy_input(window, &gbuffer_vertex_shader_asset.get()->render_state, &gbuffer_pixel_shader_asset.get()->render_state,
-      &scene_acceleration, scene, selected_object,
-      output_width, output_height,
-      default_material_asset);
+    gbuffer_pass.set_renderer_context(&context);
     
     gbuffer_pass.init();
     gbuffer_pass.draw(command_list);
-    
-    deferred_lighting_pass.copy_input(window, &lighting_vertex_shader_asset.get()->render_state, &lighting_pixel_shader_asset.get()->render_state,
-      &scene_acceleration, scene, selected_object,
-      output_width, output_height,
-      default_material_asset);
+
+    deferred_lighting_pass.set_renderer_context(&context);
     
     deferred_lighting_pass.init();
     //deferred_lighting_pass.gbuffer_srvs[egbuffer_type::material_id] = gbuffer_pass.output_srv[egbuffer_type::material_id];

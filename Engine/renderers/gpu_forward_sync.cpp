@@ -10,7 +10,7 @@ namespace engine
   OBJECT_DEFINE_SPAWN(rgpu_forward_sync)
   OBJECT_DEFINE_VISITOR(rgpu_forward_sync)
   
-  bool rgpu_forward_sync::can_render()
+  bool rgpu_forward_sync::can_draw()
   {
     if(vertex_shader_asset.get() == nullptr)
     {
@@ -30,28 +30,21 @@ namespace engine
         return false;
       }
     }
-    return forward_pass.get_can_render() && rrenderer_base::can_render();
+    return forward_pass.get_can_draw() && rrenderer_base::can_draw();
   }
   
   void rgpu_forward_sync::init()
   {
-    forward_pass.copy_input(window, &vertex_shader_asset.get()->render_state, &pixel_shader_asset.get()->render_state,
-      &scene_acceleration, scene, selected_object,
-      output_width, output_height,
-      default_material_asset);
-
+    forward_pass.set_renderer_context(&context);
+    forward_pass.vertex_shader_blob = vertex_shader_asset.get()->render_state.blob;
+    forward_pass.pixel_shader_blob = pixel_shader_asset.get()->render_state.blob;
     forward_pass.init();
   }
 
-  void rgpu_forward_sync::render_frame_internal(ComPtr<ID3D12GraphicsCommandList> command_list)
+  void rgpu_forward_sync::draw_internal(ComPtr<ID3D12GraphicsCommandList> command_list)
   {
-    forward_pass.copy_input(window, &vertex_shader_asset.get()->render_state, &pixel_shader_asset.get()->render_state,
-      &scene_acceleration, scene, selected_object,
-      output_width, output_height,
-      default_material_asset);
-    
-    forward_pass.show_object_id = show_object_id;
-    
+    forward_pass.set_renderer_context(&context);
+    forward_pass.show_object_id = show_object_id; // TODO Selection should be done as a separate pass
     forward_pass.draw(command_list);
   };
 }

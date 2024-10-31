@@ -5,25 +5,36 @@
 #include "object/object_registry.h"
 #include "profile/benchmark.h"
 #include "renderer/renderer_base.h"
-#include "renderer/aligned_structs.h"
+
+#include "renderer/scene_acceleration.h"
 
 namespace engine
 {
   OBJECT_DEFINE(rrenderer_base, oobject, Renderer base)
   OBJECT_DEFINE_NOSPAWN(rrenderer_base)
 
-  void rrenderer_base::render_frame(ComPtr<ID3D12GraphicsCommandList> command_list, fwindow* in_window, hscene* in_scene, const hhittable_base* in_selected_object)
+  rrenderer_base::rrenderer_base()
   {
-    scene = in_scene;
-    selected_object = in_selected_object;
-    window = in_window;
+    context.scene_acceleration = new fscene_acceleration();
+  }
 
-    if(!can_render())
+  rrenderer_base::~rrenderer_base()
+  {
+    delete context.scene_acceleration;
+  }
+  
+  void rrenderer_base::draw(ComPtr<ID3D12GraphicsCommandList> command_list, fwindow* in_window, hscene* in_scene, const hhittable_base* in_selected_object)
+  {
+    context.scene = in_scene;
+    context.selected_object = in_selected_object;
+    context.window = in_window;
+
+    if(!can_draw())
     {
       return;
     }
 
-    const uint32_t resolution_hash = fhash::combine(output_height, output_width);
+    const uint32_t resolution_hash = fhash::combine(context.output_height, context.output_width);
     if(resolution_hash != last_frame_resolution_hash)
     {
       LOG_INFO("Recreating output texture");
@@ -38,31 +49,31 @@ namespace engine
       init_done = true;
     }
 
-    if(!can_render())
+    if(!can_draw())
     {
       // Second check as something could've gone wrong in init()
       return;
     }
     
-    scene_acceleration.build(scene, default_material_asset.get());
-    if(!scene_acceleration.validate())
+    context.scene_acceleration->build(context.scene, context.default_material_asset.get());
+    if(!context.scene_acceleration->validate())
     {
       return;
     }
     
-    render_frame_internal(command_list);
+    draw_internal(command_list);
   }
 
-  bool rrenderer_base::can_render()
+  bool rrenderer_base::can_draw()
   {
-    if(output_height == 0 || output_width == 0)
+    if(context.output_height == 0 || context.output_width == 0)
     {
-      LOG_ERROR("Can't render. Incorrect resolution.");
+      LOG_ERROR("Can't draw. Incorrect resolution.");
       return false;
     }
-    if(scene == nullptr)
+    if(context.scene == nullptr)
     {
-      LOG_ERROR("Can't render. Scene is missing.");
+      LOG_ERROR("Can't draw. Scene is missing.");
       return false;
     }
     return true;

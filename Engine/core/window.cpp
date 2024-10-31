@@ -63,7 +63,7 @@ namespace engine
     {
       if(rrenderer_base* renderer = scene_root->renderer)
       {
-        renderer->render_frame(command_list, this, scene_root, selected_object);
+        renderer->draw(command_list, this, scene_root, selected_object);
       }
     }
 
