@@ -75,6 +75,7 @@ void GpuCrashTracker::PostDeviceInitialize(ID3D12Device* const device)
       GFSDK_Aftermath_FeatureFlags_GenerateShaderDebugInfo |
       GFSDK_Aftermath_FeatureFlags_EnableShaderErrorReporting;
     AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_DX12_Initialize(GFSDK_Aftermath_Version_API, flags, device));
+    // Crash here? Check if you have NVidia device (may vary on optimus laptops)
     m_initialized = true;
 }
 

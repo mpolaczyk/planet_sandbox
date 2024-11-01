@@ -1,9 +1,11 @@
 #pragma once
 
 #include <wrl/client.h>
-#include <dxcapi.h>
+
+#include "dxcapi.h"
 
 #include "passes/pass_base.h"
+#include "renderer/resource.h"
 
 namespace engine
 {
@@ -26,15 +28,10 @@ namespace engine
     ComPtr<IDxcBlob> pixel_shader_blob;
 
   private:
-
-    std::vector<ComPtr<ID3D12Resource>> cbv_frame_resource;  // index is back buffer id
-    std::vector<ComPtr<ID3D12Resource>> srv_lights_resource;
-    std::vector<ComPtr<ID3D12Resource>> srv_materials_resource;
-
-    // Main heap structure
-    uint32_t cbv_frame_data_heap_index = 0;
-    uint32_t srv_lights_heap_index = 0;
-    uint32_t srv_materials_heap_index = 0;
-    uint32_t srv_textures_heap_index = 0;
+    
+    std::vector<fresource> cbv_frame_resource;  // index is back buffer id
+    std::vector<fresource> srv_lights_resource;
+    std::vector<fresource> srv_materials_resource;
+    fresource srv_first_texture;
   };
 }

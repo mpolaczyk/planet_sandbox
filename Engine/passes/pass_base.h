@@ -3,9 +3,9 @@
 #include <wrl/client.h>
 
 #include "assets/material.h"
+#include "renderer/graphics_pipeline.h"
 
-struct ID3D12RootSignature;
-struct ID3D12PipelineState;
+
 struct ID3D12GraphicsCommandList;
 
 namespace engine
@@ -31,9 +31,8 @@ namespace engine
     
     // Input
     frenderer_context* context = nullptr; // weak ptr, owned by renderer
-    
-    ComPtr<ID3D12RootSignature> root_signature;
-    ComPtr<ID3D12PipelineState> pipeline_state;
+
+    fgraphics_pipeline graphics_pipeline;
 
     bool can_draw = true;
   };
