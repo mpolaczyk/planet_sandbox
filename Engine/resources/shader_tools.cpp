@@ -157,7 +157,7 @@ namespace engine
     dxc_result->GetStatus(&hr);
     if (FAILED(hr))
     {
-      LOG_ERROR("Shader compilation failed.");
+      LOG_ERROR("Shader compilation failed: {0}.", hlsl_file_name);
       return false;
     }
 

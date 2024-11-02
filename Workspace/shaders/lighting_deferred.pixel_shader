@@ -1,5 +1,6 @@
 {
+  "cache_file_name": "lighting_deferred_ps_main",
+  "entrypoint": "ps_main",
   "shader_file_name": "lighting_deferred.hlsl",
-  "entrypoint" : "ps_main",
   "target": "ps_6_0"
 }
