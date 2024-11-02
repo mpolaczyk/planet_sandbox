@@ -107,63 +107,31 @@ namespace engine
     // Create first texture SRV (handles only)
     srv_first_texture.init(heap, heap_index++, descriptor_size);
     
-    // Root signature
+    // Set up graphics pipeline
     {
-      // https://asawicki.info/news_1754_direct3d_12_long_way_to_access_data
-      CD3DX12_DESCRIPTOR_RANGE1 frame_range(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-      CD3DX12_DESCRIPTOR_RANGE1 lights_range(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-      CD3DX12_DESCRIPTOR_RANGE1 materials_range(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-      CD3DX12_DESCRIPTOR_RANGE1 texture_range(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, MAX_TEXTURES, 2, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+      graphics_pipeline.reserve_parameters(root_parameter_type::num);
+      graphics_pipeline.add_constant_parameter(root_parameter_type::object_data, 0,0, sizeof(fobject_data));
+      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::frame_data, 1, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::lights, 0, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::materials, 1, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::textures, 2, 0, MAX_TEXTURES, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
 
-      std::vector<CD3DX12_ROOT_PARAMETER1> root_parameters(root_parameter_type::num);
-      root_parameters[root_parameter_type::object_data].InitAsConstants(sizeof(fobject_data) / 4, 0, 0);
-      root_parameters[root_parameter_type::frame_data].InitAsDescriptorTable(1, &frame_range, D3D12_SHADER_VISIBILITY_PIXEL);
-      root_parameters[root_parameter_type::lights].InitAsDescriptorTable(1, &lights_range, D3D12_SHADER_VISIBILITY_PIXEL);
-      root_parameters[root_parameter_type::materials].InitAsDescriptorTable(1, &materials_range, D3D12_SHADER_VISIBILITY_PIXEL);
-      root_parameters[root_parameter_type::textures].InitAsDescriptorTable(1, &texture_range, D3D12_SHADER_VISIBILITY_PIXEL);
-      
-      std::vector<CD3DX12_STATIC_SAMPLER_DESC> static_sampers;
-      CD3DX12_STATIC_SAMPLER_DESC sampler_desc(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
-      static_sampers.push_back(sampler_desc);
-      
-      fdx12::create_root_signature(device, root_parameters, static_sampers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, graphics_pipeline.signature);
-#if BUILD_DEBUG
-      DX_SET_NAME(graphics_pipeline.signature, "Root signature forward pass")
-#endif
-    }
+      graphics_pipeline.add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
 
-    // Pipeline state
-    {
-      D3D12_INPUT_ELEMENT_DESC input_element_desc[] = {
+      graphics_pipeline.bind_pixel_shader(pixel_shader_blob);
+      graphics_pipeline.bind_vertex_shader(vertex_shader_blob);
+      
+      graphics_pipeline.setup_formats(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT, { DXGI_FORMAT_R8G8B8A8_UNORM });
+      
+      graphics_pipeline.setup_input_layout({
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
         { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
         { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
         { "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-      };
+      });
 
-      DXGI_FORMAT back_buffer_format = DXGI_FORMAT_R8G8B8A8_UNORM;
-      DXGI_FORMAT depth_buffer_format = DXGI_FORMAT_D32_FLOAT;
-
-      D3D12_RT_FORMAT_ARRAY rtv_formats = {};
-      rtv_formats.NumRenderTargets = 1;
-      rtv_formats.RTFormats[0] = back_buffer_format;
-
-      // Pipeline state object
-      IDxcBlob* vs_blob = vertex_shader_blob.Get();
-      IDxcBlob* ps_blob = pixel_shader_blob.Get();
-      fpipeline_state_stream pipeline_state_stream;
-      pipeline_state_stream.root_signature = graphics_pipeline.signature.Get();
-      pipeline_state_stream.input_layout = { input_element_desc, _countof(input_element_desc) };
-      pipeline_state_stream.primitive_topology_type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-      pipeline_state_stream.vertex_shader = CD3DX12_SHADER_BYTECODE(vs_blob->GetBufferPointer(), vs_blob->GetBufferSize());
-      pipeline_state_stream.pixel_shader = CD3DX12_SHADER_BYTECODE(ps_blob->GetBufferPointer(), ps_blob->GetBufferSize());
-      pipeline_state_stream.dsv_format = depth_buffer_format;
-      pipeline_state_stream.rtv_formats = rtv_formats;
-      fdx12::create_pipeline_state(device, pipeline_state_stream, graphics_pipeline.state);
-#if BUILD_DEBUG
-      DX_SET_NAME(graphics_pipeline.state, "Pipeline state forward pass")
-#endif
+      graphics_pipeline.init("Forward pass");
     }
   }
   
@@ -171,10 +139,9 @@ namespace engine
   {
     ComPtr<ID3D12Device2> device = fapplication::instance->device;
 
-    command_list->SetGraphicsRootSignature(graphics_pipeline.signature.Get());
+    graphics_pipeline.bind_command_list(command_list.Get());
+
     command_list->SetDescriptorHeaps(1, context->window->main_descriptor_heap.GetAddressOf());
-    command_list->SetPipelineState(graphics_pipeline.state.Get());
-    command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     const int back_buffer_index = context->window->get_back_buffer_index();
     const uint32_t N = static_cast<uint32_t>(context->scene_acceleration->h_meshes.size());
