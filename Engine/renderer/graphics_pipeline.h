@@ -1,5 +1,6 @@
 #pragma once
 
+#include <list>
 #include <wrl/client.h>
 
 #include "dxcapi.h"
@@ -17,7 +18,7 @@ namespace engine
   struct fgraphics_pipeline
   {
     void reserve_parameters(uint32_t num);
-    void add_constant_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, size_t size);
+    void add_constant_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, size_t size, D3D12_SHADER_VISIBILITY visibility);
     void add_shader_respurce_view_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, D3D12_ROOT_DESCRIPTOR_FLAGS flags, D3D12_SHADER_VISIBILITY visibility);
     void add_constant_buffer_view_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, D3D12_ROOT_DESCRIPTOR_FLAGS flags, D3D12_SHADER_VISIBILITY visibility);
     void add_unordered_access_view_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, D3D12_ROOT_DESCRIPTOR_FLAGS flags, D3D12_SHADER_VISIBILITY visibility);
@@ -32,11 +33,11 @@ namespace engine
     void setup_formats(DXGI_FORMAT back_buffer, DXGI_FORMAT depth_buffer, const std::vector<DXGI_FORMAT>& render_targets);
     void setup_input_layout(std::vector<D3D12_INPUT_ELEMENT_DESC>&& in_input_layout);
     
-    void init(const char* name);    
+    void init(const char* name);
 
   private:
     std::vector<CD3DX12_ROOT_PARAMETER1> parameters;
-    std::vector<CD3DX12_DESCRIPTOR_RANGE1> ranges;
+    std::list<CD3DX12_DESCRIPTOR_RANGE1> ranges;
     std::vector<CD3DX12_STATIC_SAMPLER_DESC> static_samplers;
     ComPtr<ID3D12RootSignature> root_signature;
     ComPtr<ID3D12PipelineState> pipeline_state;

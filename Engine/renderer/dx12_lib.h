@@ -46,8 +46,8 @@ typedef HWND__* HWND;
 #endif
 
 #define DX_RELEASE(resource) if(resource) { resource.Reset(); }
-#define DX_SET_NAME(resource, ...)  { std::string name = std::format(__VA_ARGS__); \
-    resource->SetName(std::wstring(name.begin(), name.end()).c_str()); }
+#define DX_SET_NAME(resource, ...)  { std::string __local_name = std::format(__VA_ARGS__); \
+    resource->SetName(std::wstring(__local_name.begin(), __local_name.end()).c_str()); }
 
 namespace engine
 {

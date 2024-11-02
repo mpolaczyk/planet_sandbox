@@ -110,7 +110,7 @@ namespace engine
     // Set up graphics pipeline
     {
       graphics_pipeline.reserve_parameters(root_parameter_type::num);
-      graphics_pipeline.add_constant_parameter(root_parameter_type::object_data, 0,0, sizeof(fobject_data));
+      graphics_pipeline.add_constant_parameter(root_parameter_type::object_data, 0, 0, sizeof(fobject_data), D3D12_SHADER_VISIBILITY_VERTEX);
       graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::frame_data, 1, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
       graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::lights, 0, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
       graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::materials, 1, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);

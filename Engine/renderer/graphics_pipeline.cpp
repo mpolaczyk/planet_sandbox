@@ -13,14 +13,14 @@ namespace engine
 {
   void fgraphics_pipeline::reserve_parameters(uint32_t num)
   {
-    CD3DX12_ROOT_PARAMETER1 param;
+    CD3DX12_ROOT_PARAMETER1 param = {};
     parameters.resize(num, param);
   }
 
-  void fgraphics_pipeline::add_constant_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, size_t size)
+  void fgraphics_pipeline::add_constant_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, size_t size, D3D12_SHADER_VISIBILITY visibility)
   {
     CD3DX12_ROOT_PARAMETER1 param;
-    param.InitAsConstants(shader_register / 4, shader_register, register_space);
+    param.InitAsConstants(size / 4, shader_register, register_space);
     parameters[index] = param;
   }
 
@@ -47,11 +47,11 @@ namespace engine
   
   void fgraphics_pipeline::add_descriptor_table_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, uint32_t num_descriptors, D3D12_DESCRIPTOR_RANGE_TYPE range_type, D3D12_DESCRIPTOR_RANGE_FLAGS range_flags, D3D12_SHADER_VISIBILITY visibility)
   {
-    CD3DX12_DESCRIPTOR_RANGE1 range(range_type, num_descriptors, shader_register, register_space, range_flags);
+    CD3DX12_DESCRIPTOR_RANGE1 range(range_type, num_descriptors, shader_register, register_space, range_flags, 0);
     ranges.push_back(range);
     
     CD3DX12_ROOT_PARAMETER1 param;
-    param.InitAsDescriptorTable(1, &ranges[ranges.size()-1], visibility);
+    param.InitAsDescriptorTable(1, &ranges.back(), visibility);
     parameters[index] = param;
   }
 
