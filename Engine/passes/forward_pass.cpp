@@ -101,9 +101,9 @@ namespace engine
     {
       graphics_pipeline.reserve_parameters(root_parameter_type::num);
       graphics_pipeline.add_constant_parameter(root_parameter_type::object_data, 0, 0, sizeof(fobject_data), D3D12_SHADER_VISIBILITY_VERTEX);
-      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::frame_data, 1, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_CBV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::lights, 0, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::materials, 1, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_constant_buffer_view_parameter(root_parameter_type::frame_data, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_shader_respurce_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_shader_respurce_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
       graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::textures, 2, 0, MAX_TEXTURES, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
 
       graphics_pipeline.add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
@@ -230,9 +230,9 @@ namespace engine
       const fstatic_mesh_render_state& smrs = context->scene_acceleration->h_meshes[i]->mesh_asset_ptr.get()->render_state;
 
       command_list->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, sizeof(fobject_data)/4, &context->scene_acceleration->object_buffer[i], 0);
-      command_list->SetGraphicsRootDescriptorTable(root_parameter_type::frame_data, heap.get(frame_data_heap_index[back_buffer_index])->gpu_handle);
-      command_list->SetGraphicsRootDescriptorTable(root_parameter_type::lights, heap.get(lights_data_heap_index[back_buffer_index])->gpu_handle);
-      command_list->SetGraphicsRootDescriptorTable(root_parameter_type::materials, heap.get(materials_data_heap_index[back_buffer_index])->gpu_handle);
+      command_list->SetGraphicsRootConstantBufferView(root_parameter_type::frame_data, heap.get(frame_data_heap_index[back_buffer_index])->resource->GetGPUVirtualAddress());
+      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::lights, heap.get(lights_data_heap_index[back_buffer_index])->resource->GetGPUVirtualAddress());
+      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::materials, heap.get(materials_data_heap_index[back_buffer_index])->resource->GetGPUVirtualAddress());
       command_list->SetGraphicsRootDescriptorTable(root_parameter_type::textures, heap.get(default_texture_heap_index)->gpu_handle);
       command_list->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list->IASetIndexBuffer(&smrs.index_buffer_view);
