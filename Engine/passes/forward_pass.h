@@ -5,7 +5,6 @@
 #include "dxcapi.h"
 
 #include "passes/pass_base.h"
-#include "renderer/resource.h"
 
 namespace engine
 {
@@ -29,9 +28,9 @@ namespace engine
 
   private:
     
-    std::vector<fresource> cbv_frame_resource;  // index is back buffer id
-    std::vector<fresource> srv_lights_resource;
-    std::vector<fresource> srv_materials_resource;
-    fresource srv_first_texture;
+    std::vector<uint32_t> frame_data_heap_index;  // index is back buffer id
+    std::vector<uint32_t> lights_data_heap_index;
+    std::vector<uint32_t> materials_data_heap_index;
+    uint32_t default_texture_heap_index = 0;
   };
 }

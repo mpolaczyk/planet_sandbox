@@ -5,6 +5,7 @@
 #include <wrl/client.h>
 
 #include "core/core.h"
+#include "renderer/descriptor_heap.h"
 
 struct ID3D12Device;
 struct ID3D12RootSignature;
@@ -43,7 +44,7 @@ namespace engine
     std::vector<ComPtr<ID3D12Resource>> rtv;
     ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap;
     ComPtr<ID3D12Resource> dsv;
-    ComPtr<ID3D12DescriptorHeap> main_descriptor_heap; // srv, cbv, uav
+    fdescriptor_heap main_descriptor_heap; // srv, cbv, uav
     
   protected:    
     HWND hwnd;

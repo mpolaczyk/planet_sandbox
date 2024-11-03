@@ -25,13 +25,13 @@ namespace editor
 
     fdx12::create_cbv_srv_uav_descriptor_heap(device, ui_descriptor_heap);
 #if BUILD_DEBUG
-    DX_SET_NAME(ui_descriptor_heap, "UI descriptor Heap");
+    DX_SET_NAME(ui_descriptor_heap.heap, "UI descriptor Heap");
 #endif
     
-    ImGui_ImplDX12_Init( device.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM,
-      ui_descriptor_heap.Get(),
-      ui_descriptor_heap->GetCPUDescriptorHandleForHeapStart(),
-      ui_descriptor_heap->GetGPUDescriptorHandleForHeapStart());
+    ImGui_ImplDX12_Init(device.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM,
+      ui_descriptor_heap.heap.Get(),
+      ui_descriptor_heap.heap->GetCPUDescriptorHandleForHeapStart(),
+      ui_descriptor_heap.heap->GetGPUDescriptorHandleForHeapStart());
     
     // TO FIX - it crashes in second frame because imgui knows only the first descriptor heap, second frame uses the second one...
     // Or use one descriptor heap... wierd
@@ -77,7 +77,7 @@ namespace editor
     fdx12::set_viewport(command_list, width, height);
     fdx12::set_scissor(command_list, width, height);
     
-    command_list->SetDescriptorHeaps(1, ui_descriptor_heap.GetAddressOf());
+    command_list->SetDescriptorHeaps(1, ui_descriptor_heap.heap.GetAddressOf());
 
     ImGui::Render();
 #if RENDER_IMGUI

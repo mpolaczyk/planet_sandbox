@@ -21,6 +21,7 @@
 #include "engine/log.h"
 #include "engine/string_tools.h"
 #include "renderer/aligned_structs.h"
+#include "renderer/descriptor_heap.h"
 #include "renderer/pipeline_state.h"
 #include "renderer/render_state.h"
 
@@ -278,13 +279,15 @@ namespace engine
     device->CreateDepthStencilView(out_dsv.Get(), &desc, descriptor_heap->GetCPUDescriptorHandleForHeapStart());
   }
 
-  void fdx12::create_cbv_srv_uav_descriptor_heap(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap)
+  void fdx12::create_cbv_srv_uav_descriptor_heap(ComPtr<ID3D12Device> device, fdescriptor_heap& out_descriptor_heap)
   {
+    out_descriptor_heap.descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = MAX_MAIN_DESCRIPTORS;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.GetAddressOf())))
+    THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.heap.GetAddressOf())))
   }
 
   void fdx12::create_command_list(ComPtr<ID3D12Device> device, uint32_t back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators)
@@ -519,7 +522,7 @@ namespace engine
     out_render_state.is_resource_online = true;
   }
 
-  void fdx12::upload_texture_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> descriptor_heap, const CD3DX12_CPU_DESCRIPTOR_HANDLE& handle, atexture* texture)
+  void fdx12::upload_texture_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, const CD3DX12_CPU_DESCRIPTOR_HANDLE& handle, atexture* texture)
   {
     ftexture_render_state& trs = texture->render_state;
     

@@ -41,7 +41,7 @@ namespace engine
 #if BUILD_DEBUG
     DX_SET_NAME(rtv_descriptor_heap, "Render target descriptor heap")
     DX_SET_NAME(dsv_descriptor_heap, "Depth stencil descriptor heap")
-    DX_SET_NAME(main_descriptor_heap, "Main descriptor heap")
+    DX_SET_NAME(main_descriptor_heap.heap, "Main descriptor heap")
 #endif
   }
 
@@ -128,7 +128,7 @@ namespace engine
     {
       DX_RELEASE(rtv[n]);
     }
-    DX_RELEASE(main_descriptor_heap);
+    DX_RELEASE(main_descriptor_heap.heap);
     DX_RELEASE(rtv_descriptor_heap);
     DX_RELEASE(dsv);
     DX_RELEASE(dsv_descriptor_heap);

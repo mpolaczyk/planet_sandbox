@@ -51,7 +51,6 @@ namespace editor
     fvec3 center_of_scene;
     float distance_to_center_of_scene = 0.0f;    
 
-    ComPtr<ID3D12DescriptorHeap> ui_descriptor_heap; // srv, cbv, uav
-    
+    engine::fdescriptor_heap ui_descriptor_heap; // srv, cbv, uav
   };
 }
