@@ -41,9 +41,9 @@ namespace engine
     
     ComPtr<IDXGISwapChain4> swap_chain;
     ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap;
-    std::vector<ComPtr<ID3D12Resource>> rtv;
     ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap;
-    ComPtr<ID3D12Resource> dsv;
+    std::vector<ComPtr<ID3D12Resource>> rtv;            // index is backbuffer id
+    std::vector<ComPtr<ID3D12Resource>> dsv;            // index is backbuffer id
     fdescriptor_heap main_descriptor_heap; // srv, cbv, uav
     
   protected:    

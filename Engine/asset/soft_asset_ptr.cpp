@@ -29,6 +29,12 @@ namespace engine
   }
 
   template <derives_from<aasset_base> T>
+  bool fsoft_asset_ptr<T>::is_set() const
+  {
+    return !name.empty();
+  }
+  
+  template <derives_from<aasset_base> T>
   const T* fsoft_asset_ptr<T>::get() const
   {
     if(!is_loaded() && !name.empty())

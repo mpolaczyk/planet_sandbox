@@ -1,57 +1,61 @@
 #include "gbuffer_pass.h"
 
-#include <DirectXMath.h>
-#include <dxgiformat.h>
-
+#include "core/application.h"
 #include "core/core.h"
+#include "core/window.h"
+#include "engine/log.h"
+#include "renderer/render_context.h"
 #include "hittables/scene.h"
-#include "hittables/static_mesh.h"
-#include "math/math.h"
-#include "renderer/dx12_lib.h"
-#include "renderer/render_state.h"
 #include "renderer/scene_acceleration.h"
 
 namespace engine
 {
   using namespace DirectX;
-
-  //namespace
-  //{
-  //  ALIGNED_STRUCT_BEGIN(fobject_data)
-  //  {
-  //    XMFLOAT4X4 model_world; // 64 
-  //    XMFLOAT4X4 inverse_transpose_model_world; // 64 
-  //    XMFLOAT4X4 model_world_view_projection; // 64
-  //    XMFLOAT4 object_id; // 16
-  //    uint32_t material_id; // 4
-  //    uint32_t is_selected; // 4
-  //    int32_t padding[2]; // 8
-  //  };
-  //
-  //  ALIGNED_STRUCT_END(fobject_data)
-  //}
   
   void fgbuffer_pass::init()
   {
-    //{
-    //  D3D11_INPUT_ELEMENT_DESC input_element_desc[] =
-    //  {
-    //    {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    //    {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    //    {"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    //    {"BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    //    {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0}
-    //  };
-    //  dx.create_input_layout(input_element_desc, ARRAYSIZE(input_element_desc), vertex_shader->blob, input_layout);
-    //}
-    //dx.create_sampler_state(sampler_state);
-    //dx.create_constant_buffer(sizeof(fobject_data), object_constant_buffer);
-    //dx.create_rasterizer_state(rasterizer_state);
-    //dx.create_depth_stencil_state(depth_stencil_state);
+    fpass_base::init();
+
+    // Set up graphics pipeline
+    {
+      graphics_pipeline.reserve_parameters(1);
+      graphics_pipeline.add_constant_parameter(0, 0, 0, sizeof(fobject_data), D3D12_SHADER_VISIBILITY_VERTEX);
+      graphics_pipeline.add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
+      graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->render_state.blob);
+      graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->render_state.blob);
+      graphics_pipeline.setup_formats(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT,
+        {
+          DXGI_FORMAT_R32G32B32A32_FLOAT,
+          DXGI_FORMAT_R32G32B32A32_FLOAT,
+          DXGI_FORMAT_R32G32B32A32_FLOAT,
+          DXGI_FORMAT_R32G32B32A32_FLOAT,
+          DXGI_FORMAT_R8_UINT,
+          DXGI_FORMAT_R8_UINT
+        });
+      graphics_pipeline.setup_input_layout({
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+      });
+      graphics_pipeline.init("GBuffer pass");
+    }
   }
 
   void fgbuffer_pass::draw(ComPtr<ID3D12GraphicsCommandList> command_list)
   {
+    ComPtr<ID3D12Device2> device = fapplication::instance->device;
+    fdescriptor_heap* heap = context->main_descriptor_heap;
+
+    graphics_pipeline.bind_command_list(command_list.Get());
+
+    command_list->SetDescriptorHeaps(1, heap->heap.GetAddressOf());
+
+    //const int back_buffer_index = context->back_buffer_index;
+    //const uint32_t N = static_cast<uint32_t>(context->scene.scene_acceleration->h_meshes.size());
+
+    
 //    for(int i = 0; i < egbuffer_type::count; i++)
 //    {
 //      dx.device_context->ClearRenderTargetView(output_rtv[i].Get(), scene->clear_color);

@@ -2,15 +2,13 @@
 
 #include <wrl/client.h>
 
-#include "dxcapi.h"
-
 #include "passes/pass_base.h"
 
 namespace engine
 {
   using Microsoft::WRL::ComPtr;
   
-  struct fforward_pass : fpass_base
+  struct fforward_pass : public fpass_base
   {
     virtual void init() override;
     virtual void draw(ComPtr<ID3D12GraphicsCommandList> command_list) override;
@@ -23,11 +21,8 @@ namespace engine
     int show_diffuse = 1;
     int show_normals = 0;
     int show_object_id = 0;
-    ComPtr<IDxcBlob> vertex_shader_blob;
-    ComPtr<IDxcBlob> pixel_shader_blob;
 
   private:
-    
     std::vector<uint32_t> frame_data_heap_index;  // index is back buffer id
     std::vector<uint32_t> lights_data_heap_index;
     std::vector<uint32_t> materials_data_heap_index;

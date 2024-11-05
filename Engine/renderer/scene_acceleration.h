@@ -25,9 +25,9 @@ namespace engine
    *    - Clears and rebuilds all the buffers
    * - Not clever enough to analyze the diff between this and last frame, effectively update instead of build from scratch
    */
-  struct fscene_acceleration
+  struct ENGINE_API fscene_acceleration
   {
-    void build(hscene* scene, amaterial* default_material);
+    void build(hscene* scene);
     bool validate() const;
         
     // All static meshes on the scene

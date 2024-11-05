@@ -28,22 +28,27 @@ namespace engine
     rrenderer_base(rrenderer_base&&) = delete;
     rrenderer_base& operator=(rrenderer_base&&) = delete;
     virtual ~rrenderer_base() override;
-    
+
+    // Runtime
     frenderer_context context;
-    
-    uint32_t last_frame_resolution_hash = 0;
     int show_object_id = 0;
+    
+    // Persistent
+    int output_width = 1920;
+    int output_height = 1080;
 
     // Main public interface
-    void draw(ComPtr<ID3D12GraphicsCommandList> command_list, fwindow* in_window, hscene* in_scene, const hhittable_base* in_selected_object = nullptr);
+    void set_renderer_context(frenderer_context&& in_context);
+    void draw(ComPtr<ID3D12GraphicsCommandList> command_list);
     
   protected:
     virtual bool can_draw();
     virtual void init() = 0;
     virtual void draw_internal(ComPtr<ID3D12GraphicsCommandList> command_list) = 0;
     virtual void create_output_texture(bool cleanup = false) = 0;
-    
+  
   private:
+    uint32_t last_frame_resolution_hash = 0;
     bool init_done = false;
   };
 }

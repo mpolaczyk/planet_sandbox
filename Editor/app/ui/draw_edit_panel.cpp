@@ -90,17 +90,11 @@ namespace editor
 
   void vdraw_edit_panel::visit_rrenderer_base(rrenderer_base& object) const
   {
-    ImGui::InputInt("Resolution h", &object.context.output_width);
-    ImGui::InputInt("Resolution v", &object.context.output_height);
+    ImGui::InputInt("Resolution h", &object.output_width);
+    ImGui::InputInt("Resolution v", &object.output_height);
     {
       fselection_combo_model<amaterial> model;
       model.objects = REG.get_all_by_type<const amaterial>();
-      fui_helper::draw_selection_combo<amaterial>(model, "Default material", [=](const amaterial* obj) -> bool{ return true; }, object.context.default_material_asset.get());
-
-      if (model.selected_object != nullptr)
-      {
-        object.context.default_material_asset.set_name(model.selected_object->name);
-      }
     }
   }
 

@@ -6,6 +6,7 @@
 
 #include "hittables.h"
 #include "math/camera.h"
+#include "renderer/scene_acceleration.h"
 
 namespace engine
 {
@@ -28,9 +29,10 @@ namespace engine
 
     // Persistent members
     std::vector<hhittable_base*> objects;
-    rrenderer_base* renderer = nullptr;
-    DirectX::XMFLOAT4 ambient_light_color;
-    DirectX::XMVECTORF32 clear_color;
+    rrenderer_base* renderer = nullptr;     // TODO remove it from here, should be application setting
+    DirectX::XMFLOAT4 ambient_light_color;  // TODO move to renderer
+    DirectX::XMVECTORF32 clear_color;       // TODO move to renderer
     fcamera camera_config;
+    fscene_acceleration scene_acceleration;
   };
 }

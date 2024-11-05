@@ -76,7 +76,7 @@ namespace engine
     static void create_render_target_descriptor_heap(ComPtr<ID3D12Device> device, uint32_t back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap);
     static void create_depth_stencil_descriptor_heap(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap);
     static void create_render_target(ComPtr<ID3D12Device> device, ComPtr<IDXGISwapChain4> swap_chain, ComPtr<ID3D12DescriptorHeap> descriptor_heap, uint32_t back_buffer_count, std::vector<ComPtr<ID3D12Resource>>& out_rtv);
-    static void create_depth_stencil(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap> descriptor_heap, uint32_t width, uint32_t height, ComPtr<ID3D12Resource>& out_dsv);
+    static void create_depth_stencil(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap> descriptor_heap, uint32_t width, uint32_t height, uint32_t back_buffer_count, std::vector<ComPtr<ID3D12Resource>>& out_dsv);
     static void create_cbv_srv_uav_descriptor_heap(ComPtr<ID3D12Device> device, fdescriptor_heap& out_descriptor_heap);
     static void create_command_list(ComPtr<ID3D12Device> device, uint32_t back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators);
     static void create_synchronisation(ComPtr<ID3D12Device> device, uint32_t back_buffer_count, uint64_t initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values);
@@ -97,7 +97,7 @@ namespace engine
     static void set_scissor(ComPtr<ID3D12GraphicsCommandList> command_list, uint32_t width, uint32_t height);
 
     static void clear_render_target(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap, uint32_t back_buffer_index);
-    static void clear_depth_stencil(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap);
+    static void clear_depth_stencil(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap, uint32_t back_buffer_index);
     
     static void report_live_objects();
     

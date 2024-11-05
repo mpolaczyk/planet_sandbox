@@ -1,4 +1,5 @@
-﻿#include "object/object_registry.h"
+﻿
+#include "object/object_registry.h"
 #include "object/object_visitor.h"
 #include "gpu_forward_sync.h"
 
@@ -12,32 +13,15 @@ namespace engine
   
   bool rgpu_forward_sync::can_draw()
   {
-    if(vertex_shader_asset.get() == nullptr)
-    {
-      vertex_shader_asset.set_name("forward");
-      if(vertex_shader_asset.get() == nullptr)
-      {
-        LOG_ERROR("Missing vertex shader setup.");
-        return false;
-      }
-    }
-    if(pixel_shader_asset.get() == nullptr)
-    {
-      pixel_shader_asset.set_name("forward");
-      if(pixel_shader_asset.get() == nullptr)
-      {
-        LOG_ERROR("Missing pixel shader setup.");
-        return false;
-      }
-    }
     return forward_pass.get_can_draw() && rrenderer_base::can_draw();
   }
   
   void rgpu_forward_sync::init()
   {
     forward_pass.set_renderer_context(&context);
-    forward_pass.vertex_shader_blob = vertex_shader_asset.get()->render_state.blob;
-    forward_pass.pixel_shader_blob = pixel_shader_asset.get()->render_state.blob;
+    //forward_pass.output = context.rtv;
+    forward_pass.vertex_shader_asset = vertex_shader_asset;
+    forward_pass.pixel_shader_asset = pixel_shader_asset;
     forward_pass.init();
   }
 

@@ -2,24 +2,21 @@
 
 #include <wrl/client.h>
 
-#include "passes/gbuffer_type.h"
-#include "passes/pass_base.h"
+#include "dxcapi.h"
 
-//struct ID3D11Texture2D;
-//struct ID3D11Buffer;
-//struct ID3D11RenderTargetView;
-//struct ID3D11ShaderResourceView;
-//struct ID3D11DepthStencilView;
+#include "passes/pass_base.h"
 
 namespace engine
 {
   using Microsoft::WRL::ComPtr;
   
-  struct fgbuffer_pass : fpass_base
+  struct fgbuffer_pass : public fpass_base
   {
     virtual void init() override;
     virtual void draw(ComPtr<ID3D12GraphicsCommandList> command_list) override;
     virtual void create_output_texture(bool cleanup = false) override;
+    
+    int show_object_id = 0;
     
     // Output
  //   ComPtr<ID3D11Texture2D> output_texture[egbuffer_type::count];

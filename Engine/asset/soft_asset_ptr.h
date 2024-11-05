@@ -16,7 +16,6 @@ namespace engine
 
   protected:
     // Persistent name, or the one used to discovery on the disk
-    // Can't change at runtime as I have no dependency update mechanism
     std::string name;
   };
 
@@ -30,10 +29,10 @@ namespace engine
   struct ENGINE_API fsoft_asset_ptr : public fsoft_asset_ptr_base
   {
     void set_name(const std::string& in_name);
-
     std::string get_name() const;
 
     bool is_loaded() const;
+    bool is_set() const;
 
     const T* get() const;
     T* get();

@@ -181,8 +181,8 @@ namespace engine
 #if USE_NSIGHT_AFTERMATH
       fapplication::instance->gpu_crash_handler.add_source_shader_debug_data(out_shader_blob.Get(), pdb_blob.Get());
 #endif
-#endif
     }
+#endif
     return true;
   }
 

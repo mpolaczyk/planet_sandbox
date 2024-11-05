@@ -12,6 +12,7 @@
 #include "renderer/renderer_base.h"
 #include "renderer/command_queue.h"
 #include "hittables/scene.h"
+#include "renderer/scene_acceleration.h"
 
 namespace engine
 {
@@ -48,26 +49,37 @@ namespace engine
   void fwindow::draw(const fcommand_queue* command_queue)
   {
     ComPtr<ID3D12GraphicsCommandList> command_list = command_queue->get_command_list(ecommand_list_type::main, back_buffer_index);
-    ComPtr<ID3D12Device2> device = fapplication::instance->device;
-
-    fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    ComPtr<ID3D12Device2>& device = fapplication::instance->device;
     
-    fdx12::clear_render_target(device, command_list, rtv_descriptor_heap, back_buffer_index);
-    fdx12::clear_depth_stencil(command_list, dsv_descriptor_heap);
-    
-    fdx12::set_render_targets(device, command_list, dsv_descriptor_heap, rtv_descriptor_heap, back_buffer_index);
-    fdx12::set_viewport(command_list, width, height);
-    fdx12::set_scissor(command_list, width, height);
     
     if(hscene* scene_root = fapplication::instance->scene_root)
     {
       if(rrenderer_base* renderer = scene_root->renderer)
       {
-        renderer->draw(command_list, this, scene_root, selected_object);
+        fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+        
+        fdx12::clear_render_target(device, command_list, rtv_descriptor_heap, back_buffer_index);
+        fdx12::clear_depth_stencil(device, command_list, dsv_descriptor_heap, back_buffer_index);
+        fdx12::set_render_targets(device, command_list, dsv_descriptor_heap, rtv_descriptor_heap, back_buffer_index);
+        fdx12::set_viewport(command_list, width, height);
+        fdx12::set_scissor(command_list, width, height);
+        
+        frenderer_context context;
+        context.back_buffer_count = back_buffer_count;
+        context.back_buffer_index = back_buffer_index;
+        context.rtv = rtv[back_buffer_index];
+        context.dsv = dsv[back_buffer_index];
+        context.scene = scene_root;
+        context.selected_object = selected_object;
+        context.main_descriptor_heap = &main_descriptor_heap;
+        renderer->set_renderer_context(std::move(context));
+        renderer->output_width = renderer->output_width == 0 ? width : renderer->output_width;
+        renderer->output_height = renderer->output_height == 0 ? height : renderer->output_height;
+        renderer->draw(command_list);
+
+        fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
       }
     }
-
-    fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
   }
   
   void fwindow::present(fgpu_crash_tracker* gpu_crash_handler)
@@ -103,21 +115,23 @@ namespace engine
       for(uint32_t n = 0; n < back_buffer_count; n++)
       {
         DX_RELEASE(rtv[n]);
+        DX_RELEASE(dsv[n]);
       }
       rtv.clear();
+      dsv.clear();
     }
-    DX_RELEASE(dsv);
 
     fdx12::resize_swap_chain(swap_chain, back_buffer_count, width, height);
     back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
     fdx12::create_render_target(device, swap_chain, rtv_descriptor_heap, back_buffer_count, rtv);
-    fdx12::create_depth_stencil(device, dsv_descriptor_heap, width, height, dsv);
+    fdx12::create_depth_stencil(device, dsv_descriptor_heap, width, height, back_buffer_count, dsv);
 #if BUILD_DEBUG
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
-      DX_SET_NAME(rtv[n], "Render target resource: back buffer {}", n)
+      DX_SET_NAME(rtv[n], "Render target resource: {}", n)
+      DX_SET_NAME(dsv[n], "Depth stencil resource: {}", n)
+
     }
-    DX_SET_NAME(dsv, "Depth stencil resource")
 #endif
   }
   
@@ -127,10 +141,10 @@ namespace engine
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       DX_RELEASE(rtv[n]);
+      DX_RELEASE(dsv[n]);
     }
     DX_RELEASE(main_descriptor_heap.heap);
     DX_RELEASE(rtv_descriptor_heap);
-    DX_RELEASE(dsv);
     DX_RELEASE(dsv_descriptor_heap);
 
     ::DestroyWindow(hwnd);

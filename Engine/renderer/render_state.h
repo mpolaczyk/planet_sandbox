@@ -4,7 +4,6 @@
 #include <wrl/client.h>
 #include "d3d12.h"
 #include "dxcapi.h"
-#include "d3d12shader.h"
 
 #include "math/vertex_data.h"
 

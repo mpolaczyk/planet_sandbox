@@ -226,6 +226,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClCompile Include="passes\deferred_lighting_pass.cpp" />
     <ClCompile Include="passes\forward_pass.cpp" />
     <ClCompile Include="passes\gbuffer_pass.cpp" />
+    <ClCompile Include="passes\pass_base.cpp" />
     <ClCompile Include="persistence\object_persistence.cpp" />
     <ClCompile Include="persistence\persistence.cpp" />
     <ClCompile Include="renderers\gpu_deferred_sync.cpp" />

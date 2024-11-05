@@ -5,8 +5,9 @@
 #include "object/object_registry.h"
 #include "profile/benchmark.h"
 #include "renderer/renderer_base.h"
+#include "renderer/dx12_lib.h"
 
-#include "renderer/scene_acceleration.h"
+#include "core/application.h"
 
 namespace engine
 {
@@ -15,26 +16,31 @@ namespace engine
 
   rrenderer_base::rrenderer_base()
   {
-    context.scene_acceleration = new fscene_acceleration();
+    //scene.scene_acceleration = new fscene_acceleration();
   }
 
   rrenderer_base::~rrenderer_base()
   {
-    delete context.scene_acceleration;
+    //delete context.scene_acceleration;
+  }
+
+  void rrenderer_base::set_renderer_context(frenderer_context&& in_context)
+  {
+    if(!in_context.validate())
+    {
+      throw std::runtime_error("Failed to validate renderer context");
+    }
+    context = std::move(in_context);
   }
   
-  void rrenderer_base::draw(ComPtr<ID3D12GraphicsCommandList> command_list, fwindow* in_window, hscene* in_scene, const hhittable_base* in_selected_object)
+  void rrenderer_base::draw(ComPtr<ID3D12GraphicsCommandList> command_list)
   {
-    context.scene = in_scene;
-    context.selected_object = in_selected_object;
-    context.window = in_window;
-
     if(!can_draw())
     {
       return;
     }
 
-    const uint32_t resolution_hash = fhash::combine(context.output_height, context.output_width);
+    const uint32_t resolution_hash = fhash::combine(output_height, output_width);
     if(resolution_hash != last_frame_resolution_hash)
     {
       LOG_INFO("Recreating output texture");
@@ -55,18 +61,19 @@ namespace engine
       return;
     }
     
-    context.scene_acceleration->build(context.scene, context.default_material_asset.get());
-    if(!context.scene_acceleration->validate())
+    context.scene->scene_acceleration.build(context.scene);
+    if(!context.scene->scene_acceleration.validate())
     {
       return;
     }
-    
+
     draw_internal(command_list);
+    
   }
 
   bool rrenderer_base::can_draw()
   {
-    if(context.output_height == 0 || context.output_width == 0)
+    if(output_height == 0 || output_width == 0)
     {
       LOG_ERROR("Can't draw. Incorrect resolution.");
       return false;

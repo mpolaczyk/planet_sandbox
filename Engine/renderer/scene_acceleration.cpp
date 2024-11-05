@@ -55,7 +55,7 @@ namespace engine
     return next_GPU_texture_id++;
   }
   
-  void fscene_acceleration::build(hscene* scene, amaterial* default_material)
+  void fscene_acceleration::build(hscene* scene)
   {
     uint32_t scene_hash = scene->get_hash();
     bool scene_structure_changed = previous_scene_hash != scene_hash;
@@ -68,6 +68,10 @@ namespace engine
 
     for(hhittable_base* hittable : scene->objects)
     {
+      fsoft_asset_ptr<amaterial> default_material_asset;
+      default_material_asset.set_name("default");
+      amaterial* default_material = default_material_asset.get();
+      
       if(hittable->get_class() == hstatic_mesh::get_class_static())
       {
         // Find base objects: hittable mesh

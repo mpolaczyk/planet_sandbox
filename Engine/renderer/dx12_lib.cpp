@@ -261,7 +261,7 @@ namespace engine
     THROW_IF_FAILED(swap_chain->ResizeBuffers(back_buffer_count, width, height, desc.BufferDesc.Format, desc.Flags));
   }
   
-  void fdx12::create_depth_stencil(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap> descriptor_heap, uint32_t width, uint32_t height, ComPtr<ID3D12Resource>& out_dsv)
+  void fdx12::create_depth_stencil(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap> descriptor_heap, uint32_t width, uint32_t height, uint32_t back_buffer_count, std::vector<ComPtr<ID3D12Resource>>& out_dsv)
   {
     D3D12_CLEAR_VALUE clear_value = {};
     clear_value.Format = DXGI_FORMAT_D32_FLOAT;
@@ -269,14 +269,23 @@ namespace engine
 
     CD3DX12_HEAP_PROPERTIES heap_prop(D3D12_HEAP_TYPE_DEFAULT);
     CD3DX12_RESOURCE_DESC resource_desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, width, height, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
-    THROW_IF_FAILED(device->CreateCommittedResource(&heap_prop, D3D12_HEAP_FLAG_NONE, &resource_desc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &clear_value, IID_PPV_ARGS(out_dsv.GetAddressOf())));
-    
-    D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
-    desc.Format = DXGI_FORMAT_D32_FLOAT;
-    desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-    desc.Texture2D.MipSlice = 0;
-    desc.Flags = D3D12_DSV_FLAG_NONE;
-    device->CreateDepthStencilView(out_dsv.Get(), &desc, descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+    const uint32_t descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+
+    out_dsv.reserve(back_buffer_count);
+    for(uint32_t n = 0; n < back_buffer_count; n++)
+    {
+      ComPtr<ID3D12Resource> back_buffer;
+      THROW_IF_FAILED(device->CreateCommittedResource(&heap_prop, D3D12_HEAP_FLAG_NONE, &resource_desc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &clear_value, IID_PPV_ARGS(back_buffer.GetAddressOf())));
+      D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
+      desc.Format = DXGI_FORMAT_D32_FLOAT;
+      desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+      desc.Texture2D.MipSlice = 0;
+      desc.Flags = D3D12_DSV_FLAG_NONE;
+      device->CreateDepthStencilView(back_buffer.Get(), &desc, handle);
+      out_dsv.push_back(back_buffer);
+      handle.Offset(descriptor_size);
+    }
   }
 
   void fdx12::create_cbv_srv_uav_descriptor_heap(ComPtr<ID3D12Device> device, fdescriptor_heap& out_descriptor_heap)
@@ -367,9 +376,10 @@ namespace engine
 
   void fdx12::set_render_targets(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap, ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap, int back_buffer_index)
   {
-    uint32_t rtv_descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, rtv_descriptor_size);
-    D3D12_CPU_DESCRIPTOR_HANDLE dsv_handle = dsv_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
+    const uint32_t rtv_descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    const uint32_t dsv_descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+    const CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, rtv_descriptor_size);
+    const CD3DX12_CPU_DESCRIPTOR_HANDLE dsv_handle(dsv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, dsv_descriptor_size);
     command_list->OMSetRenderTargets(1, &rtv_handle, FALSE, &dsv_handle);
   }
   
@@ -387,14 +397,15 @@ namespace engine
 
   void fdx12::clear_render_target(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap, uint32_t back_buffer_index)
   {
-    uint32_t descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, descriptor_size);
+    const uint32_t descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    const CD3DX12_CPU_DESCRIPTOR_HANDLE handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, descriptor_size);
     command_list->ClearRenderTargetView(handle, DirectX::Colors::LightSlateGray, 0, nullptr);
   }
 
-  void fdx12::clear_depth_stencil(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap)
+  void fdx12::clear_depth_stencil(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap, uint32_t back_buffer_index)
   {
-    D3D12_CPU_DESCRIPTOR_HANDLE handle = dsv_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
+    const uint32_t descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+    const CD3DX12_CPU_DESCRIPTOR_HANDLE handle(dsv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, descriptor_size);
     command_list->ClearDepthStencilView(handle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
   }
   
@@ -456,7 +467,8 @@ namespace engine
   void fdx12::create_const_buffer(ComPtr<ID3D12Device> device, const D3D12_CPU_DESCRIPTOR_HANDLE& handle, uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource)
   {
     // https://logins.github.io/graphics/2020/07/31/DX12ResourceHandling.html#resource-mapping
-
+    // https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-constant-buffers-root-descriptor-tables#c0
+    
     uint64_t size_aligned = fdx12::align_size_to(buffer_size, 255);
     
     fdx12::create_upload_resource(device, size_aligned, out_resource);

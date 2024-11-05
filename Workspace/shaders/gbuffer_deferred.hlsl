@@ -1,5 +1,3 @@
-#define MAX_MATERIALS 32
-#define MAX_LIGHTS 16
 
 struct fvs_input
 {
@@ -23,15 +21,12 @@ struct fps_output
   float4 position_ws : SV_Target0;
   float4 normal_ws	 : SV_Target1;
   float4 tex_color	 : SV_Target2;
-  uint material_id   : SV_Target3;
-  float4 object_id   : SV_Target4;
+  float4 object_id   : SV_Target3;
+  uint material_id   : SV_Target4;
   uint is_selected   : SV_Target5;
 };
 
-Texture2D texture0 : register(t0);
-sampler sampler0   : register(s0);
-
-cbuffer fobject_data : register(b0)
+struct fobject_data
 {
   matrix model_world;
   matrix inverse_transpose_model_world;
@@ -41,12 +36,16 @@ cbuffer fobject_data : register(b0)
   uint is_selected;
 };
 
+ConstantBuffer<fobject_data> object_data : register(b0);
+Texture2D texture0 : register(t0);
+SamplerState sampler_obj   : register(s0);
+
 fvs_output vs_main(fvs_input input)
 {
   fvs_output output;
-  output.position_cs = mul(model_world_view_projection, float4(input.position, 1.0f));
-  output.position_ws = mul(model_world, float4(input.position, 1.0f));
-  output.normal_ws   = normalize(mul((float3x3)inverse_transpose_model_world, input.normal));
+  output.position_cs = mul(object_data.model_world_view_projection, float4(input.position, 1.0f));
+  output.position_ws = mul(object_data.model_world, float4(input.position, 1.0f));
+  output.normal_ws   = normalize(mul((float3x3)object_data.inverse_transpose_model_world, input.normal));
   output.uv          = input.uv;
   return output;
 }
@@ -56,9 +55,9 @@ fps_output ps_main(fvs_output input) : SV_Target
   fps_output output;
   output.position_ws = input.position_ws;
   output.normal_ws   = float4(input.normal_ws, 1.0);
-  output.tex_color   = texture0.Sample(sampler0, input.uv);
-  output.material_id = material_id;
-  output.object_id   = object_id;
-  output.is_selected = is_selected;
+  output.tex_color   = texture0.Sample(sampler_obj, input.uv);
+  output.material_id = object_data.material_id;
+  output.object_id   = object_data.object_id;
+  output.is_selected = object_data.is_selected;
   return output;
 }

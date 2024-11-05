@@ -16,7 +16,7 @@ namespace engine
 {
   using Microsoft::WRL::ComPtr;
   
-  struct fdeferred_lighting_pass : fpass_base
+  struct fdeferred_lighting_pass : public fpass_base
   {
     virtual void init() override;
     virtual void draw(ComPtr<ID3D12GraphicsCommandList> command_list) override;

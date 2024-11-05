@@ -4,10 +4,10 @@
 
 #include "core/core.h"
 #include "renderer/renderer_base.h"
-#include "passes/forward_pass.h"
 #include "asset/soft_asset_ptr.h"
 #include "assets/pixel_shader.h"
 #include "assets/vertex_shader.h"
+#include "passes/forward_pass.h"
 
 struct ID3D12GraphicsCommandList;
 
@@ -28,6 +28,7 @@ namespace engine
     fsoft_asset_ptr<apixel_shader> pixel_shader_asset;
     fsoft_asset_ptr<avertex_shader> vertex_shader_asset;
 
+    // Runtime members
     fforward_pass forward_pass;
     
   protected:
