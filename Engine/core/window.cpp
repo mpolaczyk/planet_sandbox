@@ -59,7 +59,7 @@ namespace engine
         fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
         
         fdx12::clear_render_target(device, command_list, rtv_descriptor_heap, back_buffer_index);
-        fdx12::clear_depth_stencil(device, command_list, dsv_descriptor_heap, back_buffer_index);
+        fdx12::clear_depth_stencil(command_list, dsv_descriptor_heap);
         fdx12::set_render_targets(device, command_list, dsv_descriptor_heap, rtv_descriptor_heap, back_buffer_index);
         fdx12::set_viewport(command_list, width, height);
         fdx12::set_scissor(command_list, width, height);
@@ -68,7 +68,7 @@ namespace engine
         context.back_buffer_count = back_buffer_count;
         context.back_buffer_index = back_buffer_index;
         context.rtv = rtv[back_buffer_index];
-        context.dsv = dsv[back_buffer_index];
+        context.dsv = dsv;
         context.scene = scene_root;
         context.selected_object = selected_object;
         context.main_descriptor_heap = &main_descriptor_heap;
@@ -115,23 +115,21 @@ namespace engine
       for(uint32_t n = 0; n < back_buffer_count; n++)
       {
         DX_RELEASE(rtv[n]);
-        DX_RELEASE(dsv[n]);
       }
       rtv.clear();
-      dsv.clear();
+      DX_RELEASE(dsv);
     }
 
     fdx12::resize_swap_chain(swap_chain, back_buffer_count, width, height);
     back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
     fdx12::create_render_target(device, swap_chain, rtv_descriptor_heap, back_buffer_count, rtv);
-    fdx12::create_depth_stencil(device, dsv_descriptor_heap, width, height, back_buffer_count, dsv);
+    fdx12::create_depth_stencil(device, dsv_descriptor_heap, width, height, dsv);
 #if BUILD_DEBUG
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       DX_SET_NAME(rtv[n], "Render target resource: {}", n)
-      DX_SET_NAME(dsv[n], "Depth stencil resource: {}", n)
-
     }
+    DX_SET_NAME(dsv, "Depth stencil resource")
 #endif
   }
   
@@ -141,8 +139,8 @@ namespace engine
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       DX_RELEASE(rtv[n]);
-      DX_RELEASE(dsv[n]);
     }
+    DX_RELEASE(dsv);
     DX_RELEASE(main_descriptor_heap.heap);
     DX_RELEASE(rtv_descriptor_heap);
     DX_RELEASE(dsv_descriptor_heap);
