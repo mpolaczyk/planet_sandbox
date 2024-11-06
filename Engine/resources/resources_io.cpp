@@ -134,35 +134,45 @@ namespace engine
 
     std::string path = fio::get_texture_file_path(file_name.c_str());
 
-    out_texture->render_state.is_hdr = static_cast<bool>(stbi_is_hdr(path.c_str()));
+    bool is_hdr = static_cast<bool>(stbi_is_hdr(path.c_str()));
     
-    if(out_texture->render_state.is_hdr)
+    int width = 0;
+    int height = 0;
+    int channels = 0;
+    
+    if(is_hdr)
     {
-      float* data_hdr = stbi_loadf(path.c_str(), &out_texture->width, &out_texture->height, &out_texture->channels, 4);
-      int32_t elements_total = out_texture->channels * out_texture->width * out_texture->height;
+      float* data_hdr = stbi_loadf(path.c_str(), &width, &height, &channels, 4);
+      int32_t elements_total = channels * width * height;
       if(data_hdr == nullptr)
       {
         LOG_ERROR("Texture file: {0} failed to open", path);
         return false;
       }
-      out_texture->render_state.data_hdr.resize(elements_total, 0.0f);
-      std::vector<float> z(data_hdr, data_hdr + elements_total);
-      out_texture->render_state.data_hdr = z;
 
+      out_texture->data_hdr.resize(elements_total, 0.0f);
+      std::vector<float> z(data_hdr, data_hdr + elements_total);
+      out_texture->data_hdr = z;
+      out_texture->gpu_resource.element_size = sizeof(float);
     }
     else
     {
-      uint8_t* data_ldr = stbi_load(path.c_str(), &out_texture->width, &out_texture->height, &out_texture->channels, 4);
-      int32_t elements_total = out_texture->channels * out_texture->width * out_texture->height;
+      uint8_t* data_ldr = stbi_load(path.c_str(), &width, &height, &channels, 4);
+      int32_t elements_total = channels * width * height;
       if(data_ldr == nullptr)
       {
         LOG_ERROR("Texture file: {0} failed to open", path);
         return false;
       }
-      out_texture->render_state.data_ldr.resize(elements_total, 0);
+      out_texture->data_ldr.resize(elements_total, 0);
       std::vector<uint8_t> z(data_ldr, data_ldr + elements_total);
-      out_texture->render_state.data_ldr = z;
+      out_texture->data_ldr = z;
+      out_texture->gpu_resource.element_size = sizeof(uint8_t);
     }
+    out_texture->is_hdr = is_hdr;
+    out_texture->gpu_resource.width = width;
+    out_texture->gpu_resource.height = height;
+    out_texture->gpu_resource.channels = channels;
     return true;
   }
 

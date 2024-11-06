@@ -17,6 +17,7 @@
 #include "renderer/aligned_structs.h"
 #include "renderer/render_context.h"
 #include "renderer/scene_acceleration.h"
+#include "renderer/gpu_resources.h"
 
 namespace engine
 {
@@ -42,40 +43,35 @@ namespace engine
     
     uint32_t back_buffer_count = context->back_buffer_count;
     fdescriptor_heap* heap = context->main_descriptor_heap;
+    ComPtr<ID3D12Device2> device = fapplication::instance->device;
+
+    //fdx12::create_texture2d_resource(device, width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, D3D12_RESOURCE_STATE_RENDER_TARGET, output);
+    //fdx12::create_render_target(device, swap_chain, rtv_descriptor_heap, back_buffer_count, rtv);
+    //fdx12::create_depth_stencil(device, dsv_descriptor_heap, width, height, back_buffer_count, dsv);
 
     // Create frame data CBV
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
-      fdescriptor* d = heap->push(sizeof(fframe_data));
-      frame_data_heap_index.push_back(d->index);
-      fdx12::create_const_buffer(fapplication::instance->device, d->cpu_handle, d->resource_size, d->resource);
-#if BUILD_DEBUG
-      DX_SET_NAME(d->resource, "CBV frame: back buffer {}", i)
-#endif
+      frame_data.emplace_back(fconst_buffer::create(device.Get(), heap, sizeof(fframe_data), std::format("CBV frame: back buffer {}", i).c_str()));
     }
 
     // Create light and material data SRV
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
-      fdescriptor* d = heap->push(sizeof(flight_properties) * MAX_LIGHTS);
-      lights_data_heap_index.push_back(d->index);
-      fdx12::create_shader_resource_buffer(fapplication::instance->device, d->cpu_handle, d->resource_size, d->resource);
-#if BUILD_DEBUG
-      DX_SET_NAME(d->resource, "SRV lights: back buffer {}", i)
-#endif
+      lights_data.emplace_back(fshader_resource_buffer::create(device.Get(), heap, sizeof(flight_properties) * MAX_LIGHTS, std::format("SRV lights: back buffer {}", i).c_str()));
     }
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
-      fdescriptor* d = heap->push(sizeof(fmaterial_properties) * MAX_MATERIALS);
-      materials_data_heap_index.push_back(d->index);
-      fdx12::create_shader_resource_buffer(fapplication::instance->device, d->cpu_handle, d->resource_size, d->resource);
-#if BUILD_DEBUG
-      DX_SET_NAME(d->resource, "SRV materials: back buffer {}", i)
-#endif
+      materials_data.emplace_back(fshader_resource_buffer::create(device.Get(), heap, sizeof(fmaterial_properties) * MAX_MATERIALS, std::format("SRV materials: back buffer {}", i).c_str()));
     }
 
     // Create first texture SRV (handles only)
-    default_texture_heap_index = heap->push(0)->index;
+    fsoft_asset_ptr<amaterial> default_material_asset;
+    default_material_asset.set_name("default");
+    atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
+    // nonsense...
+    default_texture->gpu_resource = ftexture_resource::create(device.Get(), heap, default_texture->gpu_resource.width, default_texture->gpu_resource.height,
+      default_texture->gpu_resource.channels, default_texture->gpu_resource.element_size, DXGI_FORMAT_R8G8B8A8_UNORM, "default");
     
     // Set up graphics pipeline
     graphics_pipeline.reserve_parameters(root_parameter_type::num);
@@ -103,7 +99,18 @@ namespace engine
     ComPtr<ID3D12Device2> device = fapplication::instance->device;
     fdescriptor_heap* heap = context->main_descriptor_heap;
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
+
+    fsoft_asset_ptr<amaterial> default_material_asset;
+    default_material_asset.set_name("default");
+    atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
     
+    //fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    //fdx12::clear_render_target(device, command_list, rtv_descriptor_heap, back_buffer_index);
+    //fdx12::clear_depth_stencil(command_list, dsv_descriptor_heap);
+    //fdx12::set_render_targets(device, command_list, dsv_descriptor_heap, rtv_descriptor_heap, back_buffer_index);
+    //fdx12::set_viewport(command_list, width, height);
+    //fdx12::set_scissor(command_list, width, height);
+        
     graphics_pipeline.bind_command_list(command_list.Get());
 
     command_list->SetDescriptorHeaps(1, heap->heap.GetAddressOf());
@@ -122,25 +129,22 @@ namespace engine
 
     // Process frame data CBV
     {
-      fframe_data frame_data;
-      frame_data.camera_position = XMFLOAT4(context->scene->camera_config.location.e);
-      frame_data.ambient_light = context->scene->ambient_light_color;
-      frame_data.show_ambient = show_ambient;
-      frame_data.show_diffuse = show_diffuse;
-      frame_data.show_emissive = show_emissive;
-      frame_data.show_normals = show_normals;
-      frame_data.show_object_id = show_object_id;
-      frame_data.show_specular = show_specular;
-      fdescriptor* frame_entry = heap->get(frame_data_heap_index[back_buffer_index]);
-      fdx12::update_buffer(frame_entry->resource, frame_entry->resource_size, &frame_data);
+      fframe_data data;
+      data.camera_position = XMFLOAT4(context->scene->camera_config.location.e);
+      data.ambient_light = context->scene->ambient_light_color;
+      data.show_ambient = show_ambient;
+      data.show_diffuse = show_diffuse;
+      data.show_emissive = show_emissive;
+      data.show_normals = show_normals;
+      data.show_object_id = show_object_id;
+      data.show_specular = show_specular;
+      frame_data[back_buffer_index].upload(&data);
     }
 
     // Process light and material SRVs
     {
-      fdescriptor* lights_d = heap->get(lights_data_heap_index[back_buffer_index]);
-      fdescriptor* materials_d = heap->get(materials_data_heap_index[back_buffer_index]);
-      fdx12::update_buffer(lights_d->resource, lights_d->resource_size, scene_acceleration.lights_buffer.data());
-      fdx12::update_buffer(materials_d->resource, materials_d->resource_size, scene_acceleration.materials_buffer.data());
+      lights_data[back_buffer_index].upload(scene_acceleration.lights_buffer.data());
+      materials_data[back_buffer_index].upload(scene_acceleration.materials_buffer.data());
     }
 
     // Process texture SRVs
@@ -148,15 +152,14 @@ namespace engine
       const uint32_t num_textures_in_scene = static_cast<uint32_t>(scene_acceleration.a_textures.size());
 
       // Upload default texture first
-      fsoft_asset_ptr<amaterial> default_material_asset;
-      default_material_asset.set_name("default");
-      atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
       {
-        fdx12::upload_texture_buffer(device, command_list, heap->get(default_texture_heap_index)->cpu_handle, default_texture);
-#if BUILD_DEBUG
-        DX_SET_NAME(default_texture->render_state.texture_buffer, "Default texture buffer: {}", default_texture->get_display_name())
-        DX_SET_NAME(default_texture->render_state.texture_buffer_upload, "Default texture upload buffer: {}", default_texture->get_display_name())
-#endif
+        default_texture->gpu_resource.upload(device, command_list, default_texture->is_hdr ? reinterpret_cast<void*>(default_texture->data_hdr.data()) : default_texture->data_ldr.data());
+
+        //fdx12::upload_texture_buffer(device, command_list, heap->get(default_texture_heap_index)->cpu_handle, default_texture);
+//#if BUILD_DEBUG
+//        DX_SET_NAME(default_texture->render_state.texture_buffer, "Default texture buffer: {}", default_texture->get_display_name())
+//        DX_SET_NAME(default_texture->render_state.texture_buffer_upload, "Default texture upload buffer: {}", default_texture->get_display_name())
+//#endif
       }
 
       // Upload other textures
@@ -165,13 +168,19 @@ namespace engine
         if(i < num_textures_in_scene && scene_acceleration.a_textures[i] != default_texture)
         {
           atexture* texture = scene_acceleration.a_textures[i];
-          if(!texture->render_state.is_resource_online)
+          if(!texture->gpu_resource.is_online)
           {
-            fdx12::upload_texture_buffer(device, command_list, heap->push(0)->cpu_handle, texture);
-#if BUILD_DEBUG
-            DX_SET_NAME(texture->render_state.texture_buffer, "Texture buffer: {}", texture->get_display_name())
-            DX_SET_NAME(texture->render_state.texture_buffer_upload, "Texture upload buffer: {}", texture->get_display_name())
-#endif
+            texture->gpu_resource = ftexture_resource::create(device.Get(), heap, texture->gpu_resource.width, texture->gpu_resource.height,
+              texture->gpu_resource.channels, texture->gpu_resource.element_size, DXGI_FORMAT_R8G8B8A8_UNORM, texture->get_display_name().c_str());
+            
+            texture->gpu_resource.upload(device, command_list, texture->is_hdr ? reinterpret_cast<void*>(texture->data_hdr.data()) : texture->data_ldr.data());
+
+            
+            //fdx12::upload_texture_buffer(device, command_list, heap->push()->cpu_handle, texture)
+//#if BUILD_DEBUG
+//            DX_SET_NAME(texture->render_state.texture_buffer, "Texture buffer: {}", texture->get_display_name())
+//            DX_SET_NAME(texture->render_state.texture_buffer_upload, "Texture upload buffer: {}", texture->get_display_name())
+//#endif
           }
         }
       }
@@ -205,14 +214,16 @@ namespace engine
       const fstatic_mesh_render_state& smrs = context->scene->scene_acceleration.h_meshes[i]->mesh_asset_ptr.get()->render_state;
 
       command_list->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, sizeof(fobject_data)/4, &scene_acceleration.object_buffer[i], 0);
-      command_list->SetGraphicsRootConstantBufferView(root_parameter_type::frame_data, heap->get(frame_data_heap_index[back_buffer_index])->resource->GetGPUVirtualAddress());
-      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::lights, heap->get(lights_data_heap_index[back_buffer_index])->resource->GetGPUVirtualAddress());
-      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::materials, heap->get(materials_data_heap_index[back_buffer_index])->resource->GetGPUVirtualAddress());
-      command_list->SetGraphicsRootDescriptorTable(root_parameter_type::textures, heap->get(default_texture_heap_index)->gpu_handle);
+      command_list->SetGraphicsRootConstantBufferView(root_parameter_type::frame_data, frame_data[back_buffer_index].resource->GetGPUVirtualAddress());
+      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::lights, lights_data[back_buffer_index].resource->GetGPUVirtualAddress());
+      command_list->SetGraphicsRootShaderResourceView(root_parameter_type::materials, materials_data[back_buffer_index].resource->GetGPUVirtualAddress());
+      command_list->SetGraphicsRootDescriptorTable(root_parameter_type::textures, default_texture->gpu_resource.srv.gpu_handle);
       command_list->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list->IASetIndexBuffer(&smrs.index_buffer_view);
       command_list->DrawIndexedInstanced(static_cast<uint32_t>(smrs.vertex_list.size()), 1, 0, 0, 0);
     }
+    
+    //fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
   }
 
   void fforward_pass::create_output_texture(bool cleanup)

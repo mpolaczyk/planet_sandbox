@@ -27,19 +27,6 @@ namespace engine
     D3D12_INDEX_BUFFER_VIEW index_buffer_view;
   };
 
-  struct ftexture_render_state
-  {
-    // Offline data
-    std::vector<float> data_hdr;
-    std::vector<uint8_t> data_ldr;
-    bool is_hdr;
-
-    // Present when resource is uploaded to GPU
-    bool is_resource_online = false;
-    ComPtr<ID3D12Resource> texture_buffer;
-    ComPtr<ID3D12Resource> texture_buffer_upload; // TODO System resource, duplicates data_*. Clean vertex_list when this is set?
-  };
-
   struct fshader_render_state
   {
     ComPtr<IDxcBlob> blob;

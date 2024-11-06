@@ -3,6 +3,7 @@
 #include <wrl/client.h>
 
 #include "passes/pass_base.h"
+#include "renderer/gpu_resources.h"
 
 namespace engine
 {
@@ -22,10 +23,15 @@ namespace engine
     int show_normals = 0;
     int show_object_id = 0;
 
+    //fresource output;
+
   private:
-    std::vector<uint32_t> frame_data_heap_index;  // index is back buffer id
-    std::vector<uint32_t> lights_data_heap_index;
-    std::vector<uint32_t> materials_data_heap_index;
-    uint32_t default_texture_heap_index = 0;
+    std::vector<fconst_buffer> frame_data; // index is back buffer id
+    std::vector<fshader_resource_buffer> lights_data;
+    std::vector<fshader_resource_buffer> materials_data;
+
+    std::vector<ftexture_resource> textures_data;
+    
+    //uint32_t default_texture_heap_index = 0;
   };
 }

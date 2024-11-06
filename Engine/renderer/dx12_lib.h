@@ -47,6 +47,11 @@ typedef HWND__* HWND;
 #endif
 
 #define DX_RELEASE(resource) if(resource) { resource.Reset(); }
+
+// std::basic_format_string<char>::basic_format_string': call to immediate function is not a constant expression
+// This means that format string needs to be known at the compile time.
+// Replace: DX_SET_NAME(resource, name)
+// With: DX_SET_NAME(resource, "{}", name) 
 #define DX_SET_NAME(resource, ...)  { std::string __local_name = std::format(__VA_ARGS__); \
     resource->SetName(std::wstring(__local_name.begin(), __local_name.end()).c_str()); }
 
@@ -86,7 +91,7 @@ namespace engine
     static void create_pipeline_state(ComPtr<ID3D12Device2> device, const D3D12_GRAPHICS_PIPELINE_STATE_DESC& pso_desc, ComPtr<ID3D12PipelineState>& out_pipeline_state);
     static void create_upload_resource(ComPtr<ID3D12Device> device, uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
     static void create_buffer_resource(ComPtr<ID3D12Device> device, uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
-    static void create_texture2d_resource(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, ComPtr<ID3D12Resource>& out_resource);
+    static void create_texture_resource(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_CPU_DESCRIPTOR_HANDLE handle, ComPtr<ID3D12Resource>& out_resource, ComPtr<ID3D12Resource>& out_upload_resource);
 
     static void create_const_buffer(ComPtr<ID3D12Device> device, const D3D12_CPU_DESCRIPTOR_HANDLE& handle, uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
 
@@ -107,12 +112,13 @@ namespace engine
     static void resource_barrier(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after);
 
     // TODO Check if they do the same in the end...
-    static void update_buffer(ComPtr<ID3D12Resource> resource, uint64_t buffer_size, const void* in_buffer);
+    static void upload_buffer(ComPtr<ID3D12Resource> resource, uint64_t buffer_size, const void* in_buffer);
     static void upload_buffer_resource(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, uint64_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource);
     
     static void upload_vertex_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state);
     static void upload_index_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state);
-    static void upload_texture_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, const CD3DX12_CPU_DESCRIPTOR_HANDLE& handle, atexture* texture);
+    static void upload_texture(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, uint32_t width, uint32_t height, uint32_t channels, DXGI_FORMAT format, const void* data, uint32_t element_size, ComPtr<ID3D12Resource> resource, ComPtr<ID3D12Resource> upload_resource);
+    static void upload_texture_buffer2(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, const CD3DX12_CPU_DESCRIPTOR_HANDLE& handle, atexture* texture);
     
     static bool get_dxc_hash(ComPtr<IDxcResult> result, std::string& out_hash);
     static bool get_dxc_blob(ComPtr<IDxcResult> result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlob>& out_blob);

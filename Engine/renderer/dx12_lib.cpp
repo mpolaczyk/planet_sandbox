@@ -281,7 +281,7 @@ namespace engine
 
   void fdx12::create_cbv_srv_uav_descriptor_heap(ComPtr<ID3D12Device> device, fdescriptor_heap& out_descriptor_heap)
   {
-    out_descriptor_heap.descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    out_descriptor_heap = fdescriptor_heap(device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = MAX_MAIN_DESCRIPTORS;
@@ -453,17 +453,37 @@ namespace engine
       IID_PPV_ARGS(out_resource.GetAddressOf())));
   }
 
-  void fdx12::create_texture2d_resource(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, ComPtr<ID3D12Resource>& out_resource)
+  void fdx12::create_texture_resource(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_CPU_DESCRIPTOR_HANDLE handle, ComPtr<ID3D12Resource>& out_resource, ComPtr<ID3D12Resource>& out_upload_resource)
   {
-    const CD3DX12_HEAP_PROPERTIES type_default = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-    const CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(format, width, height, 1, 0, 1, 0, flags);
+    D3D12_RESOURCE_DESC texture_desc = {};
+    texture_desc.MipLevels = 1;
+    texture_desc.Format = format;
+    texture_desc.Width = width;
+    texture_desc.Height = height;
+    texture_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+    texture_desc.DepthOrArraySize = 1;
+    texture_desc.SampleDesc.Count = 1;
+    texture_desc.SampleDesc.Quality = 0;
+    texture_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+
+    CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
     THROW_IF_FAILED(device->CreateCommittedResource(
-      &type_default,
+      &default_heap,
       D3D12_HEAP_FLAG_NONE,
-      &desc,
-      D3D12_RESOURCE_STATE_COMMON,
+      &texture_desc,
+      D3D12_RESOURCE_STATE_COPY_DEST,
       nullptr,
-      IID_PPV_ARGS(out_resource.GetAddressOf())));
+      IID_PPV_ARGS(&out_resource)));
+
+    D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
+    srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srv_desc.Format = texture_desc.Format;
+    srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    srv_desc.Texture2D.MipLevels = 1;
+    device->CreateShaderResourceView(out_resource.Get(), &srv_desc, handle);
+    
+    const uint64_t buffer_size = GetRequiredIntermediateSize(out_resource.Get(), 0, 1);
+    create_upload_resource(device, buffer_size, out_upload_resource);
   }
   
   void fdx12::create_const_buffer(ComPtr<ID3D12Device> device, const D3D12_CPU_DESCRIPTOR_HANDLE& handle, uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource)
@@ -481,7 +501,7 @@ namespace engine
     device->CreateConstantBufferView(&cbv_desc, handle);
   }
 
-  void fdx12::update_buffer(ComPtr<ID3D12Resource> resource, uint64_t buffer_size, const void* in_buffer)
+  void fdx12::upload_buffer(ComPtr<ID3D12Resource> resource, uint64_t buffer_size, const void* in_buffer)
   {
     CD3DX12_RANGE read_range(0, 0);
     uint8_t* mapping = nullptr;
@@ -536,57 +556,71 @@ namespace engine
     out_render_state.is_resource_online = true;
   }
 
-  void fdx12::upload_texture_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, const CD3DX12_CPU_DESCRIPTOR_HANDLE& handle, atexture* texture)
+  void fdx12::upload_texture(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, uint32_t width, uint32_t height, uint32_t channels, DXGI_FORMAT format, const void* data, uint32_t element_size, ComPtr<ID3D12Resource> resource, ComPtr<ID3D12Resource> upload_resource)
   {
-    ftexture_render_state& trs = texture->render_state;
-    
-    // Describe and create a Texture2D.
-    D3D12_RESOURCE_DESC texture_desc = {};
-    texture_desc.MipLevels = 1;
-    texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // TODO move to texture, make persistent
-    texture_desc.Width = texture->width;
-    texture_desc.Height = texture->height;
-    texture_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
-    texture_desc.DepthOrArraySize = 1;
-    texture_desc.SampleDesc.Count = 1;
-    texture_desc.SampleDesc.Quality = 0;
-    texture_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-    
-    CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
-    THROW_IF_FAILED(device->CreateCommittedResource(
-      &default_heap,
-      D3D12_HEAP_FLAG_NONE,
-      &texture_desc,
-      D3D12_RESOURCE_STATE_COPY_DEST,
-      nullptr,
-      IID_PPV_ARGS(&trs.texture_buffer)));
-
-    const uint64_t buffer_size = GetRequiredIntermediateSize(trs.texture_buffer.Get(), 0, 1);
-
-    // Create the GPU upload buffer.
-    create_upload_resource(device, buffer_size, trs.texture_buffer_upload);
-
     // Copy data to the intermediate upload heap and then schedule a copy 
     // from the upload heap to the Texture2D.
     D3D12_SUBRESOURCE_DATA texture_data = {};
-    texture_data.pData = trs.is_hdr ? reinterpret_cast<void*>(trs.data_hdr.data()) : trs.data_ldr.data();
-    texture_data.RowPitch = texture->width * texture->channels * (trs.is_hdr ? sizeof(float) : sizeof(uint8_t));
-    texture_data.SlicePitch = texture_data.RowPitch * texture->height;
+    texture_data.pData = data;
+    texture_data.RowPitch = width * channels * element_size;
+    texture_data.SlicePitch = texture_data.RowPitch * height;
 
-    UpdateSubresources(command_list.Get(), trs.texture_buffer.Get(), trs.texture_buffer_upload.Get(), 0, 0, 1, &texture_data);
+    UpdateSubresources(command_list.Get(), resource.Get(), upload_resource.Get(), 0, 0, 1, &texture_data);
     
-    resource_barrier(command_list, trs.texture_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-    
-    // Describe and create a SRV for the texture.
-    D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
-    srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    srv_desc.Format = texture_desc.Format;
-    srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-    srv_desc.Texture2D.MipLevels = 1;
-    device->CreateShaderResourceView(texture->render_state.texture_buffer.Get(), &srv_desc, handle);
-
-    trs.is_resource_online = true;
+    resource_barrier(command_list, resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
   }
+  
+  //void fdx12::upload_texture_buffer2(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, const CD3DX12_CPU_DESCRIPTOR_HANDLE& handle, atexture* texture)
+  //{
+  //  ftexture_render_state& trs = texture->render_state;
+  //  
+  //  // Describe and create a Texture2D.
+  //  D3D12_RESOURCE_DESC texture_desc = {};
+  //  texture_desc.MipLevels = 1;
+  //  texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // TODO move to texture, make persistent
+  //  texture_desc.Width = texture->width;
+  //  texture_desc.Height = texture->height;
+  //  texture_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+  //  texture_desc.DepthOrArraySize = 1;
+  //  texture_desc.SampleDesc.Count = 1;
+  //  texture_desc.SampleDesc.Quality = 0;
+  //  texture_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+  //  
+  //  CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
+  //  THROW_IF_FAILED(device->CreateCommittedResource(
+  //    &default_heap,
+  //    D3D12_HEAP_FLAG_NONE,
+  //    &texture_desc,
+  //    D3D12_RESOURCE_STATE_COPY_DEST,
+  //    nullptr,
+  //    IID_PPV_ARGS(&trs.texture_buffer)));
+  //
+  //  const uint64_t buffer_size = GetRequiredIntermediateSize(trs.texture_buffer.Get(), 0, 1);
+  //
+  //  // Create the GPU upload buffer.
+  //  create_upload_resource(device, buffer_size, trs.texture_buffer_upload);
+  //
+  //  // Copy data to the intermediate upload heap and then schedule a copy 
+  //  // from the upload heap to the Texture2D.
+  //  D3D12_SUBRESOURCE_DATA texture_data = {};
+  //  texture_data.pData = trs.is_hdr ? reinterpret_cast<void*>(trs.data_hdr.data()) : trs.data_ldr.data();
+  //  texture_data.RowPitch = texture->width * texture->channels * (trs.is_hdr ? sizeof(float) : sizeof(uint8_t));
+  //  texture_data.SlicePitch = texture_data.RowPitch * texture->height;
+  //
+  //  UpdateSubresources(command_list.Get(), trs.texture_buffer.Get(), trs.texture_buffer_upload.Get(), 0, 0, 1, &texture_data);
+  //  
+  //  resource_barrier(command_list, trs.texture_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+  //  
+  //  // Describe and create a SRV for the texture.
+  //  D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
+  //  srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+  //  srv_desc.Format = texture_desc.Format;
+  //  srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+  //  srv_desc.Texture2D.MipLevels = 1;
+  //  device->CreateShaderResourceView(texture->render_state.texture_buffer.Get(), &srv_desc, handle);
+  //
+  //  trs.is_resource_online = true;
+  //}
 
   bool fdx12::get_dxc_hash(ComPtr<IDxcResult> result, std::string& out_hash)
   {
@@ -642,135 +676,4 @@ namespace engine
     fclose(file);
     return true;
   }
-
-  //void fdx12::create_input_layout(const D3D11_INPUT_ELEMENT_DESC* input_element_desc, uint32_t input_element_desc_size, const ComPtr<ID3D10Blob>& vertex_shader_blob, ComPtr<ID3D11InputLayout>& input_layout) const
-  //{
-  //  THROW_IF_FAILED(device->CreateInputLayout(input_element_desc, input_element_desc_size, vertex_shader_blob->GetBufferPointer(), vertex_shader_blob->GetBufferSize(), input_layout.GetAddressOf()))
-  //}
-  //
-  //void fdx12::create_sampler_state(ComPtr<ID3D11SamplerState>& out_sampler_state) const
-  //{
-  //  D3D11_SAMPLER_DESC desc = {};
-  //  desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-  //  desc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-  //  desc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-  //  desc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-  //  desc.BorderColor[0] = 1.0f;
-  //  desc.BorderColor[1] = 1.0f;
-  //  desc.BorderColor[2] = 1.0f;
-  //  desc.BorderColor[3] = 1.0f;
-  //  desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-  //  THROW_IF_FAILED(device->CreateSamplerState(&desc, &out_sampler_state))
-  //}
-  //
-  //void fdx12::create_constant_buffer(uint32_t size, ComPtr<ID3D11Buffer>& out_constant_buffer) const
-  //{
-  //  D3D11_BUFFER_DESC desc = {};
-  //  desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-  //  desc.Usage = D3D11_USAGE_DYNAMIC;
-  //  desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-  //  desc.ByteWidth = size;
-  //  THROW_IF_FAILED(device->CreateBuffer(&desc, nullptr, &out_constant_buffer))
-  //}
-  //
-  //void fdx12::create_rasterizer_state(ComPtr<ID3D11RasterizerState>& out_rasterizer_state) const
-  //{
-  //  D3D11_RASTERIZER_DESC desc = {};
-  //  desc.AntialiasedLineEnable = FALSE;
-  //  desc.CullMode = D3D11_CULL_BACK;
-  //  desc.DepthBias = 0;
-  //  desc.DepthBiasClamp = 0.0f;
-  //  desc.DepthClipEnable = TRUE;
-  //  desc.FillMode = D3D11_FILL_SOLID;
-  //  desc.FrontCounterClockwise = FALSE;
-  //  desc.MultisampleEnable = FALSE;
-  //  desc.ScissorEnable = FALSE;
-  //  desc.SlopeScaledDepthBias = 0.0f;
-  //  THROW_IF_FAILED(device->CreateRasterizerState(&desc, &out_rasterizer_state))
-  //}
-  //
-  //void fdx12::create_depth_stencil_state(ComPtr<ID3D11DepthStencilState>& out_depth_stencil_state) const
-  //{
-  //  D3D11_DEPTH_STENCIL_DESC desc = {};
-  //  desc.DepthEnable = TRUE;
-  //  desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-  //  desc.DepthFunc = D3D11_COMPARISON_LESS;
-  //  desc.StencilEnable = FALSE;
-  //  THROW_IF_FAILED(device->CreateDepthStencilState(&desc, &out_depth_stencil_state))
-  //}
-  //
-  //void fdx12::create_vertex_shader(const ComPtr<ID3D10Blob>& blob, ComPtr<ID3D11VertexShader>& out_vertex_shader) const
-  //{
-  //  THROW_IF_FAILED(device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, out_vertex_shader.GetAddressOf()))
-  //}
-  //
-  //void fdx12::create_pixel_shader(const ComPtr<ID3D10Blob>& blob, ComPtr<ID3D11PixelShader>& out_pixel_shader) const
-  //{
-  //  THROW_IF_FAILED(device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, out_pixel_shader.GetAddressOf()))
-  //}
-  //
-  //void fdx12::create_index_buffer(const std::vector<fface_data>& in_face_list, ComPtr<ID3D11Buffer>& out_index_buffer) const
-  //{
-  //  D3D11_BUFFER_DESC desc = {};
-  //  desc.ByteWidth = static_cast<int32_t>(in_face_list.size()) * sizeof(fface_data);
-  //  desc.Usage = D3D11_USAGE_IMMUTABLE;
-  //  desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-  //  D3D11_SUBRESOURCE_DATA data = {in_face_list.data()};
-  //  THROW_IF_FAILED(device->CreateBuffer(&desc, &data, out_index_buffer.GetAddressOf()))
-  //}
-  //
-  //void fdx12::create_vertex_buffer(const std::vector<fvertex_data>& in_vertex_list, ComPtr<ID3D11Buffer>& out_vertex_buffer) const
-  //{
-  //  D3D11_BUFFER_DESC desc = {};
-  //  desc.ByteWidth = static_cast<int32_t>(in_vertex_list.size()) * sizeof(fvertex_data);
-  //  desc.Usage = D3D11_USAGE_IMMUTABLE;
-  //  desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-  //  const D3D11_SUBRESOURCE_DATA data = {in_vertex_list.data()};
-  //  THROW_IF_FAILED(device->CreateBuffer(&desc, &data, out_vertex_buffer.GetAddressOf()))
-  //}
-  //
-  //void fdx12::create_render_target_view(const ComPtr<ID3D11Texture2D>& in_texture, DXGI_FORMAT format, D3D11_RTV_DIMENSION view_dimmension, ComPtr<ID3D11RenderTargetView>& out_render_target_view) const
-  //{
-  //  D3D11_RENDER_TARGET_VIEW_DESC desc = {};
-  //  desc.Format = format;
-  //  desc.ViewDimension = view_dimmension;
-  //  desc.Texture2D.MipSlice = 0;
-  //  THROW_IF_FAILED(device->CreateRenderTargetView(in_texture.Get(), &desc, out_render_target_view.GetAddressOf()))
-  //}
-  //
-  //void fdx12::create_depth_stencil_view(const ComPtr<ID3D11Texture2D>& in_texture, uint32_t width, uint32_t height, ComPtr<ID3D11DepthStencilView>& out_depth_stencil_view) const
-  //{
-  //  THROW_IF_FAILED(device->CreateDepthStencilView(in_texture.Get(), nullptr, out_depth_stencil_view.GetAddressOf()))) // TODO Missing descriptor
-  //}
-  //
-  //void fdx12::create_texture(uint32_t width, uint32_t height, DXGI_FORMAT format, D3D11_BIND_FLAG bind_flags, D3D11_USAGE usage, ComPtr<ID3D11Texture2D>& out_texture, uint32_t bytes_per_row, const void* in_bytes) const
-  //{
-  //  D3D11_TEXTURE2D_DESC texture_desc = {};
-  //  texture_desc.Width = width;
-  //  texture_desc.Height = height;
-  //  texture_desc.MipLevels = 1;
-  //  texture_desc.ArraySize = 1;
-  //  texture_desc.Format = format;
-  //  texture_desc.SampleDesc.Count = 1;
-  //  texture_desc.Usage = usage;
-  //  texture_desc.BindFlags = bind_flags;
-  //  texture_desc.CPUAccessFlags = 0;
-  //  texture_desc.MiscFlags = 0;
-  //
-  //  D3D11_SUBRESOURCE_DATA texture_subresource_data = {};
-  //  texture_subresource_data.SysMemPitch = bytes_per_row;
-  //  texture_subresource_data.pSysMem = in_bytes;
-  //  
-  //  THROW_IF_FAILED(device->CreateTexture2D(&texture_desc, in_bytes != nullptr ? &texture_subresource_data : nullptr, out_texture.GetAddressOf()))
-  //}
-  //
-  //void fdx12::create_shader_resource_view(const ComPtr<ID3D11Texture2D>& in_texture, DXGI_FORMAT format, D3D11_SRV_DIMENSION view_dimmension, ComPtr<ID3D11ShaderResourceView>& out_shader_resource_view) const
-  //{
-  //  D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_desc = {};
-  //  shader_resource_view_desc.Format = format;
-  //  shader_resource_view_desc.ViewDimension = view_dimmension;
-  //  shader_resource_view_desc.Texture2D.MostDetailedMip = 0;
-  //  shader_resource_view_desc.Texture2D.MipLevels = 1;
-  //  THROW_IF_FAILED(device->CreateShaderResourceView(in_texture.Get(), &shader_resource_view_desc, out_shader_resource_view.GetAddressOf()))
-  //}
 }

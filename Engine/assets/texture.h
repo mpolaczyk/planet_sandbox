@@ -21,11 +21,12 @@ namespace engine
     
     // JSON persistent
     std::string img_file_name;
-
-    // Image file data
-    int width;
-    int height;
-    int channels;
-    ftexture_render_state render_state;
+    
+    // Offline data
+    std::vector<float> data_hdr;
+    std::vector<uint8_t> data_ldr;
+    bool is_hdr = false;
+    
+    ftexture_resource gpu_resource;
   };
 }

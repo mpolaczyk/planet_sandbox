@@ -7,18 +7,17 @@
 
 namespace engine
 {
-  fdescriptor::fdescriptor(ID3D12DescriptorHeap* heap, uint32_t in_index, uint32_t descriptor_size, uint64_t in_resource_size)
+  fdescriptor::fdescriptor(fdescriptor_heap* heap, uint32_t in_index)
   {
+    parent_heap = heap;
     index = in_index;
-    cpu_handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(heap->GetCPUDescriptorHandleForHeapStart(), in_index, descriptor_size);
-    gpu_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(heap->GetGPUDescriptorHandleForHeapStart(), in_index, descriptor_size);
-    resource_size = in_resource_size;
+    cpu_handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(heap->heap->GetCPUDescriptorHandleForHeapStart(), in_index, heap->increment_size);
+    gpu_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(heap->heap->GetGPUDescriptorHandleForHeapStart(), in_index, heap->increment_size);
   }
 
-  fdescriptor* fdescriptor_heap::push(uint64_t in_resource_size)
+  fdescriptor* fdescriptor_heap::push()
   {
-    fdescriptor temp(heap.Get(), last_index, descriptor_size, in_resource_size);
-    temp.resource_size = in_resource_size;
+    fdescriptor temp(this, last_index);
     descriptors.emplace_back(temp);
     last_index++;
     return &descriptors.back(); 
