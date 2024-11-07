@@ -45,7 +45,6 @@ namespace engine
 
   void fgbuffer_pass::draw(ComPtr<ID3D12GraphicsCommandList> command_list)
   {
-    ComPtr<ID3D12Device2> device = fapplication::instance->device;
     fdescriptor_heap* heap = context->main_descriptor_heap;
 
     graphics_pipeline.bind_command_list(command_list.Get());

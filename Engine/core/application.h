@@ -6,6 +6,7 @@
 #include "core/core.h"
 #include "math/camera.h"
 #include "profile/benchmark.h"
+#include "renderer/device.h"
 
 #if USE_NSIGHT_AFTERMATH
 #include "gpu_crash_handler.h"
@@ -46,7 +47,7 @@ namespace engine
     bool is_running = true;
     std::shared_ptr<fwindow> window;
     
-    ComPtr<ID3D12Device2> device;
+    fdevice device;
     std::shared_ptr<fcommand_queue> command_queue;
 
 #if USE_NSIGHT_AFTERMATH

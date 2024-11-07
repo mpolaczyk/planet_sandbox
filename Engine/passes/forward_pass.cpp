@@ -43,7 +43,7 @@ namespace engine
     
     uint32_t back_buffer_count = context->back_buffer_count;
     fdescriptor_heap* heap = context->main_descriptor_heap;
-    ComPtr<ID3D12Device2> device = fapplication::instance->device;
+    fdevice& device = fapplication::instance->device;
 
     //fdx12::create_texture2d_resource(device, width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, D3D12_RESOURCE_STATE_RENDER_TARGET, output);
     //fdx12::create_render_target(device, swap_chain, rtv_descriptor_heap, back_buffer_count, rtv);
@@ -52,17 +52,17 @@ namespace engine
     // Create frame data CBV
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
-      frame_data.emplace_back(fconst_buffer::create(device.Get(), heap, sizeof(fframe_data), std::format("CBV frame: back buffer {}", i).c_str()));
+      frame_data.emplace_back(fconst_buffer::create(device.device.Get(), heap, sizeof(fframe_data), std::format("CBV frame: back buffer {}", i).c_str()));
     }
 
     // Create light and material data SRV
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
-      lights_data.emplace_back(fshader_resource_buffer::create(device.Get(), heap, sizeof(flight_properties) * MAX_LIGHTS, std::format("SRV lights: back buffer {}", i).c_str()));
+      lights_data.emplace_back(fshader_resource_buffer::create(device.device.Get(), heap, sizeof(flight_properties) * MAX_LIGHTS, std::format("SRV lights: back buffer {}", i).c_str()));
     }
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
-      materials_data.emplace_back(fshader_resource_buffer::create(device.Get(), heap, sizeof(fmaterial_properties) * MAX_MATERIALS, std::format("SRV materials: back buffer {}", i).c_str()));
+      materials_data.emplace_back(fshader_resource_buffer::create(device.device.Get(), heap, sizeof(fmaterial_properties) * MAX_MATERIALS, std::format("SRV materials: back buffer {}", i).c_str()));
     }
 
     // Create first texture SRV (handles only)
@@ -70,7 +70,7 @@ namespace engine
     default_material_asset.set_name("default");
     atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
     // nonsense...
-    default_texture->gpu_resource = ftexture_resource::create(device.Get(), heap, default_texture->gpu_resource.width, default_texture->gpu_resource.height,
+    default_texture->gpu_resource = ftexture_resource::create(device.device.Get(), heap, default_texture->gpu_resource.width, default_texture->gpu_resource.height,
       default_texture->gpu_resource.channels, default_texture->gpu_resource.element_size, DXGI_FORMAT_R8G8B8A8_UNORM, "default");
     
     // Set up graphics pipeline
@@ -96,7 +96,7 @@ namespace engine
   
   void fforward_pass::draw(ComPtr<ID3D12GraphicsCommandList> command_list)
   {
-    ComPtr<ID3D12Device2> device = fapplication::instance->device;
+    fdevice& device = fapplication::instance->device;
     fdescriptor_heap* heap = context->main_descriptor_heap;
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
 
@@ -153,13 +153,7 @@ namespace engine
 
       // Upload default texture first
       {
-        default_texture->gpu_resource.upload(device, command_list, default_texture->is_hdr ? reinterpret_cast<void*>(default_texture->data_hdr.data()) : default_texture->data_ldr.data());
-
-        //fdx12::upload_texture_buffer(device, command_list, heap->get(default_texture_heap_index)->cpu_handle, default_texture);
-//#if BUILD_DEBUG
-//        DX_SET_NAME(default_texture->render_state.texture_buffer, "Default texture buffer: {}", default_texture->get_display_name())
-//        DX_SET_NAME(default_texture->render_state.texture_buffer_upload, "Default texture upload buffer: {}", default_texture->get_display_name())
-//#endif
+        default_texture->gpu_resource.upload(device.device, command_list, default_texture->is_hdr ? reinterpret_cast<void*>(default_texture->data_hdr.data()) : default_texture->data_ldr.data());
       }
 
       // Upload other textures
@@ -170,17 +164,10 @@ namespace engine
           atexture* texture = scene_acceleration.a_textures[i];
           if(!texture->gpu_resource.is_online)
           {
-            texture->gpu_resource = ftexture_resource::create(device.Get(), heap, texture->gpu_resource.width, texture->gpu_resource.height,
+            texture->gpu_resource = ftexture_resource::create(device.device.Get(), heap, texture->gpu_resource.width, texture->gpu_resource.height,
               texture->gpu_resource.channels, texture->gpu_resource.element_size, DXGI_FORMAT_R8G8B8A8_UNORM, texture->get_display_name().c_str());
             
-            texture->gpu_resource.upload(device, command_list, texture->is_hdr ? reinterpret_cast<void*>(texture->data_hdr.data()) : texture->data_ldr.data());
-
-            
-            //fdx12::upload_texture_buffer(device, command_list, heap->push()->cpu_handle, texture)
-//#if BUILD_DEBUG
-//            DX_SET_NAME(texture->render_state.texture_buffer, "Texture buffer: {}", texture->get_display_name())
-//            DX_SET_NAME(texture->render_state.texture_buffer_upload, "Texture upload buffer: {}", texture->get_display_name())
-//#endif
+            texture->gpu_resource.upload(device.device, command_list, texture->is_hdr ? reinterpret_cast<void*>(texture->data_hdr.data()) : texture->data_ldr.data());
           }
         }
       }
@@ -193,8 +180,8 @@ namespace engine
       fstatic_mesh_render_state& smrs = mesh->mesh_asset_ptr.get()->render_state;
       if(!smrs.is_resource_online)
       {
-        fdx12::upload_vertex_buffer(device, command_list, smrs);
-        fdx12::upload_index_buffer(device, command_list, smrs);
+        fdx12::upload_vertex_buffer(device.device, command_list, smrs);
+        fdx12::upload_index_buffer(device.device, command_list, smrs);
 #if BUILD_DEBUG
         {
           std::string mesh_name = mesh->get_display_name();

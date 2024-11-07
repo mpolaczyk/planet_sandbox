@@ -16,19 +16,21 @@ namespace editor
     return static_cast<feditor_app*>(fapplication::instance);  
   }
   
-  void feditor_window::init(WNDPROC wnd_proc, ComPtr<ID3D12Device> device, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue)
+  void feditor_window::init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue)
   {
-    fwindow::init(wnd_proc,  device, factory,  command_queue);
+    fdevice& device = fapplication::instance->device;
+
+    fwindow::init(wnd_proc, factory,  command_queue);
     
     ImGui::StyleColorsClassic();
     ImGui_ImplWin32_Init(hwnd);
 
-    fdx12::create_cbv_srv_uav_descriptor_heap(device, ui_descriptor_heap);
+    device.create_cbv_srv_uav_descriptor_heap(ui_descriptor_heap);
 #if BUILD_DEBUG
     DX_SET_NAME(ui_descriptor_heap.heap, "UI descriptor Heap");
 #endif
     
-    ImGui_ImplDX12_Init(device.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM,
+    ImGui_ImplDX12_Init(device.device.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM,
       ui_descriptor_heap.heap.Get(),
       ui_descriptor_heap.heap->GetCPUDescriptorHandleForHeapStart(),
       ui_descriptor_heap.heap->GetGPUDescriptorHandleForHeapStart());
@@ -69,11 +71,11 @@ namespace editor
     fwindow::draw(command_queue);
     
     ComPtr<ID3D12GraphicsCommandList> command_list = command_queue->get_command_list(ecommand_list_type::ui, back_buffer_index);
-    ComPtr<ID3D12Device2> device = fapplication::instance->device;
+    fdevice& device = fapplication::instance->device;
 
     fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     
-    fdx12::set_render_targets(device, command_list, dsv_descriptor_heap, rtv_descriptor_heap, back_buffer_index);
+    fdx12::set_render_targets(device.device, command_list, dsv_descriptor_heap, rtv_descriptor_heap, back_buffer_index);
     fdx12::set_viewport(command_list, width, height);
     fdx12::set_scissor(command_list, width, height);
     

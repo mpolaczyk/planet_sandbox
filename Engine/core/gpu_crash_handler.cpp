@@ -23,9 +23,9 @@ namespace engine
     LOG_INFO("Nsight Aftermath is enabled, disabling the DX12 debug layer!")
   }
 
-  void fgpu_crash_tracker::post_device_initialize(ComPtr<ID3D12Device> device)
+  void fgpu_crash_tracker::post_device_initialize(ID3D12Device* device)
   {
-    impl->PostDeviceInitialize(device.Get());
+    impl->PostDeviceInitialize(device);
   }
 
   void fgpu_crash_tracker::create_context_handle(int back_buffer_index, ComPtr<ID3D12GraphicsCommandList> command_list)

@@ -32,10 +32,10 @@ namespace engine
     switch(msg)
     {
     case WM_SIZE:
-      if(device != nullptr && wParam != SIZE_MINIMIZED)
+      if(device.device != nullptr && wParam != SIZE_MINIMIZED)
       {
         command_queue->flush();
-        window->resize(device, LOWORD(lParam), HIWORD(lParam));
+        window->resize(LOWORD(lParam), HIWORD(lParam));
       }
       return 0;
     case WM_SYSCOMMAND:
@@ -78,10 +78,10 @@ namespace engine
     fdx12::enable_debug_layer();
 #endif
     
-    fdx12::create_device(factory, device);
+    device = fdevice::create(factory.Get());
 
 #if USE_NSIGHT_AFTERMATH
-    gpu_crash_handler.post_device_initialize(device);
+    gpu_crash_handler.post_device_initialize(device.device.Get());
 #endif
     
 #if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH
@@ -103,7 +103,7 @@ namespace engine
     
     scene_root = hscene::spawn();
     
-    window->init(WndProc, device, factory, command_queue->get_command_queue());
+    window->init(WndProc, factory, command_queue->get_command_queue());
     window->show();
 
     LOG_INFO("Init done, starting the main loop");
@@ -182,7 +182,6 @@ namespace engine
     command_queue->flush();
     command_queue->cleanup();
     window->cleanup();
-    DX_RELEASE(device);
 #ifdef BUILD_DEBUG
     fdx12::report_live_objects();
 #endif

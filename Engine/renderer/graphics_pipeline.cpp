@@ -97,9 +97,9 @@ namespace engine
 
   void fgraphics_pipeline::init(const char* name)
   {
-    ComPtr<ID3D12Device2> device = fapplication::instance->device;
+    fdevice& device = fapplication::instance->device;
 
-    fdx12::create_root_signature(device, parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature);
+    fdx12::create_root_signature(device.device, parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature);
 #if BUILD_DEBUG
     DX_SET_NAME(root_signature, "Root signature: {0}", name)
 #endif
@@ -112,7 +112,7 @@ namespace engine
     pipeline_state_stream.pixel_shader = CD3DX12_SHADER_BYTECODE(pixel_shader->GetBufferPointer(), pixel_shader->GetBufferSize());
     pipeline_state_stream.dsv_format = depth_buffer_format;
     pipeline_state_stream.rtv_formats = render_target_formats;
-    fdx12::create_pipeline_state(device, pipeline_state_stream, pipeline_state);
+    fdx12::create_pipeline_state(device.device, pipeline_state_stream, pipeline_state);
 #if BUILD_DEBUG
     DX_SET_NAME(pipeline_state, "Pipeline state: {0}", name)
 #endif

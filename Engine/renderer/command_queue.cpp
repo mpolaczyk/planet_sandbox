@@ -5,18 +5,19 @@
 #include "command_queue.h"
 
 #include "core/exceptions.h"
+#include "renderer/device.h"
 #include "renderer/dx12_lib.h"
 
 namespace engine
 {
-  void fcommand_queue::init(ComPtr<ID3D12Device> device, uint32_t in_back_buffer_count)
+  void fcommand_queue::init(fdevice& device, uint32_t in_back_buffer_count)
   {
     back_buffer_count = in_back_buffer_count;
-    fdx12::create_command_queue(device, command_queue);
+    device.create_command_queue(command_queue);
     for(int i = 0; i < ecommand_list_type::num; i++)
     {
       fcommand_pair temp;
-      fdx12::create_command_list(device, back_buffer_count, temp.command_list, temp.command_allocator);
+      device.create_command_list(back_buffer_count, temp.command_list, temp.command_allocator);
 #if BUILD_DEBUG
       for(uint32_t n = 0; n < back_buffer_count; n++)
       {
@@ -26,7 +27,7 @@ namespace engine
 #endif
       command_pair.push_back(temp);
     }
-    fdx12::create_synchronisation(device, back_buffer_count, last_fence_value, fence, fence_event, fence_value);
+    device.create_synchronisation(back_buffer_count, last_fence_value, fence, fence_event, fence_value);
   }
 
   void fcommand_queue::cleanup()

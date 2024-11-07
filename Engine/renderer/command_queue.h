@@ -5,7 +5,6 @@
 
 #include "core/core.h"
 
-struct ID3D12Device;
 struct ID3D12CommandQueue;
 struct ID3D12CommandAllocator;
 struct ID3D12GraphicsCommandList;
@@ -15,6 +14,8 @@ using Microsoft::WRL::ComPtr;
 
 namespace engine
 {
+  struct fdevice;
+
   enum ecommand_list_type : int
   {
     main = 0,
@@ -31,7 +32,7 @@ namespace engine
   struct ENGINE_API fcommand_queue
   {
   public:
-    void init(ComPtr<ID3D12Device> device, uint32_t in_back_buffer_count);
+    void init(fdevice& device, uint32_t in_back_buffer_count);
     void cleanup();
     
     void wait_for_fence_value(uint64_t value) const;

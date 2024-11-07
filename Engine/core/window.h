@@ -7,7 +7,6 @@
 #include "core/core.h"
 #include "renderer/descriptor_heap.h"
 
-struct ID3D12Device;
 struct ID3D12RootSignature;
 struct ID3D12DescriptorHeap;
 struct ID3D12Resource;
@@ -26,17 +25,17 @@ namespace engine
   public:   
     void show() const;
     void hide() const;
-    virtual void init(WNDPROC wnd_proc, ComPtr<ID3D12Device> device, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue);
+    virtual void init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue);
     virtual void update() = 0;
     virtual void draw(const fcommand_queue* command_queue);
     void present(fgpu_crash_tracker* gpu_crash_handler);
-    void resize(const ComPtr<ID3D12Device> device, uint32_t width, uint32_t height);
+    void resize(uint32_t width, uint32_t height);
     virtual const wchar_t* get_name() const = 0;
     virtual void cleanup();
 
     static constexpr uint32_t back_buffer_count = 2;
 
-    int get_back_buffer_index() const { return back_buffer_index; }
+    uint32_t get_back_buffer_index() const { return back_buffer_index; }
     HWND get_window_handle() const { return hwnd; }
     
     ComPtr<IDXGISwapChain4> swap_chain;
@@ -52,10 +51,10 @@ namespace engine
     
     bool screen_tearing = false;
     bool vsync = true;
-    int width = 1920;
-    int height = 1080;
+    uint32_t width = 1920;
+    uint32_t height = 1080;
     
-    int back_buffer_index = 0;
+    uint32_t back_buffer_index = 0;
     hhittable_base* selected_object = nullptr;
 
   };

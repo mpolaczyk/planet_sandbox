@@ -11,8 +11,6 @@ namespace engine
 {
   void fpass_base::init()
   {
-    ComPtr<ID3D12Device2> device = fapplication::instance->device;
-
     if(!vertex_shader_asset.get()->render_state.blob)
     {
       LOG_ERROR("Failed to load vertex shader.");

@@ -68,7 +68,6 @@ namespace engine
   class ENGINE_API fdx12 final
   {
   public:
-    static void get_hw_adapter(IDXGIFactory1* factory, IDXGIAdapter1** out_adapter, bool prefer_high_performance_adapter = false);
     static DXGI_SAMPLE_DESC get_multisample_quality_levels(ComPtr<ID3D12Device> device, DXGI_FORMAT format, UINT num_samples, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags);
 
     static void enable_debug_layer();
@@ -76,16 +75,8 @@ namespace engine
     static void enable_info_queue(ComPtr<ID3D12Device> device);
     
     static void create_factory(ComPtr<IDXGIFactory4>& out_factory4);
-    static void create_device(ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12Device2>& out_device);
-    static void create_command_queue(ComPtr<ID3D12Device> device, ComPtr<ID3D12CommandQueue>& out_command_queue);
+    
     static void create_swap_chain(HWND hwnd, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue, uint32_t back_buffer_count, bool allow_screen_tearing, ComPtr<IDXGISwapChain4>& out_swap_chain);
-    static void create_render_target_descriptor_heap(ComPtr<ID3D12Device> device, uint32_t back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap);
-    static void create_depth_stencil_descriptor_heap(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap);
-    static void create_render_target(ComPtr<ID3D12Device> device, ComPtr<IDXGISwapChain4> swap_chain, ComPtr<ID3D12DescriptorHeap> descriptor_heap, uint32_t back_buffer_count, std::vector<ComPtr<ID3D12Resource>>& out_rtv);
-    static void create_depth_stencil(ComPtr<ID3D12Device> device, ComPtr<ID3D12DescriptorHeap> descriptor_heap, uint32_t width, uint32_t height, ComPtr<ID3D12Resource>& out_dsv);
-    static void create_cbv_srv_uav_descriptor_heap(ComPtr<ID3D12Device> device, fdescriptor_heap& out_descriptor_heap);
-    static void create_command_list(ComPtr<ID3D12Device> device, uint32_t back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators);
-    static void create_synchronisation(ComPtr<ID3D12Device> device, uint32_t back_buffer_count, uint64_t initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values);
     static void create_root_signature(ComPtr<ID3D12Device> device, const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, const std::vector<CD3DX12_STATIC_SAMPLER_DESC>& static_samplers, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, ComPtr<ID3D12RootSignature>& out_root_signature);
     static void create_pipeline_state(ComPtr<ID3D12Device2> device, fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state);
     static void create_pipeline_state(ComPtr<ID3D12Device2> device, const D3D12_GRAPHICS_PIPELINE_STATE_DESC& pso_desc, ComPtr<ID3D12PipelineState>& out_pipeline_state);
