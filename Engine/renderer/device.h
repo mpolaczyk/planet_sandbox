@@ -43,6 +43,9 @@ enum DXC_OUT_KIND;
 
 namespace engine
 {
+  struct ftexture_resource;
+  struct fshader_resource_buffer;
+  struct fconst_buffer;
   struct fdescriptor_heap;
   
   using namespace Microsoft::WRL;
@@ -57,9 +60,14 @@ namespace engine
     void create_command_queue(ComPtr<ID3D12CommandQueue>& out_command_queue);
     void create_command_list(uint32_t back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators);
     void create_synchronisation(uint32_t back_buffer_count, uint64_t initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values);
+
     void create_render_target_descriptor_heap(uint32_t back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap);
     void create_depth_stencil_descriptor_heap(ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap);
     void create_cbv_srv_uav_descriptor_heap(fdescriptor_heap& out_descriptor_heap);
+    
+    void create_const_buffer(fdescriptor_heap* heap, uint64_t in_size, fconst_buffer& out_buffer, const char* name);
+    void create_shader_resource_buffer(fdescriptor_heap* heap, uint64_t in_size, fshader_resource_buffer& out_buffer, const char* name);
+    void create_texture_resource(fdescriptor_heap* heap, uint32_t width, uint32_t height, uint32_t channels, uint32_t element_size, DXGI_FORMAT format, ftexture_resource& out_resource, const char* name);
     
     ComPtr<ID3D12Device2> device;
   };

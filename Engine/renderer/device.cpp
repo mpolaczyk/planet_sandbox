@@ -1,18 +1,19 @@
 
 #include "d3d12.h"
-
-#include "device.h"
-
 #include <dxgi1_6.h>
 
 #include "d3dx12/d3dx12_core.h"
 #include "d3dx12/d3dx12_root_signature.h"
+
+#include "renderer/device.h"
 
 #include "core/exceptions.h"
 #include "engine/log.h"
 #include "engine/string_tools.h"
 #include "renderer/aligned_structs.h"
 #include "renderer/descriptor_heap.h"
+#include "renderer/dx12_lib.h"
+#include "renderer/gpu_resources.h"
 
 namespace engine
 {
@@ -216,5 +217,41 @@ namespace engine
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
     THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.heap.GetAddressOf())))
   }
+
+  void fdevice::create_const_buffer(fdescriptor_heap* heap, uint64_t in_size, fconst_buffer& out_buffer, const char* name)
+  {
+    out_buffer.size = in_size;
+    out_buffer.cbv = *heap->push();
+    fdx12::create_const_buffer(device, out_buffer.cbv.cpu_handle, out_buffer.size, out_buffer.resource);
+#if BUILD_DEBUG
+    DX_SET_NAME(out_buffer.resource, "{}", name)
+#endif
+  }
+
+  void fdevice::create_shader_resource_buffer(fdescriptor_heap* heap, uint64_t in_size, fshader_resource_buffer& out_buffer, const char* name)
+  {
+    out_buffer.size = in_size;
+    out_buffer.srv = *heap->push();
+    fdx12::create_shader_resource_buffer(device, out_buffer.srv.cpu_handle, out_buffer.size, out_buffer.resource);
+#if BUILD_DEBUG
+    DX_SET_NAME(out_buffer.resource, "{}", name)
+#endif
+  }
+
+  void fdevice::create_texture_resource(fdescriptor_heap* heap, uint32_t width, uint32_t height, uint32_t channels, uint32_t element_size, DXGI_FORMAT format, ftexture_resource& out_resource, const char* name)
+  {
+    out_resource.height = height;
+    out_resource.width = width;
+    out_resource.format = format;
+    out_resource.channels = channels;
+    out_resource.element_size = element_size;
+    out_resource.srv = *heap->push();
+    fdx12::create_texture_resource(device, width, height, format, out_resource.srv.cpu_handle, out_resource.resource, out_resource.resource_upload);
+#if BUILD_DEBUG
+    DX_SET_NAME(out_resource.resource, "Texture: {}", name)
+    DX_SET_NAME(out_resource.resource_upload, "Texture upload: {}", name)
+#endif
+  }
+  
   
 }

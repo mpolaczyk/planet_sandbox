@@ -52,17 +52,23 @@ namespace engine
     // Create frame data CBV
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
-      frame_data.emplace_back(fconst_buffer::create(device.device.Get(), heap, sizeof(fframe_data), std::format("CBV frame: back buffer {}", i).c_str()));
+      fconst_buffer buffer;
+      device.create_const_buffer(heap, sizeof(fframe_data), buffer, std::format("CBV frame: back buffer {}", i).c_str());
+      frame_data.emplace_back(buffer);
     }
 
     // Create light and material data SRV
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
-      lights_data.emplace_back(fshader_resource_buffer::create(device.device.Get(), heap, sizeof(flight_properties) * MAX_LIGHTS, std::format("SRV lights: back buffer {}", i).c_str()));
+      fshader_resource_buffer buffer;
+      device.create_shader_resource_buffer(heap, sizeof(flight_properties) * MAX_LIGHTS, buffer, std::format("SRV lights: back buffer {}", i).c_str());
+      lights_data.emplace_back(buffer);
     }
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
-      materials_data.emplace_back(fshader_resource_buffer::create(device.device.Get(), heap, sizeof(fmaterial_properties) * MAX_MATERIALS, std::format("SRV materials: back buffer {}", i).c_str()));
+      fshader_resource_buffer buffer;
+      device.create_shader_resource_buffer(heap, sizeof(fmaterial_properties) * MAX_MATERIALS, buffer, std::format("SRV materials: back buffer {}", i).c_str());
+      materials_data.emplace_back(buffer);
     }
 
     // Create first texture SRV (handles only)
@@ -70,8 +76,8 @@ namespace engine
     default_material_asset.set_name("default");
     atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
     // nonsense...
-    default_texture->gpu_resource = ftexture_resource::create(device.device.Get(), heap, default_texture->gpu_resource.width, default_texture->gpu_resource.height,
-      default_texture->gpu_resource.channels, default_texture->gpu_resource.element_size, DXGI_FORMAT_R8G8B8A8_UNORM, "default");
+    device.create_texture_resource(heap, default_texture->gpu_resource.width, default_texture->gpu_resource.height,
+      default_texture->gpu_resource.channels, default_texture->gpu_resource.element_size, DXGI_FORMAT_R8G8B8A8_UNORM, default_texture->gpu_resource, "default");
     
     // Set up graphics pipeline
     graphics_pipeline.reserve_parameters(root_parameter_type::num);
@@ -164,8 +170,8 @@ namespace engine
           atexture* texture = scene_acceleration.a_textures[i];
           if(!texture->gpu_resource.is_online)
           {
-            texture->gpu_resource = ftexture_resource::create(device.device.Get(), heap, texture->gpu_resource.width, texture->gpu_resource.height,
-              texture->gpu_resource.channels, texture->gpu_resource.element_size, DXGI_FORMAT_R8G8B8A8_UNORM, texture->get_display_name().c_str());
+            device.create_texture_resource(heap, texture->gpu_resource.width, texture->gpu_resource.height,
+              texture->gpu_resource.channels, texture->gpu_resource.element_size, DXGI_FORMAT_R8G8B8A8_UNORM, texture->gpu_resource, texture->get_display_name().c_str());
             
             texture->gpu_resource.upload(device.device, command_list, texture->is_hdr ? reinterpret_cast<void*>(texture->data_hdr.data()) : texture->data_ldr.data());
           }
