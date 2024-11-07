@@ -95,7 +95,7 @@ namespace engine
     for (int i = 0; i < window->back_buffer_count; i++)
     {
       // Requires command list to be in a recording state, otherwise it crashes with 0xbad00000
-      gpu_crash_handler.create_context_handle(i, command_queue->get_command_list(ecommand_list_type::main, i));
+      gpu_crash_handler.create_context_handle(i, command_queue->get_command_list(ecommand_list_purpose::main, i).get()->command_list);
     }
 #endif
 
@@ -158,7 +158,7 @@ namespace engine
   {
     command_queue->close_command_lists(back_buffer_index);
     command_queue->reset_command_lists(back_buffer_index);
-    window->draw(command_queue.get());
+    window->draw(command_queue);
   }
 
   void fapplication::render(int back_buffer_index)

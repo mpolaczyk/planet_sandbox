@@ -173,6 +173,7 @@ namespace engine
     out_texture->gpu_resource.width = width;
     out_texture->gpu_resource.height = height;
     out_texture->gpu_resource.channels = channels;
+    out_texture->gpu_resource.format = DXGI_FORMAT_R8G8B8A8_UNORM;
     return true;
   }
 

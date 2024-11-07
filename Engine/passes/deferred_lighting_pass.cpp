@@ -88,7 +88,7 @@ namespace engine
 //    quad_render_state.num_faces = static_cast<int32_t>(face_list.size()) * 3;
   }
   
-  void fdeferred_lighting_pass::draw(ComPtr<ID3D12GraphicsCommandList> command_list)
+  void fdeferred_lighting_pass::draw(std::shared_ptr<fgraphics_command_list> command_list)
   {
 //    fdx12& dx = fdx12::instance();
 //    

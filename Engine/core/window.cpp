@@ -12,6 +12,7 @@
 #include "renderer/renderer_base.h"
 #include "renderer/command_queue.h"
 #include "hittables/scene.h"
+#include "renderer/command_list.h"
 #include "renderer/scene_acceleration.h"
 
 namespace engine
@@ -37,7 +38,7 @@ namespace engine
     
     screen_tearing = fdx12::enable_screen_tearing(factory);
 
-    fdx12::create_swap_chain(hwnd, factory, command_queue, back_buffer_count, screen_tearing, swap_chain);
+    fdx12::create_swap_chain(hwnd, factory.Get(), command_queue.Get(), back_buffer_count, screen_tearing, swap_chain);
     device.create_render_target_descriptor_heap(back_buffer_count, rtv_descriptor_heap);
     device.create_depth_stencil_descriptor_heap(dsv_descriptor_heap);
     device.create_cbv_srv_uav_descriptor_heap(main_descriptor_heap);
@@ -48,22 +49,20 @@ namespace engine
 #endif
   }
 
-  void fwindow::draw(const fcommand_queue* command_queue)
+  void fwindow::draw(std::shared_ptr<fcommand_queue> command_queue)
   {
-    ComPtr<ID3D12GraphicsCommandList> command_list = command_queue->get_command_list(ecommand_list_type::main, back_buffer_index);
-    fdevice& device = fapplication::instance->device;
+    std::shared_ptr<fgraphics_command_list> command_list = command_queue->get_command_list(ecommand_list_purpose::main, back_buffer_index);
     
     if(hscene* scene_root = fapplication::instance->scene_root)
     {
       if(rrenderer_base* renderer = scene_root->renderer)
       {
-        fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-        
-        fdx12::clear_render_target(device.device, command_list, rtv_descriptor_heap, back_buffer_index);
-        fdx12::clear_depth_stencil(command_list, dsv_descriptor_heap);
-        fdx12::set_render_targets(device.device, command_list, dsv_descriptor_heap, rtv_descriptor_heap, back_buffer_index);
-        fdx12::set_viewport(command_list, width, height);
-        fdx12::set_scissor(command_list, width, height);
+        command_list->resource_barrier(rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+        command_list->clear_render_target(rtv_descriptor_heap.Get(), back_buffer_index);
+        command_list->clear_depth_stencil(dsv_descriptor_heap.Get());
+        command_list->set_render_targets(dsv_descriptor_heap.Get(), rtv_descriptor_heap.Get(), back_buffer_index);
+        command_list->set_viewport(width, height);
+        command_list->set_scissor(width, height);
         
         frenderer_context context;
         context.back_buffer_count = back_buffer_count;
@@ -78,7 +77,7 @@ namespace engine
         renderer->output_height = renderer->output_height == 0 ? height : renderer->output_height;
         renderer->draw(command_list);
 
-        fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+        command_list->resource_barrier(rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
       }
     }
   }

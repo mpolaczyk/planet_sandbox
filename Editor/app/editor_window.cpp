@@ -55,7 +55,7 @@ namespace editor
     update_default_spawn_position();
   }
 
-  void feditor_window::draw(const engine::fcommand_queue* command_queue)
+  void feditor_window::draw(std::shared_ptr<engine::fcommand_queue> command_queue)
   {
     ImGui_ImplDX12_NewFrame();
     ImGui_ImplWin32_NewFrame();
@@ -70,23 +70,22 @@ namespace editor
 
     fwindow::draw(command_queue);
     
-    ComPtr<ID3D12GraphicsCommandList> command_list = command_queue->get_command_list(ecommand_list_type::ui, back_buffer_index);
-    fdevice& device = fapplication::instance->device;
+    std::shared_ptr<fgraphics_command_list> command_list = command_queue->get_command_list(ecommand_list_purpose::ui, back_buffer_index);
 
-    fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    command_list->resource_barrier(rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     
-    fdx12::set_render_targets(device.device, command_list, dsv_descriptor_heap, rtv_descriptor_heap, back_buffer_index);
-    fdx12::set_viewport(command_list, width, height);
-    fdx12::set_scissor(command_list, width, height);
+    command_list->set_render_targets(dsv_descriptor_heap.Get(), rtv_descriptor_heap.Get(), back_buffer_index);
+    command_list->set_viewport(width, height);
+    command_list->set_scissor(width, height);
     
-    command_list->SetDescriptorHeaps(1, ui_descriptor_heap.heap.GetAddressOf());
+    command_list->command_list->SetDescriptorHeaps(1, ui_descriptor_heap.heap.GetAddressOf());
 
     ImGui::Render();
 #if RENDER_IMGUI
-    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), command_list.Get());
+    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), command_list->command_list.Get());
 #endif
     
-    fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+    command_list->resource_barrier(rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
   }
 
 

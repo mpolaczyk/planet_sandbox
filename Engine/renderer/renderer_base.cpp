@@ -8,6 +8,7 @@
 #include "renderer/dx12_lib.h"
 
 #include "core/application.h"
+#include "renderer/command_list.h"
 
 namespace engine
 {
@@ -33,7 +34,7 @@ namespace engine
     context = std::move(in_context);
   }
   
-  void rrenderer_base::draw(ComPtr<ID3D12GraphicsCommandList> command_list)
+  void rrenderer_base::draw(std::shared_ptr<fgraphics_command_list> command_list)
   {
     if(!can_draw())
     {
@@ -68,7 +69,6 @@ namespace engine
     }
 
     draw_internal(command_list);
-    
   }
 
   bool rrenderer_base::can_draw()

@@ -41,8 +41,6 @@ namespace engine
     uint32_t channels;
     uint32_t element_size;  // is_hdr ? sizeof(float) : sizeof(uint8_t)
     DXGI_FORMAT format;
-    
-    void upload(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, const void* data);
   };
   
 }

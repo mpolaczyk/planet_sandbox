@@ -7,12 +7,13 @@
 
 namespace engine
 {
+  struct fgraphics_command_list;
   using Microsoft::WRL::ComPtr;
   
   struct fforward_pass : public fpass_base
   {
     virtual void init() override;
-    virtual void draw(ComPtr<ID3D12GraphicsCommandList> command_list) override;
+    virtual void draw(std::shared_ptr<fgraphics_command_list> command_list) override;
     virtual void create_output_texture(bool cleanup = false) override;
     
     // Input

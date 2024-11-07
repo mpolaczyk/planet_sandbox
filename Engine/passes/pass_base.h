@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <wrl/client.h>
 
 #include "asset/soft_asset_ptr.h"
@@ -11,6 +12,8 @@ struct ID3D12GraphicsCommandList;
 
 namespace engine
 {
+  struct fgraphics_command_list;
+  
   using Microsoft::WRL::ComPtr;
   
   struct frenderer_context;
@@ -20,7 +23,7 @@ namespace engine
     virtual ~fpass_base() = default;
     
     virtual void init();
-    virtual void draw(ComPtr<ID3D12GraphicsCommandList> command_list) = 0;
+    virtual void draw(std::shared_ptr<fgraphics_command_list> command_list) = 0;
     virtual void create_output_texture(bool cleanup = false) = 0;
     virtual void set_renderer_context(frenderer_context* in_context)
     {

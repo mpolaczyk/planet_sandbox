@@ -43,6 +43,7 @@ enum DXC_OUT_KIND;
 
 namespace engine
 {
+  class atexture;
   struct ftexture_resource;
   struct fshader_resource_buffer;
   struct fconst_buffer;
@@ -67,7 +68,10 @@ namespace engine
     
     void create_const_buffer(fdescriptor_heap* heap, uint64_t in_size, fconst_buffer& out_buffer, const char* name);
     void create_shader_resource_buffer(fdescriptor_heap* heap, uint64_t in_size, fshader_resource_buffer& out_buffer, const char* name);
-    void create_texture_resource(fdescriptor_heap* heap, uint32_t width, uint32_t height, uint32_t channels, uint32_t element_size, DXGI_FORMAT format, ftexture_resource& out_resource, const char* name);
+    void create_texture_resource(fdescriptor_heap* heap, atexture* texture_asset, const char* name);
+
+    void create_upload_resource(uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
+    void create_buffer_resource(uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
     
     ComPtr<ID3D12Device2> device;
   };

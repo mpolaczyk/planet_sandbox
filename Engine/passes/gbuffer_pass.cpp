@@ -43,13 +43,13 @@ namespace engine
     }
   }
 
-  void fgbuffer_pass::draw(ComPtr<ID3D12GraphicsCommandList> command_list)
+  void fgbuffer_pass::draw(std::shared_ptr<fgraphics_command_list> command_list)
   {
-    fdescriptor_heap* heap = context->main_descriptor_heap;
+    //fdescriptor_heap* heap = context->main_descriptor_heap;
 
-    graphics_pipeline.bind_command_list(command_list.Get());
+    //graphics_pipeline.bind_command_list(command_list.Get());
 
-    command_list->SetDescriptorHeaps(1, heap->heap.GetAddressOf());
+    //command_list->SetDescriptorHeaps(1, heap->heap.GetAddressOf());
 
     //const int back_buffer_index = context->back_buffer_index;
     //const uint32_t N = static_cast<uint32_t>(context->scene.scene_acceleration->h_meshes.size());

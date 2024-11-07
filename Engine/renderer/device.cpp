@@ -7,6 +7,9 @@
 
 #include "renderer/device.h"
 
+#include <d3dx12/d3dx12_resource_helpers.h>
+
+#include "assets/texture.h"
 #include "core/exceptions.h"
 #include "engine/log.h"
 #include "engine/string_tools.h"
@@ -220,9 +223,19 @@ namespace engine
 
   void fdevice::create_const_buffer(fdescriptor_heap* heap, uint64_t in_size, fconst_buffer& out_buffer, const char* name)
   {
-    out_buffer.size = in_size;
+    out_buffer.size = fdx12::align_size_to(in_size, 255);
     out_buffer.cbv = *heap->push();
-    fdx12::create_const_buffer(device, out_buffer.cbv.cpu_handle, out_buffer.size, out_buffer.resource);
+
+    // https://logins.github.io/graphics/2020/07/31/DX12ResourceHandling.html#resource-mapping
+    // https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-constant-buffers-root-descriptor-tables#c0
+    
+    create_upload_resource(out_buffer.size, out_buffer.resource);
+    
+    D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
+    cbv_desc.BufferLocation = out_buffer.resource->GetGPUVirtualAddress();
+    cbv_desc.SizeInBytes = static_cast<uint32_t>(out_buffer.size);
+    device->CreateConstantBufferView(&cbv_desc, out_buffer.cbv.cpu_handle);
+    
 #if BUILD_DEBUG
     DX_SET_NAME(out_buffer.resource, "{}", name)
 #endif
@@ -230,27 +243,90 @@ namespace engine
 
   void fdevice::create_shader_resource_buffer(fdescriptor_heap* heap, uint64_t in_size, fshader_resource_buffer& out_buffer, const char* name)
   {
-    out_buffer.size = in_size;
+    out_buffer.size = fdx12::align_size_to(in_size, 255);
     out_buffer.srv = *heap->push();
-    fdx12::create_shader_resource_buffer(device, out_buffer.srv.cpu_handle, out_buffer.size, out_buffer.resource);
+
+    create_upload_resource(out_buffer.size, out_buffer.resource);
+
+    D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
+    srv_desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+    srv_desc.Format = DXGI_FORMAT_UNKNOWN;
+    srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srv_desc.Buffer.NumElements = 1;
+    srv_desc.Buffer.StructureByteStride = static_cast<uint32_t>(out_buffer.size);
+    srv_desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+    device->CreateShaderResourceView(out_buffer.resource.Get(), &srv_desc, out_buffer.srv.cpu_handle);
+    
 #if BUILD_DEBUG
     DX_SET_NAME(out_buffer.resource, "{}", name)
 #endif
   }
 
-  void fdevice::create_texture_resource(fdescriptor_heap* heap, uint32_t width, uint32_t height, uint32_t channels, uint32_t element_size, DXGI_FORMAT format, ftexture_resource& out_resource, const char* name)
+  void fdevice::create_texture_resource(fdescriptor_heap* heap, atexture* texture_asset, const char* name)
   {
-    out_resource.height = height;
-    out_resource.width = width;
-    out_resource.format = format;
-    out_resource.channels = channels;
-    out_resource.element_size = element_size;
-    out_resource.srv = *heap->push();
-    fdx12::create_texture_resource(device, width, height, format, out_resource.srv.cpu_handle, out_resource.resource, out_resource.resource_upload);
+    ftexture_resource& gpur = texture_asset->gpu_resource;
+    gpur.srv = *heap->push();
+
+    D3D12_RESOURCE_DESC texture_desc = {};
+    texture_desc.MipLevels = 1;
+    texture_desc.Format = gpur.format;
+    texture_desc.Width = gpur.width;
+    texture_desc.Height = gpur.height;
+    texture_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+    texture_desc.DepthOrArraySize = 1;
+    texture_desc.SampleDesc.Count = 1;
+    texture_desc.SampleDesc.Quality = 0;
+    texture_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+
+    CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
+    THROW_IF_FAILED(device->CreateCommittedResource(
+      &default_heap,
+      D3D12_HEAP_FLAG_NONE,
+      &texture_desc,
+      D3D12_RESOURCE_STATE_COPY_DEST,
+      nullptr,
+      IID_PPV_ARGS(&gpur.resource)));
+
+    D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
+    srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srv_desc.Format = texture_desc.Format;
+    srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    srv_desc.Texture2D.MipLevels = 1;
+    device->CreateShaderResourceView(gpur.resource.Get(), &srv_desc, gpur.srv.cpu_handle);
+    
+    const uint64_t buffer_size = GetRequiredIntermediateSize(gpur.resource.Get(), 0, 1);
+    create_upload_resource(buffer_size, gpur.resource_upload);
+    
 #if BUILD_DEBUG
-    DX_SET_NAME(out_resource.resource, "Texture: {}", name)
-    DX_SET_NAME(out_resource.resource_upload, "Texture upload: {}", name)
+    DX_SET_NAME(gpur.resource, "Texture: {}", name)
+    DX_SET_NAME(gpur.resource_upload, "Texture upload: {}", name)
 #endif
+  }
+
+  void fdevice::create_upload_resource(uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource)
+  {
+    const CD3DX12_HEAP_PROPERTIES type_upload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+    const CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
+    THROW_IF_FAILED(device->CreateCommittedResource(
+      &type_upload,
+      D3D12_HEAP_FLAG_NONE,
+      &desc,
+      D3D12_RESOURCE_STATE_GENERIC_READ,
+      nullptr,
+      IID_PPV_ARGS(out_resource.GetAddressOf())));
+  }
+
+  void fdevice::create_buffer_resource(uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource)
+  {
+    const CD3DX12_HEAP_PROPERTIES type_default = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+    const CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size, D3D12_RESOURCE_FLAG_NONE);
+    THROW_IF_FAILED(device->CreateCommittedResource(
+      &type_default,
+      D3D12_HEAP_FLAG_NONE,
+      &desc,
+      D3D12_RESOURCE_STATE_COMMON,
+      nullptr,
+      IID_PPV_ARGS(out_resource.GetAddressOf())));
   }
   
   

@@ -14,15 +14,15 @@ namespace engine
   {
     back_buffer_count = in_back_buffer_count;
     device.create_command_queue(command_queue);
-    for(int i = 0; i < ecommand_list_type::num; i++)
+    for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
       fcommand_pair temp;
-      device.create_command_list(back_buffer_count, temp.command_list, temp.command_allocator);
+      device.create_command_list(back_buffer_count, temp.command_list.command_list, temp.command_allocator);
 #if BUILD_DEBUG
       for(uint32_t n = 0; n < back_buffer_count; n++)
       {
         DX_SET_NAME(temp.command_allocator[n], "Command allocator: type {} back buffer count {}", i, n)
-        DX_SET_NAME(temp.command_list, "Command list: type {}", i)
+        DX_SET_NAME(temp.command_list.command_list, "Command list: type {}", i)
       }
 #endif
       command_pair.push_back(temp);
@@ -37,10 +37,10 @@ namespace engine
       reset_command_lists(n);
     }
     
-    for(int i = 0; i < ecommand_list_type::num; i++)
+    for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
       fcommand_pair& pair = command_pair[i];
-      DX_RELEASE(pair.command_list)
+      DX_RELEASE(pair.command_list.command_list)
       for(uint32_t n = 0; n < back_buffer_count; n++)
       {
         DX_RELEASE(pair.command_allocator[n])
@@ -84,38 +84,38 @@ namespace engine
 
   void fcommand_queue::close_command_lists(uint32_t back_buffer_id)
   {
-    for(int i = 0; i < ecommand_list_type::num; i++)
+    for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
       fcommand_pair& pair = command_pair[i];
-      pair.command_list->Close();
+      pair.command_list.command_list->Close();
     }
   }
   
   void fcommand_queue::reset_command_lists(uint32_t back_buffer_id)
   {
-    for(int i = 0; i < ecommand_list_type::num; i++)
+    for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
       fcommand_pair& pair = command_pair[i];
       pair.command_allocator[back_buffer_id]->Reset();
-      pair.command_list->Reset(pair.command_allocator[back_buffer_id].Get(), nullptr);
+      pair.command_list.command_list->Reset(pair.command_allocator[back_buffer_id].Get(), nullptr);
     }
   }
 
-  ComPtr<ID3D12GraphicsCommandList> fcommand_queue::get_command_list(ecommand_list_type type, uint32_t back_buffer_id) const
+  std::shared_ptr<fgraphics_command_list> fcommand_queue::get_command_list(ecommand_list_purpose type, uint32_t back_buffer_id) const
   {
-    return command_pair[type].command_list;
+    return std::make_shared<fgraphics_command_list>(command_pair[type].command_list);
   }
 
   uint64_t fcommand_queue::execute_command_lists(uint32_t back_buffer_id)
   {
     std::vector<ID3D12CommandList*> command_list_ptr;
-    for(int i = 0; i < ecommand_list_type::num; i++)
+    for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
-      ID3D12GraphicsCommandList* temp = command_pair[i].command_list.Get();
+      ID3D12GraphicsCommandList* temp = command_pair[i].command_list.command_list.Get();
       temp->Close();
       command_list_ptr.push_back(temp);
     }
-    command_queue->ExecuteCommandLists(ecommand_list_type::num, command_list_ptr.data());
+    command_queue->ExecuteCommandLists(ecommand_list_purpose::num, command_list_ptr.data());
 
     fence_value[back_buffer_id] = signal();
     return fence_value[back_buffer_id];

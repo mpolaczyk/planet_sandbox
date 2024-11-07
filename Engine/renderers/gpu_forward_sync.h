@@ -34,7 +34,7 @@ namespace engine
   protected:
     virtual bool can_draw() override;
     virtual void init() override;
-    virtual void draw_internal(ComPtr<ID3D12GraphicsCommandList> command_list) override;
+    virtual void draw_internal(std::shared_ptr<fgraphics_command_list> command_list) override;
     virtual void create_output_texture(bool cleanup) override { forward_pass.create_output_texture(cleanup); };
   };
 }

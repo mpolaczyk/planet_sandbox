@@ -76,40 +76,27 @@ namespace engine
     
     static void create_factory(ComPtr<IDXGIFactory4>& out_factory4);
     
-    static void create_swap_chain(HWND hwnd, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue, uint32_t back_buffer_count, bool allow_screen_tearing, ComPtr<IDXGISwapChain4>& out_swap_chain);
+    static void create_swap_chain(HWND hwnd, IDXGIFactory4* factory, ID3D12CommandQueue* command_queue, uint32_t back_buffer_count, bool allow_screen_tearing, ComPtr<IDXGISwapChain4>& out_swap_chain);
     static void create_root_signature(ComPtr<ID3D12Device> device, const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, const std::vector<CD3DX12_STATIC_SAMPLER_DESC>& static_samplers, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, ComPtr<ID3D12RootSignature>& out_root_signature);
     static void create_pipeline_state(ComPtr<ID3D12Device2> device, fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state);
     static void create_pipeline_state(ComPtr<ID3D12Device2> device, const D3D12_GRAPHICS_PIPELINE_STATE_DESC& pso_desc, ComPtr<ID3D12PipelineState>& out_pipeline_state);
-    static void create_upload_resource(ComPtr<ID3D12Device> device, uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
-    static void create_buffer_resource(ComPtr<ID3D12Device> device, uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
     static void create_texture_resource(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_CPU_DESCRIPTOR_HANDLE handle, ComPtr<ID3D12Resource>& out_resource, ComPtr<ID3D12Resource>& out_upload_resource);
 
-    static void create_const_buffer(ComPtr<ID3D12Device> device, const D3D12_CPU_DESCRIPTOR_HANDLE& handle, uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
 
-    static void create_shader_resource_buffer(ComPtr<ID3D12Device> device, const D3D12_CPU_DESCRIPTOR_HANDLE& handle, uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
+    // CLONE to the one in fdevice
+    static void create_upload_resource(ComPtr<ID3D12Device> device, uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource);
+
 
     
     static void resize_swap_chain(ComPtr<IDXGISwapChain4> swap_chain, uint32_t backbuffer_count, uint32_t width, uint32_t height);
     
-    static void set_render_targets(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap, ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap, int back_buffer_index);
-    static void set_viewport(ComPtr<ID3D12GraphicsCommandList> command_list, uint32_t width, uint32_t height);
-    static void set_scissor(ComPtr<ID3D12GraphicsCommandList> command_list, uint32_t width, uint32_t height);
-
-    static void clear_render_target(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap, uint32_t back_buffer_index);
-    static void clear_depth_stencil(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12DescriptorHeap> dsv_descriptor_heap);
     
     static void report_live_objects();
     
-    static void resource_barrier(ComPtr<ID3D12GraphicsCommandList> command_list, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after);
-
     // TODO Check if they do the same in the end...
     static void upload_buffer(ComPtr<ID3D12Resource> resource, uint64_t buffer_size, const void* in_buffer);
-    static void upload_buffer_resource(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, uint64_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource);
     
-    static void upload_vertex_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state);
-    static void upload_index_buffer(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, fstatic_mesh_render_state& out_render_state);
-    static void upload_texture(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, uint32_t width, uint32_t height, uint32_t channels, DXGI_FORMAT format, const void* data, uint32_t element_size, ComPtr<ID3D12Resource> resource, ComPtr<ID3D12Resource> upload_resource);
-    static void upload_texture_buffer2(ComPtr<ID3D12Device> device, ComPtr<ID3D12GraphicsCommandList> command_list, const CD3DX12_CPU_DESCRIPTOR_HANDLE& handle, atexture* texture);
+    
     
     static bool get_dxc_hash(ComPtr<IDxcResult> result, std::string& out_hash);
     static bool get_dxc_blob(ComPtr<IDxcResult> result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlob>& out_blob);
