@@ -43,6 +43,12 @@ namespace engine
     ComPtr<ID3D12Resource> resource;
     fdescriptor desc;
   };
+
+  struct ENGINE_API frtv_resource
+  {
+    ComPtr<ID3D12Resource> resource;
+    fdescriptor rtv;
+  };
   
   struct ENGINE_API fshader_resource
   {

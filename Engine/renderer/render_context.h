@@ -1,8 +1,6 @@
 #pragma once
 
 #include "core/core.h"
-#include "asset/soft_asset_ptr.h"
-#include "assets/material.h"
 
 namespace engine
 {
@@ -23,7 +21,7 @@ namespace engine
     uint32_t back_buffer_index = 0;
     uint32_t back_buffer_count = 2;
     fdescriptor_heap* main_descriptor_heap = nullptr; // srv, cbv, uav
-    ComPtr<ID3D12Resource> rtv;
+    frtv_resource rtv;
     fdsv_resource dsv;
 
     bool validate() const
@@ -32,7 +30,7 @@ namespace engine
         && back_buffer_count > 0
         && back_buffer_index >= 0 && back_buffer_index < back_buffer_count
         && main_descriptor_heap != nullptr
-        && rtv != nullptr
+        && rtv.rtv.index != -1
         && dsv.desc.index != -1;
     }
   };

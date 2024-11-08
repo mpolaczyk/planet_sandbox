@@ -41,11 +41,13 @@ namespace engine
     HWND get_window_handle() const { return hwnd; }
     
     ComPtr<IDXGISwapChain4> swap_chain;
-    ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap;
-    std::vector<ComPtr<ID3D12Resource>> rtv;            // index is backbuffer id
+
+    fdescriptor_heap rtv_descriptor_heap;
     fdescriptor_heap dsv_descriptor_heap;
-    fdsv_resource dsv;
     fdescriptor_heap main_descriptor_heap; // srv, cbv, uav
+
+    std::vector<frtv_resource> rtv;        // index is backbuffer id
+    fdsv_resource dsv;
     
   protected:    
     HWND hwnd;

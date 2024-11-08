@@ -12,8 +12,6 @@ class GpuCrashTracker;
 
 namespace engine
 {
-  using Microsoft::WRL::ComPtr;
-
   // Wrapper for D3D12HelloNsightAftermath GpuCrashTracker class
   struct fgpu_crash_tracker
   {
@@ -26,7 +24,7 @@ namespace engine
     
     void pre_device_initialize(uint32_t back_buffer_count);
     void post_device_initialize(ID3D12Device* device);
-    void create_context_handle(uint32_t back_buffer_index, ComPtr<ID3D12GraphicsCommandList> command_list);
+    void create_context_handle(uint32_t back_buffer_index, ID3D12GraphicsCommandList* command_list);
     void wait_for_dump_and_throw(HRESULT hr);
     void advance_frame();
 

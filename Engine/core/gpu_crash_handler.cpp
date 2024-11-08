@@ -28,9 +28,9 @@ namespace engine
     impl->PostDeviceInitialize(device);
   }
 
-  void fgpu_crash_tracker::create_context_handle(uint32_t back_buffer_index, ComPtr<ID3D12GraphicsCommandList> command_list)
+  void fgpu_crash_tracker::create_context_handle(uint32_t back_buffer_index, ID3D12GraphicsCommandList* command_list)
   {
-    impl->CreateContextHandle(back_buffer_index, command_list.Get());
+    impl->CreateContextHandle(back_buffer_index, command_list);
   }
 
   void fgpu_crash_tracker::wait_for_dump_and_throw(HRESULT hr)

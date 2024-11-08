@@ -31,8 +31,7 @@ namespace engine
   {
     friend fdescriptor;
 
-    fdescriptor_heap() = default;
-    fdescriptor_heap(ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE in_heap_type)
+    void init(ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE in_heap_type)
     {
       heap_type = in_heap_type;
       increment_size = device->GetDescriptorHandleIncrementSize(in_heap_type);

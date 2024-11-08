@@ -177,26 +177,16 @@ namespace engine
     DX_SET_NAME(out_pipeline_state, "Pipeline state: {}", name)
 #endif
   }
-  
-  void fdevice::create_render_target(IDXGISwapChain4* swap_chain, ID3D12DescriptorHeap* descriptor_heap, uint32_t back_buffer_count, std::vector<ComPtr<ID3D12Resource>>& out_rtv, const char* name) const
-  {
-    // TODO use new heap type and break it into two calls.
-    const uint32_t descriptor_size = com->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
-    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptor_heap->GetCPUDescriptorHandleForHeapStart());
-    out_rtv.reserve(back_buffer_count);
-    for(uint32_t n = 0; n < back_buffer_count; n++)
-    {
-      ComPtr<ID3D12Resource> back_buffer;
-      THROW_IF_FAILED(swap_chain->GetBuffer(n, IID_PPV_ARGS(back_buffer.GetAddressOf())))
-      com->CreateRenderTargetView(back_buffer.Get(), nullptr, handle);
-      out_rtv.push_back(back_buffer);
-      handle.Offset(static_cast<int>(descriptor_size));
+  void fdevice::create_render_target(IDXGISwapChain4* swap_chain, uint32_t swap_chain_buffer_id, fdescriptor_heap& descriptor_heap, frtv_resource& out_rtv, const char* name) const
+  {
+    THROW_IF_FAILED(swap_chain->GetBuffer(swap_chain_buffer_id, IID_PPV_ARGS(out_rtv.resource.GetAddressOf())))
+    descriptor_heap.push(out_rtv.rtv);
+    com->CreateRenderTargetView(out_rtv.resource.Get(), nullptr, out_rtv.rtv.cpu_handle);
 
 #if BUILD_DEBUG
-      DX_SET_NAME(out_rtv[n], "{}", name)
+      DX_SET_NAME(out_rtv.resource, "Render target: {}", name)
 #endif
-    }
   }
 
   void fdevice::create_depth_stencil(fdescriptor_heap& descriptor_heap, uint32_t width, uint32_t height, fdsv_resource& out_dsv, const char* name) const
@@ -219,7 +209,7 @@ namespace engine
     com->CreateDepthStencilView(out_dsv.resource.Get(), &desc, out_dsv.desc.cpu_handle);
 
 #if BUILD_DEBUG
-    DX_SET_NAME(out_dsv.resource, "{}", name)
+    DX_SET_NAME(out_dsv.resource, "Depth stencil: {}", name)
 #endif
   }
 
@@ -260,22 +250,26 @@ namespace engine
     }
   }
 
-  void fdevice::create_render_target_descriptor_heap(uint32_t back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap, const char* name) const 
+  void fdevice::create_render_target_descriptor_heap(uint32_t back_buffer_count, fdescriptor_heap& out_descriptor_heap, const char* name) const 
   {
+    out_descriptor_heap.init(com, D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = back_buffer_count;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     desc.NodeMask = 0;
-    THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.GetAddressOf())))
+    THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.com.GetAddressOf())))
     
 #if BUILD_DEBUG
-    DX_SET_NAME(out_descriptor_heap, "{}", name)
+    DX_SET_NAME(out_descriptor_heap.com, "RTV heap: {}", name)
 #endif
   }
   
   void fdevice::create_depth_stencil_descriptor_heap(fdescriptor_heap& out_descriptor_heap, const char* name) const 
   {
+    out_descriptor_heap.init(com, D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = 1;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
@@ -283,13 +277,13 @@ namespace engine
     THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&out_descriptor_heap.com)));
 
 #if BUILD_DEBUG
-    DX_SET_NAME(out_descriptor_heap.com, "{}", name)
+    DX_SET_NAME(out_descriptor_heap.com, "DSV heap: {}", name)
 #endif
   }
 
   void fdevice::create_cbv_srv_uav_descriptor_heap(fdescriptor_heap& out_descriptor_heap, const char* name) const
   {
-    out_descriptor_heap = fdescriptor_heap(com, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    out_descriptor_heap.init(com, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = MAX_MAIN_DESCRIPTORS;
@@ -298,7 +292,7 @@ namespace engine
     THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.com.GetAddressOf())))
 
 #if BUILD_DEBUG
-    DX_SET_NAME(out_descriptor_heap.com, "{}", name)
+    DX_SET_NAME(out_descriptor_heap.com, "CBV SRV UAV heap: {}", name)
 #endif
   }
 

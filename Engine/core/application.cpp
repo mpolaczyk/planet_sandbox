@@ -95,7 +95,8 @@ namespace engine
     for (uint32_t i = 0; i < window->back_buffer_count; i++)
     {
       // Requires command list to be in a recording state, otherwise it crashes with 0xbad00000
-      gpu_crash_handler.create_context_handle(i, command_queue->get_command_list(ecommand_list_purpose::main, i).get()->com);
+      std::shared_ptr<fgraphics_command_list> command_list = command_queue->get_command_list(ecommand_list_purpose::main, i);
+      gpu_crash_handler.create_context_handle(i, command_list->com.Get());
     }
 #endif
 
