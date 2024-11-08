@@ -120,7 +120,7 @@ namespace engine
     THROW_IF_FAILED(swap_chain->ResizeBuffers(back_buffer_count, width, height, desc.BufferDesc.Format, desc.Flags));
   }
   
-  void fdx12::create_root_signature(ComPtr<ID3D12Device> device, const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, const std::vector<CD3DX12_STATIC_SAMPLER_DESC>& static_samplers, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, ComPtr<ID3D12RootSignature>& out_root_signature)
+  void fdx12::create_root_signature(ComPtr<ID3D12Device> device, const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, const std::vector<CD3DX12_STATIC_SAMPLER_DESC>& static_samplers, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, ComPtr<ID3D12RootSignature>& out_root_signature, const char* name)
   {
     D3D12_FEATURE_DATA_ROOT_SIGNATURE feature_data = {};
     feature_data.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
@@ -154,17 +154,26 @@ namespace engine
       throw fhresult_exception(hr, oss.str());
     }
     THROW_IF_FAILED(device->CreateRootSignature(0, root_signature_serialized->GetBufferPointer(), root_signature_serialized->GetBufferSize(), IID_PPV_ARGS(out_root_signature.GetAddressOf())));
+#if BUILD_DEBUG
+    DX_SET_NAME(out_root_signature, "Root signature: {}", name)
+#endif
   }
 
-  void fdx12::create_pipeline_state(ComPtr<ID3D12Device2> device, fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state)
+  void fdx12::create_pipeline_state(ComPtr<ID3D12Device2> device, fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state, const char* name)
   {
     const D3D12_PIPELINE_STATE_STREAM_DESC pipeline_state_stream_desc(sizeof(fpipeline_state_stream), &pipeline_state_stream);
     THROW_IF_FAILED(device->CreatePipelineState(&pipeline_state_stream_desc, IID_PPV_ARGS(out_pipeline_state.GetAddressOf())));
+#if BUILD_DEBUG
+    DX_SET_NAME(out_pipeline_state, "Pipeline state: {}", name)
+#endif
   }
 
-  void fdx12::create_pipeline_state(ComPtr<ID3D12Device2> device, const D3D12_GRAPHICS_PIPELINE_STATE_DESC& pso_desc, ComPtr<ID3D12PipelineState>& out_pipeline_state)
+  void fdx12::create_pipeline_state(ComPtr<ID3D12Device2> device, const D3D12_GRAPHICS_PIPELINE_STATE_DESC& pso_desc, ComPtr<ID3D12PipelineState>& out_pipeline_state, const char* name)
   {
     THROW_IF_FAILED(device->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(out_pipeline_state.GetAddressOf())));
+#if BUILD_DEBUG
+    DX_SET_NAME(out_pipeline_state, "Pipeline state: {}", name)
+#endif
   }
 
 

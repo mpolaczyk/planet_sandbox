@@ -25,10 +25,7 @@ namespace editor
     ImGui::StyleColorsClassic();
     ImGui_ImplWin32_Init(hwnd);
 
-    device.create_cbv_srv_uav_descriptor_heap(ui_descriptor_heap);
-#if BUILD_DEBUG
-    DX_SET_NAME(ui_descriptor_heap.heap, "UI descriptor Heap");
-#endif
+    device.create_cbv_srv_uav_descriptor_heap(ui_descriptor_heap, "UI descriptor_heap");
     
     ImGui_ImplDX12_Init(device.com.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM,
       ui_descriptor_heap.heap.Get(),

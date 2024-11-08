@@ -119,8 +119,9 @@ namespace engine
     }
   }
   
-  void fdevice::create_render_target(IDXGISwapChain4* swap_chain, ID3D12DescriptorHeap* descriptor_heap, uint32_t back_buffer_count, std::vector<ComPtr<ID3D12Resource>>& out_rtv) const
+  void fdevice::create_render_target(IDXGISwapChain4* swap_chain, ID3D12DescriptorHeap* descriptor_heap, uint32_t back_buffer_count, std::vector<ComPtr<ID3D12Resource>>& out_rtv, const char* name) const
   {
+    // TODO use new heap type and break it into two calls.
     const uint32_t descriptor_size = com->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptor_heap->GetCPUDescriptorHandleForHeapStart());
@@ -132,10 +133,14 @@ namespace engine
       com->CreateRenderTargetView(back_buffer.Get(), nullptr, handle);
       out_rtv.push_back(back_buffer);
       handle.Offset(static_cast<int>(descriptor_size));
+
+#if BUILD_DEBUG
+      DX_SET_NAME(out_rtv[n], "{}", name)
+#endif
     }
   }
 
-  void fdevice::create_depth_stencil(ID3D12DescriptorHeap* descriptor_heap, uint32_t width, uint32_t height, ComPtr<ID3D12Resource>& out_dsv) const
+  void fdevice::create_depth_stencil(ID3D12DescriptorHeap* descriptor_heap, uint32_t width, uint32_t height, ComPtr<ID3D12Resource>& out_dsv, const char* name) const
   {
     D3D12_CLEAR_VALUE clear_value = {};
     clear_value.Format = DXGI_FORMAT_D32_FLOAT;
@@ -151,6 +156,10 @@ namespace engine
     desc.Texture2D.MipSlice = 0;
     desc.Flags = D3D12_DSV_FLAG_NONE;
     com->CreateDepthStencilView(out_dsv.Get(), &desc, descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+
+#if BUILD_DEBUG
+    DX_SET_NAME(out_dsv, "{}", name)
+#endif
   }
 
   void fdevice::create_command_queue(ComPtr<ID3D12CommandQueue>& out_command_queue) const 
@@ -190,7 +199,7 @@ namespace engine
     }
   }
 
-  void fdevice::create_render_target_descriptor_heap(uint32_t back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap) const 
+  void fdevice::create_render_target_descriptor_heap(uint32_t back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap, const char* name) const 
   {
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = back_buffer_count;
@@ -198,18 +207,26 @@ namespace engine
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     desc.NodeMask = 0;
     THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.GetAddressOf())))
+    
+#if BUILD_DEBUG
+    DX_SET_NAME(out_descriptor_heap, "{}", name)
+#endif
   }
   
-  void fdevice::create_depth_stencil_descriptor_heap(ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap) const 
+  void fdevice::create_depth_stencil_descriptor_heap(ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap, const char* name) const 
   {
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = 1;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&out_descriptor_heap)));
+
+#if BUILD_DEBUG
+    DX_SET_NAME(out_descriptor_heap, "{}", name)
+#endif
   }
 
-  void fdevice::create_cbv_srv_uav_descriptor_heap(fdescriptor_heap& out_descriptor_heap) const
+  void fdevice::create_cbv_srv_uav_descriptor_heap(fdescriptor_heap& out_descriptor_heap, const char* name) const
   {
     out_descriptor_heap = fdescriptor_heap(com, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     
@@ -218,6 +235,10 @@ namespace engine
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
     THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.heap.GetAddressOf())))
+
+#if BUILD_DEBUG
+    DX_SET_NAME(out_descriptor_heap.heap, "{}", name)
+#endif
   }
 
   void fdevice::create_const_buffer(fdescriptor_heap* heap, uint64_t in_size, fconst_buffer& out_buffer, const char* name) const

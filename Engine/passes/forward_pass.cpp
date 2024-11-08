@@ -7,12 +7,10 @@
 #include "d3dx12/d3dx12_root_signature.h"
 
 #include "core/application.h"
-#include "core/exceptions.h"
 #include "core/window.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
 #include "math/math.h"
-#include "renderer/dx12_lib.h"
 #include "renderer/render_state.h"
 #include "renderer/aligned_structs.h"
 #include "renderer/command_list.h"
@@ -121,7 +119,7 @@ namespace engine
 
     command_list->com->SetDescriptorHeaps(1, heap->heap.GetAddressOf());
 
-    const int back_buffer_index = context->back_buffer_index;
+    const uint32_t back_buffer_index = context->back_buffer_index;
     const uint32_t N = static_cast<uint32_t>(scene_acceleration.h_meshes.size());
     
     // Process object data
@@ -183,18 +181,10 @@ namespace engine
       fstatic_mesh_render_state& smrs = mesh->mesh_asset_ptr.get()->render_state;
       if(!smrs.is_resource_online)
       {
-        command_list->upload_vertex_buffer(smrs);
-        command_list->upload_index_buffer(smrs);
-#if BUILD_DEBUG
-        {
-          std::string mesh_name = mesh->get_display_name();
-          std::string asset_name = mesh->mesh_asset_ptr.get()->name;
-          DX_SET_NAME(smrs.vertex_buffer, "Vertex buffer: asset {} hittable {}", mesh_name, asset_name)
-          DX_SET_NAME(smrs.vertex_buffer_upload, "Index buffer: asset {} hittable {}", mesh_name, asset_name)
-          DX_SET_NAME(smrs.index_buffer, "Vertex upload buffer: asset {} hittable {}", mesh_name, asset_name)
-          DX_SET_NAME(smrs.index_buffer_upload, "Index upload buffer: asset {} hittable {}", mesh_name, asset_name)
-        }
-#endif
+        std::string mesh_name = mesh->get_display_name();
+        std::string asset_name = mesh->mesh_asset_ptr.get()->name;
+        command_list->upload_vertex_buffer(smrs, std::format("{}{}", mesh_name, asset_name).c_str());
+        command_list->upload_index_buffer(smrs, std::format("{}{}", mesh_name, asset_name).c_str());
       }
     }
     

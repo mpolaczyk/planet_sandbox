@@ -28,8 +28,8 @@ namespace engine
     void clear_depth_stencil(ID3D12DescriptorHeap* dsv_descriptor_heap) const;
 
     void upload_buffer_resource(uint64_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource) const;
-    void upload_vertex_buffer(fstatic_mesh_render_state& out_render_state) const;
-    void upload_index_buffer(fstatic_mesh_render_state& out_render_state) const;
+    void upload_vertex_buffer(fstatic_mesh_render_state& out_render_state, const char* name) const;
+    void upload_index_buffer(fstatic_mesh_render_state& out_render_state, const char* name) const;
     void upload_texture(atexture* texture_asset) const;
     
     ComPtr<ID3D12GraphicsCommandList> com; 

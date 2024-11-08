@@ -11,6 +11,7 @@
 #include "assets/texture.h"
 #include "core/application.h"
 #include "math/vertex_data.h"
+#include "renderer/dx12_lib.h"
 #include "renderer/render_state.h"
 
 namespace engine
@@ -75,7 +76,7 @@ namespace engine
     }
   }
   
-  void fgraphics_command_list::upload_vertex_buffer(fstatic_mesh_render_state& out_render_state) const
+  void fgraphics_command_list::upload_vertex_buffer(fstatic_mesh_render_state& out_render_state, const char* name) const
   {
     const uint64_t vertex_list_size = out_render_state.vertex_list.size() * sizeof(fvertex_data);
     
@@ -88,9 +89,14 @@ namespace engine
     resource_barrier(out_render_state.vertex_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
     
     out_render_state.is_resource_online = true;
+
+#if BUILD_DEBUG
+    DX_SET_NAME(out_render_state.vertex_buffer, "Vertex buffer {}", name)
+    DX_SET_NAME(out_render_state.vertex_buffer_upload, "Vertex buffer upload {}", name)
+#endif
   }
 
-  void fgraphics_command_list::upload_index_buffer(fstatic_mesh_render_state& out_render_state) const
+  void fgraphics_command_list::upload_index_buffer(fstatic_mesh_render_state& out_render_state, const char* name) const
   {
     const uint64_t face_list_size = out_render_state.face_list.size() * sizeof(fface_data); 
 
@@ -103,6 +109,11 @@ namespace engine
     resource_barrier(out_render_state.index_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER);
     
     out_render_state.is_resource_online = true;
+
+#if BUILD_DEBUG
+    DX_SET_NAME(out_render_state.index_buffer, "Index buffer {}", name)
+    DX_SET_NAME(out_render_state.index_buffer_upload, "Index buffer upload {}", name)
+#endif
   }
 
   void fgraphics_command_list::upload_texture(atexture* texture_asset) const

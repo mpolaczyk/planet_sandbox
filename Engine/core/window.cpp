@@ -39,14 +39,9 @@ namespace engine
     screen_tearing = fdx12::enable_screen_tearing(factory);
 
     fdx12::create_swap_chain(hwnd, factory.Get(), command_queue.Get(), back_buffer_count, screen_tearing, swap_chain);
-    device.create_render_target_descriptor_heap(back_buffer_count, rtv_descriptor_heap);
-    device.create_depth_stencil_descriptor_heap(dsv_descriptor_heap);
-    device.create_cbv_srv_uav_descriptor_heap(main_descriptor_heap);
-#if BUILD_DEBUG
-    DX_SET_NAME(rtv_descriptor_heap, "Render target descriptor heap")
-    DX_SET_NAME(dsv_descriptor_heap, "Depth stencil descriptor heap")
-    DX_SET_NAME(main_descriptor_heap.heap, "Main descriptor heap")
-#endif
+    device.create_render_target_descriptor_heap(back_buffer_count, rtv_descriptor_heap, "Render target descriptor heap");
+    device.create_depth_stencil_descriptor_heap(dsv_descriptor_heap, "Depth stencil descriptor heap");
+    device.create_cbv_srv_uav_descriptor_heap(main_descriptor_heap, "Main descriptor heap");
   }
 
   void fwindow::draw(std::shared_ptr<fcommand_queue> command_queue)
@@ -124,15 +119,8 @@ namespace engine
 
     fdx12::resize_swap_chain(swap_chain, back_buffer_count, width, height);
     back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
-    device.create_render_target(swap_chain.Get(), rtv_descriptor_heap.Get(), back_buffer_count, rtv);
-    device.create_depth_stencil(dsv_descriptor_heap.Get(), width, height, dsv);
-#if BUILD_DEBUG
-    for(uint32_t n = 0; n < back_buffer_count; n++)
-    {
-      DX_SET_NAME(rtv[n], "Render target resource: {}", n)
-    }
-    DX_SET_NAME(dsv, "Depth stencil resource")
-#endif
+    device.create_render_target(swap_chain.Get(), rtv_descriptor_heap.Get(), back_buffer_count, rtv, "Render target");
+    device.create_depth_stencil(dsv_descriptor_heap.Get(), width, height, dsv, "Depth stencil");
   }
   
   void fwindow::cleanup()
