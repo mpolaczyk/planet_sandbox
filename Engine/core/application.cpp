@@ -32,7 +32,7 @@ namespace engine
     switch(msg)
     {
     case WM_SIZE:
-      if(device.device != nullptr && wParam != SIZE_MINIMIZED)
+      if(device.com != nullptr && wParam != SIZE_MINIMIZED)
       {
         command_queue->flush();
         window->resize(LOWORD(lParam), HIWORD(lParam));
@@ -81,7 +81,7 @@ namespace engine
     device = fdevice::create(factory.Get());
 
 #if USE_NSIGHT_AFTERMATH
-    gpu_crash_handler.post_device_initialize(device.device.Get());
+    gpu_crash_handler.post_device_initialize(device.com.Get());
 #endif
     
 #if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH
@@ -92,10 +92,10 @@ namespace engine
     command_queue->init(device, window->back_buffer_count);
     
 #if USE_NSIGHT_AFTERMATH
-    for (int i = 0; i < window->back_buffer_count; i++)
+    for (uint32_t i = 0; i < window->back_buffer_count; i++)
     {
       // Requires command list to be in a recording state, otherwise it crashes with 0xbad00000
-      gpu_crash_handler.create_context_handle(i, command_queue->get_command_list(ecommand_list_purpose::main, i).get()->command_list);
+      gpu_crash_handler.create_context_handle(i, command_queue->get_command_list(ecommand_list_purpose::main, i).get()->com);
     }
 #endif
 

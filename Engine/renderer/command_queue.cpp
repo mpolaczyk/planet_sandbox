@@ -17,12 +17,12 @@ namespace engine
     for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
       fcommand_pair temp;
-      device.create_command_list(back_buffer_count, temp.command_list.command_list, temp.command_allocator);
+      device.create_command_list(back_buffer_count, temp.command_list.com, temp.command_allocator);
 #if BUILD_DEBUG
       for(uint32_t n = 0; n < back_buffer_count; n++)
       {
         DX_SET_NAME(temp.command_allocator[n], "Command allocator: type {} back buffer count {}", i, n)
-        DX_SET_NAME(temp.command_list.command_list, "Command list: type {}", i)
+        DX_SET_NAME(temp.command_list.com, "Command list: type {}", i)
       }
 #endif
       command_pair.push_back(temp);
@@ -40,7 +40,7 @@ namespace engine
     for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
       fcommand_pair& pair = command_pair[i];
-      DX_RELEASE(pair.command_list.command_list)
+      DX_RELEASE(pair.command_list.com)
       for(uint32_t n = 0; n < back_buffer_count; n++)
       {
         DX_RELEASE(pair.command_allocator[n])
@@ -87,7 +87,7 @@ namespace engine
     for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
       fcommand_pair& pair = command_pair[i];
-      pair.command_list.command_list->Close();
+      pair.command_list.com->Close();
     }
   }
   
@@ -97,7 +97,7 @@ namespace engine
     {
       fcommand_pair& pair = command_pair[i];
       pair.command_allocator[back_buffer_id]->Reset();
-      pair.command_list.command_list->Reset(pair.command_allocator[back_buffer_id].Get(), nullptr);
+      pair.command_list.com->Reset(pair.command_allocator[back_buffer_id].Get(), nullptr);
     }
   }
 
@@ -111,7 +111,7 @@ namespace engine
     std::vector<ID3D12CommandList*> command_list_ptr;
     for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
-      ID3D12GraphicsCommandList* temp = command_pair[i].command_list.command_list.Get();
+      ID3D12GraphicsCommandList* temp = command_pair[i].command_list.com.Get();
       temp->Close();
       command_list_ptr.push_back(temp);
     }

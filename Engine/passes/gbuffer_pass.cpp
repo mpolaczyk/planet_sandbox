@@ -19,7 +19,7 @@ namespace engine
     // Set up graphics pipeline
     {
       graphics_pipeline.reserve_parameters(1);
-      graphics_pipeline.add_constant_parameter(0, 0, 0, sizeof(fobject_data), D3D12_SHADER_VISIBILITY_VERTEX);
+      graphics_pipeline.add_constant_parameter(0, 0, 0, static_cast<uint32_t>(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_VERTEX);
       graphics_pipeline.add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
       graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->render_state.blob);
       graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->render_state.blob);

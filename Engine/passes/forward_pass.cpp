@@ -80,7 +80,7 @@ namespace engine
     
     // Set up graphics pipeline
     graphics_pipeline.reserve_parameters(root_parameter_type::num);
-    graphics_pipeline.add_constant_parameter(root_parameter_type::object_data, 0, 0, sizeof(fobject_data), D3D12_SHADER_VISIBILITY_VERTEX);
+    graphics_pipeline.add_constant_parameter(root_parameter_type::object_data, 0, 0, static_cast<uint32_t>(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_VERTEX);
     graphics_pipeline.add_constant_buffer_view_parameter(root_parameter_type::frame_data, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     graphics_pipeline.add_shader_respurce_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     graphics_pipeline.add_shader_respurce_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
@@ -104,7 +104,7 @@ namespace engine
     fdevice& device = fapplication::instance->device;
     fdescriptor_heap* heap = context->main_descriptor_heap;
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
-    ComPtr<ID3D12GraphicsCommandList> command_list2 = command_list.get()->command_list;
+    ComPtr<ID3D12GraphicsCommandList> command_list2 = command_list.get()->com;
 
     fsoft_asset_ptr<amaterial> default_material_asset;
     default_material_asset.set_name("default");
@@ -119,7 +119,7 @@ namespace engine
         
     graphics_pipeline.bind_command_list(command_list2.Get());
 
-    command_list->command_list->SetDescriptorHeaps(1, heap->heap.GetAddressOf());
+    command_list->com->SetDescriptorHeaps(1, heap->heap.GetAddressOf());
 
     const int back_buffer_index = context->back_buffer_index;
     const uint32_t N = static_cast<uint32_t>(scene_acceleration.h_meshes.size());
@@ -166,7 +166,7 @@ namespace engine
         if(i < num_textures_in_scene && scene_acceleration.a_textures[i] != default_texture)
         {
           atexture* texture = scene_acceleration.a_textures[i];
-          if(!texture->gpu_resource.is_online)
+          if(!texture->is_online)
           {
             device.create_texture_resource(heap, texture, texture->get_display_name().c_str());
             

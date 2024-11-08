@@ -4,10 +4,9 @@
 
 #include "d3dx12/d3dx12_core.h"
 #include "d3dx12/d3dx12_root_signature.h"
+#include "d3dx12/d3dx12_resource_helpers.h"
 
 #include "renderer/device.h"
-
-#include <d3dx12/d3dx12_resource_helpers.h>
 
 #include "assets/texture.h"
 #include "core/exceptions.h"
@@ -115,14 +114,14 @@ namespace engine
         throw std::runtime_error("Feature level is not high enough!");
       }
       
-      THROW_IF_FAILED((D3D12CreateDevice(adapter1.Get(), feature_level.MaxSupportedFeatureLevel, IID_PPV_ARGS(device.device.GetAddressOf()))))
+      THROW_IF_FAILED((D3D12CreateDevice(adapter1.Get(), feature_level.MaxSupportedFeatureLevel, IID_PPV_ARGS(device.com.GetAddressOf()))))
       return device;
     }
   }
   
-  void fdevice::create_render_target(IDXGISwapChain4* swap_chain, ID3D12DescriptorHeap* descriptor_heap, uint32_t back_buffer_count, std::vector<ComPtr<ID3D12Resource>>& out_rtv)
+  void fdevice::create_render_target(IDXGISwapChain4* swap_chain, ID3D12DescriptorHeap* descriptor_heap, uint32_t back_buffer_count, std::vector<ComPtr<ID3D12Resource>>& out_rtv) const
   {
-    const uint32_t descriptor_size = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    const uint32_t descriptor_size = com->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE handle(descriptor_heap->GetCPUDescriptorHandleForHeapStart());
     out_rtv.reserve(back_buffer_count);
@@ -130,13 +129,13 @@ namespace engine
     {
       ComPtr<ID3D12Resource> back_buffer;
       THROW_IF_FAILED(swap_chain->GetBuffer(n, IID_PPV_ARGS(back_buffer.GetAddressOf())))
-      device->CreateRenderTargetView(back_buffer.Get(), nullptr, handle);
+      com->CreateRenderTargetView(back_buffer.Get(), nullptr, handle);
       out_rtv.push_back(back_buffer);
       handle.Offset(static_cast<int>(descriptor_size));
     }
   }
 
-  void fdevice::create_depth_stencil(ID3D12DescriptorHeap* descriptor_heap, uint32_t width, uint32_t height, ComPtr<ID3D12Resource>& out_dsv)
+  void fdevice::create_depth_stencil(ID3D12DescriptorHeap* descriptor_heap, uint32_t width, uint32_t height, ComPtr<ID3D12Resource>& out_dsv) const
   {
     D3D12_CLEAR_VALUE clear_value = {};
     clear_value.Format = DXGI_FORMAT_D32_FLOAT;
@@ -144,39 +143,39 @@ namespace engine
 
     CD3DX12_HEAP_PROPERTIES heap_prop(D3D12_HEAP_TYPE_DEFAULT);
     CD3DX12_RESOURCE_DESC resource_desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, width, height, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
-    THROW_IF_FAILED(device->CreateCommittedResource(&heap_prop, D3D12_HEAP_FLAG_NONE, &resource_desc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &clear_value, IID_PPV_ARGS(out_dsv.GetAddressOf())));
+    THROW_IF_FAILED(com->CreateCommittedResource(&heap_prop, D3D12_HEAP_FLAG_NONE, &resource_desc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &clear_value, IID_PPV_ARGS(out_dsv.GetAddressOf())));
     
     D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
     desc.Format = DXGI_FORMAT_D32_FLOAT;
     desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
     desc.Texture2D.MipSlice = 0;
     desc.Flags = D3D12_DSV_FLAG_NONE;
-    device->CreateDepthStencilView(out_dsv.Get(), &desc, descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+    com->CreateDepthStencilView(out_dsv.Get(), &desc, descriptor_heap->GetCPUDescriptorHandleForHeapStart());
   }
 
-  void fdevice::create_command_queue(ComPtr<ID3D12CommandQueue>& out_command_queue)
+  void fdevice::create_command_queue(ComPtr<ID3D12CommandQueue>& out_command_queue) const 
   {
     D3D12_COMMAND_QUEUE_DESC desc = {};
     desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
     desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
     desc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
-    THROW_IF_FAILED(device->CreateCommandQueue(&desc, IID_PPV_ARGS(out_command_queue.GetAddressOf())))
+    THROW_IF_FAILED(com->CreateCommandQueue(&desc, IID_PPV_ARGS(out_command_queue.GetAddressOf())))
   }
 
-  void fdevice::create_command_list(uint32_t back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators)
+  void fdevice::create_command_list(uint32_t back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators) const 
   {
     out_command_allocators.reserve(back_buffer_count);
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       out_command_allocators.push_back(nullptr);
-      THROW_IF_FAILED(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(out_command_allocators[n].GetAddressOf())))
+      THROW_IF_FAILED(com->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(out_command_allocators[n].GetAddressOf())))
     }
-    THROW_IF_FAILED(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, out_command_allocators[0].Get(), nullptr, IID_PPV_ARGS(out_command_list.GetAddressOf())))
+    THROW_IF_FAILED(com->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, out_command_allocators[0].Get(), nullptr, IID_PPV_ARGS(out_command_list.GetAddressOf())))
   }
 
-  void fdevice::create_synchronisation(uint32_t back_buffer_count, uint64_t initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values)
+  void fdevice::create_synchronisation(uint32_t back_buffer_count, uint64_t initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values) const 
   {
-    THROW_IF_FAILED(device->CreateFence(initial_fence_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(out_fence.GetAddressOf())))
+    THROW_IF_FAILED(com->CreateFence(initial_fence_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(out_fence.GetAddressOf())))
 
     out_fence_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
     if(out_fence_event == nullptr)
@@ -191,37 +190,37 @@ namespace engine
     }
   }
 
-  void fdevice::create_render_target_descriptor_heap(uint32_t back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap)
+  void fdevice::create_render_target_descriptor_heap(uint32_t back_buffer_count, ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap) const 
   {
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = back_buffer_count;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     desc.NodeMask = 0;
-    THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.GetAddressOf())))
+    THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.GetAddressOf())))
   }
   
-  void fdevice::create_depth_stencil_descriptor_heap(ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap)
+  void fdevice::create_depth_stencil_descriptor_heap(ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap) const 
   {
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = 1;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-    THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&out_descriptor_heap)));
+    THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&out_descriptor_heap)));
   }
 
-  void fdevice::create_cbv_srv_uav_descriptor_heap(fdescriptor_heap& out_descriptor_heap)
+  void fdevice::create_cbv_srv_uav_descriptor_heap(fdescriptor_heap& out_descriptor_heap) const
   {
-    out_descriptor_heap = fdescriptor_heap(device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    out_descriptor_heap = fdescriptor_heap(com, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = MAX_MAIN_DESCRIPTORS;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    THROW_IF_FAILED(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.heap.GetAddressOf())))
+    THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.heap.GetAddressOf())))
   }
 
-  void fdevice::create_const_buffer(fdescriptor_heap* heap, uint64_t in_size, fconst_buffer& out_buffer, const char* name)
+  void fdevice::create_const_buffer(fdescriptor_heap* heap, uint64_t in_size, fconst_buffer& out_buffer, const char* name) const
   {
     out_buffer.size = fdx12::align_size_to(in_size, 255);
     out_buffer.cbv = *heap->push();
@@ -234,14 +233,14 @@ namespace engine
     D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
     cbv_desc.BufferLocation = out_buffer.resource->GetGPUVirtualAddress();
     cbv_desc.SizeInBytes = static_cast<uint32_t>(out_buffer.size);
-    device->CreateConstantBufferView(&cbv_desc, out_buffer.cbv.cpu_handle);
+    com->CreateConstantBufferView(&cbv_desc, out_buffer.cbv.cpu_handle);
     
 #if BUILD_DEBUG
     DX_SET_NAME(out_buffer.resource, "{}", name)
 #endif
   }
 
-  void fdevice::create_shader_resource_buffer(fdescriptor_heap* heap, uint64_t in_size, fshader_resource_buffer& out_buffer, const char* name)
+  void fdevice::create_shader_resource_buffer(fdescriptor_heap* heap, uint64_t in_size, fshader_resource_buffer& out_buffer, const char* name) const
   {
     out_buffer.size = fdx12::align_size_to(in_size, 255);
     out_buffer.srv = *heap->push();
@@ -255,23 +254,23 @@ namespace engine
     srv_desc.Buffer.NumElements = 1;
     srv_desc.Buffer.StructureByteStride = static_cast<uint32_t>(out_buffer.size);
     srv_desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-    device->CreateShaderResourceView(out_buffer.resource.Get(), &srv_desc, out_buffer.srv.cpu_handle);
+    com->CreateShaderResourceView(out_buffer.resource.Get(), &srv_desc, out_buffer.srv.cpu_handle);
     
 #if BUILD_DEBUG
     DX_SET_NAME(out_buffer.resource, "{}", name)
 #endif
   }
 
-  void fdevice::create_texture_resource(fdescriptor_heap* heap, atexture* texture_asset, const char* name)
+  void fdevice::create_texture_resource(fdescriptor_heap* heap, atexture* texture_asset, const char* name) const
   {
     ftexture_resource& gpur = texture_asset->gpu_resource;
     gpur.srv = *heap->push();
 
     D3D12_RESOURCE_DESC texture_desc = {};
     texture_desc.MipLevels = 1;
-    texture_desc.Format = gpur.format;
-    texture_desc.Width = gpur.width;
-    texture_desc.Height = gpur.height;
+    texture_desc.Format = texture_asset->format;
+    texture_desc.Width = texture_asset->width;
+    texture_desc.Height = texture_asset->height;
     texture_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
     texture_desc.DepthOrArraySize = 1;
     texture_desc.SampleDesc.Count = 1;
@@ -279,7 +278,7 @@ namespace engine
     texture_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 
     CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
-    THROW_IF_FAILED(device->CreateCommittedResource(
+    THROW_IF_FAILED(com->CreateCommittedResource(
       &default_heap,
       D3D12_HEAP_FLAG_NONE,
       &texture_desc,
@@ -292,7 +291,7 @@ namespace engine
     srv_desc.Format = texture_desc.Format;
     srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
     srv_desc.Texture2D.MipLevels = 1;
-    device->CreateShaderResourceView(gpur.resource.Get(), &srv_desc, gpur.srv.cpu_handle);
+    com->CreateShaderResourceView(gpur.resource.Get(), &srv_desc, gpur.srv.cpu_handle);
     
     const uint64_t buffer_size = GetRequiredIntermediateSize(gpur.resource.Get(), 0, 1);
     create_upload_resource(buffer_size, gpur.resource_upload);
@@ -303,11 +302,11 @@ namespace engine
 #endif
   }
 
-  void fdevice::create_upload_resource(uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource)
+  void fdevice::create_upload_resource(uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const
   {
     const CD3DX12_HEAP_PROPERTIES type_upload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
     const CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
-    THROW_IF_FAILED(device->CreateCommittedResource(
+    THROW_IF_FAILED(com->CreateCommittedResource(
       &type_upload,
       D3D12_HEAP_FLAG_NONE,
       &desc,
@@ -316,11 +315,11 @@ namespace engine
       IID_PPV_ARGS(out_resource.GetAddressOf())));
   }
 
-  void fdevice::create_buffer_resource(uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource)
+  void fdevice::create_buffer_resource(uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const
   {
     const CD3DX12_HEAP_PROPERTIES type_default = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
     const CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size, D3D12_RESOURCE_FLAG_NONE);
-    THROW_IF_FAILED(device->CreateCommittedResource(
+    THROW_IF_FAILED(com->CreateCommittedResource(
       &type_default,
       D3D12_HEAP_FLAG_NONE,
       &desc,

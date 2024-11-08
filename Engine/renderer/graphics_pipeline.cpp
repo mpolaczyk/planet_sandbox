@@ -17,7 +17,7 @@ namespace engine
     parameters.resize(num, param);
   }
 
-  void fgraphics_pipeline::add_constant_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, size_t size, D3D12_SHADER_VISIBILITY visibility)
+  void fgraphics_pipeline::add_constant_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, uint32_t size, D3D12_SHADER_VISIBILITY visibility)
   {
     CD3DX12_ROOT_PARAMETER1 param;
     param.InitAsConstants(size / 4, shader_register, register_space);
@@ -99,7 +99,7 @@ namespace engine
   {
     fdevice& device = fapplication::instance->device;
 
-    fdx12::create_root_signature(device.device, parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature);
+    fdx12::create_root_signature(device.com, parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature);
 #if BUILD_DEBUG
     DX_SET_NAME(root_signature, "Root signature: {0}", name)
 #endif
@@ -112,7 +112,7 @@ namespace engine
     pipeline_state_stream.pixel_shader = CD3DX12_SHADER_BYTECODE(pixel_shader->GetBufferPointer(), pixel_shader->GetBufferSize());
     pipeline_state_stream.dsv_format = depth_buffer_format;
     pipeline_state_stream.rtv_formats = render_target_formats;
-    fdx12::create_pipeline_state(device.device, pipeline_state_stream, pipeline_state);
+    fdx12::create_pipeline_state(device.com, pipeline_state_stream, pipeline_state);
 #if BUILD_DEBUG
     DX_SET_NAME(pipeline_state, "Pipeline state: {0}", name)
 #endif

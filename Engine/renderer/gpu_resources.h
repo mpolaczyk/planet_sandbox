@@ -27,20 +27,11 @@ namespace engine
   {
     fdescriptor srv;
   };
-
   
   struct ENGINE_API ftexture_resource
   {
-    bool is_online = false;
     ComPtr<ID3D12Resource> resource;
     ComPtr<ID3D12Resource> resource_upload;
     fdescriptor srv;
-    
-    uint32_t width;
-    uint32_t height;
-    uint32_t channels;
-    uint32_t element_size;  // is_hdr ? sizeof(float) : sizeof(uint8_t)
-    DXGI_FORMAT format;
   };
-  
 }

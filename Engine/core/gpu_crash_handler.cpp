@@ -17,7 +17,7 @@ namespace engine
     delete impl;
   }
 
-  void fgpu_crash_tracker::pre_device_initialize(int back_buffer_count)
+  void fgpu_crash_tracker::pre_device_initialize(uint32_t back_buffer_count)
   {
     impl->PreDeviceInitialize(back_buffer_count, "planetSandbox");
     LOG_INFO("Nsight Aftermath is enabled, disabling the DX12 debug layer!")
@@ -28,7 +28,7 @@ namespace engine
     impl->PostDeviceInitialize(device);
   }
 
-  void fgpu_crash_tracker::create_context_handle(int back_buffer_index, ComPtr<ID3D12GraphicsCommandList> command_list)
+  void fgpu_crash_tracker::create_context_handle(uint32_t back_buffer_index, ComPtr<ID3D12GraphicsCommandList> command_list)
   {
     impl->CreateContextHandle(back_buffer_index, command_list.Get());
   }

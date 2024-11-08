@@ -46,7 +46,7 @@ public:
     void PreDeviceInitialize(int backBufferCount, const char* descriptionAppName);
     void PostDeviceInitialize(ID3D12Device* const device);
   
-    void CreateContextHandle(int backBufferIndex, ID3D12GraphicsCommandList* commandList);
+    void CreateContextHandle(uint32_t backBufferIndex, ID3D12GraphicsCommandList* commandList);
   
     void WaitForDump(std::string& outMsg);
 

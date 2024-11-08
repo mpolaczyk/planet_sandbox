@@ -139,7 +139,7 @@ namespace engine
       source.Ptr = source_blob->GetBufferPointer();
       source.Size = source_blob->GetBufferSize();
       source.Encoding = DXC_CP_ACP;
-      if(FAILED(compiler->Compile(&source, const_cast<LPCWSTR*>(arguments.data()), arguments.size(), include_handler.Get(), IID_PPV_ARGS(dxc_result.GetAddressOf()))))
+      if(FAILED(compiler->Compile(&source, const_cast<LPCWSTR*>(arguments.data()), static_cast<uint32_t>(arguments.size()), include_handler.Get(), IID_PPV_ARGS(dxc_result.GetAddressOf()))))
       {
         LOG_ERROR("Could not compile shader, failed to compile");
         return false;

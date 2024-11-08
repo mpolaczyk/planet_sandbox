@@ -79,7 +79,7 @@ void GpuCrashTracker::PostDeviceInitialize(ID3D12Device* const device)
     m_initialized = true;
 }
 
-void GpuCrashTracker::CreateContextHandle(int backBufferIndex, ID3D12GraphicsCommandList* commandList)
+void GpuCrashTracker::CreateContextHandle(uint32_t backBufferIndex, ID3D12GraphicsCommandList* commandList)
 {
   AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_DX12_CreateContextHandle(commandList, &m_CommandListContext[backBufferIndex]));
 }

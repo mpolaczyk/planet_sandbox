@@ -153,7 +153,8 @@ namespace engine
       out_texture->data_hdr.resize(elements_total, 0.0f);
       std::vector<float> z(data_hdr, data_hdr + elements_total);
       out_texture->data_hdr = z;
-      out_texture->gpu_resource.element_size = sizeof(float);
+      out_texture->element_size = sizeof(float);
+      out_texture->format = DXGI_FORMAT_R32G32B32A32_FLOAT;
     }
     else
     {
@@ -167,13 +168,13 @@ namespace engine
       out_texture->data_ldr.resize(elements_total, 0);
       std::vector<uint8_t> z(data_ldr, data_ldr + elements_total);
       out_texture->data_ldr = z;
-      out_texture->gpu_resource.element_size = sizeof(uint8_t);
+      out_texture->element_size = sizeof(uint8_t);
+      out_texture->format = DXGI_FORMAT_R8G8B8A8_UNORM;
     }
     out_texture->is_hdr = is_hdr;
-    out_texture->gpu_resource.width = width;
-    out_texture->gpu_resource.height = height;
-    out_texture->gpu_resource.channels = channels;
-    out_texture->gpu_resource.format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    out_texture->width = width;
+    out_texture->height = height;
+    out_texture->channels = channels;
     return true;
   }
 

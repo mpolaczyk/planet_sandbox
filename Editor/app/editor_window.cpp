@@ -30,7 +30,7 @@ namespace editor
     DX_SET_NAME(ui_descriptor_heap.heap, "UI descriptor Heap");
 #endif
     
-    ImGui_ImplDX12_Init(device.device.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM,
+    ImGui_ImplDX12_Init(device.com.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM,
       ui_descriptor_heap.heap.Get(),
       ui_descriptor_heap.heap->GetCPUDescriptorHandleForHeapStart(),
       ui_descriptor_heap.heap->GetGPUDescriptorHandleForHeapStart());
@@ -78,11 +78,11 @@ namespace editor
     command_list->set_viewport(width, height);
     command_list->set_scissor(width, height);
     
-    command_list->command_list->SetDescriptorHeaps(1, ui_descriptor_heap.heap.GetAddressOf());
+    command_list->com->SetDescriptorHeaps(1, ui_descriptor_heap.heap.GetAddressOf());
 
     ImGui::Render();
 #if RENDER_IMGUI
-    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), command_list->command_list.Get());
+    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), command_list->com.Get());
 #endif
     
     command_list->resource_barrier(rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
