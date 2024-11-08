@@ -199,7 +199,7 @@ namespace engine
     }
   }
 
-  void fdevice::create_depth_stencil(ID3D12DescriptorHeap* descriptor_heap, uint32_t width, uint32_t height, ComPtr<ID3D12Resource>& out_dsv, const char* name) const
+  void fdevice::create_depth_stencil(fdescriptor_heap& descriptor_heap, uint32_t width, uint32_t height, ComPtr<ID3D12Resource>& out_dsv, const char* name) const
   {
     D3D12_CLEAR_VALUE clear_value = {};
     clear_value.Format = DXGI_FORMAT_D32_FLOAT;
@@ -214,7 +214,7 @@ namespace engine
     desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
     desc.Texture2D.MipSlice = 0;
     desc.Flags = D3D12_DSV_FLAG_NONE;
-    com->CreateDepthStencilView(out_dsv.Get(), &desc, descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+    com->CreateDepthStencilView(out_dsv.Get(), &desc, descriptor_heap.com->GetCPUDescriptorHandleForHeapStart());
 
 #if BUILD_DEBUG
     DX_SET_NAME(out_dsv, "{}", name)
@@ -272,16 +272,16 @@ namespace engine
 #endif
   }
   
-  void fdevice::create_depth_stencil_descriptor_heap(ComPtr<ID3D12DescriptorHeap>& out_descriptor_heap, const char* name) const 
+  void fdevice::create_depth_stencil_descriptor_heap(fdescriptor_heap& out_descriptor_heap, const char* name) const 
   {
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = 1;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-    THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&out_descriptor_heap)));
+    THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&out_descriptor_heap.com)));
 
 #if BUILD_DEBUG
-    DX_SET_NAME(out_descriptor_heap, "{}", name)
+    DX_SET_NAME(out_descriptor_heap.com, "{}", name)
 #endif
   }
 

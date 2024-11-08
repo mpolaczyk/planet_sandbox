@@ -71,7 +71,7 @@ namespace editor
 
     command_list->resource_barrier(rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     
-    command_list->set_render_targets(dsv_descriptor_heap.Get(), rtv_descriptor_heap.Get(), back_buffer_index);
+    command_list->set_render_targets(dsv_descriptor_heap, rtv_descriptor_heap.Get(), back_buffer_index);
     command_list->set_viewport(width, height);
     command_list->set_scissor(width, height);
     

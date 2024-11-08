@@ -23,12 +23,12 @@ namespace engine
     com->ResourceBarrier(1, &resource_barrier);
   }
   
-  void fgraphics_command_list::set_render_targets(ID3D12DescriptorHeap* dsv_descriptor_heap, ID3D12DescriptorHeap* rtv_descriptor_heap, int back_buffer_index) const
+  void fgraphics_command_list::set_render_targets(fdescriptor_heap& dsv_descriptor_heap, ID3D12DescriptorHeap* rtv_descriptor_heap, int back_buffer_index) const
   {
     fdevice& device = fapplication::instance->device;
     uint32_t rtv_descriptor_size = device.com.Get()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(rtv_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), back_buffer_index, rtv_descriptor_size);
-    D3D12_CPU_DESCRIPTOR_HANDLE dsv_handle = dsv_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
+    D3D12_CPU_DESCRIPTOR_HANDLE dsv_handle = dsv_descriptor_heap.com->GetCPUDescriptorHandleForHeapStart();
     com->OMSetRenderTargets(1, &rtv_handle, FALSE, &dsv_handle);
   }
 
@@ -52,9 +52,9 @@ namespace engine
     com->ClearRenderTargetView(handle, DirectX::Colors::LightSlateGray, 0, nullptr);
   }
 
-  void fgraphics_command_list::clear_depth_stencil(ID3D12DescriptorHeap* dsv_descriptor_heap) const
+  void fgraphics_command_list::clear_depth_stencil(fdescriptor_heap& dsv_descriptor_heap) const
   {
-    D3D12_CPU_DESCRIPTOR_HANDLE handle = dsv_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
+    D3D12_CPU_DESCRIPTOR_HANDLE handle = dsv_descriptor_heap.com->GetCPUDescriptorHandleForHeapStart();
     com->ClearDepthStencilView(handle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
   }
 

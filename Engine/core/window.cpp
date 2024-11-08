@@ -54,8 +54,8 @@ namespace engine
       {
         command_list->resource_barrier(rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
         command_list->clear_render_target(rtv_descriptor_heap.Get(), back_buffer_index);
-        command_list->clear_depth_stencil(dsv_descriptor_heap.Get());
-        command_list->set_render_targets(dsv_descriptor_heap.Get(), rtv_descriptor_heap.Get(), back_buffer_index);
+        command_list->clear_depth_stencil(dsv_descriptor_heap);
+        command_list->set_render_targets(dsv_descriptor_heap, rtv_descriptor_heap.Get(), back_buffer_index);
         command_list->set_viewport(width, height);
         command_list->set_scissor(width, height);
         
@@ -120,7 +120,7 @@ namespace engine
     fdx12::resize_swap_chain(swap_chain.Get(), back_buffer_count, width, height);
     back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
     device.create_render_target(swap_chain.Get(), rtv_descriptor_heap.Get(), back_buffer_count, rtv, "Render target");
-    device.create_depth_stencil(dsv_descriptor_heap.Get(), width, height, dsv, "Depth stencil");
+    device.create_depth_stencil(dsv_descriptor_heap, width, height, dsv, "Depth stencil");
   }
   
   void fwindow::cleanup()
@@ -133,7 +133,7 @@ namespace engine
     DX_RELEASE(dsv);
     DX_RELEASE(main_descriptor_heap.com);
     DX_RELEASE(rtv_descriptor_heap);
-    DX_RELEASE(dsv_descriptor_heap);
+    DX_RELEASE(dsv_descriptor_heap.com);
 
     ::DestroyWindow(hwnd);
     ::UnregisterClass(wc.lpszClassName, wc.hInstance);

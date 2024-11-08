@@ -14,7 +14,9 @@ namespace engine
   struct fdescriptor_heap;
   
   struct ENGINE_API frenderer_context
-  {    
+  {
+    // TODO shared pointers
+    
     // Only runtime members!
     const hhittable_base* selected_object = nullptr;          // weak ptr
     hscene* scene = nullptr;                                  // weak ptr
