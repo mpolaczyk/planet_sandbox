@@ -18,14 +18,13 @@ namespace engine
   
   struct ENGINE_API fdescriptor
   {
-    fdescriptor() = default;
-    fdescriptor(fdescriptor_heap* heap, uint32_t in_index);
+    void init(fdescriptor_heap* heap, uint32_t in_index);
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE cpu_handle;
     CD3DX12_GPU_DESCRIPTOR_HANDLE gpu_handle;
 
     fdescriptor_heap* parent_heap = nullptr;
-    uint32_t index = 0;   // index in parent heap
+    uint32_t index = -1;   // index in parent heap
   };
   
   struct ENGINE_API fdescriptor_heap
@@ -39,7 +38,8 @@ namespace engine
       increment_size = device->GetDescriptorHandleIncrementSize(in_heap_type);
     }
     
-    fdescriptor* push();
+    void push(fdescriptor& desc);
+
     fdescriptor* get(uint32_t index);
 
     ComPtr<ID3D12DescriptorHeap> com;

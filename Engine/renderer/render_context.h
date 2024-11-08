@@ -24,7 +24,7 @@ namespace engine
     uint32_t back_buffer_count = 2;
     fdescriptor_heap* main_descriptor_heap = nullptr; // srv, cbv, uav
     ComPtr<ID3D12Resource> rtv;
-    ComPtr<ID3D12Resource> dsv;
+    fdsv_resource dsv;
 
     bool validate() const
     {
@@ -33,7 +33,7 @@ namespace engine
         && back_buffer_index >= 0 && back_buffer_index < back_buffer_count
         && main_descriptor_heap != nullptr
         && rtv != nullptr
-        && dsv != nullptr;
+        && dsv.desc.index != -1;
     }
   };
 }

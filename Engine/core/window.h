@@ -7,6 +7,7 @@
 
 #include "core/core.h"
 #include "renderer/descriptor_heap.h"
+#include "renderer/gpu_resources.h"
 
 struct ID3D12RootSignature;
 struct ID3D12DescriptorHeap;
@@ -41,9 +42,9 @@ namespace engine
     
     ComPtr<IDXGISwapChain4> swap_chain;
     ComPtr<ID3D12DescriptorHeap> rtv_descriptor_heap;
-    fdescriptor_heap dsv_descriptor_heap;
     std::vector<ComPtr<ID3D12Resource>> rtv;            // index is backbuffer id
-    ComPtr<ID3D12Resource> dsv;
+    fdescriptor_heap dsv_descriptor_heap;
+    fdsv_resource dsv;
     fdescriptor_heap main_descriptor_heap; // srv, cbv, uav
     
   protected:    

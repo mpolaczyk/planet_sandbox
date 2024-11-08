@@ -3,11 +3,10 @@
 #include "d3d12.h"
 
 #include "core/application.h"
-#include "renderer/dx12_lib.h"
 
 namespace engine
 {
-  fdescriptor::fdescriptor(fdescriptor_heap* heap, uint32_t in_index)
+  void fdescriptor::init(fdescriptor_heap* heap, uint32_t in_index)
   {
     parent_heap = heap;
     index = in_index;
@@ -15,12 +14,11 @@ namespace engine
     gpu_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(heap->com->GetGPUDescriptorHandleForHeapStart(), in_index, heap->increment_size);
   }
 
-  fdescriptor* fdescriptor_heap::push()
+  void fdescriptor_heap::push(fdescriptor& desc)
   {
-    fdescriptor temp(this, last_index);
-    descriptors.emplace_back(temp);
+    desc.init(this, last_index);
+    descriptors.emplace_back(desc);
     last_index++;
-    return &descriptors.back(); 
   }
 
   fdescriptor* fdescriptor_heap::get(uint32_t index)

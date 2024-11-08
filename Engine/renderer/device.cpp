@@ -199,7 +199,7 @@ namespace engine
     }
   }
 
-  void fdevice::create_depth_stencil(fdescriptor_heap& descriptor_heap, uint32_t width, uint32_t height, ComPtr<ID3D12Resource>& out_dsv, const char* name) const
+  void fdevice::create_depth_stencil(fdescriptor_heap& descriptor_heap, uint32_t width, uint32_t height, fdsv_resource& out_dsv, const char* name) const
   {
     D3D12_CLEAR_VALUE clear_value = {};
     clear_value.Format = DXGI_FORMAT_D32_FLOAT;
@@ -207,17 +207,19 @@ namespace engine
 
     CD3DX12_HEAP_PROPERTIES heap_prop(D3D12_HEAP_TYPE_DEFAULT);
     CD3DX12_RESOURCE_DESC resource_desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, width, height, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
-    THROW_IF_FAILED(com->CreateCommittedResource(&heap_prop, D3D12_HEAP_FLAG_NONE, &resource_desc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &clear_value, IID_PPV_ARGS(out_dsv.GetAddressOf())));
+    THROW_IF_FAILED(com->CreateCommittedResource(&heap_prop, D3D12_HEAP_FLAG_NONE, &resource_desc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &clear_value, IID_PPV_ARGS(out_dsv.resource.GetAddressOf())));
     
     D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
     desc.Format = DXGI_FORMAT_D32_FLOAT;
     desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
     desc.Texture2D.MipSlice = 0;
     desc.Flags = D3D12_DSV_FLAG_NONE;
-    com->CreateDepthStencilView(out_dsv.Get(), &desc, descriptor_heap.com->GetCPUDescriptorHandleForHeapStart());
+
+    descriptor_heap.push(out_dsv.desc);
+    com->CreateDepthStencilView(out_dsv.resource.Get(), &desc, out_dsv.desc.cpu_handle);
 
 #if BUILD_DEBUG
-    DX_SET_NAME(out_dsv, "{}", name)
+    DX_SET_NAME(out_dsv.resource, "{}", name)
 #endif
   }
 
@@ -303,7 +305,7 @@ namespace engine
   void fdevice::create_const_buffer(fdescriptor_heap* heap, uint64_t in_size, fconst_buffer& out_buffer, const char* name) const
   {
     out_buffer.size = fdx12::align_size_to(in_size, 255);
-    out_buffer.cbv = *heap->push();
+    heap->push(out_buffer.cbv);
 
     // https://logins.github.io/graphics/2020/07/31/DX12ResourceHandling.html#resource-mapping
     // https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-constant-buffers-root-descriptor-tables#c0
@@ -323,7 +325,7 @@ namespace engine
   void fdevice::create_shader_resource_buffer(fdescriptor_heap* heap, uint64_t in_size, fshader_resource_buffer& out_buffer, const char* name) const
   {
     out_buffer.size = fdx12::align_size_to(in_size, 255);
-    out_buffer.srv = *heap->push();
+    heap->push(out_buffer.srv);
 
     create_upload_resource(out_buffer.size, out_buffer.resource);
 
@@ -344,7 +346,7 @@ namespace engine
   void fdevice::create_texture_resource(fdescriptor_heap* heap, atexture* texture_asset, const char* name) const
   {
     ftexture_resource& gpur = texture_asset->gpu_resource;
-    gpur.srv = *heap->push();
+    heap->push(gpur.srv);
 
     D3D12_RESOURCE_DESC texture_desc = {};
     texture_desc.MipLevels = 1;
