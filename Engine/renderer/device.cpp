@@ -8,6 +8,8 @@
 
 #include "renderer/device.h"
 
+#include <sstream>
+
 #include "assets/texture.h"
 #include "core/exceptions.h"
 #include "engine/log.h"
@@ -16,6 +18,7 @@
 #include "renderer/descriptor_heap.h"
 #include "renderer/dx12_lib.h"
 #include "renderer/gpu_resources.h"
+#include "renderer/pipeline_state.h"
 
 namespace engine
 {
@@ -117,6 +120,62 @@ namespace engine
       THROW_IF_FAILED((D3D12CreateDevice(adapter1.Get(), feature_level.MaxSupportedFeatureLevel, IID_PPV_ARGS(device.com.GetAddressOf()))))
       return device;
     }
+  }
+
+  void fdevice::create_root_signature(const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, const std::vector<CD3DX12_STATIC_SAMPLER_DESC>& static_samplers, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, ComPtr<ID3D12RootSignature>& out_root_signature, const char* name) const
+  {
+    D3D12_FEATURE_DATA_ROOT_SIGNATURE feature_data = {};
+    feature_data.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+    if (FAILED(com->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &feature_data, sizeof(feature_data))))
+    {
+      feature_data.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+    }
+      
+    // Serialize the root signature.
+    ComPtr<ID3DBlob> root_signature_serialized;
+    ComPtr<ID3DBlob> error_blob;
+    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC root_signature_desc;
+    root_signature_desc.Init_1_1(static_cast<uint32_t>(root_parameters.size()), root_parameters.data(), static_cast<uint32_t>(static_samplers.size()), static_samplers.data(), root_signature_flags);
+    
+    HRESULT hr;
+    hr = D3DX12SerializeVersionedRootSignature(&root_signature_desc, feature_data.HighestVersion, root_signature_serialized.GetAddressOf(), error_blob.GetAddressOf());
+    bool do_throw = false;
+    std::ostringstream oss;
+    if(FAILED(hr))
+    {
+      oss << "Root signature serialization failed. ";
+      do_throw = true;
+    }
+    if (error_blob)
+    {
+      oss << static_cast<const char*>(error_blob->GetBufferPointer());
+      do_throw = true;
+    }
+    if(do_throw)
+    {
+      throw fhresult_exception(hr, oss.str());
+    }
+    THROW_IF_FAILED(com->CreateRootSignature(0, root_signature_serialized->GetBufferPointer(), root_signature_serialized->GetBufferSize(), IID_PPV_ARGS(out_root_signature.GetAddressOf())));
+#if BUILD_DEBUG
+    DX_SET_NAME(out_root_signature, "Root signature: {}", name)
+#endif
+  }
+
+  void fdevice::create_pipeline_state(fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state, const char* name) const
+  {
+    const D3D12_PIPELINE_STATE_STREAM_DESC pipeline_state_stream_desc(sizeof(fpipeline_state_stream), &pipeline_state_stream);
+    THROW_IF_FAILED(com->CreatePipelineState(&pipeline_state_stream_desc, IID_PPV_ARGS(out_pipeline_state.GetAddressOf())));
+#if BUILD_DEBUG
+    DX_SET_NAME(out_pipeline_state, "Pipeline state: {}", name)
+#endif
+  }
+
+  void fdevice::create_pipeline_state(const D3D12_GRAPHICS_PIPELINE_STATE_DESC& pso_desc, ComPtr<ID3D12PipelineState>& out_pipeline_state, const char* name) const
+  {
+    THROW_IF_FAILED(com->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(out_pipeline_state.GetAddressOf())));
+#if BUILD_DEBUG
+    DX_SET_NAME(out_pipeline_state, "Pipeline state: {}", name)
+#endif
   }
   
   void fdevice::create_render_target(IDXGISwapChain4* swap_chain, ID3D12DescriptorHeap* descriptor_heap, uint32_t back_buffer_count, std::vector<ComPtr<ID3D12Resource>>& out_rtv, const char* name) const
@@ -234,10 +293,10 @@ namespace engine
     desc.NumDescriptors = MAX_MAIN_DESCRIPTORS;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.heap.GetAddressOf())))
+    THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.com.GetAddressOf())))
 
 #if BUILD_DEBUG
-    DX_SET_NAME(out_descriptor_heap.heap, "{}", name)
+    DX_SET_NAME(out_descriptor_heap.com, "{}", name)
 #endif
   }
 
@@ -348,6 +407,35 @@ namespace engine
       nullptr,
       IID_PPV_ARGS(out_resource.GetAddressOf())));
   }
+
+  DXGI_SAMPLE_DESC fdevice::get_multisample_quality_levels(DXGI_FORMAT format, UINT num_samples, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags) const
+  {
+    DXGI_SAMPLE_DESC desc = { 1, 0 };
+
+    D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS quality_levels;
+    quality_levels.Format           = format;
+    quality_levels.SampleCount      = 1;
+    quality_levels.Flags            = flags;
+    quality_levels.NumQualityLevels = 0;
+
+    while (quality_levels.SampleCount <= num_samples
+        && SUCCEEDED(com->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &quality_levels, sizeof(D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS)))
+        && quality_levels.NumQualityLevels > 0)
+    {
+      desc.Count   = quality_levels.SampleCount;
+      desc.Quality = quality_levels.NumQualityLevels - 1;
+      quality_levels.SampleCount *= 2;
+    }
+    return desc;
+  }
   
-  
+  void fdevice::enable_info_queue() const
+  {
+    ComPtr<ID3D12InfoQueue> info_queue;
+    com->QueryInterface(IID_PPV_ARGS(info_queue.GetAddressOf()));
+    info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
+    info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
+    info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+  }
+
 }

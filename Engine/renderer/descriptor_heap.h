@@ -42,7 +42,7 @@ namespace engine
     fdescriptor* push();
     fdescriptor* get(uint32_t index);
 
-    ComPtr<ID3D12DescriptorHeap> heap;
+    ComPtr<ID3D12DescriptorHeap> com;
     
 private:
     std::vector<fdescriptor> descriptors;

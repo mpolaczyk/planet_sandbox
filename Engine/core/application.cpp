@@ -85,7 +85,7 @@ namespace engine
 #endif
     
 #if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH
-    fdx12::enable_info_queue(device);
+    device->enable_info_queue();
 #endif
 
     command_queue = std::make_shared<fcommand_queue>();

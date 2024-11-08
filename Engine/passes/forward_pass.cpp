@@ -117,7 +117,7 @@ namespace engine
         
     graphics_pipeline.bind_command_list(command_list2.Get());
 
-    command_list->com->SetDescriptorHeaps(1, heap->heap.GetAddressOf());
+    command_list->com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
 
     const uint32_t back_buffer_index = context->back_buffer_index;
     const uint32_t N = static_cast<uint32_t>(scene_acceleration.h_meshes.size());

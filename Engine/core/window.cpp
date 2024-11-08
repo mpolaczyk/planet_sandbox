@@ -116,8 +116,8 @@ namespace engine
       rtv.clear();
       DX_RELEASE(dsv);
     }
-
-    fdx12::resize_swap_chain(swap_chain, back_buffer_count, width, height);
+  
+    fdx12::resize_swap_chain(swap_chain.Get(), back_buffer_count, width, height);
     back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
     device.create_render_target(swap_chain.Get(), rtv_descriptor_heap.Get(), back_buffer_count, rtv, "Render target");
     device.create_depth_stencil(dsv_descriptor_heap.Get(), width, height, dsv, "Depth stencil");
@@ -131,7 +131,7 @@ namespace engine
       DX_RELEASE(rtv[n]);
     }
     DX_RELEASE(dsv);
-    DX_RELEASE(main_descriptor_heap.heap);
+    DX_RELEASE(main_descriptor_heap.com);
     DX_RELEASE(rtv_descriptor_heap);
     DX_RELEASE(dsv_descriptor_heap);
 

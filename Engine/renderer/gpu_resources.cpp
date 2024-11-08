@@ -6,6 +6,6 @@ namespace engine
 {
   void fbuffer::upload(const void* data) const
   {
-    fdx12::upload_buffer(resource, size, data);
+    fdx12::upload_host_buffer(resource.Get(), size, data);
   }
 }

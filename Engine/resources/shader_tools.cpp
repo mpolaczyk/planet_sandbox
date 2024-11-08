@@ -148,7 +148,7 @@ namespace engine
 
     // Print warnings and errors, fail if errors
     ComPtr<IDxcBlobUtf8> errors = nullptr;
-    fdx12::get_dxc_blob(dxc_result, DXC_OUT_ERRORS, errors);
+    fdx12::get_dxc_blob(dxc_result.Get(), DXC_OUT_ERRORS, errors);
     if (errors != nullptr && errors->GetStringLength() != 0)
     {
       LOG_ERROR("Warnings and errors:\n {0}", errors->GetStringPointer());
@@ -164,8 +164,8 @@ namespace engine
     // Object file
     {
       std::string obj_path = shader_path + ".cso";
-      if(!fdx12::get_dxc_blob(dxc_result, DXC_OUT_OBJECT, out_shader_blob)) { return false; }
-      if(!fdx12::save_dxc_blob(out_shader_blob, obj_path.c_str())) { return false; }
+      if(!fdx12::get_dxc_blob(dxc_result.Get(), DXC_OUT_OBJECT, out_shader_blob)) { return false; }
+      if(!fdx12::save_dxc_blob(out_shader_blob.Get(), obj_path.c_str())) { return false; }
 #if USE_NSIGHT_AFTERMATH
       fapplication::instance->gpu_crash_handler.add_shader_binary(out_shader_blob.Get());
 #endif
@@ -176,8 +176,8 @@ namespace engine
     {
       ComPtr<IDxcBlob> pdb_blob;
       std::string pdb_path = shader_path + ".pdb";
-      if(!fdx12::get_dxc_blob(dxc_result, DXC_OUT_PDB, pdb_blob)) { return false; }
-      if(!fdx12::save_dxc_blob(pdb_blob, pdb_path.c_str())) { return false; }
+      if(!fdx12::get_dxc_blob(dxc_result.Get(), DXC_OUT_PDB, pdb_blob)) { return false; }
+      if(!fdx12::save_dxc_blob(pdb_blob.Get(), pdb_path.c_str())) { return false; }
 #if USE_NSIGHT_AFTERMATH
       fapplication::instance->gpu_crash_handler.add_source_shader_debug_data(out_shader_blob.Get(), pdb_blob.Get());
 #endif

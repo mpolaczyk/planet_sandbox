@@ -28,9 +28,9 @@ namespace editor
     device.create_cbv_srv_uav_descriptor_heap(ui_descriptor_heap, "UI descriptor_heap");
     
     ImGui_ImplDX12_Init(device.com.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM,
-      ui_descriptor_heap.heap.Get(),
-      ui_descriptor_heap.heap->GetCPUDescriptorHandleForHeapStart(),
-      ui_descriptor_heap.heap->GetGPUDescriptorHandleForHeapStart());
+      ui_descriptor_heap.com.Get(),
+      ui_descriptor_heap.com->GetCPUDescriptorHandleForHeapStart(),
+      ui_descriptor_heap.com->GetGPUDescriptorHandleForHeapStart());
     
     // TO FIX - it crashes in second frame because imgui knows only the first descriptor heap, second frame uses the second one...
     // Or use one descriptor heap... wierd
@@ -75,7 +75,7 @@ namespace editor
     command_list->set_viewport(width, height);
     command_list->set_scissor(width, height);
     
-    command_list->com->SetDescriptorHeaps(1, ui_descriptor_heap.heap.GetAddressOf());
+    command_list->com->SetDescriptorHeaps(1, ui_descriptor_heap.com.GetAddressOf());
 
     ImGui::Render();
 #if RENDER_IMGUI

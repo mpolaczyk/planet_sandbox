@@ -11,8 +11,8 @@ namespace engine
   {
     parent_heap = heap;
     index = in_index;
-    cpu_handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(heap->heap->GetCPUDescriptorHandleForHeapStart(), in_index, heap->increment_size);
-    gpu_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(heap->heap->GetGPUDescriptorHandleForHeapStart(), in_index, heap->increment_size);
+    cpu_handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(heap->com->GetCPUDescriptorHandleForHeapStart(), in_index, heap->increment_size);
+    gpu_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(heap->com->GetGPUDescriptorHandleForHeapStart(), in_index, heap->increment_size);
   }
 
   fdescriptor* fdescriptor_heap::push()

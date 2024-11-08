@@ -98,8 +98,7 @@ namespace engine
   void fgraphics_pipeline::init(const char* name)
   {
     fdevice& device = fapplication::instance->device;
-
-    fdx12::create_root_signature(device.com, parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature, name);
+    device.create_root_signature(parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature, name);
 
     fpipeline_state_stream pipeline_state_stream;
     pipeline_state_stream.root_signature = root_signature.Get();
@@ -109,7 +108,7 @@ namespace engine
     pipeline_state_stream.pixel_shader = CD3DX12_SHADER_BYTECODE(pixel_shader->GetBufferPointer(), pixel_shader->GetBufferSize());
     pipeline_state_stream.dsv_format = depth_buffer_format;
     pipeline_state_stream.rtv_formats = render_target_formats;
-    fdx12::create_pipeline_state(device.com, pipeline_state_stream, pipeline_state, name);
+    device.create_pipeline_state(pipeline_state_stream, pipeline_state, name);
   }
 
 }
