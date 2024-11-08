@@ -4,7 +4,8 @@
 
 #include "core/core.h"
 #include "asset/asset.h"
-#include "renderer/render_state.h"
+#include "math/vertex_data.h"
+#include "renderer/gpu_resources.h"
 
 namespace engine
 {
@@ -24,6 +25,10 @@ namespace engine
 
     // Runtime state
     DirectX::BoundingBox bounding_box;
-    fstatic_mesh_render_state render_state;
+    std::vector<fvertex_data> vertex_list;
+    std::vector<fface_data> face_list;
+    
+    bool is_resource_online = false;
+    fstatic_mesh_resource resource;
   };
 }

@@ -10,9 +10,9 @@
 
 #include "assets/texture.h"
 #include "core/application.h"
+#include "hittables/static_mesh.h"
 #include "math/vertex_data.h"
 #include "renderer/dx12_lib.h"
-#include "renderer/render_state.h"
 
 namespace engine
 {
@@ -76,43 +76,46 @@ namespace engine
     }
   }
   
-  void fgraphics_command_list::upload_vertex_buffer(fstatic_mesh_render_state& out_render_state, const char* name) const
+  void fgraphics_command_list::upload_vertex_buffer(astatic_mesh* mesh, const char* name) const
   {
-    const uint64_t vertex_list_size = out_render_state.vertex_list.size() * sizeof(fvertex_data);
+    fstatic_mesh_resource& smr = mesh->resource;
+    const uint64_t vertex_list_size = mesh->vertex_list.size() * sizeof(fvertex_data);
     
-    upload_buffer_resource(vertex_list_size, out_render_state.vertex_list.data(), out_render_state.vertex_buffer_upload, out_render_state.vertex_buffer);
+    upload_buffer_resource(vertex_list_size, mesh->vertex_list.data(), smr.vertex_buffer_upload, smr.vertex_buffer);
     
-    out_render_state.vertex_buffer_view.BufferLocation = out_render_state.vertex_buffer->GetGPUVirtualAddress();
-    out_render_state.vertex_buffer_view.SizeInBytes = static_cast<uint32_t>(vertex_list_size);
-    out_render_state.vertex_buffer_view.StrideInBytes = sizeof(fvertex_data);
+    smr.vertex_buffer_view.BufferLocation = smr.vertex_buffer->GetGPUVirtualAddress();
+    smr.vertex_buffer_view.SizeInBytes = static_cast<uint32_t>(vertex_list_size);
+    smr.vertex_buffer_view.StrideInBytes = sizeof(fvertex_data);
+    smr.vertex_num = static_cast<uint32_t>(mesh->vertex_list.size());
 
-    resource_barrier(out_render_state.vertex_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+    resource_barrier(smr.vertex_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
     
-    out_render_state.is_resource_online = true;
+    mesh->is_resource_online = true;
 
 #if BUILD_DEBUG
-    DX_SET_NAME(out_render_state.vertex_buffer, "Vertex buffer {}", name)
-    DX_SET_NAME(out_render_state.vertex_buffer_upload, "Vertex buffer upload {}", name)
+    DX_SET_NAME(smr.vertex_buffer, "Vertex buffer {}", name)
+    DX_SET_NAME(smr.vertex_buffer_upload, "Vertex buffer upload {}", name)
 #endif
   }
 
-  void fgraphics_command_list::upload_index_buffer(fstatic_mesh_render_state& out_render_state, const char* name) const
+  void fgraphics_command_list::upload_index_buffer(astatic_mesh* mesh, const char* name) const
   {
-    const uint64_t face_list_size = out_render_state.face_list.size() * sizeof(fface_data); 
+    fstatic_mesh_resource& smr = mesh->resource;
+    const uint64_t face_list_size = mesh->face_list.size() * sizeof(fface_data); 
 
-    upload_buffer_resource(face_list_size, out_render_state.face_list.data(), out_render_state.index_buffer_upload, out_render_state.index_buffer);
+    upload_buffer_resource(face_list_size, mesh->face_list.data(), smr.index_buffer_upload, smr.index_buffer);
     
-    out_render_state.index_buffer_view.BufferLocation = out_render_state.index_buffer->GetGPUVirtualAddress();
-    out_render_state.index_buffer_view.Format = DXGI_FORMAT_R32_UINT;
-    out_render_state.index_buffer_view.SizeInBytes = static_cast<uint32_t>(face_list_size);
+    smr.index_buffer_view.BufferLocation = smr.index_buffer->GetGPUVirtualAddress();
+    smr.index_buffer_view.Format = DXGI_FORMAT_R32_UINT;
+    smr.index_buffer_view.SizeInBytes = static_cast<uint32_t>(face_list_size);
 
-    resource_barrier(out_render_state.index_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER);
+    resource_barrier(smr.index_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER);
     
-    out_render_state.is_resource_online = true;
+    mesh->is_resource_online = true;
 
 #if BUILD_DEBUG
-    DX_SET_NAME(out_render_state.index_buffer, "Index buffer {}", name)
-    DX_SET_NAME(out_render_state.index_buffer_upload, "Index buffer upload {}", name)
+    DX_SET_NAME(smr.index_buffer, "Index buffer {}", name)
+    DX_SET_NAME(smr.index_buffer_upload, "Index buffer upload {}", name)
 #endif
   }
 

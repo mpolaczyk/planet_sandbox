@@ -21,8 +21,8 @@ namespace engine
       graphics_pipeline.reserve_parameters(1);
       graphics_pipeline.add_constant_parameter(0, 0, 0, static_cast<uint32_t>(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_VERTEX);
       graphics_pipeline.add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
-      graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->render_state.blob);
-      graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->render_state.blob);
+      graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->resource.blob);
+      graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->resource.blob);
       graphics_pipeline.setup_formats(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT,
         {
           DXGI_FORMAT_R32G32B32A32_FLOAT,
@@ -88,7 +88,7 @@ namespace engine
 //    {
 //      const astatic_mesh* sma = sm->mesh_asset_ptr.get();
 //      if(sma == nullptr) { continue; }
-//      const fstatic_mesh_render_state& smrs = sma->render_state;
+//      const fstatic_mesh_resource& smrs = sma->render_state;
 //      const amaterial* ma = sm->material_asset_ptr.get();
 //      if(ma == nullptr)
 //      {

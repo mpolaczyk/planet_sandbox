@@ -5,7 +5,6 @@
 #include "object/object.h"
 #include "asset/asset.h"
 #include "renderer/gpu_resources.h"
-#include "renderer/render_state.h"
   
 namespace engine
 {

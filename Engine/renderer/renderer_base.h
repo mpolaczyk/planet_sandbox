@@ -14,7 +14,7 @@ namespace engine
 {
   class hscene;
   class fwindow;
-  struct fshader_render_state;
+  struct fshader_resource;
   struct fgraphics_command_list;
   
   // The responsibility of this class is to render to a texture

@@ -4,7 +4,7 @@
 
 #include "object/object.h"
 #include "asset/asset.h"
-#include "renderer/render_state.h"
+#include "renderer/gpu_resources.h"
 
 namespace engine
 {
@@ -25,6 +25,6 @@ namespace engine
     std::string cache_file_name;  // cso file
 
     // Runtime
-    fshader_render_state render_state;
+    fshader_resource resource;
   };
 }

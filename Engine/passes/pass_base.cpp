@@ -11,13 +11,13 @@ namespace engine
 {
   void fpass_base::init()
   {
-    if(!vertex_shader_asset.get()->render_state.blob)
+    if(!vertex_shader_asset.get()->resource.blob)
     {
       LOG_ERROR("Failed to load vertex shader.");
       can_draw = false;
       return;
     }
-    if(!pixel_shader_asset.get()->render_state.blob)
+    if(!pixel_shader_asset.get()->resource.blob)
     {
       LOG_ERROR("Failed to load pixel shader.");
       can_draw = false;

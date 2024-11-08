@@ -47,14 +47,14 @@ namespace engine
     accept(vdeserialize_object(j));
     set_display_name(name);
 
-    if(fshader_tools::load_compiled_shader(cache_file_name, render_state.blob))
+    if(fshader_tools::load_compiled_shader(cache_file_name, resource.blob))
     {
       return true;
     }
     std::string new_cache_file_name;
-    if(!fshader_tools::load_and_compile_hlsl(shader_file_name, entrypoint, target, render_state.blob, new_cache_file_name))
+    if(!fshader_tools::load_and_compile_hlsl(shader_file_name, entrypoint, target, resource.blob, new_cache_file_name))
     {
-      DX_RELEASE(render_state.blob)
+      DX_RELEASE(resource.blob)
       return false;
     }
     if(new_cache_file_name != "" && cache_file_name != new_cache_file_name)

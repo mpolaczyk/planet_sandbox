@@ -13,7 +13,7 @@ enum D3D12_RESOURCE_STATES;
 namespace engine
 {
   class atexture;
-  struct fstatic_mesh_render_state;
+  class astatic_mesh;
   using namespace Microsoft::WRL;
   
   struct ENGINE_API fgraphics_command_list
@@ -28,8 +28,8 @@ namespace engine
     void clear_depth_stencil(ID3D12DescriptorHeap* dsv_descriptor_heap) const;
 
     void upload_buffer_resource(uint64_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource) const;
-    void upload_vertex_buffer(fstatic_mesh_render_state& out_render_state, const char* name) const;
-    void upload_index_buffer(fstatic_mesh_render_state& out_render_state, const char* name) const;
+    void upload_vertex_buffer(astatic_mesh* mesh, const char* name) const;
+    void upload_index_buffer(astatic_mesh* mesh, const char* name) const;
     void upload_texture(atexture* texture_asset) const;
     
     ComPtr<ID3D12GraphicsCommandList> com; 

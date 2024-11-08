@@ -162,7 +162,6 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClInclude Include="math\chunk_generator.h" />
     <ClInclude Include="renderer\dx12_lib.h" />
     <ClInclude Include="renderer\render_context.h" />
-    <ClInclude Include="renderer\render_state.h" />
     <ClInclude Include="renderer\gpu_resources.h" />
     <ClInclude Include="renderer\scene_acceleration.h" />
     <ClInclude Include="resources\assimp_logger.h" />

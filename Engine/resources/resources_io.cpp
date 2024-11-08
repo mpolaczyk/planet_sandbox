@@ -79,7 +79,7 @@ namespace engine
       }
       // Vertex list
       {
-        std::vector<fvertex_data>& vertex_list = out_static_mesh->render_state.vertex_list;
+        std::vector<fvertex_data>& vertex_list = out_static_mesh->vertex_list;
         vertex_list.resize(ai_mesh->mNumVertices, fvertex_data());
         for(size_t i = 0; i < vertex_list.capacity(); ++i)
         {
@@ -100,7 +100,7 @@ namespace engine
 
       // Face list
       {
-        std::vector<fface_data>& face_list = out_static_mesh->render_state.face_list;
+        std::vector<fface_data>& face_list = out_static_mesh->face_list;
         face_list.resize(ai_mesh->mNumFaces, fface_data());
         for(size_t i = 0; i < face_list.capacity(); ++i)
         {

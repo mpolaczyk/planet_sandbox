@@ -11,7 +11,6 @@
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
 #include "math/math.h"
-#include "renderer/render_state.h"
 #include "renderer/aligned_structs.h"
 #include "renderer/command_list.h"
 #include "renderer/render_context.h"
@@ -84,8 +83,8 @@ namespace engine
     graphics_pipeline.add_shader_respurce_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::textures, 2, 0, MAX_TEXTURES, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     graphics_pipeline.add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
-    graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->render_state.blob);
-    graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->render_state.blob);
+    graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->resource.blob);
+    graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->resource.blob);
     graphics_pipeline.setup_formats(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT, { DXGI_FORMAT_R8G8B8A8_UNORM });
     graphics_pipeline.setup_input_layout({
       { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -177,21 +176,21 @@ namespace engine
     // Update vertex and index buffers
     for(uint32_t i = 0; i < N; i++)
     {
-      hstatic_mesh* mesh = scene_acceleration.h_meshes[i];
-      fstatic_mesh_render_state& smrs = mesh->mesh_asset_ptr.get()->render_state;
-      if(!smrs.is_resource_online)
+      hstatic_mesh* hmesh = scene_acceleration.h_meshes[i];
+      astatic_mesh* amesh = hmesh->mesh_asset_ptr.get();
+      if(!amesh->is_resource_online)
       {
-        std::string mesh_name = mesh->get_display_name();
-        std::string asset_name = mesh->mesh_asset_ptr.get()->name;
-        command_list->upload_vertex_buffer(smrs, std::format("{}{}", mesh_name, asset_name).c_str());
-        command_list->upload_index_buffer(smrs, std::format("{}{}", mesh_name, asset_name).c_str());
+        std::string mesh_name = hmesh->get_display_name();
+        std::string asset_name = hmesh->mesh_asset_ptr.get()->name;
+        command_list->upload_vertex_buffer(amesh, std::format("{}{}", mesh_name, asset_name).c_str());
+        command_list->upload_index_buffer(amesh, std::format("{}{}", mesh_name, asset_name).c_str());
       }
     }
     
     // Draw
     for(uint32_t i = 0; i < N; i++)
     {
-      const fstatic_mesh_render_state& smrs = context->scene->scene_acceleration.h_meshes[i]->mesh_asset_ptr.get()->render_state;
+      const fstatic_mesh_resource& smrs = context->scene->scene_acceleration.h_meshes[i]->mesh_asset_ptr.get()->resource;
 
       command_list2->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, sizeof(fobject_data)/4, &scene_acceleration.object_buffer[i], 0);
       command_list2->SetGraphicsRootConstantBufferView(root_parameter_type::frame_data, frame_data[back_buffer_index].resource->GetGPUVirtualAddress());
@@ -200,7 +199,7 @@ namespace engine
       command_list2->SetGraphicsRootDescriptorTable(root_parameter_type::textures, default_texture->gpu_resource.srv.gpu_handle);
       command_list2->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list2->IASetIndexBuffer(&smrs.index_buffer_view);
-      command_list2->DrawIndexedInstanced(static_cast<uint32_t>(smrs.vertex_list.size()), 1, 0, 0, 0);
+      command_list2->DrawIndexedInstanced(smrs.vertex_num, 1, 0, 0, 0);
     }
     
     //fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);

@@ -9,7 +9,7 @@ namespace engine
   class fwindow;
   class hscene;
   class hhittable_base;
-  struct fshader_render_state;
+  struct fshader_resource;
   struct fscene_acceleration;
   struct fdescriptor_heap;
   

@@ -4,7 +4,6 @@
 
 #include "passes/gbuffer_type.h"
 #include "passes/pass_base.h"
-#include "renderer/render_state.h"
 
 //struct ID3D11Texture2D;
 //struct ID3D11Buffer;
@@ -38,6 +37,6 @@ namespace engine
     //
     //  private:
     //    ComPtr<ID3D11Buffer> frame_constant_buffer;
-    fstatic_mesh_render_state quad_render_state;
+    fstatic_mesh_resource quad_render_state;
   };
 }
