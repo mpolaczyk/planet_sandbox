@@ -22,8 +22,8 @@ namespace engine
     fgpu_crash_tracker& operator=(const fgpu_crash_tracker&) = delete;
     fgpu_crash_tracker& operator=(fgpu_crash_tracker&&) = delete;
     
-    void pre_device_initialize(uint32_t back_buffer_count);
-    void post_device_initialize(ID3D12Device* device);
+    void pre_device_creation(uint32_t back_buffer_count);
+    void post_device_creation(ID3D12Device* device);
     void create_context_handle(uint32_t back_buffer_index, ID3D12GraphicsCommandList* command_list);
     void wait_for_dump_and_throw(HRESULT hr);
     void advance_frame();

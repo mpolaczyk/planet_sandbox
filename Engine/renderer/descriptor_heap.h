@@ -45,7 +45,7 @@ namespace engine
     
 private:
     std::vector<fdescriptor> descriptors;
-    uint32_t last_index = 0;
+    uint32_t next_index = 0;
     uint32_t increment_size = 0;
     D3D12_DESCRIPTOR_HEAP_TYPE heap_type;
   };

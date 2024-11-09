@@ -24,20 +24,18 @@ namespace engine
     THROW_IF_FAILED(debug->QueryInterface(IID_PPV_ARGS(debug1.GetAddressOf())))
     debug1->SetEnableGPUBasedValidation(true);
     debug->EnableDebugLayer();
+    LOG_DEBUG("Enabled debug layer and GPU validation")
   }
 
   bool fdx12::enable_screen_tearing(ComPtr<IDXGIFactory4> factory)
   {
-    bool success = false;
+    uint32_t success = 1;
     ComPtr<IDXGIFactory5> factory5;
     if(SUCCEEDED(factory.As(&factory5)))
     {
-      if(FAILED(factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &success, sizeof(success))))
-      {
-        success = false;
-      }
+      success = FAILED(factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &success, sizeof(success))) ? 0 : 1;
     }
-    return success;
+    return success == 1;
   }
   
   void fdx12::create_factory(ComPtr<IDXGIFactory4>& out_factory4)
@@ -67,15 +65,15 @@ namespace engine
 
     ComPtr<IDXGISwapChain1> swap_chain1;
     THROW_IF_FAILED(factory->CreateSwapChainForHwnd(command_queue, hwnd, &desc, nullptr, nullptr, &swap_chain1))
-    THROW_IF_FAILED(factory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER));
+    THROW_IF_FAILED(factory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER))
     THROW_IF_FAILED(swap_chain1.As(&out_swap_chain))
   }
   
-  void fdx12::resize_swap_chain(IDXGISwapChain4* swap_chain, uint32_t back_buffer_count, uint32_t width, uint32_t height)
+  void fdx12::resize_swap_chain(IDXGISwapChain4* swap_chain, uint32_t backbuffer_count, uint32_t width, uint32_t height)
   {
     DXGI_SWAP_CHAIN_DESC desc = {};
     THROW_IF_FAILED(swap_chain->GetDesc(&desc))
-    THROW_IF_FAILED(swap_chain->ResizeBuffers(back_buffer_count, width, height, desc.BufferDesc.Format, desc.Flags))
+    THROW_IF_FAILED(swap_chain->ResizeBuffers(backbuffer_count, width, height, desc.BufferDesc.Format, desc.Flags))
   }
   
   void fdx12::report_live_objects()
@@ -89,7 +87,7 @@ namespace engine
   {
     CD3DX12_RANGE read_range(0, 0);
     uint8_t* mapping = nullptr;
-    THROW_IF_FAILED(resource->Map(0, &read_range, reinterpret_cast<void**>(&mapping)));
+    THROW_IF_FAILED(resource->Map(0, &read_range, reinterpret_cast<void**>(&mapping)))
     memcpy(mapping, in_buffer, buffer_size);
     resource->Unmap(0, nullptr);
   }
@@ -127,7 +125,7 @@ namespace engine
     ComPtr<IDxcBlobUtf16> name = nullptr;
     if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), name.GetAddressOf())) && out_blob != nullptr)
     {
-      LOG_ERROR("Unable to get dxc blob {0}", static_cast<int32_t>(blob_type));
+      LOG_ERROR("Unable to get dxc blob {0}", static_cast<int32_t>(blob_type))
       return false;
     }
     return true;
@@ -141,7 +139,7 @@ namespace engine
     if(open_result != 0)
     {
       // See https://learn.microsoft.com/en-us/cpp/c-runtime-library/errno-constants
-      LOG_ERROR("Failed to write dxc blob. Error code {0}", static_cast<int32_t>(open_result));
+      LOG_ERROR("Failed to write dxc blob. Error code {0}", static_cast<int32_t>(open_result))
       return false;
     }
     fwrite(blob->GetBufferPointer(), blob->GetBufferSize(), 1, file);

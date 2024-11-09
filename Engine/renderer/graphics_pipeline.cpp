@@ -47,11 +47,13 @@ namespace engine
   
   void fgraphics_pipeline::add_descriptor_table_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, uint32_t num_descriptors, D3D12_DESCRIPTOR_RANGE_TYPE range_type, D3D12_DESCRIPTOR_RANGE_FLAGS range_flags, D3D12_SHADER_VISIBILITY visibility)
   {
-    CD3DX12_DESCRIPTOR_RANGE1 range(range_type, num_descriptors, shader_register, register_space, range_flags, 0);
+    constexpr uint32_t offset_in_descriptors_from_table_start = 0;
+    CD3DX12_DESCRIPTOR_RANGE1 range(range_type, num_descriptors, shader_register, register_space, range_flags, offset_in_descriptors_from_table_start);
     ranges.push_back(range);
     
     CD3DX12_ROOT_PARAMETER1 param;
-    param.InitAsDescriptorTable(1, &ranges.back(), visibility);
+    uint32_t num_descriptor_ranges = ranges.size();
+    param.InitAsDescriptorTable(num_descriptor_ranges, &ranges.back(), visibility);
     parameters[index] = param;
   }
 

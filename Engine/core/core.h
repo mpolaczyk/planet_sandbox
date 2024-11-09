@@ -31,7 +31,7 @@
 #define USE_TLAS 1
 #endif
 
-#define USE_NSIGHT_AFTERMATH 1
+#define USE_NSIGHT_AFTERMATH 0
 #define USE_FXC 0
 #define FORCE_COMPILE_SHADERS_ON_START 1
 

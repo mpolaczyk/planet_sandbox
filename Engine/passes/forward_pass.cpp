@@ -96,13 +96,13 @@ namespace engine
     graphics_pipeline.init("Forward pass");
   }
   
-  void fforward_pass::draw(std::shared_ptr<fgraphics_command_list> command_list)
+  void fforward_pass::draw(fgraphics_command_list* command_list)
   {
     fdevice& device = fapplication::instance->device;
     fdescriptor_heap* heap = context->main_descriptor_heap;
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
-    ComPtr<ID3D12GraphicsCommandList> command_list2 = command_list.get()->com;
-
+    ID3D12GraphicsCommandList* command_list_com = command_list->com.Get();
+    
     fsoft_asset_ptr<amaterial> default_material_asset;
     default_material_asset.set_name("default");
     atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
@@ -114,9 +114,9 @@ namespace engine
     //fdx12::set_viewport(command_list, width, height);
     //fdx12::set_scissor(command_list, width, height);
         
-    graphics_pipeline.bind_command_list(command_list2.Get());
+    graphics_pipeline.bind_command_list(command_list_com);
 
-    command_list->com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
+    command_list_com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
 
     const uint32_t back_buffer_index = context->back_buffer_index;
     const uint32_t N = static_cast<uint32_t>(scene_acceleration.h_meshes.size());
@@ -192,14 +192,14 @@ namespace engine
     {
       const fstatic_mesh_resource& smrs = context->scene->scene_acceleration.h_meshes[i]->mesh_asset_ptr.get()->resource;
 
-      command_list2->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, sizeof(fobject_data)/4, &scene_acceleration.object_buffer[i], 0);
-      command_list2->SetGraphicsRootConstantBufferView(root_parameter_type::frame_data, frame_data[back_buffer_index].resource->GetGPUVirtualAddress());
-      command_list2->SetGraphicsRootShaderResourceView(root_parameter_type::lights, lights_data[back_buffer_index].resource->GetGPUVirtualAddress());
-      command_list2->SetGraphicsRootShaderResourceView(root_parameter_type::materials, materials_data[back_buffer_index].resource->GetGPUVirtualAddress());
-      command_list2->SetGraphicsRootDescriptorTable(root_parameter_type::textures, default_texture->gpu_resource.srv.gpu_handle);
-      command_list2->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
-      command_list2->IASetIndexBuffer(&smrs.index_buffer_view);
-      command_list2->DrawIndexedInstanced(smrs.vertex_num, 1, 0, 0, 0);
+      command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, sizeof(fobject_data)/4, &scene_acceleration.object_buffer[i], 0);
+      command_list_com->SetGraphicsRootConstantBufferView(root_parameter_type::frame_data, frame_data[back_buffer_index].resource->GetGPUVirtualAddress());
+      command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::lights, lights_data[back_buffer_index].resource->GetGPUVirtualAddress());
+      command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::materials, materials_data[back_buffer_index].resource->GetGPUVirtualAddress());
+      command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::textures, default_texture->gpu_resource.srv.gpu_handle);
+      command_list_com->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
+      command_list_com->IASetIndexBuffer(&smrs.index_buffer_view);
+      command_list_com->DrawIndexedInstanced(smrs.vertex_num, 1, 0, 0, 0);
     }
     
     //fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);

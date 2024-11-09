@@ -13,7 +13,6 @@
 #include "renderer/command_queue.h"
 #include "hittables/scene.h"
 #include "renderer/command_list.h"
-#include "renderer/scene_acceleration.h"
 
 namespace engine
 {
@@ -38,9 +37,9 @@ namespace engine
     fdx12::create_swap_chain(hwnd, factory.Get(), command_queue.Get(), back_buffer_count, screen_tearing, swap_chain);
 
     fdevice& device = fapplication::instance->device;
-    device.create_render_target_descriptor_heap(back_buffer_count, rtv_descriptor_heap, "");
-    device.create_depth_stencil_descriptor_heap(dsv_descriptor_heap, "");
-    device.create_cbv_srv_uav_descriptor_heap(main_descriptor_heap, "");
+    device.create_render_target_descriptor_heap(back_buffer_count, rtv_descriptor_heap, "main");
+    device.create_depth_stencil_descriptor_heap(dsv_descriptor_heap, "main");
+    device.create_cbv_srv_uav_descriptor_heap(main_descriptor_heap, "main");
   }
 
   void fwindow::draw(std::shared_ptr<fcommand_queue> command_queue)
@@ -69,7 +68,7 @@ namespace engine
         renderer->set_renderer_context(std::move(context));
         renderer->output_width = renderer->output_width == 0 ? width : renderer->output_width;
         renderer->output_height = renderer->output_height == 0 ? height : renderer->output_height;
-        renderer->draw(command_list);
+        renderer->draw(command_list.get());
 
         command_list->resource_barrier(rtv[back_buffer_index].resource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
       }
@@ -123,11 +122,11 @@ namespace engine
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       frtv_resource temp;
-      device.create_render_target(swap_chain.Get(), n, rtv_descriptor_heap, temp, std::format("{}",n).c_str());
+      device.create_render_target(swap_chain.Get(), n, rtv_descriptor_heap, temp, std::format("backbuffer{}",n).c_str());
       rtv.push_back(temp);
     }
     
-    device.create_depth_stencil(dsv_descriptor_heap, width, height, dsv, "Depth stencil");
+    device.create_depth_stencil(dsv_descriptor_heap, width, height, dsv, "main");
   }
   
   void fwindow::cleanup()

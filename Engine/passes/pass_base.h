@@ -23,7 +23,7 @@ namespace engine
     virtual ~fpass_base() = default;
     
     virtual void init();
-    virtual void draw(std::shared_ptr<fgraphics_command_list> command_list) = 0;
+    virtual void draw(fgraphics_command_list* command_list) = 0;
     virtual void create_output_texture(bool cleanup = false) = 0;
     virtual void set_renderer_context(frenderer_context* in_context)
     {

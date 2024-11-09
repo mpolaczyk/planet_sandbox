@@ -71,23 +71,27 @@ namespace engine
     fdx12::create_factory(factory);
     
 #if USE_NSIGHT_AFTERMATH
-    gpu_crash_handler.pre_device_initialize(window->back_buffer_count);
+    gpu_crash_handler.pre_device_creation(window->back_buffer_count);
 #endif
     
 #if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH
     fdx12::enable_debug_layer();
+#else
+    LOG_WARN("Disabling the DX12 debug layer and GPU validation!")
 #endif
     
     device = fdevice::create(factory.Get());
 
 #if USE_NSIGHT_AFTERMATH
-    gpu_crash_handler.post_device_initialize(device.com.Get());
+    gpu_crash_handler.post_device_creation(device.com.Get());
 #endif
     
 #if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH
-    device->enable_info_queue();
+    device.enable_info_queue();
+#else
+    LOG_WARN("Disabling the info queue!")
 #endif
-
+    
     command_queue = std::make_shared<fcommand_queue>();
     command_queue->init(device, window->back_buffer_count);
     

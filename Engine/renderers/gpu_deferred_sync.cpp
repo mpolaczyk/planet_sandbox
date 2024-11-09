@@ -31,7 +31,7 @@ namespace engine
     deferred_lighting_pass.init();
   }
 
-  void rgpu_deferred_sync::draw_internal(std::shared_ptr<fgraphics_command_list> command_list)
+  void rgpu_deferred_sync::draw_internal(fgraphics_command_list* command_list)
   {
     gbuffer_pass.set_renderer_context(&context);
     gbuffer_pass.show_object_id = show_object_id; // TODO Selection should be done as a separate pass

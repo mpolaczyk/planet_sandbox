@@ -362,15 +362,15 @@ namespace engine
       nullptr,
       IID_PPV_ARGS(&gpur.resource)));
 
+    const uint64_t buffer_size = GetRequiredIntermediateSize(gpur.resource.Get(), 0, 1);
+    create_upload_resource(buffer_size, gpur.resource_upload);
+    
     D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
     srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srv_desc.Format = texture_desc.Format;
     srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
     srv_desc.Texture2D.MipLevels = 1;
     com->CreateShaderResourceView(gpur.resource.Get(), &srv_desc, gpur.srv.cpu_handle);
-    
-    const uint64_t buffer_size = GetRequiredIntermediateSize(gpur.resource.Get(), 0, 1);
-    create_upload_resource(buffer_size, gpur.resource_upload);
     
 #if BUILD_DEBUG
     DX_SET_NAME(gpur.resource, "Texture: {}", name)
@@ -432,6 +432,7 @@ namespace engine
     info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
     info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
     info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+    LOG_DEBUG("Enabled info queue")
   }
 
 }

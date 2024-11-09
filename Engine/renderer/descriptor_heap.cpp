@@ -11,14 +11,17 @@ namespace engine
     parent_heap = heap;
     index = in_index;
     cpu_handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(heap->com->GetCPUDescriptorHandleForHeapStart(), in_index, heap->increment_size);
-    gpu_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(heap->com->GetGPUDescriptorHandleForHeapStart(), in_index, heap->increment_size);
+    if(parent_heap->heap_type != D3D12_DESCRIPTOR_HEAP_TYPE_RTV && parent_heap->heap_type != D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
+    {
+      gpu_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(heap->com->GetGPUDescriptorHandleForHeapStart(), in_index, heap->increment_size);
+    }
   }
 
   void fdescriptor_heap::push(fdescriptor& desc)
   {
-    desc.init(this, last_index);
+    desc.init(this, next_index);
     descriptors.emplace_back(desc);
-    last_index++;
+    next_index++;
   }
 
   fdescriptor* fdescriptor_heap::get(uint32_t index)

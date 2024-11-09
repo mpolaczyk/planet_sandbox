@@ -34,7 +34,7 @@ namespace engine
     context = std::move(in_context);
   }
   
-  void rrenderer_base::draw(std::shared_ptr<fgraphics_command_list> command_list)
+  void rrenderer_base::draw(fgraphics_command_list* command_list)
   {
     if(!can_draw())
     {

@@ -17,13 +17,13 @@ namespace engine
     delete impl;
   }
 
-  void fgpu_crash_tracker::pre_device_initialize(uint32_t back_buffer_count)
+  void fgpu_crash_tracker::pre_device_creation(uint32_t back_buffer_count)
   {
     impl->PreDeviceInitialize(back_buffer_count, "planetSandbox");
-    LOG_INFO("Nsight Aftermath is enabled, disabling the DX12 debug layer!")
+    LOG_DEBUG("Nsight Aftermath is enabled.")
   }
 
-  void fgpu_crash_tracker::post_device_initialize(ID3D12Device* device)
+  void fgpu_crash_tracker::post_device_creation(ID3D12Device* device)
   {
     impl->PostDeviceInitialize(device);
   }

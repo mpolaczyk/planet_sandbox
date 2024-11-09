@@ -43,7 +43,7 @@ namespace engine
     }
   }
 
-  void fgbuffer_pass::draw(std::shared_ptr<fgraphics_command_list> command_list)
+  void fgbuffer_pass::draw(fgraphics_command_list* command_list)
   {
     //fdescriptor_heap* heap = context->main_descriptor_heap;
 
