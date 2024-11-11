@@ -81,7 +81,7 @@ namespace engine
     graphics_pipeline.add_constant_buffer_view_parameter(root_parameter_type::frame_data, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     graphics_pipeline.add_shader_respurce_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     graphics_pipeline.add_shader_respurce_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::textures, 2, 0, MAX_TEXTURES, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::textures, 2, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     graphics_pipeline.add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
     graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->resource.blob);
     graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->resource.blob);
@@ -155,8 +155,11 @@ namespace engine
       const uint32_t num_textures_in_scene = static_cast<uint32_t>(scene_acceleration.a_textures.size());
 
       // Upload default texture first
-      command_list->upload_texture(default_texture);
-
+      if(!default_texture->is_online)
+      {
+        command_list->upload_texture(default_texture);
+      }
+      
       // Upload other textures
       for(uint32_t i = 0; i < MAX_TEXTURES-1; i++)
       {

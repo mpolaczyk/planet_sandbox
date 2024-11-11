@@ -82,12 +82,11 @@ namespace engine
     return command_queue;
   }
 
-  void fcommand_queue::close_command_lists(uint32_t back_buffer_id)
+  void fcommand_queue::close_command_lists()
   {
     for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
-      fcommand_pair& pair = command_pair[i];
-      pair.command_list.com->Close();
+      command_pair[i].command_list.com->Close();
     }
   }
   
@@ -96,8 +95,9 @@ namespace engine
     for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
       fcommand_pair& pair = command_pair[i];
-      pair.command_allocator[back_buffer_id]->Reset();
-      pair.command_list.com->Reset(pair.command_allocator[back_buffer_id].Get(), nullptr);
+      ID3D12CommandAllocator* command_allocator = pair.command_allocator[back_buffer_id].Get();
+      command_allocator->Reset();
+      pair.command_list.com->Reset(command_allocator, nullptr);
     }
   }
 
@@ -112,7 +112,6 @@ namespace engine
     for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
       ID3D12GraphicsCommandList* temp = command_pair[i].command_list.com.Get();
-      temp->Close();
       command_list_ptr.push_back(temp);
     }
     command_queue->ExecuteCommandLists(ecommand_list_purpose::num, command_list_ptr.data());

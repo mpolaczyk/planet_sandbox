@@ -161,14 +161,14 @@ namespace engine
 
   void fapplication::draw(int back_buffer_index)
   {
-    command_queue->close_command_lists(back_buffer_index);
-    command_queue->reset_command_lists(back_buffer_index);
     window->draw(command_queue);
   }
 
   void fapplication::render(int back_buffer_index)
   {
+    command_queue->close_command_lists();
     uint64_t fence_value = command_queue->execute_command_lists(back_buffer_index);
+    command_queue->reset_command_lists(back_buffer_index);
 #if USE_NSIGHT_AFTERMATH
     window->present(&gpu_crash_handler);
 #else
