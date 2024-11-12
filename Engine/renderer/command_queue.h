@@ -36,25 +36,25 @@ namespace engine
     void init(fdevice& device, uint32_t in_back_buffer_count);
     void cleanup();
     
-    void wait_for_fence_value(uint64_t value) const;
+    void wait_for_fence_value(uint64_t value);
     bool is_fence_complete(uint64_t value) const;
     uint64_t signal();
     void flush();
 
-    ComPtr<ID3D12CommandQueue> get_command_queue() const;
     void close_command_lists();
     void reset_command_lists(uint32_t back_buffer_id);
     std::shared_ptr<fgraphics_command_list> get_command_list(ecommand_list_purpose type, uint32_t back_buffer_id) const;
     uint64_t execute_command_lists(uint32_t back_buffer_id);
-    
+
+    ComPtr<ID3D12CommandQueue> com;
+
   private: 
-    ComPtr<ID3D12CommandQueue> command_queue;
-    std::vector<fcommand_pair> command_pair; // index is ecommand_list_purpose
+    std::vector<fcommand_pair> command_pairs; // index is ecommand_list_purpose
     
     uint32_t back_buffer_count = 0;
     HANDLE fence_event = nullptr;
     ComPtr<ID3D12Fence> fence;  
     std::vector<uint64_t> fence_value = {};
-    uint64_t last_fence_value = 0;
+    uint64_t next_fence_value = 0;
   };
 }

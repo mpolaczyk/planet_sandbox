@@ -41,7 +41,7 @@ namespace engine
   struct ENGINE_API fdsv_resource
   {
     ComPtr<ID3D12Resource> resource;
-    fdescriptor desc;
+    fdescriptor dsv;
   };
 
   struct ENGINE_API frtv_resource

@@ -16,11 +16,11 @@ namespace editor
     return static_cast<feditor_app*>(fapplication::instance);  
   }
   
-  void feditor_window::init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue)
+  void feditor_window::init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory)
   {
     fdevice& device = fapplication::instance->device;
 
-    fwindow::init(wnd_proc, factory,  command_queue);
+    fwindow::init(wnd_proc, factory);
     
     ImGui::StyleColorsClassic();
     ImGui_ImplWin32_Init(hwnd);
@@ -52,7 +52,7 @@ namespace editor
     update_default_spawn_position();
   }
 
-  void feditor_window::draw(std::shared_ptr<engine::fcommand_queue> command_queue)
+  void feditor_window::draw()
   {
     ImGui_ImplDX12_NewFrame();
     ImGui_ImplWin32_NewFrame();
@@ -65,8 +65,9 @@ namespace editor
     draw_editor_window(editor_window_model);
     draw_scene_window(scene_window_model);
 
-    fwindow::draw(command_queue);
-    
+    fwindow::draw();
+
+    std::shared_ptr<fcommand_queue> command_queue = fapplication::instance->command_queue;
     std::shared_ptr<fgraphics_command_list> command_list = command_queue->get_command_list(ecommand_list_purpose::ui, back_buffer_index);
 
     command_list->resource_barrier(rtv[back_buffer_index].resource.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);

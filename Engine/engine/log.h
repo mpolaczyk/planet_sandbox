@@ -26,4 +26,3 @@ namespace engine
 #define LOG_WARN(...) ::engine::flogger::warn(std::format(__VA_ARGS__).c_str());
 #define LOG_ERROR(...) ::engine::flogger::error(std::format(__VA_ARGS__).c_str());
 #define LOG_CRITICAL(...) ::engine::flogger::critical(std::format(__VA_ARGS__).c_str());
-#define LOG_FLUSH ::engine::flogger::flush();

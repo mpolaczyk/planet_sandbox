@@ -36,6 +36,6 @@ namespace engine
     void upload_index_buffer(astatic_mesh* mesh, const char* name) const;
     void upload_texture(atexture* texture_asset) const;
     
-    ComPtr<ID3D12GraphicsCommandList> com; 
+    ComPtr<ID3D12GraphicsCommandList> com;
   };
 }

@@ -27,9 +27,9 @@ namespace engine
   public:   
     void show() const;
     void hide() const;
-    virtual void init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue);
+    virtual void init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory);
     virtual void update() = 0;
-    virtual void draw(std::shared_ptr<fcommand_queue> command_queue);
+    virtual void draw();
     void present(fgpu_crash_tracker* gpu_crash_handler);
     void resize(uint32_t width, uint32_t height);
     virtual const wchar_t* get_name() const = 0;

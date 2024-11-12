@@ -35,8 +35,8 @@ namespace engine
     virtual LRESULT wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     virtual void init(const char* project_name);
     virtual void update();
-    virtual void draw(int back_buffer_index);
-    virtual void render(int back_buffer_index);
+    virtual void draw();
+    virtual void render();
     virtual void cleanup();
 
     void main_loop();

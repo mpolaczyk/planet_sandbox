@@ -27,23 +27,26 @@ namespace engine
     ::ShowWindow(hwnd, SW_HIDE);
   }
 
-  void fwindow::init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory, ComPtr<ID3D12CommandQueue> command_queue)
+  void fwindow::init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory)
   {
     wc = {sizeof(WNDCLASSEX), CS_CLASSDC, wnd_proc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, get_name(), NULL};
     ::RegisterClassEx(&wc);
     hwnd = ::CreateWindow(wc.lpszClassName, get_name(), WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
+
+    std::shared_ptr<fcommand_queue> command_queue = fapplication::instance->command_queue;
+    fdevice& device = fapplication::instance->device;
     
     screen_tearing = fdx12::enable_screen_tearing(factory);
-    fdx12::create_swap_chain(hwnd, factory.Get(), command_queue.Get(), back_buffer_count, screen_tearing, swap_chain);
-
-    fdevice& device = fapplication::instance->device;
+    fdx12::create_swap_chain(hwnd, factory.Get(), command_queue->com.Get(), back_buffer_count, screen_tearing, swap_chain);
+    
     device.create_render_target_descriptor_heap(back_buffer_count, rtv_descriptor_heap, "main");
     device.create_depth_stencil_descriptor_heap(dsv_descriptor_heap, "main");
     device.create_cbv_srv_uav_descriptor_heap(main_descriptor_heap, "main");
   }
 
-  void fwindow::draw(std::shared_ptr<fcommand_queue> command_queue)
+  void fwindow::draw()
   {
+    std::shared_ptr<fcommand_queue> command_queue = fapplication::instance->command_queue;
     std::shared_ptr<fgraphics_command_list> command_list = command_queue->get_command_list(ecommand_list_purpose::main, back_buffer_index);
     
     if(hscene* scene_root = fapplication::instance->scene_root)
@@ -97,6 +100,7 @@ namespace engine
   
   void fwindow::resize(uint32_t in_width, uint32_t in_height)
   {
+    std::shared_ptr<fcommand_queue> command_queue = fapplication::instance->command_queue;
     fdevice& device = fapplication::instance->device;
     
     if(in_width == 0 || in_height == 0) { return; }
@@ -105,6 +109,7 @@ namespace engine
     width = in_width;
     height = in_height;
 
+    // Release resources if they already exist
     if(rtv.size() == back_buffer_count)
     {
       for(uint32_t n = 0; n < back_buffer_count; n++)

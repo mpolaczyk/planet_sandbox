@@ -205,8 +205,8 @@ namespace engine
     desc.Texture2D.MipSlice = 0;
     desc.Flags = D3D12_DSV_FLAG_NONE;
 
-    descriptor_heap.push(out_dsv.desc);
-    com->CreateDepthStencilView(out_dsv.resource.Get(), &desc, out_dsv.desc.cpu_handle);
+    descriptor_heap.push(out_dsv.dsv);
+    com->CreateDepthStencilView(out_dsv.resource.Get(), &desc, out_dsv.dsv.cpu_handle);
 
 #if BUILD_DEBUG
     DX_SET_NAME(out_dsv.resource, "Depth stencil: {}", name)

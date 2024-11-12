@@ -44,7 +44,7 @@ void guarded_main(int argc, char** argv, fapplication* app)
     std::ostringstream oss;
     oss << "Global exception hadler!\n" << e.what();
     LOG_CRITICAL("{0}", oss.str())
-    LOG_FLUSH
+    flogger::flush();
 
     // TODO
     // c++ exception: does not have any call stack information

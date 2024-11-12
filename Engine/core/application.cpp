@@ -34,7 +34,6 @@ namespace engine
     case WM_SIZE:
       if(device.com != nullptr && wParam != SIZE_MINIMIZED)
       {
-        command_queue->flush();
         window->resize(LOWORD(lParam), HIWORD(lParam));
       }
       return 0;
@@ -108,7 +107,7 @@ namespace engine
     
     scene_root = hscene::spawn();
     
-    window->init(WndProc, factory, command_queue->get_command_queue());
+    window->init(WndProc, factory);
     window->show();
 
     LOG_INFO("Init done, starting the main loop");
@@ -119,20 +118,17 @@ namespace engine
     while(is_running)
     {
       fscope_timer frame_timer(stat_frame_time);
-
       MSG msg;
       while(::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
       {
-        if(msg.message == WM_CLOSE)
+        ::TranslateMessage(&msg);
+        if(msg.message == WM_QUIT)
         {
           is_running = false;
         }
-        ::TranslateMessage(&msg);
         ::DispatchMessage(&msg);
       }
       if(!is_running) break;
-
-      const int back_buffer_index = window->get_back_buffer_index();
       
       {
         fscope_timer update_timer(stat_update_time);
@@ -140,13 +136,13 @@ namespace engine
       }
       {
         fscope_timer draw_timer(stat_draw_time);
-        draw(back_buffer_index);
+        draw();
       }
       {
         fscope_timer render_timer(stat_render_time);
-        render(back_buffer_index);
+        render();
       }
-      LOG_FLUSH
+      flogger::flush();
     }
   }
 
@@ -159,13 +155,15 @@ namespace engine
     window->update();
   }
 
-  void fapplication::draw(int back_buffer_index)
+  void fapplication::draw()
   {
-    window->draw(command_queue);
+    window->draw();
   }
 
-  void fapplication::render(int back_buffer_index)
+  void fapplication::render()
   {
+    const int back_buffer_index = window->get_back_buffer_index();
+
     command_queue->close_command_lists();
     uint64_t fence_value = command_queue->execute_command_lists(back_buffer_index);
     command_queue->reset_command_lists(back_buffer_index);
@@ -185,11 +183,14 @@ namespace engine
       scene_root->destroy();
     }
     command_queue->flush();
+    command_queue->flush();
+    command_queue->flush();
+    command_queue->flush();
     command_queue->cleanup();
     window->cleanup();
 #ifdef BUILD_DEBUG
     fdx12::report_live_objects();
 #endif
-    LOG_FLUSH
+    flogger::flush();
   }
 }

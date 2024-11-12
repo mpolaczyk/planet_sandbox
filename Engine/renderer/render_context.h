@@ -31,7 +31,7 @@ namespace engine
         && back_buffer_index >= 0 && back_buffer_index < back_buffer_count
         && main_descriptor_heap != nullptr
         && rtv.rtv.index != -1
-        && dsv.desc.index != -1;
+        && dsv.dsv.index != -1;
     }
   };
 }

@@ -25,7 +25,7 @@ namespace engine
   
   void fgraphics_command_list::set_render_targets(const frtv_resource& rtv, const fdsv_resource& dsv) const
   {
-    com->OMSetRenderTargets(1, &rtv.rtv.cpu_handle, FALSE, &dsv.desc.cpu_handle);
+    com->OMSetRenderTargets(1, &rtv.rtv.cpu_handle, FALSE, &dsv.dsv.cpu_handle);
   }
 
   void fgraphics_command_list::set_viewport(uint32_t width, uint32_t height) const
@@ -47,7 +47,7 @@ namespace engine
 
   void fgraphics_command_list::clear_depth_stencil(const fdsv_resource& dsv) const
   {
-    com->ClearDepthStencilView(dsv.desc.cpu_handle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+    com->ClearDepthStencilView(dsv.dsv.cpu_handle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
   }
 
   void fgraphics_command_list::upload_buffer_resource(uint64_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource) const

@@ -13,7 +13,7 @@ namespace engine
   void fcommand_queue::init(fdevice& device, uint32_t in_back_buffer_count)
   {
     back_buffer_count = in_back_buffer_count;
-    device.create_command_queue(command_queue);
+    device.create_command_queue(com);
     for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
       fcommand_pair temp;
@@ -25,9 +25,9 @@ namespace engine
         DX_SET_NAME(temp.command_list.com, "Command list: type {}", i)
       }
 #endif
-      command_pair.push_back(temp);
+      command_pairs.push_back(temp);
     }
-    device.create_synchronisation(back_buffer_count, last_fence_value, fence, fence_event, fence_value);
+    device.create_synchronisation(back_buffer_count, next_fence_value, fence, fence_event, fence_value);
   }
 
   void fcommand_queue::cleanup()
@@ -39,14 +39,14 @@ namespace engine
     
     for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
-      fcommand_pair& pair = command_pair[i];
+      fcommand_pair& pair = command_pairs[i];
       DX_RELEASE(pair.command_list.com)
       for(uint32_t n = 0; n < back_buffer_count; n++)
       {
         DX_RELEASE(pair.command_allocator[n])
       }      
     }
-    DX_RELEASE(command_queue)
+    DX_RELEASE(com)
     DX_RELEASE(fence)
     CloseHandle(fence_event);
   }
@@ -56,7 +56,7 @@ namespace engine
     return fence->GetCompletedValue() >= value;
   }
 
-  void fcommand_queue::wait_for_fence_value(uint64_t value) const
+  void fcommand_queue::wait_for_fence_value(uint64_t value)
   {
     if(!is_fence_complete(value))
     {
@@ -67,8 +67,8 @@ namespace engine
 
   uint64_t fcommand_queue::signal()
   {
-    uint64_t value_for_signal = ++last_fence_value;
-    THROW_IF_FAILED(command_queue->Signal(fence.Get(), value_for_signal))
+    uint64_t value_for_signal = ++next_fence_value;
+    THROW_IF_FAILED(com->Signal(fence.Get(), value_for_signal))
     return value_for_signal;
   }
 
@@ -77,16 +77,11 @@ namespace engine
     wait_for_fence_value(signal());
   }
 
-  ComPtr<ID3D12CommandQueue> fcommand_queue::get_command_queue() const
-  {
-    return command_queue;
-  }
-
   void fcommand_queue::close_command_lists()
   {
     for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
-      command_pair[i].command_list.com->Close();
+      command_pairs[i].command_list.com->Close();
     }
   }
   
@@ -94,7 +89,7 @@ namespace engine
   {
     for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
-      fcommand_pair& pair = command_pair[i];
+      fcommand_pair& pair = command_pairs[i];
       ID3D12CommandAllocator* command_allocator = pair.command_allocator[back_buffer_id].Get();
       command_allocator->Reset();
       pair.command_list.com->Reset(command_allocator, nullptr);
@@ -103,7 +98,7 @@ namespace engine
 
   std::shared_ptr<fgraphics_command_list> fcommand_queue::get_command_list(ecommand_list_purpose type, uint32_t back_buffer_id) const
   {
-    return std::make_shared<fgraphics_command_list>(command_pair[type].command_list);
+    return std::make_shared<fgraphics_command_list>(command_pairs[type].command_list);
   }
 
   uint64_t fcommand_queue::execute_command_lists(uint32_t back_buffer_id)
@@ -111,10 +106,10 @@ namespace engine
     std::vector<ID3D12CommandList*> command_list_ptr;
     for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
-      ID3D12GraphicsCommandList* temp = command_pair[i].command_list.com.Get();
+      ID3D12GraphicsCommandList* temp = command_pairs[i].command_list.com.Get();
       command_list_ptr.push_back(temp);
     }
-    command_queue->ExecuteCommandLists(ecommand_list_purpose::num, command_list_ptr.data());
+    com->ExecuteCommandLists(ecommand_list_purpose::num, command_list_ptr.data());
 
     fence_value[back_buffer_id] = signal();
     return fence_value[back_buffer_id];
