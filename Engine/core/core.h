@@ -45,6 +45,29 @@
 
 #define ALIGN(x) __declspec(align(x))
 
+#define CTOR_DEFAULT(NAME) NAME() = default;
+#define CTOR_DELETE(NAME) NAME() = delete;
+#define DTOR_DEFAULT(NAME) ~NAME() = default;
+#define DTOR_DELETE(NAME) ~NAME() = delete;
+#define CTOR_MOVE_DEFAULT(NAME) \
+  NAME(NAME&&) = default; \
+  NAME& operator=(NAME&&) = default; 
+#define CTOR_MOVE_DELETE(NAME) \
+  NAME(NAME&&) = delete; \
+  NAME& operator=(NAME&&) = delete;
+#define CTOR_COPY_DEFAULT(NAME) \
+  NAME(const NAME&) = default; \
+  NAME& operator=(const NAME&) = default;
+#define CTOR_COPY_DELETE(NAME) \
+  NAME(const NAME&) = delete; \
+  NAME& operator=(const NAME&) = delete;
+#define CTOR_MOVE_COPY_DEFAULT(NAME) \
+    CTOR_MOVE_DEFAULT(NAME) \
+    CTOR_COPY_DEFAULT(NAME)
+#define CTOR_MOVE_COPY_DELETE(NAME) \
+  CTOR_MOVE_DELETE(NAME) \
+  CTOR_COPY_DELETE(NAME)
+
 #define RAND_SEED_FUNC(seed) rand_pcg(seed)
 
 #define SPDLOG_USE_STD_FORMAT

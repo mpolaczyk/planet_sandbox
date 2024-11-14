@@ -13,8 +13,7 @@ namespace engine
   class ENGINE_API fcamera
   {
   public:
-    fcamera() = default;
-
+    CTOR_DEFAULT(fcamera)
     fcamera(const fvec3& look_from, float field_of_view)
       : location(look_from), field_of_view(field_of_view)
     {
@@ -25,10 +24,10 @@ namespace engine
     void update(float delta_time, int32_t width, int32_t height);
 
     // Camera movement
-    int32_t input_forward, input_left, input_backward, input_right;
-    int32_t input_down, input_up;
-    int32_t input_yaw;
-    int32_t input_pitch;
+    int32_t input_forward, input_left, input_backward, input_right = 0;
+    int32_t input_down, input_up = 0;
+    int32_t input_yaw = 0;
+    int32_t input_pitch = 0;
     float move_speed = 5.f;
     float rotate_speed = 5.f;
 
@@ -40,8 +39,8 @@ namespace engine
 
     // Persistent members
     fvec3 location;
-    float pitch;
-    float yaw;
+    float pitch = 0.0f;
+    float yaw = 0.0f;
     float field_of_view = 70.0f;
   };
 }

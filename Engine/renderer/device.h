@@ -39,11 +39,11 @@ namespace engine
   
   using namespace Microsoft::WRL;
   
-  struct ENGINE_API fdevice
+  struct ENGINE_API fdevice final
   {
     static void get_hw_adapter(IDXGIFactory1* factory, IDXGIAdapter1** out_adapter, bool prefer_high_performance_adapter = false);
     static fdevice create(IDXGIFactory4* factory);
-
+    
     void create_root_signature(const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, const std::vector<CD3DX12_STATIC_SAMPLER_DESC>& static_samplers, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, ComPtr<ID3D12RootSignature>& out_root_signature, const char* name) const;
     void create_pipeline_state(fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state, const char* name) const;
     void create_pipeline_state(const D3D12_GRAPHICS_PIPELINE_STATE_DESC& pso_desc, ComPtr<ID3D12PipelineState>& out_pipeline_state, const char* name) const;
@@ -67,7 +67,7 @@ namespace engine
 
     DXGI_SAMPLE_DESC get_multisample_quality_levels(DXGI_FORMAT format, UINT num_samples, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags) const;
     void enable_info_queue() const;
-    
+
     ComPtr<ID3D12Device2> com;
   };
 }

@@ -1,6 +1,7 @@
 #include <dxgi1_5.h>
 
 #include "core/application.h"
+
 #include "core/exceptions.h"
 #include "core/window.h"
 #include "engine/io.h"
@@ -15,7 +16,7 @@
 
 namespace engine
 {
-  fapplication* fapplication::instance = nullptr;
+  fapplication* fapplication::instance = nullptr; // weak ptr, no ownership
   ftimer_instance fapplication::stat_frame_time;
   ftimer_instance fapplication::stat_update_time;
   ftimer_instance fapplication::stat_draw_time;
@@ -25,6 +26,14 @@ namespace engine
   LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   {
     return fapplication::instance->wnd_proc(hWnd, msg, wParam, lParam);
+  }
+
+  fapplication::~fapplication()
+  {
+    REG.destroy_all();
+    command_queue.reset();
+    window.reset();
+    flogger::flush();
   }
 
   LRESULT fapplication::wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -51,7 +60,6 @@ namespace engine
   void fapplication::init(const char* project_name)
   {
     fio::init(project_name);
-    flogger::init();
     fassimp_logger::init();
     frandom_cache::init();
 
@@ -91,8 +99,7 @@ namespace engine
     LOG_WARN("Disabling the info queue!")
 #endif
     
-    command_queue = std::make_shared<fcommand_queue>();
-    command_queue->init(device, window->back_buffer_count);
+    command_queue = std::make_shared<fcommand_queue>(device, window->back_buffer_count);
     
 #if USE_NSIGHT_AFTERMATH
     for (uint32_t i = 0; i < window->back_buffer_count; i++)
@@ -104,10 +111,8 @@ namespace engine
 #endif
 
     command_queue->flush();
-    
     scene_root = hscene::spawn();
-    
-    window->init(WndProc, factory);
+    window->init(WndProc, factory, L"Editor");
     window->show();
 
     LOG_INFO("Init done, starting the main loop");
@@ -157,16 +162,16 @@ namespace engine
 
   void fapplication::draw()
   {
+    if(fapplication::frame_counter != 0)
+    {
+      command_queue->reset_allocator(window->get_back_buffer_index());
+    }
     window->draw();
   }
 
   void fapplication::render()
   {
-    const int back_buffer_index = window->get_back_buffer_index();
-
-    command_queue->close_command_lists();
-    uint64_t fence_value = command_queue->execute_command_lists(back_buffer_index);
-    command_queue->reset_command_lists(back_buffer_index);
+    const uint64_t fence_value = command_queue->execute_command_lists(window->get_back_buffer_index());
 #if USE_NSIGHT_AFTERMATH
     window->present(&gpu_crash_handler);
 #else
@@ -174,23 +179,5 @@ namespace engine
 #endif
     command_queue->wait_for_fence_value(fence_value);   // TODO CPU waits for GPU, make it async
     frame_counter++;
-  }
-  
-  void fapplication::cleanup()
-  {
-    if (scene_root)
-    {
-      scene_root->destroy();
-    }
-    command_queue->flush();
-    command_queue->flush();
-    command_queue->flush();
-    command_queue->flush();
-    command_queue->cleanup();
-    window->cleanup();
-#ifdef BUILD_DEBUG
-    fdx12::report_live_objects();
-#endif
-    flogger::flush();
   }
 }

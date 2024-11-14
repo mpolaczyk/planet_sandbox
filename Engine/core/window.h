@@ -24,16 +24,18 @@ namespace engine
   
   class ENGINE_API fwindow
   {
-  public:   
+  public:
+    CTOR_DEFAULT(fwindow)
+    CTOR_MOVE_COPY_DELETE(fwindow)
+    virtual ~fwindow();
+
+    virtual void init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory, const wchar_t* name);
     void show() const;
     void hide() const;
-    virtual void init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory);
     virtual void update() = 0;
     virtual void draw();
     void present(fgpu_crash_tracker* gpu_crash_handler);
     void resize(uint32_t width, uint32_t height);
-    virtual const wchar_t* get_name() const = 0;
-    virtual void cleanup();
 
     static constexpr uint32_t back_buffer_count = 2;
 

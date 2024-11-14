@@ -6,6 +6,7 @@
 #include "core/window.h"
 #include "engine/log.h"
 #include "engine/string_tools.h"
+#include "renderer/dx12_lib.h"
 
 using namespace engine;
 
@@ -16,28 +17,41 @@ namespace engine
   extern fwindow* create_window();
 }
 
-void unguarded_main(int argc, char** argv, fapplication* app)
+void inline main_impl(int argc, char** argv)
 {
-  if (argc == 1)
+  flogger::init();
+  if (argc == 0)
   {
-    throw std::runtime_error("Application command line argument required: project name");
+    LOG_ERROR("Command line argument required: project name");
+    return;
   }
-  else
+
+  // Application lifecycle scope
   {
+    std::shared_ptr<fapplication> app;
+    app.reset(create_application());
+    fapplication::instance = app.get();
+    app->set_window(create_window());
     app->init(argv[1]);
     app->main_loop();
-    app->cleanup();
+    fapplication::instance = nullptr;
   }
+  
+#ifdef BUILD_DEBUG
+  fdx12::report_live_objects();
+#endif
+  
+  LOG_INFO("Goodbye!");
 }
 
-void guarded_main(int argc, char** argv, fapplication* app)
+void inline guarded_main_impl(int argc, char** argv)
 {
   // Catch SEH exception and raise C++ typed exception. This needs to be done per thread!
   _set_se_translator(fwindows_error::throw_cpp_exception_from_seh_exception);
 
   try
   {
-    unguarded_main(argc, argv, app);
+    main_impl(argc, argv);
   }
   catch (const std::exception& e)
   {
@@ -45,32 +59,21 @@ void guarded_main(int argc, char** argv, fapplication* app)
     oss << "Global exception hadler!\n" << e.what();
     LOG_CRITICAL("{0}", oss.str())
     flogger::flush();
-
-    // TODO
-    // c++ exception: does not have any call stack information
-
-    ::MessageBox(app->window->get_window_handle(), fstring_tools::to_utf16(oss.str()).c_str(), L"Error Message", MB_APPLMODAL | MB_ICONERROR | MB_OK);
+    ::MessageBox(nullptr, fstring_tools::to_utf16(oss.str()).c_str(), L"Error Message", MB_APPLMODAL | MB_ICONERROR | MB_OK);
   }
 }
 
 int main(int argc, char** argv)
 {
-  fapplication* app = create_application();
-  fapplication::instance = app;
-  app->window.reset(create_window());
-
+  // Don't guard code with try/catch block and error handling so that IDE can catch all exceptions
   if (IsDebuggerPresent())
   {
-    // Don't guard code with try/catch block and error handling so that IDE can catch all exceptions
-    unguarded_main(argc, argv, app);
+    main_impl(argc, argv);
   }
   else
   {
-    guarded_main(argc, argv, app);
+    guarded_main_impl(argc, argv);
   }
-
-  fapplication::instance = nullptr;
-  delete app;
   return 0;
 }
 

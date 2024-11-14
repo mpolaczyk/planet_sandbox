@@ -16,27 +16,28 @@ namespace engine
 
   struct fdescriptor_heap;
   
-  struct ENGINE_API fdescriptor
+  struct ENGINE_API fdescriptor final
   {
-    void init(fdescriptor_heap* heap, uint32_t in_index);
+    CTOR_DEFAULT(fdescriptor)
+    CTOR_MOVE_COPY_DEFAULT(fdescriptor)
+    DTOR_DEFAULT(fdescriptor)
+    fdescriptor(fdescriptor_heap* heap, uint32_t in_index);
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE cpu_handle;
     CD3DX12_GPU_DESCRIPTOR_HANDLE gpu_handle;
 
-    fdescriptor_heap* parent_heap = nullptr;
+    fdescriptor_heap* parent_heap = nullptr;  // weak ptr, no ownership
     uint32_t index = -1;   // index in parent heap
   };
   
-  struct ENGINE_API fdescriptor_heap
+  struct ENGINE_API fdescriptor_heap final
   {
     friend fdescriptor;
 
-    void init(ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE in_heap_type)
-    {
-      heap_type = in_heap_type;
-      increment_size = device->GetDescriptorHandleIncrementSize(in_heap_type);
-    }
-    
+    CTOR_DEFAULT(fdescriptor_heap)
+    CTOR_MOVE_COPY_DEFAULT(fdescriptor_heap)
+    fdescriptor_heap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE in_heap_type);
+
     void push(fdescriptor& desc);
 
     fdescriptor* get(uint32_t index);

@@ -12,7 +12,6 @@
 #include "app/editor_window.h"
 #include "hittables/scene.h"
 #include "renderer/command_queue.h"
-#include "renderer/renderer_base.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -27,11 +26,6 @@ namespace editor
     return fapplication::wnd_proc(hWnd, msg, wParam, lParam);
   }
 
-  feditor_window* feditor_app::get_editor_window() const
-  {
-    return static_cast<feditor_window*>(window.get());
-  }
-  
   void feditor_app::init(const char* project_name)
   {
     ImGui_ImplWin32_EnableDpiAwareness();
@@ -39,8 +33,6 @@ namespace editor
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     
-    fapplication::init(project_name);
-
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
     {
@@ -50,9 +42,16 @@ namespace editor
       strcpy(buff, imgui_ini_filename.c_str()); // returning char* is fucked up
       io.IniFilename = buff;
     }
-    
+
+    fapplication::init(project_name);
+
     // Load persistent state
     load_assets();
-    load_scene_state();
+    load_scene_state();  
+  }
+
+  feditor_window* feditor_app::get_editor_window() const
+  {
+    return static_cast<feditor_window*>(window.get());
   }
 }

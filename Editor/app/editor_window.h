@@ -1,6 +1,6 @@
 #pragma once
 
-#include "app/ui/ui.h"
+#include "ui/ui.h"
 #include "core/window.h"
 
 namespace engine
@@ -16,9 +16,11 @@ namespace editor
   class feditor_window final : public engine::fwindow
   {
   public:
-    virtual void init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory) override;
-    virtual const wchar_t* get_name() const override { return L"Editor"; }
-    virtual void cleanup() override;
+    CTOR_DEFAULT(feditor_window)
+    CTOR_MOVE_COPY_DELETE(feditor_window)
+    virtual ~feditor_window() override;
+
+    virtual void init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory, const wchar_t* name) override;
     virtual void update() override;
     virtual void draw() override;
 
@@ -48,7 +50,7 @@ namespace editor
     void draw_delete_object_panel(fdelete_object_panel_model& model);
     
     // Runtime state
-    fvec3 center_of_scene;
+    engine::fvec3 center_of_scene;
     float distance_to_center_of_scene = 0.0f;    
 
     engine::fdescriptor_heap ui_descriptor_heap; // srv, cbv, uav

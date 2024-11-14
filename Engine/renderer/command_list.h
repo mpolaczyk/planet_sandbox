@@ -20,7 +20,7 @@ namespace engine
   
   using namespace Microsoft::WRL;
   
-  struct ENGINE_API fgraphics_command_list
+  struct ENGINE_API fgraphics_command_list final
   {
     void resource_barrier(ID3D12Resource* resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after) const;
 

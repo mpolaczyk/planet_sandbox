@@ -3,24 +3,30 @@
 #include "d3d12.h"
 
 #include "core/application.h"
+#include "renderer/dx12_lib.h"
 
 namespace engine
 {
-  void fdescriptor::init(fdescriptor_heap* heap, uint32_t in_index)
+  fdescriptor::fdescriptor(fdescriptor_heap* heap, uint32_t in_index)
+    : parent_heap(heap), index(in_index)
   {
-    parent_heap = heap;
-    index = in_index;
-    cpu_handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(heap->com->GetCPUDescriptorHandleForHeapStart(), in_index, heap->increment_size);
+    cpu_handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(heap->com->GetCPUDescriptorHandleForHeapStart(), index, heap->increment_size);
     if(parent_heap->heap_type != D3D12_DESCRIPTOR_HEAP_TYPE_RTV && parent_heap->heap_type != D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
     {
-      gpu_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(heap->com->GetGPUDescriptorHandleForHeapStart(), in_index, heap->increment_size);
+      gpu_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(heap->com->GetGPUDescriptorHandleForHeapStart(), index, heap->increment_size);
     }
+  }
+
+  fdescriptor_heap::fdescriptor_heap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE in_heap_type)
+    : heap_type(in_heap_type)
+  {
+    increment_size = device->GetDescriptorHandleIncrementSize(in_heap_type);
   }
 
   void fdescriptor_heap::push(fdescriptor& desc)
   {
-    desc.init(this, next_index);
-    descriptors.emplace_back(desc);
+    desc = fdescriptor(this, next_index);
+    descriptors.push_back(desc);
     next_index++;
   }
 

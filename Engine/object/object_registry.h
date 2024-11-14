@@ -41,6 +41,7 @@ namespace engine
     void set_custom_display_name(int id, const std::string& name);
     const oclass_object* get_class(int id) const;
     void destroy(int id);
+    void destroy_all();
     std::vector<oobject*> get_all(bool no_nullptr = true);
     std::vector<int> get_all_ids(const oclass_object* type, bool no_nullptr = true) const;
 

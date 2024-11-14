@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "core/application.h"
-#include "math/camera.h"
 
 namespace engine
 {
@@ -16,6 +15,8 @@ namespace editor
   class feditor_app final : public fapplication
   {
   public:
+    CTOR_DEFAULT(feditor_app)
+    
     virtual LRESULT wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
     virtual void init(const char* project_name) override;
     

@@ -51,6 +51,15 @@ namespace engine
     object_classes[id] = nullptr;
   }
 
+  void fobject_registry::destroy_all()
+  {
+    std::vector<oobject*> obj_list = get_all(true);
+    for(oobject* obj : obj_list)
+    {
+      destroy(obj->runtime_id);
+    }
+  }
+
   std::vector<oobject*> fobject_registry::get_all(bool no_nullptr)
   {
     // Warning, null objects may be filtered, indexes in the return vector will not match the runtime id

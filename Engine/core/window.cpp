@@ -16,22 +16,17 @@
 
 namespace engine
 {
-  void fwindow::show() const
+  fwindow::~fwindow()
   {
-    ::ShowWindow(hwnd, SW_SHOW);
-    ::UpdateWindow(hwnd);
+    ::DestroyWindow(hwnd);
+    ::UnregisterClass(wc.lpszClassName, wc.hInstance);
   }
 
-  void fwindow::hide() const 
+  void fwindow::init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory, const wchar_t* name)
   {
-    ::ShowWindow(hwnd, SW_HIDE);
-  }
-
-  void fwindow::init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory)
-  {
-    wc = {sizeof(WNDCLASSEX), CS_CLASSDC, wnd_proc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, get_name(), NULL};
+    wc = {sizeof(WNDCLASSEX), CS_CLASSDC, wnd_proc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, name, NULL};
     ::RegisterClassEx(&wc);
-    hwnd = ::CreateWindow(wc.lpszClassName, get_name(), WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
+    hwnd = ::CreateWindow(wc.lpszClassName, name, WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
 
     std::shared_ptr<fcommand_queue> command_queue = fapplication::instance->command_queue;
     fdevice& device = fapplication::instance->device;
@@ -42,6 +37,17 @@ namespace engine
     device.create_render_target_descriptor_heap(back_buffer_count, rtv_descriptor_heap, "main");
     device.create_depth_stencil_descriptor_heap(dsv_descriptor_heap, "main");
     device.create_cbv_srv_uav_descriptor_heap(main_descriptor_heap, "main");
+  }
+
+  void fwindow::show() const
+  {
+    ::ShowWindow(hwnd, SW_SHOW);
+    ::UpdateWindow(hwnd);
+  }
+
+  void fwindow::hide() const 
+  {
+    ::ShowWindow(hwnd, SW_HIDE);
   }
 
   void fwindow::draw()
@@ -112,6 +118,8 @@ namespace engine
     // Release resources if they already exist
     if(rtv.size() == back_buffer_count)
     {
+      //command_queue->cleanup();
+      
       for(uint32_t n = 0; n < back_buffer_count; n++)
       {
         DX_RELEASE(rtv[n].resource);
@@ -132,21 +140,5 @@ namespace engine
     }
     
     device.create_depth_stencil(dsv_descriptor_heap, width, height, dsv, "main");
-  }
-  
-  void fwindow::cleanup()
-  {
-    DX_RELEASE(swap_chain);
-    for(uint32_t n = 0; n < back_buffer_count; n++)
-    {
-      DX_RELEASE(rtv[n].resource);
-    }
-    DX_RELEASE(dsv.resource);
-    DX_RELEASE(main_descriptor_heap.com);
-    DX_RELEASE(rtv_descriptor_heap.com);
-    DX_RELEASE(dsv_descriptor_heap.com);
-
-    ::DestroyWindow(hwnd);
-    ::UnregisterClass(wc.lpszClassName, wc.hInstance);
   }
 }

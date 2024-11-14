@@ -24,25 +24,27 @@ namespace engine
     num
   };
 
-  struct ENGINE_API fcommand_pair
+  struct ENGINE_API fcommand_pair final
   {
     std::vector<ComPtr<ID3D12CommandAllocator>> command_allocator;  // index is back buffers id
     fgraphics_command_list command_list;   // TODO afaik I can use one command list for all back buffers, need to test it later
   };
   
-  struct ENGINE_API fcommand_queue
+  struct ENGINE_API fcommand_queue final
   {
-  public:
-    void init(fdevice& device, uint32_t in_back_buffer_count);
-    void cleanup();
+    CTOR_DEFAULT(fcommand_queue)
+    CTOR_MOVE_COPY_DELETE(fcommand_queue)
+    fcommand_queue(fdevice& device, uint32_t in_back_buffer_count);
+    ~fcommand_queue();
+    
     
     void wait_for_fence_value(uint64_t value);
     bool is_fence_complete(uint64_t value) const;
     uint64_t signal();
     void flush();
+    
+    void reset_allocator(uint32_t back_buffer_id);
 
-    void close_command_lists();
-    void reset_command_lists(uint32_t back_buffer_id);
     std::shared_ptr<fgraphics_command_list> get_command_list(ecommand_list_purpose type, uint32_t back_buffer_id) const;
     uint64_t execute_command_lists(uint32_t back_buffer_id);
 

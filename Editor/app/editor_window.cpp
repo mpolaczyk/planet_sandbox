@@ -15,13 +15,22 @@ namespace editor
   {
     return static_cast<feditor_app*>(fapplication::instance);  
   }
-  
-  void feditor_window::init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory)
+
+  feditor_window::~feditor_window()
   {
+    get_editor_app()->save_window_state();
+
+    ImGui_ImplDX12_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+  }
+
+  void feditor_window::init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory, const wchar_t* name)
+  {
+    fwindow::init(wnd_proc, factory, name);
+    
     fdevice& device = fapplication::instance->device;
 
-    fwindow::init(wnd_proc, factory);
-    
     ImGui::StyleColorsClassic();
     ImGui_ImplWin32_Init(hwnd);
 
@@ -35,15 +44,6 @@ namespace editor
     // TO FIX - it crashes in second frame because imgui knows only the first descriptor heap, second frame uses the second one...
     // Or use one descriptor heap... wierd
     get_editor_app()->load_window_state();
-  }
-
-  void feditor_window::cleanup()
-  {
-    get_editor_app()->save_window_state();
-
-    ImGui_ImplDX12_Shutdown();
-    ImGui_ImplWin32_Shutdown();
-    ImGui::DestroyContext();
   }
 
   void feditor_window::update()

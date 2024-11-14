@@ -4,7 +4,8 @@
 
 namespace engine
 {
-  class renderer_base;
+  class amaterial;
+  class oclass_object;
 }
 
 namespace editor
@@ -35,12 +36,12 @@ namespace editor
 
   struct fmaterials_panel_model
   {
-    fselection_combo_model<amaterial> m_model;
+    fselection_combo_model<engine::amaterial> m_model;
   };
 
   struct fnew_object_panel_model
   {
-    fselection_combo_model<oclass_object> c_model;
+    fselection_combo_model<engine::oclass_object> c_model;
   };
 
   struct fdelete_object_panel_model
@@ -51,14 +52,14 @@ namespace editor
 
   struct frenderer_panel_model
   {
-    fselection_combo_model<oclass_object> r_model;
+    fselection_combo_model<engine::oclass_object> r_model;
   };
   struct fobjects_panel_model
   {
     int selected_id = -1;
     fnew_object_panel_model nop_model;
     fdelete_object_panel_model d_model;
-    fselection_combo_model<amaterial> m_model;
+    fselection_combo_model<engine::amaterial> m_model;
     std::string object_name_filter;
   };
 
