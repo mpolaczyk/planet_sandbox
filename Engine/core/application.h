@@ -43,10 +43,7 @@ namespace engine
     virtual void draw();
     virtual void render();
 
-    void set_window(fwindow* in_window)
-    {
-      window.reset(in_window);
-    }
+    void set_window(fwindow* in_window);
     void main_loop();
     
     hscene* scene_root = nullptr;

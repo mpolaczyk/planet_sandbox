@@ -118,6 +118,11 @@ namespace engine
     LOG_INFO("Init done, starting the main loop");
   }
 
+  void fapplication::set_window(fwindow* in_window)
+  {
+    window.reset(in_window);
+  }
+
   void fapplication::main_loop()
   {
     while(is_running)
