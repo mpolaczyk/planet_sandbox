@@ -69,8 +69,8 @@ namespace engine
         frenderer_context context;
         context.back_buffer_count = back_buffer_count;
         context.back_buffer_index = back_buffer_index;
-        context.rtv = rtv[back_buffer_index];
-        context.dsv = dsv;
+        context.rtv = &rtv[back_buffer_index];
+        context.dsv = &dsv;
         context.scene = scene_root;
         context.selected_object = selected_object;
         context.main_descriptor_heap = &main_descriptor_heap;
@@ -103,31 +103,40 @@ namespace engine
     
     back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
   }
-  
-  void fwindow::resize(uint32_t in_width, uint32_t in_height)
+
+  void fwindow::request_resize(uint32_t in_width, uint32_t in_height)
   {
+    requested_width = in_width;
+    requested_height = in_height;
+  }
+
+  bool fwindow::apply_resize()
+  {
+    if(width == requested_width && height == requested_height)
+    {
+      return false;
+    }
+    width = requested_width;
+    height = requested_height;
     std::shared_ptr<fcommand_queue> command_queue = fapplication::instance->command_queue;
     fdevice& device = fapplication::instance->device;
-    
-    if(in_width == 0 || in_height == 0) { return; }
-    if(in_width == width && in_height == height) { return; }
-    
-    width = in_width;
-    height = in_height;
 
     // Release resources if they already exist
     if(rtv.size() == back_buffer_count)
     {
-      //command_queue->cleanup();
+      for(uint32_t n = 0; n < back_buffer_count; n++)
+      {
+        command_queue->flush();
+      }
       
       for(uint32_t n = 0; n < back_buffer_count; n++)
       {
-        DX_RELEASE(rtv[n].resource);
+        rtv[n].release();
       }
       rtv.clear();
-      DX_RELEASE(dsv.resource);
+      dsv.release();
     }
-  
+    
     fdx12::resize_swap_chain(swap_chain.Get(), back_buffer_count, width, height);
     back_buffer_index = swap_chain->GetCurrentBackBufferIndex();
 
@@ -135,10 +144,10 @@ namespace engine
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       frtv_resource temp;
-      device.create_render_target(swap_chain.Get(), n, rtv_descriptor_heap, temp, std::format("backbuffer{}",n).c_str());
-      rtv.push_back(temp);
+      device.create_render_target(swap_chain.Get(), n, rtv_descriptor_heap, temp, std::format("back buffer {}",n).c_str());
+      rtv.emplace_back(std::move(temp));
     }
-    
     device.create_depth_stencil(dsv_descriptor_heap, width, height, dsv, "main");
+    return true;
   }
 }

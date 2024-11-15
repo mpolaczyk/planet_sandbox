@@ -43,7 +43,7 @@ namespace engine
     uint64_t signal();
     void flush();
     
-    void reset_allocator(uint32_t back_buffer_id);
+    void reset_allocator(uint32_t back_buffer_id) const;
 
     std::shared_ptr<fgraphics_command_list> get_command_list(ecommand_list_purpose type, uint32_t back_buffer_id) const;
     uint64_t execute_command_lists(uint32_t back_buffer_id);

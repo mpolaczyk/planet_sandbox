@@ -80,7 +80,7 @@ namespace engine
     return std::make_shared<fgraphics_command_list>(command_pairs[type].command_list);
   }
 
-  void fcommand_queue::reset_allocator(uint32_t back_buffer_id)
+  void fcommand_queue::reset_allocator(uint32_t back_buffer_id) const
   {
     for(int i = 0; i < ecommand_list_purpose::num; i++)
     {

@@ -253,7 +253,7 @@ namespace engine
 
   void fdevice::create_render_target_descriptor_heap(uint32_t back_buffer_count, fdescriptor_heap& out_descriptor_heap, const char* name) const 
   {
-    out_descriptor_heap = fdescriptor_heap(com.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    out_descriptor_heap = fdescriptor_heap(com.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, back_buffer_count);
 
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = back_buffer_count;
@@ -269,7 +269,7 @@ namespace engine
   
   void fdevice::create_depth_stencil_descriptor_heap(fdescriptor_heap& out_descriptor_heap, const char* name) const 
   {
-    out_descriptor_heap = fdescriptor_heap(com.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+    out_descriptor_heap = fdescriptor_heap(com.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1);
 
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = 1;
@@ -284,7 +284,7 @@ namespace engine
 
   void fdevice::create_cbv_srv_uav_descriptor_heap(fdescriptor_heap& out_descriptor_heap, const char* name) const
   {
-    out_descriptor_heap = fdescriptor_heap(com.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    out_descriptor_heap = fdescriptor_heap(com.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, MAX_MAIN_DESCRIPTORS);
     
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = MAX_MAIN_DESCRIPTORS;

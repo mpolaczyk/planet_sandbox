@@ -21,17 +21,17 @@ namespace engine
     uint32_t back_buffer_index = 0;
     uint32_t back_buffer_count = 2;
     fdescriptor_heap* main_descriptor_heap = nullptr; // srv, cbv, uav
-    frtv_resource rtv;
-    fdsv_resource dsv;
+    frtv_resource* rtv;
+    fdsv_resource* dsv;
 
     bool validate() const
     {
       return scene != nullptr
         && back_buffer_count > 0
-        && back_buffer_index >= 0 && back_buffer_index < back_buffer_count
+        && back_buffer_index < back_buffer_count
         && main_descriptor_heap != nullptr
-        && rtv.rtv.index != -1
-        && dsv.dsv.index != -1;
+        && rtv != nullptr
+        && dsv != nullptr;
     }
   };
 }

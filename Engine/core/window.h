@@ -35,7 +35,8 @@ namespace engine
     virtual void update() = 0;
     virtual void draw();
     void present(fgpu_crash_tracker* gpu_crash_handler);
-    void resize(uint32_t width, uint32_t height);
+    void request_resize(uint32_t in_width, uint32_t in_height);
+    bool apply_resize();
 
     static constexpr uint32_t back_buffer_count = 2;
 
@@ -48,17 +49,19 @@ namespace engine
     fdescriptor_heap dsv_descriptor_heap;
     fdescriptor_heap main_descriptor_heap; // srv, cbv, uav
 
-    std::vector<frtv_resource> rtv;        // index is backbuffer id
+    std::vector<frtv_resource> rtv;        // index is back buffer id
     fdsv_resource dsv;
-    
+
   protected:    
     HWND hwnd;
     WNDCLASSEX wc;
     
     bool screen_tearing = false;
     bool vsync = true;
-    uint32_t width = 1920;
-    uint32_t height = 1080;
+    uint32_t width = 0;
+    uint32_t height = 0;
+    uint32_t requested_width = 1920;
+    uint32_t requested_height = 1080;
     
     uint32_t back_buffer_index = 0;
     hhittable_base* selected_object = nullptr;

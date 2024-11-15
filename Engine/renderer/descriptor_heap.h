@@ -15,7 +15,9 @@ namespace engine
   using namespace Microsoft::WRL;
 
   struct fdescriptor_heap;
-  
+
+  // Copyable descriptor. Holds reference to a heap and handles.
+  // Does not own the ComPtr resource.
   struct ENGINE_API fdescriptor final
   {
     CTOR_DEFAULT(fdescriptor)
@@ -29,24 +31,33 @@ namespace engine
     fdescriptor_heap* parent_heap = nullptr;  // weak ptr, no ownership
     uint32_t index = -1;   // index in parent heap
   };
-  
+
+  // Heap management. Copyable.
+  // Does not own the ComPtr resource.
+  // Allows to:
+  // - push to a heap
+  // - remove usused descriptors
+  // - reuse previously cleared slots
   struct ENGINE_API fdescriptor_heap final
   {
     friend fdescriptor;
 
     CTOR_DEFAULT(fdescriptor_heap)
     CTOR_MOVE_COPY_DEFAULT(fdescriptor_heap)
-    fdescriptor_heap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE in_heap_type);
+    fdescriptor_heap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE in_heap_type, uint32_t in_max_descriptors);
 
-    void push(fdescriptor& desc);
-
+    void push(fdescriptor& out_desc);
+    void remove(uint32_t index);
     fdescriptor* get(uint32_t index);
 
     ComPtr<ID3D12DescriptorHeap> com;
     
 private:
+    uint32_t find_free_index() const;
+    
     std::vector<fdescriptor> descriptors;
-    uint32_t next_index = 0;
+    std::vector<bool> is_valid;             // index is descriptor index
+    uint32_t max_descriptors;
     uint32_t increment_size = 0;
     D3D12_DESCRIPTOR_HEAP_TYPE heap_type;
   };

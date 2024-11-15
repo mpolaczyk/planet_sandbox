@@ -43,7 +43,7 @@ namespace engine
     case WM_SIZE:
       if(device.com != nullptr && wParam != SIZE_MINIMIZED)
       {
-        window->resize(LOWORD(lParam), HIWORD(lParam));
+        window->request_resize(LOWORD(lParam), HIWORD(lParam));
       }
       return 0;
     case WM_SYSCOMMAND:
@@ -139,7 +139,7 @@ namespace engine
         ::DispatchMessage(&msg);
       }
       if(!is_running) break;
-      
+
       {
         fscope_timer update_timer(stat_update_time);
         update();
@@ -167,10 +167,11 @@ namespace engine
 
   void fapplication::draw()
   {
-    if(fapplication::frame_counter != 0)
+    if(!window->apply_resize() && fapplication::frame_counter != 0)
     {
       command_queue->reset_allocator(window->get_back_buffer_index());
     }
+    
     window->draw();
   }
 

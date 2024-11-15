@@ -4,6 +4,7 @@
 
 #include "dxcapi.h"
 #include "renderer/descriptor_heap.h"
+#include "renderer/dx12_lib.h"
 
 struct ID3D12Resource;
 struct D3D12_VERTEX_BUFFER_VIEW;
@@ -33,21 +34,55 @@ namespace engine
   
   struct ENGINE_API ftexture_resource
   {
+    CTOR_DEFAULT(ftexture_resource)
+    CTOR_COPY_DELETE(ftexture_resource)   // Avoid copying to not increase the reference count, this makes cleanup harder
+    CTOR_MOVE_DEFAULT(ftexture_resource)
+    DTOR_DEFAULT(ftexture_resource)
+
     ComPtr<ID3D12Resource> resource;
     ComPtr<ID3D12Resource> resource_upload;
     fdescriptor srv;
+
+    void release()
+    {
+      srv.parent_heap->remove(srv.index);
+      DX_RELEASE(resource)
+      DX_RELEASE(resource_upload)
+    }
   };
 
   struct ENGINE_API fdsv_resource
   {
+    CTOR_DEFAULT(fdsv_resource)
+    CTOR_COPY_DELETE(fdsv_resource)   // Avoid copying to not increase the reference count, this makes cleanup harder
+    CTOR_MOVE_DEFAULT(fdsv_resource)
+    DTOR_DEFAULT(fdsv_resource)
+
     ComPtr<ID3D12Resource> resource;
     fdescriptor dsv;
+    
+    void release()
+    {
+      dsv.parent_heap->remove(dsv.index);
+      DX_RELEASE(resource)
+    }
   };
 
   struct ENGINE_API frtv_resource
   {
+    CTOR_DEFAULT(frtv_resource)
+    CTOR_COPY_DELETE(frtv_resource)   // Avoid copying to not increase the reference count, this makes cleanup harder
+    CTOR_MOVE_DEFAULT(frtv_resource)
+    DTOR_DEFAULT(frtv_resource)
+
     ComPtr<ID3D12Resource> resource;
     fdescriptor rtv;
+
+    void release()
+    {
+      rtv.parent_heap->remove(rtv.index);
+      DX_RELEASE(resource)
+    }
   };
   
   struct ENGINE_API fshader_resource
