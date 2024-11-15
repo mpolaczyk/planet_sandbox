@@ -20,7 +20,9 @@ namespace engine
   
   struct fpass_base
   {
-    virtual ~fpass_base() = default;
+    CTOR_DEFAULT(fpass_base)
+    CTOR_MOVE_COPY_DELETE(fpass_base)
+    VDTOR_DEFAULT(fpass_base)
     
     virtual void init();
     virtual void draw(fgraphics_command_list* command_list) = 0;

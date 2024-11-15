@@ -34,12 +34,9 @@ namespace engine
   struct ENGINE_API vobject_visitor
   {
   public:
-    vobject_visitor() = default;
-    virtual ~vobject_visitor() = default;
-    vobject_visitor(const vobject_visitor&) = delete;
-    vobject_visitor(vobject_visitor&&) = delete;
-    vobject_visitor& operator=(vobject_visitor&&) = delete;
-    vobject_visitor& operator=(const vobject_visitor&) = delete;
+    CTOR_DEFAULT(vobject_visitor)
+    CTOR_MOVE_COPY_DELETE(vobject_visitor)
+    VDTOR_DEFAULT(vobject_visitor)
 
     virtual void visit(amaterial& object) const { vobject_visitor::invalid_operation(); }
     virtual void visit(atexture& object) const { vobject_visitor::invalid_operation(); }

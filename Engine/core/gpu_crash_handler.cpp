@@ -7,18 +7,9 @@
 
 namespace engine
 {
-  fgpu_crash_tracker::fgpu_crash_tracker()
-  {
-    impl = new GpuCrashTracker();
-  }
-
-  fgpu_crash_tracker::~fgpu_crash_tracker()
-  {
-    delete impl;
-  }
-
   void fgpu_crash_tracker::pre_device_creation(uint32_t back_buffer_count)
   {
+    impl = std::make_unique<GpuCrashTracker>();
     impl->PreDeviceInitialize(back_buffer_count, "planetSandbox");
     LOG_DEBUG("Nsight Aftermath is enabled.")
   }

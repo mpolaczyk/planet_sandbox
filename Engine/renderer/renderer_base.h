@@ -23,12 +23,9 @@ namespace engine
   public:
     OBJECT_DECLARE(rrenderer_base, oobject)
 
-    rrenderer_base();
-    rrenderer_base(const rrenderer_base&) = delete;
-    rrenderer_base& operator=(const rrenderer_base&) = delete;
-    rrenderer_base(rrenderer_base&&) = delete;
-    rrenderer_base& operator=(rrenderer_base&&) = delete;
-    virtual ~rrenderer_base() override;
+    CTOR_DEFAULT(rrenderer_base)
+    CTOR_MOVE_COPY_DELETE(rrenderer_base)
+    VDTOR_DEFAULT(rrenderer_base)
 
     // Runtime
     frenderer_context context;

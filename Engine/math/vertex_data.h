@@ -21,11 +21,9 @@ namespace engine
 
   struct ENGINE_API fvertex_data
   {
-    fvertex_data() = default;
-    fvertex_data(const fvertex_data&) = default;
-    fvertex_data& operator=(const fvertex_data&) = default;
-    fvertex_data(fvertex_data&&) = default;
-    fvertex_data& operator=(fvertex_data&&) = default;
+    CTOR_DEFAULT(fvertex_data)
+    CTOR_MOVE_COPY_DEFAULT(fvertex_data)
+    DTOR_DEFAULT(fvertex_data)
 
     fvertex_data(const XMFLOAT3& in_position, const XMFLOAT3& in_normal, const XMFLOAT3& in_tangent, const XMFLOAT3& in_bitangent, const XMFLOAT2& in_uv)
       : position(in_position), normal(in_normal), tangent(in_tangent), bitangent(in_bitangent), uv(in_uv)

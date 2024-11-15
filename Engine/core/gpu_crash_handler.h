@@ -1,8 +1,11 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <wrl/client.h>
+
+#include "core/core.h"
 
 struct IDxcBlob;
 struct ID3D12Device;
@@ -15,12 +18,9 @@ namespace engine
   // Wrapper for D3D12HelloNsightAftermath GpuCrashTracker class
   struct fgpu_crash_tracker
   {
-    fgpu_crash_tracker();
-    ~fgpu_crash_tracker();
-    fgpu_crash_tracker(const fgpu_crash_tracker&) = delete;
-    fgpu_crash_tracker(fgpu_crash_tracker&&) = delete;
-    fgpu_crash_tracker& operator=(const fgpu_crash_tracker&) = delete;
-    fgpu_crash_tracker& operator=(fgpu_crash_tracker&&) = delete;
+    CTOR_DEFAULT(fgpu_crash_tracker)
+    CTOR_MOVE_COPY_DELETE(fgpu_crash_tracker)
+    DTOR_DEFAULT(fgpu_crash_tracker)
     
     void pre_device_creation(uint32_t back_buffer_count);
     void post_device_creation(ID3D12Device* device);
@@ -32,6 +32,6 @@ namespace engine
     std::string add_source_shader_debug_data(IDxcBlob* shader_blob, IDxcBlob* pdb_blob);
     
   private:
-    GpuCrashTracker* impl = nullptr;
+    std::unique_ptr<GpuCrashTracker> impl;
   };
 }

@@ -14,17 +14,7 @@ namespace engine
 {
   OBJECT_DEFINE(rrenderer_base, oobject, Renderer base)
   OBJECT_DEFINE_NOSPAWN(rrenderer_base)
-
-  rrenderer_base::rrenderer_base()
-  {
-    //scene.scene_acceleration = new fscene_acceleration();
-  }
-
-  rrenderer_base::~rrenderer_base()
-  {
-    //delete context.scene_acceleration;
-  }
-
+  
   void rrenderer_base::set_renderer_context(frenderer_context&& in_context)
   {
     if(!in_context.validate())

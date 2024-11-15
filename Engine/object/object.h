@@ -33,12 +33,10 @@ namespace engine
     OBJECT_DECLARE(oobject, oobject)
     OBJECT_DECLARE_VISITOR_BASE
 
-    oobject() = default;
-    oobject(const oobject&) = default;
-    oobject& operator=(const oobject&) = default;
-    oobject(oobject&&) = delete;
-    oobject& operator=(oobject&&) = delete;
-    virtual ~oobject() = default;
+    CTOR_DEFAULT(oobject)
+    CTOR_COPY_DEFAULT(oobject)
+    CTOR_MOVE_DELETE(oobject)
+    VDTOR_DEFAULT(oobject)
     
     int get_runtime_id() const;
 

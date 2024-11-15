@@ -54,7 +54,8 @@ namespace engine
   class ENGINE_API fseh_exception : public std::runtime_error
   {
   private:
-    fseh_exception() = default;
+    CTOR_DEFAULT(fseh_exception)
+    CTOR_MOVE_COPY_DELETE(fseh_exception)
 
   public:
     explicit fseh_exception(fseh_exception& e)
@@ -63,8 +64,8 @@ namespace engine
     explicit fseh_exception(unsigned int in_code, const std::string&& in_context)
       : std::runtime_error("SEH exception"), code(in_code), context(in_context) { }
 
-    ~fseh_exception() = default;
-
+    DTOR_DEFAULT(fseh_exception)
+    
     virtual char const* what() const override;
 
   private:

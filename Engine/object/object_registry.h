@@ -23,12 +23,9 @@ namespace engine
   class ENGINE_API fobject_registry final
   {
   public:
-    fobject_registry() = default;
+    CTOR_DEFAULT(fobject_registry)
+    CTOR_MOVE_COPY_DELETE(fobject_registry)
     ~fobject_registry();
-    fobject_registry(const fobject_registry&) = delete;
-    fobject_registry(fobject_registry&&) = delete;
-    fobject_registry& operator=(fobject_registry&&) = delete;
-    fobject_registry& operator=(const fobject_registry&) = delete;
 
     static fobject_registry& instance()
     {
