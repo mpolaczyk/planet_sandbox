@@ -90,8 +90,12 @@ namespace editor
 
   void vdraw_edit_panel::visit_rrenderer_base(rrenderer_base& object) const
   {
-    ImGui::InputInt("Resolution h", &object.output_width);
-    ImGui::InputInt("Resolution v", &object.output_height);
+    int width = static_cast<int>(object.context.width);
+    int height = static_cast<int>(object.context.height);
+    ImGui::InputInt("Resolution h", &width);
+    ImGui::InputInt("Resolution v", &height);
+    object.context.width = width;
+    object.context.height = height;
     {
       fselection_combo_model<amaterial> model;
       model.objects = REG.get_all_by_type<const amaterial>();

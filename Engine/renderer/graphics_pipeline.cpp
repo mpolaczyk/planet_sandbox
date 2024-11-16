@@ -81,15 +81,18 @@ namespace engine
   }
 
 
-  void fgraphics_pipeline::setup_formats(DXGI_FORMAT back_buffer, DXGI_FORMAT depth_buffer, const std::vector<DXGI_FORMAT>& render_targets)
+  void fgraphics_pipeline::setup_formats(const std::vector<DXGI_FORMAT>& render_targets, DXGI_FORMAT depth_buffer)
   {
-    back_buffer_format = back_buffer;
-    depth_buffer_format = depth_buffer;
-    render_target_formats.NumRenderTargets = min(8, static_cast<uint32_t>(render_targets.size()));
+    if(render_targets.size() > 8)
+    {
+      throw std::runtime_error("Maximum number of render targets exceeded.");
+    }
+    render_target_formats.NumRenderTargets = static_cast<uint32_t>(render_targets.size());
     for(uint32_t i = 0; i < render_target_formats.NumRenderTargets; i++)
     {
       render_target_formats.RTFormats[i] = render_targets[i];
     }
+    depth_buffer_format = depth_buffer;
   }
 
   void fgraphics_pipeline::setup_input_layout(std::vector<D3D12_INPUT_ELEMENT_DESC>&& in_input_layout)

@@ -13,6 +13,7 @@ namespace engine
     cpu_handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(heap->com->GetCPUDescriptorHandleForHeapStart(), index, heap->increment_size);
     if(parent_heap->heap_type != D3D12_DESCRIPTOR_HEAP_TYPE_RTV && parent_heap->heap_type != D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
     {
+      // Only for D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE heaps
       gpu_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(heap->com->GetGPUDescriptorHandleForHeapStart(), index, heap->increment_size);
     }
   }
@@ -37,8 +38,11 @@ namespace engine
 
   void fdescriptor_heap::remove(uint32_t index)
   {
-    descriptors[index] = fdescriptor();
-    is_valid[index] = false;
+    if(is_valid[index])
+    {
+      descriptors[index] = fdescriptor();
+      is_valid[index] = false;
+    }
   }
 
   fdescriptor* fdescriptor_heap::get(uint32_t index)

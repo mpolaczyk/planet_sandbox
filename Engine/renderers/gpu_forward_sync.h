@@ -30,11 +30,13 @@ namespace engine
 
     // Runtime members
     fforward_pass forward_pass;
+
+    virtual ftexture_resource* get_color() override;
+    virtual ftexture_resource* get_depth() override;
     
   protected:
     virtual bool can_draw() override;
     virtual void init() override;
     virtual void draw_internal(fgraphics_command_list* command_list) override;
-    virtual void create_output_texture(bool cleanup) override { forward_pass.create_output_texture(cleanup); };
   };
 }

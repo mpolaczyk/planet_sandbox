@@ -49,8 +49,8 @@ namespace engine
     fdescriptor_heap dsv_descriptor_heap;
     fdescriptor_heap main_descriptor_heap; // srv, cbv, uav
 
-    std::vector<frtv_resource> rtv;        // index is back buffer id
-    fdsv_resource dsv;
+    std::vector<ftexture_resource> rtv;        // index is back buffer id
+    ftexture_resource dsv;
 
   protected:    
     HWND hwnd;

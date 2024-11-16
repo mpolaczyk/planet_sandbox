@@ -54,10 +54,4 @@ namespace engine
     //deferred_lighting_pass.show_object_id = show_object_id;
     //deferred_lighting_pass.draw(command_list);
   }
-
-  void rgpu_deferred_sync::create_output_texture(bool cleanup)
-  {
-    //gbuffer_pass.create_output_texture(cleanup);
-    //deferred_lighting_pass.create_output_texture(cleanup);
-  };
 }

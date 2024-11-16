@@ -42,11 +42,7 @@ namespace engine
     uint32_t back_buffer_count = context->back_buffer_count;
     fdescriptor_heap* heap = context->main_descriptor_heap;
     fdevice& device = fapplication::instance->device;
-
-    //fdx12::create_texture2d_resource(device, width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, D3D12_RESOURCE_STATE_RENDER_TARGET, output);
-    //fdx12::create_render_target(device, swap_chain, rtv_descriptor_heap, back_buffer_count, rtv);
-    //fdx12::create_depth_stencil(device, dsv_descriptor_heap, width, height, back_buffer_count, dsv);
-
+    
     // Create frame data CBV
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
@@ -73,7 +69,7 @@ namespace engine
     fsoft_asset_ptr<amaterial> default_material_asset;
     default_material_asset.set_name("default");
     atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
-    device.create_texture_resource(heap, default_texture, "default");
+    device.create_texture_buffer(heap, default_texture, "default");
     
     // Set up graphics pipeline
     graphics_pipeline.reserve_parameters(root_parameter_type::num);
@@ -85,7 +81,7 @@ namespace engine
     graphics_pipeline.add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
     graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->resource.blob);
     graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->resource.blob);
-    graphics_pipeline.setup_formats(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT, { DXGI_FORMAT_R8G8B8A8_UNORM });
+    graphics_pipeline.setup_formats({ DXGI_FORMAT_R8G8B8A8_UNORM }, DXGI_FORMAT_D32_FLOAT);
     graphics_pipeline.setup_input_layout({
       { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
       { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -95,9 +91,25 @@ namespace engine
     });
     graphics_pipeline.init("Forward pass");
   }
+
+  void fforward_pass::init_size_dependent(bool cleanup)
+  {
+    fdevice& device = fapplication::instance->device;
+
+    if(cleanup)
+    {
+      context->main_descriptor_heap->remove(color.srv.index);
+      context->rtv_descriptor_heap->remove(color.rtv.index);
+      context->dsv_descriptor_heap->remove(depth.dsv.index);
+    }
+    device.create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap, color, context->width, context->height, graphics_pipeline.get_rtv_format(0), D3D12_RESOURCE_STATE_COPY_SOURCE, "Forward pass");
+    device.create_depth_stencil(context->dsv_descriptor_heap, depth, context->width, context->height, graphics_pipeline.get_depth_format(), D3D12_RESOURCE_STATE_COPY_SOURCE, "Forward pass");
+  }
   
   void fforward_pass::draw(fgraphics_command_list* command_list)
   {
+    fpass_base::draw(command_list);
+    
     fdevice& device = fapplication::instance->device;
     fdescriptor_heap* heap = context->main_descriptor_heap;
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
@@ -107,12 +119,12 @@ namespace engine
     default_material_asset.set_name("default");
     atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
     
-    //fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-    //fdx12::clear_render_target(device, command_list, rtv_descriptor_heap, back_buffer_index);
-    //fdx12::clear_depth_stencil(command_list, dsv_descriptor_heap);
-    //fdx12::set_render_targets(device, command_list, dsv_descriptor_heap, rtv_descriptor_heap, back_buffer_index);
-    //fdx12::set_viewport(command_list, width, height);
-    //fdx12::set_scissor(command_list, width, height);
+    command_list->resource_barrier(color.com.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    command_list->resource_barrier(depth.com.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+
+    command_list->clear_render_target(color);
+    command_list->clear_depth_stencil(depth);
+    command_list->set_render_targets(color, &depth);
         
     graphics_pipeline.bind_command_list(command_list_com);
 
@@ -168,7 +180,7 @@ namespace engine
           atexture* texture = scene_acceleration.a_textures[i];
           if(!texture->is_online)
           {
-            device.create_texture_resource(heap, texture, texture->get_display_name().c_str());
+            device.create_texture_buffer(heap, texture, texture->get_display_name().c_str());
             
             command_list->upload_texture(texture);
           }
@@ -205,10 +217,7 @@ namespace engine
       command_list_com->DrawIndexedInstanced(smrs.vertex_num, 1, 0, 0, 0);
     }
     
-    //fdx12::resource_barrier(command_list, rtv[back_buffer_index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-  }
-
-  void fforward_pass::create_output_texture(bool cleanup)
-  {
+    command_list->resource_barrier(color.com.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
+    command_list->resource_barrier(depth.com.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_COPY_SOURCE);
   }
 }

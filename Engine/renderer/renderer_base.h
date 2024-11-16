@@ -31,22 +31,18 @@ namespace engine
     frenderer_context context;
     int show_object_id = 0;
     
-    // Persistent
-    int output_width = 1920;
-    int output_height = 1080;
-
     // Main public interface
     void set_renderer_context(frenderer_context&& in_context);
     void draw(fgraphics_command_list* command_list);
+    virtual ftexture_resource* get_color() = 0;
+    virtual ftexture_resource* get_depth() = 0;
     
   protected:
     virtual bool can_draw();
     virtual void init() = 0;
     virtual void draw_internal(fgraphics_command_list* command_list) = 0;
-    virtual void create_output_texture(bool cleanup = false) = 0;
   
   private:
-    uint32_t last_frame_resolution_hash = 0;
     bool init_done = false;
   };
 }

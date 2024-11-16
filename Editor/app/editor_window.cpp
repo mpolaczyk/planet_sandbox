@@ -70,9 +70,9 @@ namespace editor
     std::shared_ptr<fcommand_queue> command_queue = fapplication::instance->command_queue;
     std::shared_ptr<fgraphics_command_list> command_list = command_queue->get_command_list(ecommand_list_purpose::ui, back_buffer_index);
 
-    command_list->resource_barrier(rtv[back_buffer_index].resource.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    command_list->resource_barrier(rtv[back_buffer_index].com.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     
-    command_list->set_render_targets(rtv[back_buffer_index], dsv);
+    command_list->set_render_targets(rtv[back_buffer_index], &dsv);
     command_list->set_viewport(width, height);
     command_list->set_scissor(width, height);
     
@@ -83,7 +83,7 @@ namespace editor
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), command_list->com.Get());
 #endif
     
-    command_list->resource_barrier(rtv[back_buffer_index].resource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+    command_list->resource_barrier(rtv[back_buffer_index].com.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
   }
 
 

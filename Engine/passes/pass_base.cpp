@@ -5,6 +5,7 @@
 #include "core/window.h"
 #include "engine/log.h"
 #include "renderer/aligned_structs.h"
+#include "renderer/command_list.h"
 #include "renderer/render_context.h"
 
 namespace engine
@@ -29,5 +30,16 @@ namespace engine
       can_draw = false;
       return;
     }
+    init_size_dependent(false);
+  }
+
+  void fpass_base::draw(fgraphics_command_list* command_list)
+  {
+    if(context && context->resolution_changed)
+    {
+      init_size_dependent(true);
+    }
+    command_list->set_viewport(context->width, context->height);
+    command_list->set_scissor(context->width, context->height);
   }
 }

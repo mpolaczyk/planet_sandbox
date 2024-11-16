@@ -21,17 +21,24 @@ namespace engine
     uint32_t back_buffer_index = 0;
     uint32_t back_buffer_count = 2;
     fdescriptor_heap* main_descriptor_heap = nullptr; // srv, cbv, uav
-    frtv_resource* rtv;
-    fdsv_resource* dsv;
-
+    fdescriptor_heap* rtv_descriptor_heap = nullptr;
+    fdescriptor_heap* dsv_descriptor_heap = nullptr;
+    ftexture_resource* rtv = nullptr;
+    ftexture_resource* dsv = nullptr;
+    uint32_t width = 1920;
+    uint32_t height = 1080;
+    bool resolution_changed;
+    
     bool validate() const
     {
       return scene != nullptr
         && back_buffer_count > 0
         && back_buffer_index < back_buffer_count
         && main_descriptor_heap != nullptr
-        && rtv != nullptr
-        && dsv != nullptr;
+        && rtv_descriptor_heap != nullptr
+        && dsv_descriptor_heap != nullptr
+        && rtv != nullptr && dsv != nullptr
+        && width > 0 && height > 0;
     }
   };
 }

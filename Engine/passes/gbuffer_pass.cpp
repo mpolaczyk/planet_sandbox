@@ -23,7 +23,7 @@ namespace engine
       graphics_pipeline.add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
       graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->resource.blob);
       graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->resource.blob);
-      graphics_pipeline.setup_formats(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT,
+      graphics_pipeline.setup_formats(
         {
           DXGI_FORMAT_R32G32B32A32_FLOAT,
           DXGI_FORMAT_R32G32B32A32_FLOAT,
@@ -31,7 +31,7 @@ namespace engine
           DXGI_FORMAT_R32G32B32A32_FLOAT,
           DXGI_FORMAT_R8_UINT,
           DXGI_FORMAT_R8_UINT
-        });
+        }, DXGI_FORMAT_D32_FLOAT);
       graphics_pipeline.setup_input_layout({
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
         { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -141,7 +141,7 @@ namespace engine
 //    }
   }
 
-  void fgbuffer_pass::create_output_texture(bool cleanup)
+  void fgbuffer_pass::init_size_dependent(bool cleanup)
   {
 //    if(cleanup)
 //    {

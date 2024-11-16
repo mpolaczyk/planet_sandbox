@@ -21,7 +21,9 @@ namespace engine
     {
       throw std::runtime_error("Failed to validate renderer context");
     }
+    bool resolution_changed = context.width != in_context.width || context.height != in_context.height;
     context = std::move(in_context);
+    context.resolution_changed = resolution_changed;
   }
   
   void rrenderer_base::draw(fgraphics_command_list* command_list)
@@ -30,22 +32,14 @@ namespace engine
     {
       return;
     }
-
-    const uint32_t resolution_hash = fhash::combine(output_height, output_width);
-    if(resolution_hash != last_frame_resolution_hash)
-    {
-      LOG_INFO("Recreating output texture");
-      create_output_texture(true);
-      last_frame_resolution_hash = resolution_hash;
-    }
-
+    
     // Initialize
     if(!init_done)
     {
       init();
       init_done = true;
     }
-
+    
     if(!can_draw())
     {
       // Second check as something could've gone wrong in init()
@@ -63,11 +57,6 @@ namespace engine
 
   bool rrenderer_base::can_draw()
   {
-    if(output_height == 0 || output_width == 0)
-    {
-      LOG_ERROR("Can't draw. Incorrect resolution.");
-      return false;
-    }
     if(context.scene == nullptr)
     {
       LOG_ERROR("Can't draw. Scene is missing.");

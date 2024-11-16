@@ -22,9 +22,9 @@ namespace engine
     com->ResourceBarrier(1, &resource_barrier);
   }
   
-  void fgraphics_command_list::set_render_targets(const frtv_resource& rtv, const fdsv_resource& dsv) const
+  void fgraphics_command_list::set_render_targets(const ftexture_resource& rtv, const ftexture_resource* dsv) const
   {
-    com->OMSetRenderTargets(1, &rtv.rtv.cpu_handle, FALSE, &dsv.dsv.cpu_handle);
+    com->OMSetRenderTargets(1, &rtv.rtv.cpu_handle, FALSE, dsv ? &dsv->dsv.cpu_handle : nullptr);
   }
 
   void fgraphics_command_list::set_viewport(uint32_t width, uint32_t height) const
@@ -39,12 +39,12 @@ namespace engine
     com->RSSetScissorRects(1, &scissor_rect);
   }
 
-  void fgraphics_command_list::clear_render_target(const frtv_resource& rtv) const
+  void fgraphics_command_list::clear_render_target(const ftexture_resource& rtv) const
   {
     com->ClearRenderTargetView(rtv.rtv.cpu_handle, DirectX::Colors::LightSlateGray, 0, nullptr);
   }
 
-  void fgraphics_command_list::clear_depth_stencil(const fdsv_resource& dsv) const
+  void fgraphics_command_list::clear_depth_stencil(const ftexture_resource& dsv) const
   {
     com->ClearDepthStencilView(dsv.dsv.cpu_handle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
   }
@@ -121,9 +121,9 @@ namespace engine
     texture_data.RowPitch = texture_asset->width * texture_asset->channels * texture_asset->element_size;
     texture_data.SlicePitch = texture_data.RowPitch * texture_asset->height;
 
-    UpdateSubresources(com.Get(), gpur.resource.Get(), gpur.resource_upload.Get(), 0, 0, 1, &texture_data);
+    UpdateSubresources(com.Get(), gpur.com.Get(), gpur.upload_com.Get(), 0, 0, 1, &texture_data);
     
-    resource_barrier(gpur.resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    resource_barrier(gpur.com.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
     texture_asset->is_online = true;
   }

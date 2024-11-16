@@ -39,52 +39,22 @@ namespace engine
     CTOR_MOVE_DEFAULT(ftexture_resource)
     DTOR_DEFAULT(ftexture_resource)
 
-    ComPtr<ID3D12Resource> resource;
-    ComPtr<ID3D12Resource> resource_upload;
+    ComPtr<ID3D12Resource> com;
+    ComPtr<ID3D12Resource> upload_com;
     fdescriptor srv;
-
-    void release()
-    {
-      srv.parent_heap->remove(srv.index);
-      DX_RELEASE(resource)
-      DX_RELEASE(resource_upload)
-    }
-  };
-
-  struct ENGINE_API fdsv_resource
-  {
-    CTOR_DEFAULT(fdsv_resource)
-    CTOR_COPY_DELETE(fdsv_resource)   // Avoid copying to not increase the reference count, this makes cleanup harder
-    CTOR_MOVE_DEFAULT(fdsv_resource)
-    DTOR_DEFAULT(fdsv_resource)
-
-    ComPtr<ID3D12Resource> resource;
-    fdescriptor dsv;
-    
-    void release()
-    {
-      dsv.parent_heap->remove(dsv.index);
-      DX_RELEASE(resource)
-    }
-  };
-
-  struct ENGINE_API frtv_resource
-  {
-    CTOR_DEFAULT(frtv_resource)
-    CTOR_COPY_DELETE(frtv_resource)   // Avoid copying to not increase the reference count, this makes cleanup harder
-    CTOR_MOVE_DEFAULT(frtv_resource)
-    DTOR_DEFAULT(frtv_resource)
-
-    ComPtr<ID3D12Resource> resource;
     fdescriptor rtv;
+    fdescriptor dsv;
 
     void release()
     {
-      rtv.parent_heap->remove(rtv.index);
-      DX_RELEASE(resource)
+      if(srv.parent_heap) { srv.parent_heap->remove(srv.index); }
+      if(rtv.parent_heap) { rtv.parent_heap->remove(rtv.index); }
+      if(dsv.parent_heap) { dsv.parent_heap->remove(dsv.index); }
+      DX_RELEASE(com)
+      DX_RELEASE(upload_com)
     }
   };
-  
+
   struct ENGINE_API fshader_resource
   {
     ComPtr<IDxcBlob> blob;

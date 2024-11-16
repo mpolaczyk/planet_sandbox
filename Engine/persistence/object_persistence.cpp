@@ -107,8 +107,7 @@ namespace engine
 
   void vserialize_object::visit_rrenderer_base(rrenderer_base& object) const
   {
-    j["output_width"] = object.output_width;
-    j["output_height"] = object.output_height;
+
   }
 
   void vserialize_object::visit(rgpu_forward_sync& object) const
@@ -242,8 +241,7 @@ namespace engine
 
   void vdeserialize_object::visit_rrenderer_base(rrenderer_base& object) const
   {
-    TRY_PARSE(int, j, "output_width", object.output_width);
-    TRY_PARSE(int, j, "output_height", object.output_height);
+
   }
 
   void vdeserialize_object::visit(rgpu_forward_sync& object) const

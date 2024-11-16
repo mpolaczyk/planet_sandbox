@@ -160,7 +160,7 @@ namespace engine
   {
     if(scene_root != nullptr && scene_root->renderer != nullptr)
     {
-      scene_root->camera_config.update(stat_frame_time.get_last_time_ms(), scene_root->renderer->output_width, scene_root->renderer->output_height);
+      scene_root->camera_config.update(stat_frame_time.get_last_time_ms(), scene_root->renderer->context.width, scene_root->renderer->context.height);
     }
     window->update();
   }

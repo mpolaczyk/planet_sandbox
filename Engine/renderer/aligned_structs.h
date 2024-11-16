@@ -7,6 +7,8 @@
 #define MAX_LIGHTS 16
 #define MAX_TEXTURES 32
 #define MAX_MAIN_DESCRIPTORS 128
+#define MAX_RTV_DESCRIPTORS 8
+#define MAX_DSV_DESCRIPTORS 4
 
 namespace engine
 {

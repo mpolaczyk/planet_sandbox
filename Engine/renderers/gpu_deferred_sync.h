@@ -34,11 +34,13 @@ namespace engine
     // Runtime members
     fgbuffer_pass gbuffer_pass;
     fdeferred_lighting_pass deferred_lighting_pass;
-    
+
+    virtual ftexture_resource* get_color() override {return nullptr;};
+    virtual ftexture_resource* get_depth() override {return nullptr;};
+
   protected:
     virtual bool can_draw() override;
     virtual void init() override;
     virtual void draw_internal(fgraphics_command_list* command_list) override;
-    virtual void create_output_texture(bool cleanup = false) override;
   };
 }

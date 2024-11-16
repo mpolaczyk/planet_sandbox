@@ -147,7 +147,7 @@ namespace engine
 //    }
   }
   
-  void fdeferred_lighting_pass::create_output_texture(bool cleanup)
+  void fdeferred_lighting_pass::init_size_dependent(bool cleanup)
   {
     //    if(cleanup)
     //    {

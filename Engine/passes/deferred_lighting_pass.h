@@ -19,7 +19,7 @@ namespace engine
   {
     virtual void init() override;
     virtual void draw(fgraphics_command_list* command_list) override;
-    virtual void create_output_texture(bool cleanup = false) override;
+    virtual void init_size_dependent(bool cleanup) override;
 
     // Input
     int show_normal_ws = 0;

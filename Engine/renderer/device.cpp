@@ -8,6 +8,7 @@
 
 #include "renderer/device.h"
 
+#include <DirectXColors.h>
 #include <sstream>
 
 #include "assets/texture.h"
@@ -179,41 +180,6 @@ namespace engine
 #endif
   }
 
-  void fdevice::create_render_target(IDXGISwapChain4* swap_chain, uint32_t swap_chain_buffer_id, fdescriptor_heap& descriptor_heap, frtv_resource& out_rtv, const char* name) const
-  {
-    THROW_IF_FAILED(swap_chain->GetBuffer(swap_chain_buffer_id, IID_PPV_ARGS(out_rtv.resource.GetAddressOf())))
-    descriptor_heap.push(out_rtv.rtv);
-    com->CreateRenderTargetView(out_rtv.resource.Get(), nullptr, out_rtv.rtv.cpu_handle);
-
-#if BUILD_DEBUG
-      DX_SET_NAME(out_rtv.resource, "Render target: {}", name)
-#endif
-  }
-
-  void fdevice::create_depth_stencil(fdescriptor_heap& descriptor_heap, uint32_t width, uint32_t height, fdsv_resource& out_dsv, const char* name) const
-  {
-    D3D12_CLEAR_VALUE clear_value = {};
-    clear_value.Format = DXGI_FORMAT_D32_FLOAT;
-    clear_value.DepthStencil = { 1.0f, 0 };
-
-    CD3DX12_HEAP_PROPERTIES heap_prop(D3D12_HEAP_TYPE_DEFAULT);
-    CD3DX12_RESOURCE_DESC resource_desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, width, height, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
-    THROW_IF_FAILED(com->CreateCommittedResource(&heap_prop, D3D12_HEAP_FLAG_NONE, &resource_desc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &clear_value, IID_PPV_ARGS(out_dsv.resource.GetAddressOf())));
-    
-    D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
-    desc.Format = DXGI_FORMAT_D32_FLOAT;
-    desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-    desc.Texture2D.MipSlice = 0;
-    desc.Flags = D3D12_DSV_FLAG_NONE;
-
-    descriptor_heap.push(out_dsv.dsv);
-    com->CreateDepthStencilView(out_dsv.resource.Get(), &desc, out_dsv.dsv.cpu_handle);
-
-#if BUILD_DEBUG
-    DX_SET_NAME(out_dsv.resource, "Depth stencil: {}", name)
-#endif
-  }
-
   void fdevice::create_command_queue(ComPtr<ID3D12CommandQueue>& out_command_queue) const 
   {
     D3D12_COMMAND_QUEUE_DESC desc = {};
@@ -251,12 +217,12 @@ namespace engine
     }
   }
 
-  void fdevice::create_render_target_descriptor_heap(uint32_t back_buffer_count, fdescriptor_heap& out_descriptor_heap, const char* name) const 
+  void fdevice::create_render_target_descriptor_heap(fdescriptor_heap& out_descriptor_heap, const char* name) const 
   {
-    out_descriptor_heap = fdescriptor_heap(com.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, back_buffer_count);
+    out_descriptor_heap = fdescriptor_heap(com.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, MAX_RTV_DESCRIPTORS);
 
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-    desc.NumDescriptors = back_buffer_count;
+    desc.NumDescriptors = MAX_RTV_DESCRIPTORS;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     desc.NodeMask = 0;
@@ -269,10 +235,10 @@ namespace engine
   
   void fdevice::create_depth_stencil_descriptor_heap(fdescriptor_heap& out_descriptor_heap, const char* name) const 
   {
-    out_descriptor_heap = fdescriptor_heap(com.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1);
+    out_descriptor_heap = fdescriptor_heap(com.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, MAX_DSV_DESCRIPTORS);
 
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-    desc.NumDescriptors = 1;
+    desc.NumDescriptors = MAX_DSV_DESCRIPTORS;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&out_descriptor_heap.com)));
@@ -338,16 +304,105 @@ namespace engine
 #endif
   }
 
-  void fdevice::create_texture_resource(fdescriptor_heap* heap, atexture* texture_asset, const char* name) const
+  void fdevice::create_back_buffer(IDXGISwapChain4* swap_chain, uint32_t swap_chain_buffer_id, fdescriptor_heap& descriptor_heap, ftexture_resource& out_rtv, const char* name) const
   {
-    ftexture_resource& gpur = texture_asset->gpu_resource;
-    heap->push(gpur.srv);
+    THROW_IF_FAILED(swap_chain->GetBuffer(swap_chain_buffer_id, IID_PPV_ARGS(out_rtv.com.GetAddressOf())))
+    descriptor_heap.push(out_rtv.rtv);
+    com->CreateRenderTargetView(out_rtv.com.Get(), nullptr, out_rtv.rtv.cpu_handle);
+
+#if BUILD_DEBUG
+    DX_SET_NAME(out_rtv.com, "Back buffer: {}", name)
+#endif
+}
+
+  void fdevice::create_frame_buffer(fdescriptor_heap* main_heap, fdescriptor_heap* rtv_heap, ftexture_resource& texture, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES initial_state, const char* name) const
+  {
+    const CD3DX12_CLEAR_VALUE clear_color = { format, DirectX::Colors::LightSlateGray };
+    const CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
+    
+    D3D12_RESOURCE_DESC desc = {};
+    desc.MipLevels = 1;
+    desc.Format = format;
+    desc.Width = width;
+    desc.Height = height;
+    desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+    desc.DepthOrArraySize = 1;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+
+    THROW_IF_FAILED(com->CreateCommittedResource(
+      &default_heap,
+      D3D12_HEAP_FLAG_NONE,
+      &desc,
+      initial_state,
+      &clear_color,
+      IID_PPV_ARGS(&texture.com)));
+
+    D3D12_RENDER_TARGET_VIEW_DESC rtv_desc = {};
+    rtv_desc.Format = format;
+    rtv_desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+    rtv_heap->push(texture.rtv);
+    com->CreateRenderTargetView(texture.com.Get(), &rtv_desc, texture.rtv.cpu_handle);
+    
+    D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
+    srv_desc.Format = format;
+    srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srv_desc.Texture2D.MostDetailedMip = 0;
+    srv_desc.Texture2D.MipLevels = 1;
+    main_heap->push(texture.srv);
+    com->CreateShaderResourceView(texture.com.Get(), &srv_desc, texture.srv.cpu_handle);
+
+#if BUILD_DEBUG
+    DX_SET_NAME(texture.com, "Frame buffer: {}", name)
+#endif
+  }
+
+  void fdevice::create_depth_stencil(fdescriptor_heap* dsv_heap, ftexture_resource& texture, uint32_t width, uint32_t height, DXGI_FORMAT format,  D3D12_RESOURCE_STATES initial_state, const char* name) const
+  {
+    CD3DX12_CLEAR_VALUE clear_value = {format, 1.0f, 0};
+    const CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
+    
+    D3D12_RESOURCE_DESC desc = {};
+    desc.MipLevels = 1;
+    desc.Format = format;
+    desc.Width = width;
+    desc.Height = height;
+    desc.Flags  = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL | D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE;
+    desc.DepthOrArraySize = 1;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+
+    THROW_IF_FAILED(com->CreateCommittedResource(
+      &default_heap,
+      D3D12_HEAP_FLAG_NONE,
+      &desc,
+      initial_state,
+      &clear_value,
+      IID_PPV_ARGS(&texture.com)));
+
+    D3D12_DEPTH_STENCIL_VIEW_DESC dsv_desc = {};
+    dsv_desc.Format = format;
+    dsv_desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+    dsv_heap->push(texture.dsv);
+    com->CreateDepthStencilView(texture.com.Get(), &dsv_desc, texture.dsv.cpu_handle);
+
+#if BUILD_DEBUG
+    DX_SET_NAME(texture.com, "Depth stencil: {}", name)
+#endif
+  }
+  
+  void fdevice::create_texture_buffer(fdescriptor_heap* heap, ftexture_resource& texture, uint32_t width, uint32_t height, DXGI_FORMAT format, const char* name) const
+  {
+    heap->push(texture.srv);
 
     D3D12_RESOURCE_DESC texture_desc = {};
     texture_desc.MipLevels = 1;
-    texture_desc.Format = texture_asset->format;
-    texture_desc.Width = texture_asset->width;
-    texture_desc.Height = texture_asset->height;
+    texture_desc.Format = format;
+    texture_desc.Width = width;
+    texture_desc.Height = height;
     texture_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
     texture_desc.DepthOrArraySize = 1;
     texture_desc.SampleDesc.Count = 1;
@@ -361,22 +416,27 @@ namespace engine
       &texture_desc,
       D3D12_RESOURCE_STATE_COPY_DEST,
       nullptr,
-      IID_PPV_ARGS(&gpur.resource)));
+      IID_PPV_ARGS(&texture.com)));
 
-    const uint64_t buffer_size = GetRequiredIntermediateSize(gpur.resource.Get(), 0, 1);
-    create_upload_resource(buffer_size, gpur.resource_upload);
+    const uint64_t buffer_size = GetRequiredIntermediateSize(texture.com.Get(), 0, 1);
+    create_upload_resource(buffer_size, texture.upload_com);
     
     D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
     srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srv_desc.Format = texture_desc.Format;
     srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
     srv_desc.Texture2D.MipLevels = 1;
-    com->CreateShaderResourceView(gpur.resource.Get(), &srv_desc, gpur.srv.cpu_handle);
+    com->CreateShaderResourceView(texture.com.Get(), &srv_desc, texture.srv.cpu_handle);
     
 #if BUILD_DEBUG
-    DX_SET_NAME(gpur.resource, "Texture: {}", name)
-    DX_SET_NAME(gpur.resource_upload, "Texture upload: {}", name)
+    DX_SET_NAME(texture.com, "Texture: {}", name)
+    DX_SET_NAME(texture.upload_com, "Texture upload: {}", name)
 #endif
+  }
+  
+  void fdevice::create_texture_buffer(fdescriptor_heap* heap, atexture* texture_asset, const char* name) const
+  {
+    create_texture_buffer(heap, texture_asset->gpu_resource, texture_asset->width, texture_asset->height, texture_asset->format, name);
   }
 
   void fdevice::create_upload_resource(uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const
