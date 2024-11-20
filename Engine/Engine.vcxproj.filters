@@ -55,7 +55,6 @@
     <ClInclude Include="math\vertex_data.h" />
     <ClInclude Include="third_party\WaveFrontReader.h" />
     <ClInclude Include="hittables\light.h" />
-    <ClInclude Include="renderer\render_state.h" />
     <ClInclude Include="resources\ffbx.h" />
     <ClInclude Include="third_party\libdeflate.h" />
     <ClInclude Include="third_party\ofbx.h" />
@@ -77,6 +76,12 @@
     <ClInclude Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathHelpers.h" />
     <ClInclude Include="core\gpu_crash_handler.h" />
     <ClInclude Include="assets\shader.h" />
+    <ClInclude Include="renderer\command_list.h" />
+    <ClInclude Include="renderer\descriptor_heap.h" />
+    <ClInclude Include="renderer\device.h" />
+    <ClInclude Include="renderer\graphics_pipeline.h" />
+    <ClInclude Include="renderer\render_context.h" />
+    <ClInclude Include="renderer\gpu_resources.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\application.cpp" />
@@ -141,5 +146,11 @@
     <ClCompile Include="assets\shader.cpp" />
     <ClCompile Include="resources\shader_tools.cpp" />
     <ClCompile Include="resources\shader_tools.h" />
+    <ClCompile Include="passes\pass_base.cpp" />
+    <ClCompile Include="renderer\command_list.cpp" />
+    <ClCompile Include="renderer\descriptor_heap.cpp" />
+    <ClCompile Include="renderer\device.cpp" />
+    <ClCompile Include="renderer\graphics_pipeline.cpp" />
+    <ClCompile Include="renderer\gpu_resources.cpp" />
   </ItemGroup>
 </Project>

@@ -58,6 +58,8 @@ NVidia R445 or newer is required
 
 [openfbx] 
 
+[React Physics 3D] v0.10.2
+
 [//]: # (links)
 
    [1.0]: <https://bitbucket.org/planet620/planetsandbox/src/release_1.0/>
@@ -75,3 +77,4 @@ NVidia R445 or newer is required
    [DirectX Shader Compiler]: <https://github.com/microsoft/DirectXShaderCompiler/releases/tag/v1.8.2407>
    [Nsight Aftermath SDK Samples]: <https://github.com/NVIDIA/nsight-aftermath-samples/releases/tag/2023.2>
    [Nsight Aftermath SDK]: <https://developer.nvidia.com/nsight-aftermath>
+   [React Physics 3d]: <https://github.com/DanielChappuis/reactphysics3d/tree/v0.10.2>
