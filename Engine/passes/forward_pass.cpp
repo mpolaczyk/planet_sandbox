@@ -41,7 +41,7 @@ namespace engine
     
     uint32_t back_buffer_count = context->back_buffer_count;
     fdescriptor_heap* heap = context->main_descriptor_heap;
-    fdevice& device = fapplication::instance->device;
+    fdevice& device = fapplication::get_instance()->device;
     
     // Create frame data CBV
     for(uint32_t i = 0; i < back_buffer_count; i++)
@@ -94,7 +94,7 @@ namespace engine
 
   void fforward_pass::init_size_dependent(bool cleanup)
   {
-    fdevice& device = fapplication::instance->device;
+    fdevice& device = fapplication::get_instance()->device;
 
     if(cleanup)
     {
@@ -110,7 +110,7 @@ namespace engine
   {
     fpass_base::draw(command_list);
     
-    fdevice& device = fapplication::instance->device;
+    fdevice& device = fapplication::get_instance()->device;
     fdescriptor_heap* heap = context->main_descriptor_heap;
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
     ID3D12GraphicsCommandList* command_list_com = command_list->com.Get();

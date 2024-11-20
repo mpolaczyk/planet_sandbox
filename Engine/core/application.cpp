@@ -25,7 +25,7 @@ namespace engine
   
   LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   {
-    return fapplication::instance->wnd_proc(hWnd, msg, wParam, lParam);
+    return fapplication::get_instance()->wnd_proc(hWnd, msg, wParam, lParam);
   }
 
   fapplication::~fapplication()
@@ -114,7 +114,7 @@ namespace engine
     scene_root = hscene::spawn();
     window->init(WndProc, factory, L"Editor");
     window->show();
-
+    
     LOG_INFO("Init done, starting the main loop");
   }
 

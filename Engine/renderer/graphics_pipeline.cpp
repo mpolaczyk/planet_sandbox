@@ -102,7 +102,7 @@ namespace engine
 
   void fgraphics_pipeline::init(const char* name)
   {
-    fdevice& device = fapplication::instance->device;
+    fdevice& device = fapplication::get_instance()->device;
     device.create_root_signature(parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature, name);
 
     fpipeline_state_stream pipeline_state_stream;

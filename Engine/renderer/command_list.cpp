@@ -51,7 +51,7 @@ namespace engine
 
   void fgraphics_command_list::upload_buffer_resource(uint64_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource) const
   {
-    fdevice& device = fapplication::instance->device;
+    fdevice& device = fapplication::get_instance()->device;
 
     if (in_buffer)
     {

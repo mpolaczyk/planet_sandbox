@@ -24,18 +24,21 @@ namespace engine
 
   class ENGINE_API fapplication
   {
-  public:
-
-    CTOR_DEFAULT(fapplication)
-    CTOR_MOVE_COPY_DELETE(fapplication)
-    virtual ~fapplication();
-    
+  private:
     static fapplication* instance;
     static ftimer_instance stat_frame_time;
     static ftimer_instance stat_update_time;
     static ftimer_instance stat_draw_time;
     static ftimer_instance stat_render_time;
     static uint64_t frame_counter;
+    
+  public:
+
+    CTOR_DEFAULT(fapplication)
+    CTOR_MOVE_COPY_DELETE(fapplication)
+    virtual ~fapplication();
+    
+    static fapplication* get_instance() { return instance; };
     
     virtual LRESULT wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     virtual void init(const char* project_name);

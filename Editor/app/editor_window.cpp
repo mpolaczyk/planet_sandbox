@@ -13,7 +13,7 @@ namespace editor
 {
   feditor_app* feditor_window::get_editor_app()
   {
-    return static_cast<feditor_app*>(fapplication::instance);  
+    return static_cast<feditor_app*>(fapplication::get_instance());  
   }
 
   feditor_window::~feditor_window()
@@ -29,7 +29,7 @@ namespace editor
   {
     fwindow::init(wnd_proc, factory, name);
     
-    fdevice& device = fapplication::instance->device;
+    fdevice& device = fapplication::get_instance()->device;
 
     ImGui::StyleColorsClassic();
     ImGui_ImplWin32_Init(hwnd);
@@ -67,7 +67,7 @@ namespace editor
 
     fwindow::draw();
 
-    std::shared_ptr<fcommand_queue> command_queue = fapplication::instance->command_queue;
+    std::shared_ptr<fcommand_queue> command_queue = fapplication::get_instance()->command_queue;
     std::shared_ptr<fgraphics_command_list> command_list = command_queue->get_command_list(ecommand_list_purpose::ui, back_buffer_index);
 
     command_list->resource_barrier(rtv[back_buffer_index].com.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);

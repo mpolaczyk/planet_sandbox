@@ -45,7 +45,7 @@ namespace engine
       }
       out_shader_blob = cso_blob;
 #if USE_NSIGHT_AFTERMATH
-      fapplication::instance->gpu_crash_handler.add_shader_binary(cso_blob.Get());
+      fapplication::get_instance()->gpu_crash_handler.add_shader_binary(cso_blob.Get());
 #endif
     }
 
@@ -60,7 +60,7 @@ namespace engine
       }
       else
       {
-        fapplication::instance->gpu_crash_handler.add_source_shader_debug_data(out_shader_blob.Get(), pdb_blob.Get());
+        fapplication::get_instance()->gpu_crash_handler.add_source_shader_debug_data(out_shader_blob.Get(), pdb_blob.Get());
       }
     }
 #endif
@@ -167,7 +167,7 @@ namespace engine
       if(!fdx12::get_dxc_blob(dxc_result.Get(), DXC_OUT_OBJECT, out_shader_blob)) { return false; }
       if(!fdx12::save_dxc_blob(out_shader_blob.Get(), obj_path.c_str())) { return false; }
 #if USE_NSIGHT_AFTERMATH
-      fapplication::instance->gpu_crash_handler.add_shader_binary(out_shader_blob.Get());
+      fapplication::get_instance()->gpu_crash_handler.add_shader_binary(out_shader_blob.Get());
 #endif
     }
 
@@ -179,7 +179,7 @@ namespace engine
       if(!fdx12::get_dxc_blob(dxc_result.Get(), DXC_OUT_PDB, pdb_blob)) { return false; }
       if(!fdx12::save_dxc_blob(pdb_blob.Get(), pdb_path.c_str())) { return false; }
 #if USE_NSIGHT_AFTERMATH
-      fapplication::instance->gpu_crash_handler.add_source_shader_debug_data(out_shader_blob.Get(), pdb_blob.Get());
+      fapplication::get_instance()->gpu_crash_handler.add_source_shader_debug_data(out_shader_blob.Get(), pdb_blob.Get());
 #endif
     }
 #endif

@@ -96,7 +96,7 @@ namespace editor
     ImGui::Begin("SCENE", nullptr);
     if (ImGui::MenuItem("SAVE SCENE"))
     {
-      static_cast<feditor_app*>(fapplication::instance)->save_scene_state();
+      static_cast<feditor_app*>(fapplication::get_instance())->save_scene_state();
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SAVED!");
     }
     ImGui::Separator();
@@ -406,7 +406,7 @@ void feditor_window::update_default_spawn_position()
     // Handle hotkeys
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
     {
-      fapplication::instance->is_running = false;
+      fapplication::get_instance()->is_running = false;
     }
 
     // Handle camera movement

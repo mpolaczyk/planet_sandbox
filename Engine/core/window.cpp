@@ -28,8 +28,8 @@ namespace engine
     ::RegisterClassEx(&wc);
     hwnd = ::CreateWindow(wc.lpszClassName, name, WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
 
-    std::shared_ptr<fcommand_queue> command_queue = fapplication::instance->command_queue;
-    fdevice& device = fapplication::instance->device;
+    std::shared_ptr<fcommand_queue> command_queue = fapplication::get_instance()->command_queue;
+    fdevice& device = fapplication::get_instance()->device;
     
     screen_tearing = fdx12::enable_screen_tearing(factory);
     fdx12::create_swap_chain(hwnd, factory.Get(), command_queue->com.Get(), back_buffer_count, screen_tearing, swap_chain);
@@ -52,10 +52,10 @@ namespace engine
 
   void fwindow::draw()
   {
-    std::shared_ptr<fcommand_queue> command_queue = fapplication::instance->command_queue;
+    std::shared_ptr<fcommand_queue> command_queue = fapplication::get_instance()->command_queue;
     std::shared_ptr<fgraphics_command_list> command_list = command_queue->get_command_list(ecommand_list_purpose::main, back_buffer_index);
     
-    if(hscene* scene_root = fapplication::instance->scene_root)
+    if(hscene* scene_root = fapplication::get_instance()->scene_root)
     {
       if(rrenderer_base* renderer = scene_root->renderer)
       {
@@ -119,8 +119,8 @@ namespace engine
     }
     width = requested_width;
     height = requested_height;
-    std::shared_ptr<fcommand_queue> command_queue = fapplication::instance->command_queue;
-    fdevice& device = fapplication::instance->device;
+    std::shared_ptr<fcommand_queue> command_queue = fapplication::get_instance()->command_queue;
+    fdevice& device = fapplication::get_instance()->device;
 
     // Release resources if they already exist
     if(rtv.size() == back_buffer_count)

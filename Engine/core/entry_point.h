@@ -30,11 +30,11 @@ void inline main_impl(int argc, char** argv)
   {
     std::shared_ptr<fapplication> app;
     app.reset(create_application());
-    fapplication::instance = app.get();
+    fapplication::get_instance() = app.get();
     app->set_window(create_window());
     app->init(argv[1]);
     app->main_loop();
-    fapplication::instance = nullptr;
+    fapplication::get_instance() = nullptr;
   }
   
 #ifdef BUILD_DEBUG
