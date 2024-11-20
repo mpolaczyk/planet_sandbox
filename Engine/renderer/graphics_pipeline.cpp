@@ -52,7 +52,7 @@ namespace engine
     ranges.push_back(range);
     
     CD3DX12_ROOT_PARAMETER1 param;
-    uint32_t num_descriptor_ranges = ranges.size();
+    uint32_t num_descriptor_ranges = static_cast<uint32_t>(ranges.size());
     param.InitAsDescriptorTable(num_descriptor_ranges, &ranges.back(), visibility);
     parameters[index] = param;
   }

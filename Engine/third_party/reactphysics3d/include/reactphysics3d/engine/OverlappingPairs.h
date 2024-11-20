@@ -26,6 +26,8 @@
 #ifndef REACTPHYSICS3D_OVERLAPPING_PAIR_H
 #define	REACTPHYSICS3D_OVERLAPPING_PAIR_H
 
+#pragma warning(disable:4244)
+
 // Libraries
 #include <reactphysics3d/collision/Collider.h>
 #include <reactphysics3d/containers/Map.h>

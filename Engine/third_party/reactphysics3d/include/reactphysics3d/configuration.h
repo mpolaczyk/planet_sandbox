@@ -70,6 +70,9 @@
     #define RP3D_FORCE_INLINE inline
 #endif
 
+#undef max
+#undef min
+
 /// Namespace reactphysics3d
 namespace reactphysics3d {
 

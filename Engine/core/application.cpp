@@ -1,6 +1,6 @@
-#include <dxgi1_5.h>
-
 #include "core/application.h"
+
+#include <dxgi1_5.h>
 
 #include "core/exceptions.h"
 #include "core/window.h"
@@ -13,6 +13,8 @@
 #include "renderer/command_queue.h"
 #include "renderer/renderer_base.h"
 #include "resources/assimp_logger.h"
+
+#include "reactphysics3d/engine/PhysicsCommon.h"
 
 namespace engine
 {
@@ -100,7 +102,6 @@ namespace engine
 #endif
     
     command_queue = std::make_shared<fcommand_queue>(device, window->back_buffer_count);
-    
 #if USE_NSIGHT_AFTERMATH
     for (uint32_t i = 0; i < window->back_buffer_count; i++)
     {
@@ -109,9 +110,12 @@ namespace engine
       gpu_crash_handler.create_context_handle(i, command_list->com.Get());
     }
 #endif
-
     command_queue->flush();
+    
+    physics_common = std::make_shared<reactphysics3d::PhysicsCommon>();
     scene_root = hscene::spawn();
+    scene_root->create_physics_state();
+    
     window->init(WndProc, factory, L"Editor");
     window->show();
     
@@ -127,7 +131,9 @@ namespace engine
   {
     while(is_running)
     {
+      float delta_time = stat_frame_time.get_last_time_ms();
       fscope_timer frame_timer(stat_frame_time);
+      
       MSG msg;
       while(::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
       {
@@ -142,7 +148,7 @@ namespace engine
 
       {
         fscope_timer update_timer(stat_update_time);
-        update();
+        update(delta_time);
       }
       {
         fscope_timer draw_timer(stat_draw_time);
@@ -156,11 +162,12 @@ namespace engine
     }
   }
 
-  void fapplication::update()
+  void fapplication::update(float delta_time)
   {
-    if(scene_root != nullptr && scene_root->renderer != nullptr)
+    if(scene_root != nullptr && scene_root->renderer != nullptr && delta_time != 0.0f)
     {
-      scene_root->camera_config.update(stat_frame_time.get_last_time_ms(), scene_root->renderer->context.width, scene_root->renderer->context.height);
+      scene_root->physics_world->update(delta_time);
+      scene_root->camera_config.update(delta_time, scene_root->renderer->context.width, scene_root->renderer->context.height);
     }
     window->update();
   }

@@ -26,6 +26,8 @@
 #ifndef REACTPHYSICS3D_ARRAY_H
 #define REACTPHYSICS3D_ARRAY_H
 
+#pragma warning(disable:4244)
+
 // Libraries
 #include <reactphysics3d/configuration.h>
 #include <reactphysics3d/memory/MemoryAllocator.h>

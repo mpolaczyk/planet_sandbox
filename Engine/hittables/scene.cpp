@@ -1,6 +1,7 @@
 #include "hittables/scene.h"
 
 #include "light.h"
+#include "core/application.h"
 #include "hittables/hittables.h"
 #include "engine/log.h"
 #include "profile/stats.h"
@@ -10,6 +11,9 @@
 #include "hittables/sphere.h"
 #include "object/object_visitor.h"
 #include "math/math.h"
+
+#include "reactphysics3d/engine/PhysicsCommon.h"
+#include "reactphysics3d/engine/PhysicsWorld.h"
 
 namespace engine
 {
@@ -29,12 +33,28 @@ namespace engine
 
   void hscene::load_resources()
   {
-    LOG_TRACE("Scene: load resources");
-
+    LOG_TRACE("Scene: loading resources");
+    
     for(hhittable_base* object : objects)
     {
       assert(object != nullptr);
       object->load_resources();
+    }
+  }
+
+  void hscene::create_physics_state()
+  {
+    LOG_TRACE("Scene: creating physics scene");
+
+    using namespace reactphysics3d;
+    physics_world = fapplication::get_instance()->physics_common->createPhysicsWorld();
+    for(hhittable_base* object : objects)
+    {
+      Vector3 position(object->origin.x, object->origin.y, object->origin.z);
+      Quaternion orientation = Quaternion::fromEulerAngles(object->rotation.x, object->rotation.y, object->rotation.z);
+      Transform transform(position, orientation);
+      RigidBody* rb = physics_world->createRigidBody(transform);
+      object->rigid_body.reset(rb);
     }
   }
 
@@ -65,42 +85,4 @@ namespace engine
     }
     return lights;
   }
-
-
-  //hscene* hscene::clone() const
-  //{
-  //  throw std::runtime_error("Attempt to clone the scene!"); // Is this still needed?
-  //  
-  //  hscene* new_scene = REG.copy_shallow<hscene>(this);
-  //  // Deep copy
-  //  for (hhittable_base* obj : objects)
-  //  {
-  //    const oclass_object* class_o = obj->get_class();
-  //    hhittable_base* new_obj = nullptr;
-  //    if (class_o == oclass_object::get_class_static())
-  //    {
-  //      new_obj = REG.copy_shallow<hscene>(static_cast<hscene*>(obj));
-  //    }
-  //    else if (class_o == hsphere::get_class_static())
-  //    {
-  //      new_obj = REG.copy_shallow<hsphere>(static_cast<hsphere*>(obj));
-  //    }
-  //    else if (class_o == hstatic_mesh::get_class_static())
-  //    {
-  //      new_obj = REG.copy_shallow<hstatic_mesh>(static_cast<hstatic_mesh*>(obj));
-  //    }
-  //    else if (class_o == hlight::get_class_static())
-  //    {
-  //      new_obj = REG.copy_shallow<hlight>(static_cast<hlight*>(obj));
-  //    }
-  //    else
-  //    {
-  //      LOG_ERROR("Unable to clone a hittable of type: {0}", obj->get_class()->get_class_name());
-  //      return nullptr;
-  //    }
-  //    
-  //    new_scene->objects.push_back(new_obj);
-  //  }
-  //  return new_scene;
-  //}
 }

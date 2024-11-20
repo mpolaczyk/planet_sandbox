@@ -14,10 +14,16 @@
 
 struct ID3D12Device2;
 
+namespace reactphysics3d
+{
+ class PhysicsCommon;
+}
+
 using Microsoft::WRL::ComPtr;
 
 namespace engine
 {
+  class rrenderer_base;
   class hscene;
   struct fcommand_queue;
   class fwindow;
@@ -26,10 +32,6 @@ namespace engine
   {
   private:
     static fapplication* instance;
-    static ftimer_instance stat_frame_time;
-    static ftimer_instance stat_update_time;
-    static ftimer_instance stat_draw_time;
-    static ftimer_instance stat_render_time;
     static uint64_t frame_counter;
     
   public:
@@ -37,18 +39,25 @@ namespace engine
     CTOR_DEFAULT(fapplication)
     CTOR_MOVE_COPY_DELETE(fapplication)
     virtual ~fapplication();
+
+    static ftimer_instance stat_frame_time;
+    static ftimer_instance stat_update_time;
+    static ftimer_instance stat_draw_time;
+    static ftimer_instance stat_render_time;
     
+    static void set_instance(fapplication* value) { instance = value; }
     static fapplication* get_instance() { return instance; };
     
     virtual LRESULT wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     virtual void init(const char* project_name);
-    virtual void update();
+    virtual void update(float delta_time);
     virtual void draw();
     virtual void render();
 
     void set_window(fwindow* in_window);
     void main_loop();
-    
+
+    std::shared_ptr<reactphysics3d::PhysicsCommon> physics_common;
     hscene* scene_root = nullptr;
     fcamera camera;
     

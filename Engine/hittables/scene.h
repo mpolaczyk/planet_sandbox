@@ -2,11 +2,18 @@
 
 #include <string>
 #include <vector>
+#include <memory>
+
 #include <DirectXMath.h>
 
 #include "hittables.h"
 #include "math/camera.h"
 #include "renderer/scene_acceleration.h"
+
+namespace reactphysics3d
+{
+  class PhysicsWorld;
+}
 
 namespace engine
 {
@@ -21,6 +28,7 @@ namespace engine
 
     virtual uint32_t get_hash() const override;
     virtual void load_resources() override;
+    void create_physics_state();
 
     void add(hhittable_base* object);
     void remove(int object_id);
@@ -29,10 +37,12 @@ namespace engine
 
     // Persistent members
     std::vector<hhittable_base*> objects;
-    rrenderer_base* renderer = nullptr;     // TODO remove it from here, should be application setting
-    DirectX::XMFLOAT4 ambient_light_color;  // TODO move to renderer
-    DirectX::XMVECTORF32 clear_color;       // TODO move to renderer
+    rrenderer_base* renderer = nullptr;
+    DirectX::XMFLOAT4 ambient_light_color;
     fcamera camera_config;
+
+    // Runtime members
     fscene_acceleration scene_acceleration;
+    reactphysics3d::PhysicsWorld* physics_world;
   };
 }

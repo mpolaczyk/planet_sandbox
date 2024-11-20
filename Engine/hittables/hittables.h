@@ -7,6 +7,11 @@
 
 #include "object/object.h"
 
+namespace reactphysics3d
+{
+  class RigidBody;  
+}
+
 namespace engine
 {
   class ENGINE_API hhittable_base : public oobject
@@ -28,5 +33,6 @@ namespace engine
 
     // Runtime members
     faabb bounding_box;
+    std::shared_ptr<reactphysics3d::RigidBody> rigid_body;
   };
 }

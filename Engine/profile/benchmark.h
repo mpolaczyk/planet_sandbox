@@ -20,7 +20,7 @@ namespace engine
     inline uint64_t stop(bool log = false); // microseconds
     inline bool is_working() const { return is_started; }
     inline uint64_t get_last_time_us() { return last_time_us; }
-    inline float get_last_time_ms() { return static_cast<float>(last_time_us / 1000); }
+    inline float get_last_time_ms() { return static_cast<float>(last_time_us) / 1000.0f; }
 
   private:
     std::chrono::time_point<std::chrono::high_resolution_clock> start_point, end_point;

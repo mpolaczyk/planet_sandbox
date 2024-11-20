@@ -176,11 +176,6 @@ namespace editor
     float temp_arr[4] = { temp.x,temp.y,temp.z,temp.w };
     ImGui::ColorEdit4("Ambient", temp_arr, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
     temp = { temp_arr[0],temp_arr[1],temp_arr[2],temp_arr[3] };
-
-    DirectX::XMVECTORF32& temp1 = get_editor_app()->scene_root->clear_color;
-    float temp_arr1[4] = { temp1.f[0],temp1.f[1],temp1.f[2],temp1.f[3] };
-    ImGui::ColorEdit4("Clear", temp_arr1, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
-    temp1 = { temp_arr1[0],temp_arr1[1],temp_arr1[2],temp_arr1[3] };
   }
   void feditor_window::draw_scene_objects_panel(fobjects_panel_model& model)
   {
