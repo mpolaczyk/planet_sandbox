@@ -164,12 +164,15 @@ namespace engine
 
   void fapplication::update(float delta_time)
   {
-    if(scene_root != nullptr && scene_root->renderer != nullptr && delta_time != 0.0f)
+    if(scene_root != nullptr && scene_root->renderer != nullptr)
     {
-      scene_root->physics_world->update(delta_time);
+      if(delta_time != 0.0f)
+      {
+        scene_root->physics_world->update(delta_time);
+      }
       scene_root->camera_config.update(delta_time, scene_root->renderer->context.width, scene_root->renderer->context.height);
+      window->update();
     }
-    window->update();
   }
 
   void fapplication::draw()
