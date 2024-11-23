@@ -56,6 +56,8 @@ namespace engine
     j["origin"] = fpersistence::serialize(object.origin);
     j["scale"] = fpersistence::serialize(object.scale);
     j["rotation"] = fpersistence::serialize(object.rotation);
+    j["gravity_enabled"] = object.gravity_enabled;
+    j["rigid_body_type"] = object.rigid_body_type;
     j["custom_display_name"] = object.get_display_name();
   }
 
@@ -159,6 +161,9 @@ namespace engine
     if(TRY_PARSE(nlohmann::json, j, "scale", jscale)) { fpersistence::deserialize(jscale, object.scale); }
     nlohmann::json jrotation;
     if(TRY_PARSE(nlohmann::json, j, "rotation", jrotation)) { fpersistence::deserialize(jrotation, object.rotation); }
+
+    TRY_PARSE(bool, j, "gravity_enabled", object.gravity_enabled);
+    TRY_PARSE(int, j, "rigid_body_type", object.rigid_body_type);
 
     std::string name;
     if(TRY_PARSE(std::string, j, "custom_display_name", name)) { object.set_display_name(name); }

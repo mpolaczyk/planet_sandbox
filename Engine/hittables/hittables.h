@@ -39,9 +39,13 @@ namespace engine
     fvec3 origin = fvec3(0.0f, 0.0f, 0.0f);
     fvec3 scale = fvec3(1.0f, 1.0f, 1.0f);
     fvec3 rotation = fvec3(0.0f, 0.0f, 0.0f); // degrees
-
+    bool gravity_enabled = false;
+    int32_t rigid_body_type = 0; // maps to reactphysics3d::BodyType
+    
     // Runtime members
     faabb bounding_box;
     reactphysics3d::RigidBody* rigid_body;  // owned here, but managed by hscene
+    fvec3 pre_physics_origin = fvec3(0.0f, 0.0f, 0.0f);
+    fvec3 pre_physics_rotation = fvec3(0.0f, 0.0f, 0.0f); // degrees
   };
 }

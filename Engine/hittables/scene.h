@@ -44,5 +44,6 @@ namespace engine
 
     // Runtime members
     fscene_acceleration scene_acceleration;
+    bool is_simulating_physics = false;
   };
 }

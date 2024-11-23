@@ -45,14 +45,19 @@ namespace engine
 
   void hscene::create_scene_physics_state()
   {
+    if(is_simulating_physics) return;
+
     for(hhittable_base* object : objects)
     {
       object->create_physics_state();
     }
+    is_simulating_physics = true;
   }
 
   void hscene::update_scene_physics_state(float delta_time)
   {
+    if(!is_simulating_physics) return;
+    
     for(hhittable_base* object : objects)
     {
       object->update_physics_state(delta_time);
@@ -61,10 +66,13 @@ namespace engine
 
   void hscene::destroy_scene_physics_state()
   {
+    if(!is_simulating_physics) return;
+
     for(hhittable_base* object : objects)
     {
       object->destroy_physics_state();
     }
+    is_simulating_physics = false;
   }
 
   void hscene::add(hhittable_base* object)

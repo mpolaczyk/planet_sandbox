@@ -49,6 +49,7 @@ namespace editor
     ImGui::Text("QWEASD - Camera movement");
     ImGui::Text("RMB - Camera rotation");
     ImGui::Text("ZXC + mouse - Object movement");
+    ImGui::Text("Space - Toggle simulation");
   }
   void feditor_window::draw_materials_panel(fmaterials_panel_model& model)
   {
@@ -176,6 +177,22 @@ namespace editor
     float temp_arr[4] = { temp.x,temp.y,temp.z,temp.w };
     ImGui::ColorEdit4("Ambient", temp_arr, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
     temp = { temp_arr[0],temp_arr[1],temp_arr[2],temp_arr[3] };
+
+    if(get_editor_app()->wants_to_simulate_physics)
+    {
+      if(ImGui::Button("Reset simulation"))
+      {
+        get_editor_app()->wants_to_simulate_physics = false;
+      }
+      ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "SIMULATING!");
+    }
+    else
+    {
+      if(ImGui::Button("Start simulation"))
+      {
+        get_editor_app()->wants_to_simulate_physics = true;
+      }      
+    }
   }
   void feditor_window::draw_scene_objects_panel(fobjects_panel_model& model)
   {
@@ -402,6 +419,10 @@ void feditor_window::update_default_spawn_position()
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
     {
       fapplication::get_instance()->is_running = false;
+    }
+    if(ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Space), false))
+    {
+      get_editor_app()->wants_to_simulate_physics = !get_editor_app()->wants_to_simulate_physics;
     }
 
     // Handle camera movement

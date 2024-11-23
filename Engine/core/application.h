@@ -57,11 +57,15 @@ namespace engine
 
     void set_window(fwindow* in_window);
     void main_loop();
+    void begin_physics();
+    void end_physics();
+    void update_physics(float delta_time);
 
     std::shared_ptr<reactphysics3d::PhysicsCommon> physics_common;
     reactphysics3d::PhysicsWorld* physics_world = nullptr;
     //std::shared_ptr<reactphysics3d::PhysicsWorld> physics_world;  // TODO some nonsense compilation issues
-
+    bool wants_to_simulate_physics = false;
+    
     hscene* scene_root; // managed object does not work well with shared_ptr, because they need to be destroyed through object registry
     fcamera camera;
     

@@ -37,13 +37,17 @@ namespace engine
 
   fapplication::~fapplication()
   {
-    LOG_TRACE("Destroying physics scene");
-    scene_root->destroy_scene_physics_state();
-    physics_common->destroyPhysicsWorld(physics_world);
-    physics_world = nullptr;
-    LOG_TRACE("Destroying managed objects");
+    LOG_INFO("Destroying managed objects");
     REG.destroy_all();
-    LOG_TRACE("Destroying other resources");
+
+    if(physics_world)
+    {
+      LOG_INFO("Destroying physics scene");
+      physics_common->destroyPhysicsWorld(physics_world);
+      physics_world = nullptr;
+    }
+    
+    LOG_INFO("Destroying other resources");
     command_queue.reset();
     window.reset();
     flogger::flush();
@@ -77,9 +81,6 @@ namespace engine
     fassimp_logger::init();
     frandom_cache::init();
 
-    LOG_TRACE("Creating class objects");
-    REG.create_class_objects();
-
     LOG_INFO("Project: {0}", fio::get_project_name());
     LOG_INFO("Working dir: {0}", fio::get_working_dir());
     LOG_INFO("Workspace dir: {0}", fio::get_workspace_dir());
@@ -88,8 +89,11 @@ namespace engine
     {
       LOG_CRITICAL("Invalid workspace directory!");
     }
+    
+    LOG_INFO("Creating class objects");
+    REG.create_class_objects();
 
-    LOG_TRACE("Creating rendering resources");
+    LOG_INFO("Creating rendering resources");
 
     ComPtr<IDXGIFactory4> factory;
     fdx12::create_factory(factory);
@@ -127,19 +131,18 @@ namespace engine
 #endif
     command_queue->flush();
 
-    LOG_TRACE("Creating physics scene");
+    LOG_INFO("Creating physics scene");
+    using namespace reactphysics3d;
     scene_root = hscene::spawn();
-    physics_common = std::make_shared<reactphysics3d::PhysicsCommon>();
+    physics_common = std::make_shared<PhysicsCommon>();
     {
-      reactphysics3d::PhysicsWorld::WorldSettings settings;
-      settings.defaultVelocitySolverNbIterations = 20;
-      settings.isSleepingEnabled = false;
-      settings.gravity = reactphysics3d::Vector3(0, -0.000001, 0);
-      physics_world = physics_common->createPhysicsWorld(settings);
+      
     }
+
+    LOG_INFO("Loading scene persistent state");
     load_scene_state();
-    scene_root->create_scene_physics_state();
-    
+
+    LOG_INFO("Initiating the window");
     window->init(WndProc, factory, L"Editor");
     window->show();
     
@@ -155,7 +158,7 @@ namespace engine
   {
     while(is_running)
     {
-      float delta_time = stat_frame_time.get_last_time_ms();
+      float delta_time = stat_frame_time.get_last_time_ms() / 1000.0f;
       fscope_timer frame_timer(stat_frame_time);
       
       MSG msg;
@@ -186,14 +189,47 @@ namespace engine
     }
   }
 
+  void fapplication::begin_physics()
+  {
+    using namespace reactphysics3d;
+
+    PhysicsWorld::WorldSettings settings;
+    settings.isSleepingEnabled = false;
+    settings.gravity = Vector3(0, -9.81, 0);
+    settings.defaultTimeBeforeSleep = 5.0f;
+    physics_world = physics_common->createPhysicsWorld(settings);
+    scene_root->create_scene_physics_state();
+  }
+
+  void fapplication::end_physics()
+  {
+    scene_root->destroy_scene_physics_state();
+
+    physics_common->destroyPhysicsWorld(physics_world);
+    physics_world = nullptr;
+  }
+
+  void fapplication::update_physics(float delta_time)
+  {
+    physics_world->update(delta_time);
+    scene_root->update_scene_physics_state(delta_time);
+  }
+
   void fapplication::update(float delta_time)
   {
     if(scene_root != nullptr && scene_root->renderer != nullptr)
     {
-      if(delta_time != 0.0f)
+      if(wants_to_simulate_physics && !scene_root->is_simulating_physics)
       {
-        physics_world->update(delta_time);
-        scene_root->update_scene_physics_state(delta_time);
+        begin_physics();
+      }
+      else if(!wants_to_simulate_physics && scene_root->is_simulating_physics)
+      {
+        end_physics();
+      }
+      if(scene_root->is_simulating_physics && delta_time != 0.0f)
+      {
+        update_physics(delta_time);
       }
       scene_root->camera_config.update(delta_time, scene_root->renderer->context.width, scene_root->renderer->context.height);
       window->update();
