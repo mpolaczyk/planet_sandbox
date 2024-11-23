@@ -34,7 +34,6 @@ void inline main_impl(int argc, char** argv)
     app->set_window(create_window());
     app->init(argv[1]);
     app->main_loop();
-    fapplication::set_instance(nullptr);
   }
   
 #ifdef BUILD_DEBUG

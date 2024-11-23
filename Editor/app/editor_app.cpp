@@ -42,12 +42,8 @@ namespace editor
       strcpy(buff, imgui_ini_filename.c_str()); // returning char* is fucked up
       io.IniFilename = buff;
     }
-
+    
     fapplication::init(project_name);
-
-    // Load persistent state
-    load_assets();
-    load_scene_state();  
   }
 
   feditor_window* feditor_app::get_editor_window() const

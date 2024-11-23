@@ -9,12 +9,17 @@
 #include "engine/log.h"
 #include "hittables/scene.h"
 #include "math/random.h"
+#include "persistence/object_persistence.h"
+#include "persistence/persistence_helper.h"
 #include "renderer/dx12_lib.h"
 #include "renderer/command_queue.h"
 #include "renderer/renderer_base.h"
+#include "renderer/device.h"
 #include "resources/assimp_logger.h"
 
+#include "nlohmann/json.hpp"
 #include "reactphysics3d/engine/PhysicsCommon.h"
+#include "reactphysics3d/engine/PhysicsWorld.h"
 
 namespace engine
 {
@@ -32,7 +37,13 @@ namespace engine
 
   fapplication::~fapplication()
   {
+    LOG_TRACE("Destroying physics scene");
+    scene_root->destroy_scene_physics_state();
+    physics_common->destroyPhysicsWorld(physics_world);
+    physics_world = nullptr;
+    LOG_TRACE("Destroying managed objects");
     REG.destroy_all();
+    LOG_TRACE("Destroying other resources");
     command_queue.reset();
     window.reset();
     flogger::flush();
@@ -43,7 +54,7 @@ namespace engine
     switch(msg)
     {
     case WM_SIZE:
-      if(device.com != nullptr && wParam != SIZE_MINIMIZED)
+      if(device->com != nullptr && wParam != SIZE_MINIMIZED)
       {
         window->request_resize(LOWORD(lParam), HIWORD(lParam));
       }
@@ -61,10 +72,12 @@ namespace engine
 
   void fapplication::init(const char* project_name)
   {
+    LOG_TRACE("Application init");
     fio::init(project_name);
     fassimp_logger::init();
     frandom_cache::init();
 
+    LOG_TRACE("Creating class objects");
     REG.create_class_objects();
 
     LOG_INFO("Project: {0}", fio::get_project_name());
@@ -75,6 +88,8 @@ namespace engine
     {
       LOG_CRITICAL("Invalid workspace directory!");
     }
+
+    LOG_TRACE("Creating rendering resources");
 
     ComPtr<IDXGIFactory4> factory;
     fdx12::create_factory(factory);
@@ -89,19 +104,19 @@ namespace engine
     LOG_WARN("Disabling the DX12 debug layer and GPU validation!")
 #endif
     
-    device = fdevice::create(factory.Get());
+    device.reset(fdevice::create(factory.Get()));
 
 #if USE_NSIGHT_AFTERMATH
     gpu_crash_handler.post_device_creation(device.com.Get());
 #endif
     
 #if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH
-    device.enable_info_queue();
+    device->enable_info_queue();
 #else
     LOG_WARN("Disabling the info queue!")
 #endif
-    
-    command_queue = std::make_shared<fcommand_queue>(device, window->back_buffer_count);
+
+    command_queue.reset(new fcommand_queue(device.get(), window->back_buffer_count));
 #if USE_NSIGHT_AFTERMATH
     for (uint32_t i = 0; i < window->back_buffer_count; i++)
     {
@@ -111,15 +126,24 @@ namespace engine
     }
 #endif
     command_queue->flush();
-    
-    physics_common = std::make_shared<reactphysics3d::PhysicsCommon>();
+
+    LOG_TRACE("Creating physics scene");
     scene_root = hscene::spawn();
-    scene_root->create_physics_state();
+    physics_common = std::make_shared<reactphysics3d::PhysicsCommon>();
+    {
+      reactphysics3d::PhysicsWorld::WorldSettings settings;
+      settings.defaultVelocitySolverNbIterations = 20;
+      settings.isSleepingEnabled = false;
+      settings.gravity = reactphysics3d::Vector3(0, -0.000001, 0);
+      physics_world = physics_common->createPhysicsWorld(settings);
+    }
+    load_scene_state();
+    scene_root->create_scene_physics_state();
     
     window->init(WndProc, factory, L"Editor");
     window->show();
     
-    LOG_INFO("Init done, starting the main loop");
+    LOG_INFO("Application init done, starting the main loop");
   }
 
   void fapplication::set_window(fwindow* in_window)
@@ -168,7 +192,8 @@ namespace engine
     {
       if(delta_time != 0.0f)
       {
-        scene_root->physics_world->update(delta_time);
+        physics_world->update(delta_time);
+        scene_root->update_scene_physics_state(delta_time);
       }
       scene_root->camera_config.update(delta_time, scene_root->renderer->context.width, scene_root->renderer->context.height);
       window->update();
@@ -177,11 +202,10 @@ namespace engine
 
   void fapplication::draw()
   {
-    if(!window->apply_resize() && fapplication::frame_counter != 0)
+    if(!window->try_apply_resize() && fapplication::frame_counter != 0)
     {
       command_queue->reset_allocator(window->get_back_buffer_index());
     }
-    
     window->draw();
   }
 
@@ -195,5 +219,40 @@ namespace engine
 #endif
     command_queue->wait_for_fence_value(fence_value);   // TODO CPU waits for GPU, make it async
     frame_counter++;
+  }
+
+  void fapplication::load_scene_state() const // TODO move hscene::load(), btw. scene should be an asset
+  {
+    LOG_INFO("Loading: scene");
+
+    std::string path = fio::get_scene_file_path();
+    std::ifstream input_stream(path.c_str());
+    if (input_stream.fail())
+    {
+      LOG_ERROR("Unable to open file: {0}", path);
+      return;
+    }
+    nlohmann::json j;
+    input_stream >> j;
+
+    nlohmann::json jscene_root;
+    if (TRY_PARSE(nlohmann::json, j, "scene", jscene_root)) { scene_root->accept(vdeserialize_object(jscene_root)); }
+
+    input_stream.close();
+  }
+
+  void fapplication::save_scene_state() const // TODO move to hscene::save() , btw. scene should be an asset
+  {
+    LOG_INFO("Saving: scene");
+
+    nlohmann::json j;
+    scene_root->accept(vserialize_object(j["scene"]));
+    std::ofstream o(fio::get_scene_file_path().c_str(), std::ios_base::out | std::ios::binary);
+    std::string str = j.dump(2);
+    if (o.is_open())
+    {
+      o.write(str.data(), str.length());
+    }
+    o.close();
   }
 }

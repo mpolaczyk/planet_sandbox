@@ -20,11 +20,20 @@ namespace engine
     OBJECT_DECLARE(hhittable_base, oobject)
     OBJECT_DECLARE_VISITOR
 
+    CTOR_DEFAULT(hhittable_base)
+    CTOR_COPY_DEFAULT(hhittable_base)
+    CTOR_MOVE_DELETE(hhittable_base)
+    virtual ~hhittable_base() override;
+
     virtual uint32_t get_hash() const override;
 
     virtual void load_resources()
     {
     };
+
+    void create_physics_state();
+    void update_physics_state(float delta_time);
+    void destroy_physics_state();
 
     // Persistent members
     fvec3 origin = fvec3(0.0f, 0.0f, 0.0f);
@@ -33,6 +42,6 @@ namespace engine
 
     // Runtime members
     faabb bounding_box;
-    std::shared_ptr<reactphysics3d::RigidBody> rigid_body;
+    reactphysics3d::RigidBody* rigid_body;  // owned here, but managed by hscene
   };
 }

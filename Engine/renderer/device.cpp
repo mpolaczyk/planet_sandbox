@@ -78,9 +78,9 @@ namespace engine
     *out_adapter = adapter1.Detach();
   }
 
-  fdevice fdevice::create(IDXGIFactory4* factory)
+  fdevice* fdevice::create(IDXGIFactory4* factory)
   {
-    fdevice device;
+    fdevice* device = new fdevice();
     constexpr D3D_SHADER_MODEL required_shader_model = D3D_SHADER_MODEL_6_0;                
     constexpr D3D_FEATURE_LEVEL required_feature_level = D3D_FEATURE_LEVEL_12_0;            
     
@@ -118,7 +118,7 @@ namespace engine
         throw std::runtime_error("Feature level is not high enough!");
       }
       
-      THROW_IF_FAILED((D3D12CreateDevice(adapter1.Get(), feature_level.MaxSupportedFeatureLevel, IID_PPV_ARGS(device.com.GetAddressOf()))))
+      THROW_IF_FAILED((D3D12CreateDevice(adapter1.Get(), feature_level.MaxSupportedFeatureLevel, IID_PPV_ARGS(device->com.GetAddressOf()))))
       DX_RELEASE(adapter1)
       return device;
     }

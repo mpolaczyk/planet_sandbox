@@ -4,7 +4,7 @@
 #include "d3dx12/d3dx12_core.h"
 
 #include "core/application.h"
-#include "renderer/dx12_lib.h"
+#include "renderer/device.h"
 #include "renderer/pipeline_state.h"
 
 // https://asawicki.info/news_1754_direct3d_12_long_way_to_access_data
@@ -102,8 +102,8 @@ namespace engine
 
   void fgraphics_pipeline::init(const char* name)
   {
-    fdevice& device = fapplication::get_instance()->device;
-    device.create_root_signature(parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature, name);
+    fdevice* device = fapplication::get_instance()->device.get();
+    device->create_root_signature(parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature, name);
 
     fpipeline_state_stream pipeline_state_stream;
     pipeline_state_stream.root_signature = root_signature.Get();
@@ -113,7 +113,7 @@ namespace engine
     pipeline_state_stream.pixel_shader = CD3DX12_SHADER_BYTECODE(pixel_shader->GetBufferPointer(), pixel_shader->GetBufferSize());
     pipeline_state_stream.dsv_format = depth_buffer_format;
     pipeline_state_stream.rtv_formats = render_target_formats;
-    device.create_pipeline_state(pipeline_state_stream, pipeline_state, name);
+    device->create_pipeline_state(pipeline_state_stream, pipeline_state, name);
   }
 
 }

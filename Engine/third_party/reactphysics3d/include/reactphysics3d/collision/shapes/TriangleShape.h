@@ -31,6 +31,9 @@
 #include <reactphysics3d/collision/shapes/AABB.h>
 #include <reactphysics3d/collision/shapes/ConvexPolyhedronShape.h>
 
+#undef min
+#undef max
+
 /// ReactPhysics3D namespace
 namespace reactphysics3d {
 

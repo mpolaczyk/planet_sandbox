@@ -10,14 +10,14 @@
 
 namespace engine
 {
-  fcommand_queue::fcommand_queue(fdevice& device, uint32_t in_back_buffer_count)
+  fcommand_queue::fcommand_queue(fdevice* device, uint32_t in_back_buffer_count)
   {
     back_buffer_count = in_back_buffer_count;
-    device.create_command_queue(com);
+    device->create_command_queue(com);
     for(int i = 0; i < ecommand_list_purpose::num; i++)
     {
       fcommand_pair temp;
-      device.create_command_list(back_buffer_count, temp.command_list.com, temp.command_allocator);
+      device->create_command_list(back_buffer_count, temp.command_list.com, temp.command_allocator);
 #if BUILD_DEBUG
       for(uint32_t n = 0; n < back_buffer_count; n++)
       {
@@ -27,7 +27,7 @@ namespace engine
 #endif
       command_pairs.push_back(temp);
     }
-    device.create_synchronisation(back_buffer_count, next_fence_value, fence, fence_event, fence_value);
+    device->create_synchronisation(back_buffer_count, next_fence_value, fence, fence_event, fence_value);
   }
 
   fcommand_queue::~fcommand_queue()

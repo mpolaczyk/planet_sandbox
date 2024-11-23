@@ -7,19 +7,20 @@
 #include "profile/stats.h"
 #include "engine/hash.h"
 #include "object/object_registry.h"
-#include "hittables/static_mesh.h"
-#include "hittables/sphere.h"
 #include "object/object_visitor.h"
 #include "math/math.h"
-
-#include "reactphysics3d/engine/PhysicsCommon.h"
-#include "reactphysics3d/engine/PhysicsWorld.h"
+#include "renderer/renderer_base.h"
 
 namespace engine
 {
   OBJECT_DEFINE(hscene, hhittable_base, Scene)
   OBJECT_DEFINE_SPAWN(hscene)
   OBJECT_DEFINE_VISITOR(hscene)
+
+  hscene::~hscene()
+  {
+    destroy_scene_physics_state();
+  }
 
   inline uint32_t hscene::get_hash() const
   {
@@ -42,19 +43,27 @@ namespace engine
     }
   }
 
-  void hscene::create_physics_state()
+  void hscene::create_scene_physics_state()
   {
-    LOG_TRACE("Scene: creating physics scene");
-
-    using namespace reactphysics3d;
-    physics_world = fapplication::get_instance()->physics_common->createPhysicsWorld();
     for(hhittable_base* object : objects)
     {
-      Vector3 position(object->origin.x, object->origin.y, object->origin.z);
-      Quaternion orientation = Quaternion::fromEulerAngles(object->rotation.x, object->rotation.y, object->rotation.z);
-      Transform transform(position, orientation);
-      RigidBody* rb = physics_world->createRigidBody(transform);
-      object->rigid_body.reset(rb);
+      object->create_physics_state();
+    }
+  }
+
+  void hscene::update_scene_physics_state(float delta_time)
+  {
+    for(hhittable_base* object : objects)
+    {
+      object->update_physics_state(delta_time);
+    }
+  }
+
+  void hscene::destroy_scene_physics_state()
+  {
+    for(hhittable_base* object : objects)
+    {
+      object->destroy_physics_state();
     }
   }
 

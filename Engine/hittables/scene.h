@@ -2,18 +2,12 @@
 
 #include <string>
 #include <vector>
-#include <memory>
 
 #include <DirectXMath.h>
 
 #include "hittables.h"
 #include "math/camera.h"
 #include "renderer/scene_acceleration.h"
-
-namespace reactphysics3d
-{
-  class PhysicsWorld;
-}
 
 namespace engine
 {
@@ -26,9 +20,16 @@ namespace engine
     OBJECT_DECLARE(hscene, hittable)
     OBJECT_DECLARE_VISITOR
 
+    CTOR_DEFAULT(hscene)
+    CTOR_COPY_DEFAULT(hscene)
+    CTOR_MOVE_DELETE(hscene)
+    virtual ~hscene() override;
+    
     virtual uint32_t get_hash() const override;
     virtual void load_resources() override;
-    void create_physics_state();
+    void create_scene_physics_state();
+    void update_scene_physics_state(float delta_time);
+    void destroy_scene_physics_state();
 
     void add(hhittable_base* object);
     void remove(int object_id);
@@ -37,12 +38,11 @@ namespace engine
 
     // Persistent members
     std::vector<hhittable_base*> objects;
-    rrenderer_base* renderer = nullptr;
+    rrenderer_base* renderer = nullptr;   // TODO shared_ptr
     DirectX::XMFLOAT4 ambient_light_color;
     fcamera camera_config;
 
     // Runtime members
     fscene_acceleration scene_acceleration;
-    reactphysics3d::PhysicsWorld* physics_world;
   };
 }

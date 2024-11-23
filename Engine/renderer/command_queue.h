@@ -34,7 +34,7 @@ namespace engine
   {
     CTOR_DEFAULT(fcommand_queue)
     CTOR_MOVE_COPY_DELETE(fcommand_queue)
-    fcommand_queue(fdevice& device, uint32_t in_back_buffer_count);
+    fcommand_queue(fdevice* device, uint32_t in_back_buffer_count);
     ~fcommand_queue();
     
     

@@ -6,17 +6,15 @@
 #include "core/core.h"
 #include "math/camera.h"
 #include "profile/benchmark.h"
-#include "renderer/device.h"
 
 #if USE_NSIGHT_AFTERMATH
 #include "gpu_crash_handler.h"
 #endif
 
-struct ID3D12Device2;
-
 namespace reactphysics3d
 {
- class PhysicsCommon;
+  class PhysicsCommon;
+  class PhysicsWorld;
 }
 
 using Microsoft::WRL::ComPtr;
@@ -25,8 +23,9 @@ namespace engine
 {
   class rrenderer_base;
   class hscene;
-  struct fcommand_queue;
   class fwindow;
+  struct fcommand_queue;
+  struct fdevice;
 
   class ENGINE_API fapplication
   {
@@ -53,18 +52,23 @@ namespace engine
     virtual void update(float delta_time);
     virtual void draw();
     virtual void render();
+    void load_scene_state() const;
+    void save_scene_state() const;
 
     void set_window(fwindow* in_window);
     void main_loop();
 
     std::shared_ptr<reactphysics3d::PhysicsCommon> physics_common;
-    hscene* scene_root = nullptr;
+    reactphysics3d::PhysicsWorld* physics_world = nullptr;
+    //std::shared_ptr<reactphysics3d::PhysicsWorld> physics_world;  // TODO some nonsense compilation issues
+
+    hscene* scene_root; // managed object does not work well with shared_ptr, because they need to be destroyed through object registry
     fcamera camera;
     
     bool is_running = true;
     std::shared_ptr<fwindow> window;
     
-    fdevice device;
+    std::shared_ptr<fdevice> device;
     std::shared_ptr<fcommand_queue> command_queue;  // TODO move as a member of fdevice
 
 #if USE_NSIGHT_AFTERMATH

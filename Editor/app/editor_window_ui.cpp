@@ -96,7 +96,7 @@ namespace editor
     ImGui::Begin("SCENE", nullptr);
     if (ImGui::MenuItem("SAVE SCENE"))
     {
-      static_cast<feditor_app*>(fapplication::get_instance())->save_scene_state();
+      fapplication::get_instance()->save_scene_state();
       ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SAVED!");
     }
     ImGui::Separator();

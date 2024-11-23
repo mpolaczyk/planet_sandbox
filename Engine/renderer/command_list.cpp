@@ -13,6 +13,7 @@
 #include "hittables/static_mesh.h"
 #include "math/vertex_data.h"
 #include "renderer/dx12_lib.h"
+#include "renderer/device.h"
 
 namespace engine
 {
@@ -51,12 +52,12 @@ namespace engine
 
   void fgraphics_command_list::upload_buffer_resource(uint64_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource) const
   {
-    fdevice& device = fapplication::get_instance()->device;
+    fdevice* device = fapplication::get_instance()->device.get();
 
     if (in_buffer)
     {
-      device.create_buffer_resource(buffer_size, out_gpu_resource);
-      device.create_upload_resource(buffer_size, out_upload_intermediate);
+      device->create_buffer_resource(buffer_size, out_gpu_resource);
+      device->create_upload_resource(buffer_size, out_upload_intermediate);
       
       D3D12_SUBRESOURCE_DATA data;
       data.pData = in_buffer;

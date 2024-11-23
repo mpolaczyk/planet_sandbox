@@ -36,7 +36,7 @@ namespace engine
     virtual void draw();
     void present(fgpu_crash_tracker* gpu_crash_handler);
     void request_resize(uint32_t in_width, uint32_t in_height);
-    bool apply_resize();
+    bool try_apply_resize();
 
     static constexpr uint32_t back_buffer_count = 2;
 

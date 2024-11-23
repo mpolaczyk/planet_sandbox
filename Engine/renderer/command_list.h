@@ -6,7 +6,6 @@
 #include "core/core.h"
 
 struct ID3D12GraphicsCommandList;
-struct ID3D12DescriptorHeap;
 struct ID3D12Resource;
 enum D3D12_RESOURCE_STATES;
 

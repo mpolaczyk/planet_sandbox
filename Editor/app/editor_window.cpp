@@ -8,6 +8,7 @@
 #include "app/editor_app.h"
 #include "renderer/dx12_lib.h"
 #include "renderer/command_queue.h"
+#include "renderer/device.h"
 
 namespace editor
 {
@@ -29,14 +30,14 @@ namespace editor
   {
     fwindow::init(wnd_proc, factory, name);
     
-    fdevice& device = fapplication::get_instance()->device;
+    fdevice* device = fapplication::get_instance()->device.get();
 
     ImGui::StyleColorsClassic();
     ImGui_ImplWin32_Init(hwnd);
 
-    device.create_cbv_srv_uav_descriptor_heap(ui_descriptor_heap, "UI descriptor_heap");
+    device->create_cbv_srv_uav_descriptor_heap(ui_descriptor_heap, "UI descriptor_heap");
     
-    ImGui_ImplDX12_Init(device.com.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM,
+    ImGui_ImplDX12_Init(device->com.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM,
       ui_descriptor_heap.com.Get(),
       ui_descriptor_heap.com->GetCPUDescriptorHandleForHeapStart(),
       ui_descriptor_heap.com->GetGPUDescriptorHandleForHeapStart());

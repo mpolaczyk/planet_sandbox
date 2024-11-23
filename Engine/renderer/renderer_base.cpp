@@ -5,7 +5,6 @@
 #include "object/object_registry.h"
 #include "profile/benchmark.h"
 #include "renderer/renderer_base.h"
-#include "renderer/dx12_lib.h"
 
 #include "core/application.h"
 #include "renderer/command_list.h"

@@ -28,8 +28,16 @@ namespace engine
     XMVECTOR _location = XMVectorSet(location.x, location.y, location.z, 1.f);
     {
       float move_ratio = move_speed * delta_time;
-      XMVECTOR _walk = XMVectorSet(static_cast<float>(input_right - input_left) * move_ratio, 0.0f, static_cast<float>(input_forward - input_backward) * move_ratio, 1.0f * move_ratio);
-      XMVECTOR _climb = XMVectorSet(0.0f, static_cast<float>(input_up - input_down) * move_ratio, 0.0f, 1.0f * move_ratio);
+      XMVECTOR _walk = XMVectorSet(
+        static_cast<float>(input_right - input_left) * move_ratio,
+        0.0f,
+        static_cast<float>(input_forward - input_backward) * move_ratio,
+        1.0f * move_ratio);
+      XMVECTOR _climb = XMVectorSet(
+        0.0f,
+        static_cast<float>(input_up - input_down) * move_ratio,
+        0.0f,
+        1.0f * move_ratio);
       _location += XMVector3Rotate(_walk, _rotation_quaternion);
       _location += _climb;
       _location = XMVectorSetW(_location, 1.0f);

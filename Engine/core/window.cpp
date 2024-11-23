@@ -11,6 +11,7 @@
 #include "renderer/dx12_lib.h"
 #include "renderer/renderer_base.h"
 #include "renderer/command_queue.h"
+#include "renderer/device.h"
 #include "hittables/scene.h"
 #include "renderer/command_list.h"
 
@@ -29,14 +30,14 @@ namespace engine
     hwnd = ::CreateWindow(wc.lpszClassName, name, WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
 
     std::shared_ptr<fcommand_queue> command_queue = fapplication::get_instance()->command_queue;
-    fdevice& device = fapplication::get_instance()->device;
+    fdevice* device = fapplication::get_instance()->device.get();
     
     screen_tearing = fdx12::enable_screen_tearing(factory);
     fdx12::create_swap_chain(hwnd, factory.Get(), command_queue->com.Get(), back_buffer_count, screen_tearing, swap_chain);
     
-    device.create_render_target_descriptor_heap(rtv_descriptor_heap, "main");
-    device.create_depth_stencil_descriptor_heap(dsv_descriptor_heap, "main");
-    device.create_cbv_srv_uav_descriptor_heap(main_descriptor_heap, "main");
+    device->create_render_target_descriptor_heap(rtv_descriptor_heap, "main");
+    device->create_depth_stencil_descriptor_heap(dsv_descriptor_heap, "main");
+    device->create_cbv_srv_uav_descriptor_heap(main_descriptor_heap, "main");
   }
 
   void fwindow::show() const
@@ -111,7 +112,7 @@ namespace engine
     requested_height = in_height;
   }
 
-  bool fwindow::apply_resize()
+  bool fwindow::try_apply_resize()
   {
     if(width == requested_width && height == requested_height)
     {
@@ -120,7 +121,7 @@ namespace engine
     width = requested_width;
     height = requested_height;
     std::shared_ptr<fcommand_queue> command_queue = fapplication::get_instance()->command_queue;
-    fdevice& device = fapplication::get_instance()->device;
+    fdevice* device = fapplication::get_instance()->device.get();
 
     // Release resources if they already exist
     if(rtv.size() == back_buffer_count)
@@ -145,10 +146,10 @@ namespace engine
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       ftexture_resource temp;
-      device.create_back_buffer(swap_chain.Get(), n, rtv_descriptor_heap, temp, std::format("{}",n).c_str());
+      device->create_back_buffer(swap_chain.Get(), n, rtv_descriptor_heap, temp, std::format("{}",n).c_str());
       rtv.emplace_back(std::move(temp));
     }
-    device.create_depth_stencil(&dsv_descriptor_heap, dsv, width, height, DXGI_FORMAT_D32_FLOAT, D3D12_RESOURCE_STATE_DEPTH_WRITE, "main");
+    device->create_depth_stencil(&dsv_descriptor_heap, dsv, width, height, DXGI_FORMAT_D32_FLOAT, D3D12_RESOURCE_STATE_DEPTH_WRITE, "main");
     return true;
   }
 }
