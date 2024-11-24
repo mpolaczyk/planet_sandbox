@@ -94,32 +94,25 @@ namespace engine
     REG.create_class_objects();
 
     LOG_INFO("Creating rendering resources");
-
     ComPtr<IDXGIFactory4> factory;
     fdx12::create_factory(factory);
-    
 #if USE_NSIGHT_AFTERMATH
     gpu_crash_handler.pre_device_creation(window->back_buffer_count);
 #endif
-    
 #if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH
     fdx12::enable_debug_layer();
 #else
     LOG_WARN("Disabling the DX12 debug layer and GPU validation!")
 #endif
-    
     device.reset(fdevice::create(factory.Get()));
-
 #if USE_NSIGHT_AFTERMATH
     gpu_crash_handler.post_device_creation(device.com.Get());
 #endif
-    
 #if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH
     device->enable_info_queue();
 #else
     LOG_WARN("Disabling the info queue!")
 #endif
-
     command_queue.reset(new fcommand_queue(device.get(), window->back_buffer_count));
 #if USE_NSIGHT_AFTERMATH
     for (uint32_t i = 0; i < window->back_buffer_count; i++)
@@ -135,9 +128,10 @@ namespace engine
     using namespace reactphysics3d;
     scene_root = hscene::spawn();
     physics_common = std::make_shared<PhysicsCommon>();
-    {
-      
-    }
+    DefaultLogger* logger = physics_common->createDefaultLogger();
+    uint log_level = static_cast<uint>(static_cast<uint>(Logger::Level::Warning) | static_cast<uint>(Logger::Level::Error));
+    logger->addStreamDestination(std::cout, log_level, DefaultLogger::Format::Text);
+    physics_common->setLogger(logger);
 
     LOG_INFO("Loading scene persistent state");
     load_scene_state();
@@ -195,7 +189,7 @@ namespace engine
 
     PhysicsWorld::WorldSettings settings;
     settings.isSleepingEnabled = false;
-    settings.gravity = Vector3(0, -9.81, 0);
+    settings.gravity = Vector3(0, -9.81f, 0);
     settings.defaultTimeBeforeSleep = 5.0f;
     physics_world = physics_common->createPhysicsWorld(settings);
     scene_root->create_scene_physics_state();

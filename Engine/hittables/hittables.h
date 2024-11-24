@@ -9,7 +9,7 @@
 
 namespace reactphysics3d
 {
-  class RigidBody;  
+  class RigidBody;
 }
 
 namespace engine
@@ -31,9 +31,9 @@ namespace engine
     {
     };
 
-    void create_physics_state();
+    virtual void create_physics_state();
     void update_physics_state(float delta_time);
-    void destroy_physics_state();
+    virtual void destroy_physics_state();
 
     // Persistent members
     fvec3 origin = fvec3(0.0f, 0.0f, 0.0f);
@@ -43,7 +43,6 @@ namespace engine
     int32_t rigid_body_type = 0; // maps to reactphysics3d::BodyType
     
     // Runtime members
-    faabb bounding_box;
     reactphysics3d::RigidBody* rigid_body;  // owned here, but managed by hscene
     fvec3 pre_physics_origin = fvec3(0.0f, 0.0f, 0.0f);
     fvec3 pre_physics_rotation = fvec3(0.0f, 0.0f, 0.0f); // degrees

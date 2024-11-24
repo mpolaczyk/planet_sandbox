@@ -5,6 +5,7 @@
 #include "core/application.h"
 #include "profile/stats.h"
 #include "engine/hash.h"
+#include "math/math.h"
 #include "object/object_registry.h"
 #include "object/object_visitor.h"
 
@@ -36,13 +37,15 @@ namespace engine
     
     // Needs to happen after persistent state is loaded
     const Vector3 position(origin.x, origin.y, origin.z);
-    const Quaternion& orientation = Quaternion::fromEulerAngles(rotation.x, rotation.y, rotation.z);
+    const Quaternion& orientation = Quaternion::fromEulerAngles(fmath::degrees_to_radians(rotation.x), fmath::degrees_to_radians(rotation.y), fmath::degrees_to_radians(rotation.z));
     const Transform transform(position, orientation);
     rigid_body = fapplication::get_instance()->physics_world->createRigidBody(transform);
     rigid_body->enableGravity(gravity_enabled);
     rigid_body->setType(static_cast<BodyType>(rigid_body_type));
   }
 
+
+  
   void hhittable_base::update_physics_state(float delta_time)
   {
     using namespace reactphysics3d;
@@ -51,11 +54,17 @@ namespace engine
     if(delta_time == 0.0f) return;
     
     const Transform& transform = rigid_body->getTransform();
+
     const Vector3& position = transform.getPosition();
-    //const Quaternion& rotation = transform.getOrientation();  // TODO quaternion to euler angles
     origin.x = position.x;
     origin.y = position.y;
     origin.z = position.z;
+    
+    const Quaternion& quat = transform.getOrientation();
+    const fvec3 rot_rad = fmath::quaternion_to_rpy(quat.x, quat.y, quat.z, quat.w);
+    rotation.x = fmath::radians_to_degrees(rot_rad.x);
+    rotation.y = fmath::radians_to_degrees(rot_rad.y);
+    rotation.z = fmath::radians_to_degrees(rot_rad.z);
   }
 
   void hhittable_base::destroy_physics_state()

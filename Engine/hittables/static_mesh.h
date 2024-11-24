@@ -9,6 +9,12 @@
 #include "assets/mesh.h"
 #include "assets/material.h"
 
+namespace reactphysics3d
+{
+  class BoxShape;
+  class Collider;
+}
+
 namespace engine
 {
   class ENGINE_API hstatic_mesh : public hhittable_base
@@ -19,11 +25,17 @@ namespace engine
     
     virtual uint32_t get_hash() const override;
     virtual void load_resources() override;
-
+    virtual void create_physics_state() override;
+    virtual void destroy_physics_state() override;
+    
     void get_object_matrices(const XMFLOAT4X4& view_projection, fobject_data& out_data);
 
     // Persistent state
     fsoft_asset_ptr<astatic_mesh> mesh_asset_ptr;
     fsoft_asset_ptr<amaterial> material_asset_ptr;
+
+    // Runtime members
+    reactphysics3d::BoxShape* box_shape = nullptr;  // base: CollisionShape
+    reactphysics3d::Collider* collider = nullptr;   
   };
 }

@@ -24,7 +24,7 @@ namespace engine
 
   inline uint32_t hscene::get_hash() const
   {
-    uint32_t a = 0;
+    uint32_t a = camera_config.get_hash();
     for(const hhittable_base* obj : objects)
     {
       a = fhash::combine(a, obj->get_hash());

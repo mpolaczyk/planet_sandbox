@@ -20,6 +20,11 @@ namespace engine
     return degrees * fmath::pi / 180.0f;
   }
 
+  float fmath::radians_to_degrees(float degrees)
+  {
+    return degrees * 180.0f / fmath::pi;
+  }
+
   bool fmath::is_almost_zero(float value)
   {
     return value <= epsilon && value >= -epsilon;
@@ -300,6 +305,28 @@ namespace engine
     direction.y = sinf(rpy.z) * cosf(rpy.x);
     direction.z = sinf(rpy.x);
     return direction;
+  }
+
+  fvec3 fmath::quaternion_to_rpy(float x, float y, float z, float w)
+  {
+    fvec3 angles;
+
+    // roll (x-axis rotation)
+    double sinr_cosp = 2 * (w * x + y * z);
+    double cosr_cosp = 1 - 2 * (x * x + y * y);
+    angles.x = atan2(sinr_cosp, cosr_cosp);
+
+    // pitch (y-axis rotation)
+    double sinp = sqrt(1 + 2 * (w * y - x * z));
+    double cosp = sqrt(1 - 2 * (w * y - x * z));
+    angles.y = 2 * atan2(sinp, cosp) - 3.14159265 / 2;
+
+    // yaw (z-axis rotation)
+    double siny_cosp = 2 * (w * z + x * y);
+    double cosy_cosp = 1 - 2 * (y * y + z * z);
+    angles.z = atan2(siny_cosp, cosy_cosp);
+
+    return angles;
   }
 
   fvec3 fmath::min3(const fvec3& a, const fvec3& b)

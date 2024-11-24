@@ -30,6 +30,7 @@ namespace engine
     static float reflectance(float cosine, float ref_idx);
     static float sign(float value);
     static float degrees_to_radians(float degrees);
+    static float radians_to_degrees(float degrees);
     static bool is_almost_zero(float value);
     static bool is_almost_equal(float a, float b);
     static float inv_sqrt(float x);
@@ -57,6 +58,7 @@ namespace engine
     static fvec3 rotate_pitch(const fvec3& u, float pitch);
     static fvec3 rotate_roll(const fvec3& u, float roll);
     static fvec3 rpy_to_direction(const fvec3& rpy);
+    static fvec3 quaternion_to_rpy(float x, float y, float z, float w);
     static fvec3 min3(const fvec3& a, const fvec3& b);
     static fvec3 max3(const fvec3& a, const fvec3& b);
     static void get_sphere_uv(const fvec3& p, float& out_u, float& out_v);
