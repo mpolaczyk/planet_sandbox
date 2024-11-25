@@ -21,9 +21,8 @@ struct fps_output
   float4 position_ws : SV_Target0;
   float4 normal_ws	 : SV_Target1;
   float4 tex_color	 : SV_Target2;
-  float4 object_id   : SV_Target3;
-  uint material_id   : SV_Target4;
-  uint is_selected   : SV_Target5;
+  uint material_id   : SV_Target3;
+  uint is_selected   : SV_Target4;
 };
 
 struct fobject_data
@@ -31,7 +30,6 @@ struct fobject_data
   matrix model_world;
   matrix inverse_transpose_model_world;
   matrix model_world_view_projection;
-  float4 object_id;    
   uint material_id;
   uint is_selected;
 };
@@ -57,7 +55,6 @@ fps_output ps_main(fvs_output input) : SV_Target
   output.normal_ws   = float4(input.normal_ws, 1.0);
   output.tex_color   = texture0.Sample(sampler_obj, input.uv);
   output.material_id = object_data.material_id;
-  output.object_id   = object_data.object_id;
   output.is_selected = object_data.is_selected;
   return output;
 }

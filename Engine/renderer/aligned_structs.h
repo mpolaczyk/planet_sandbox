@@ -67,7 +67,6 @@ namespace engine
     int32_t show_specular; // 4
     int32_t show_diffuse; // 4
     int32_t show_normals; // 4
-    int32_t show_object_id; // 4
     int32_t padding[2]; // 8
   };
 
@@ -78,7 +77,6 @@ namespace engine
     XMFLOAT4X4 model_world; // 64 Used to transform the vertex position from object space to world space
     XMFLOAT4X4 inverse_transpose_model_world; // 64 Used to transform the vertex normal from object space to world space
     XMFLOAT4X4 model_world_view_projection; // 64 Used to transform the vertex position from object space to projected clip space
-    XMFLOAT4 object_id; // 16
     uint32_t material_id; // 4   // TODO pack bits
     uint32_t is_selected; // 4
   };

@@ -30,7 +30,6 @@ struct fobject_data
   matrix model_world;
   matrix inverse_transpose_model_world;
   matrix model_world_view_projection;
-  float4 object_id;
   uint material_id;
   uint is_selected;
 };
@@ -44,7 +43,6 @@ struct fframe_data
   int show_specular;			    // 4
   int show_diffuse; 			    // 4
   int show_normals;			      // 4
-  int show_object_id;         // 4
   int2 padding;				        // 8
 };
 
@@ -114,10 +112,6 @@ float4 ps_main(fvs_output input) : SV_Target
   {
     return float4(input.normal_ws * 0.5 + 0.5, 1);
   }
-  else if(frame_data.show_object_id)
-  {
-    return object_data.object_id;
-  }
   else
   {
     const uint material_id = NonUniformResourceIndex(object_data.material_id);
@@ -133,7 +127,7 @@ float4 ps_main(fvs_output input) : SV_Target
     }
     
     const float4 selection_emissive = { 0.5, 0.5, 0.5, 1 };
-    float4 emissive = max(material.emissive, object_data.is_selected * selection_emissive);
+    float4 emissive = max(material.emissive, object_data.is_selected * selection_emissive)  * frame_data.show_emissive;
     float4 ambient = material.ambient * frame_data.ambient_light * frame_data.show_ambient;
     float4 diffuse = material.diffuse * light_final.diffuse * frame_data.show_diffuse;
     float4 specular = material.specular * light_final.specular * frame_data.show_specular;

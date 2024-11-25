@@ -29,7 +29,6 @@ namespace engine
 
     // Runtime
     frenderer_context context;
-    int show_object_id = 0;
     
     // Main public interface
     void set_renderer_context(frenderer_context&& in_context);

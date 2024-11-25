@@ -27,8 +27,7 @@ Texture2D position_ws_texture		: register(t0);
 Texture2D normal_ws_texture		  : register(t1);
 Texture2D tex_color_texture		  : register(t2);
 Texture2D<uint> material_id_texture		: register(t3);
-Texture2D object_id_texture		        : register(t4);
-Texture2D<uint> is_selected_texture		: register(t5);
+Texture2D<uint> is_selected_texture		: register(t4);
 
 sampler sampler0 : register(s0);
 
@@ -40,7 +39,6 @@ cbuffer fframe_data : register(b0)
   int show_position_ws;			// 4        // TODO bit flags
   int show_normal_ws;			  // 4
   int show_tex_color;			  // 4
-  int show_object_id;        // 4
   flight_properties lights[MAX_LIGHTS];    // 80xN
   fmaterial_properties materials[MAX_MATERIALS];  // 80xN
 };
@@ -100,13 +98,8 @@ float4 ps_main(fvs_output input) : SV_Target
   float3 normal_ws     = normal_ws_texture.Sample(sampler0, input.uv).xyz;
   float4 tex_color     = { 1, 1, 1, 1 };
   uint material_id     = material_id_texture.Load(int3(input.position_cs.xy, 0));
-  float4 object_id     = object_id_texture.Sample(sampler0, input.uv).xyzw;
   uint is_selected     = is_selected_texture.Load(int3(input.position_cs.xy, 0));
   
-  if(show_object_id)
-  {
-    return object_id;
-  }
   if(show_position_ws)
   {
     return position_ws;

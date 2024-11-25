@@ -16,7 +16,6 @@ namespace engine
     virtual void draw(fgraphics_command_list* command_list) override;
     virtual void init_size_dependent(bool cleanup) override;
     
-    int show_object_id = 0;
     
     // Output
  //   ComPtr<ID3D11Texture2D> output_texture[egbuffer_type::count];

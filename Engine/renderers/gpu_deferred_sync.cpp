@@ -34,7 +34,6 @@ namespace engine
   void rgpu_deferred_sync::draw_internal(fgraphics_command_list* command_list)
   {
     gbuffer_pass.set_renderer_context(&context);
-    gbuffer_pass.show_object_id = show_object_id; // TODO Selection should be done as a separate pass
     gbuffer_pass.draw(command_list);
     
     //gbuffer_pass.set_renderer_context(&context);
@@ -49,9 +48,7 @@ namespace engine
     //deferred_lighting_pass.gbuffer_srvs[egbuffer_type::normal] = gbuffer_pass.output_srv[egbuffer_type::normal];
     //deferred_lighting_pass.gbuffer_srvs[egbuffer_type::position] = gbuffer_pass.output_srv[egbuffer_type::position];
     //deferred_lighting_pass.gbuffer_srvs[egbuffer_type::tex_color] = gbuffer_pass.output_srv[egbuffer_type::tex_color];
-    //deferred_lighting_pass.gbuffer_srvs[egbuffer_type::object_id] = gbuffer_pass.output_srv[egbuffer_type::object_id];
     //deferred_lighting_pass.gbuffer_srvs[egbuffer_type::is_selected] = gbuffer_pass.output_srv[egbuffer_type::is_selected];
-    //deferred_lighting_pass.show_object_id = show_object_id;
     //deferred_lighting_pass.draw(command_list);
   }
 }

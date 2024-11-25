@@ -140,7 +140,6 @@ namespace engine
       fobject_data& object_data = scene_acceleration.object_buffer[i];
       const hstatic_mesh* sm = scene_acceleration.h_meshes[i];
       object_data.is_selected = context->selected_object == sm ? 1 : 0;
-      object_data.object_id = fmath::uint32_to_colorf(sm->get_hash());
     }
 
     // Process frame data CBV
@@ -152,7 +151,6 @@ namespace engine
       data.show_diffuse = show_diffuse;
       data.show_emissive = show_emissive;
       data.show_normals = show_normals;
-      data.show_object_id = show_object_id;
       data.show_specular = show_specular;
       frame_data[back_buffer_index].upload(&data);
     }

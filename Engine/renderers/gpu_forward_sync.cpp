@@ -28,7 +28,6 @@ namespace engine
   void rgpu_forward_sync::draw_internal(fgraphics_command_list* command_list)
   {
     forward_pass.set_renderer_context(&context);
-    forward_pass.show_object_id = show_object_id; // TODO Selection should be done as a separate pass
     forward_pass.draw(command_list);
   }
 

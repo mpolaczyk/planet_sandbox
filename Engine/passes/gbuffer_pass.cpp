@@ -117,7 +117,6 @@ namespace engine
 //          pod.material_id = scene_acceleration->material_map.at(material);
 //        }
 //        pod.is_selected = selected_object == sm ? 1 : 0;
-//        pod.object_id = fmath::uint32_to_colorf(sm->get_hash());
 //        dx.update_constant_buffer<fobject_data>(&pod, object_constant_buffer);
 //      }
 //
