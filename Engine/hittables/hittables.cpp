@@ -30,10 +30,6 @@ namespace engine
   void hhittable_base::create_physics_state()
   {
     using namespace reactphysics3d;
-
-    // State before physics state is created (use to reset the simulation)
-    pre_physics_origin = origin;
-    pre_physics_rotation = rotation;
     
     // Needs to happen after persistent state is loaded
     const Vector3 position(origin.x, origin.y, origin.z);
@@ -42,9 +38,35 @@ namespace engine
     rigid_body = fapplication::get_instance()->physics_world->createRigidBody(transform);
     rigid_body->enableGravity(gravity_enabled);
     rigid_body->setType(static_cast<BodyType>(rigid_body_type));
+
+    set_physics_state();
   }
 
+  void hhittable_base::set_physics_state()
+  {
+    using namespace reactphysics3d;
+    
+    pre_physics_origin = origin;
+    pre_physics_rotation = rotation;
+  }
 
+  void hhittable_base::reset_physics_state()
+  {
+    if(!rigid_body) return;
+    using namespace reactphysics3d;
+
+    origin = pre_physics_origin;
+    rotation = pre_physics_rotation;
+
+    const Vector3 velocity(0.0f, 0.0f, 0.0f);
+    const Vector3 position(origin.x, origin.y, origin.z);
+    const Quaternion& orientation = Quaternion::fromEulerAngles(fmath::degrees_to_radians(rotation.x), fmath::degrees_to_radians(rotation.y), fmath::degrees_to_radians(rotation.z));
+    const Transform transform(position, orientation);
+    rigid_body->setTransform(transform);
+    rigid_body->setLinearVelocity(velocity);
+    rigid_body->resetForce();
+    rigid_body->resetTorque();
+  }
   
   void hhittable_base::update_physics_state(float delta_time)
   {

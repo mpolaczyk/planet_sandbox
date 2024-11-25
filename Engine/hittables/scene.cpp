@@ -64,6 +64,22 @@ namespace engine
     }
   }
 
+  void hscene::set_scene_physics_state()
+  {
+    for(hhittable_base* object : objects)
+    {
+      object->set_physics_state();
+    }
+  }
+  
+  void hscene::reset_scene_physics_state()
+  {
+    for(hhittable_base* object : objects)
+    {
+      object->reset_physics_state();
+    }
+  }
+
   void hscene::destroy_scene_physics_state()
   {
     if(!is_simulating_physics) return;

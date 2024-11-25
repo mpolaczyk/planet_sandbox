@@ -32,6 +32,8 @@ namespace engine
     };
 
     virtual void create_physics_state();
+    void set_physics_state();
+    void reset_physics_state();
     void update_physics_state(float delta_time);
     virtual void destroy_physics_state();
 

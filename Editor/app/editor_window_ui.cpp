@@ -29,19 +29,21 @@ namespace editor
 {
   void feditor_window::draw_editor_window(feditor_window_model& model)
   {
-    ImGui::Begin("EDITOR", nullptr);
-    ImGui::Separator();
-    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "STATS");
-    ImGui::Separator();
-    ImGui::Text("Update %.3f ms", fapplication::stat_update_time.get_last_time_ms());
-    ImGui::Text("Draw %.3f ms", fapplication::stat_draw_time.get_last_time_ms());
-    ImGui::Text("Render %.3f ms", fapplication::stat_render_time.get_last_time_ms());
-    float frame_time = fapplication::stat_frame_time.get_last_time_ms();
-    float fps = 1.0f/frame_time*1000.0f;
-    ImGui::Text("Frame %.3f ms  %.2f FPS", frame_time, fps);
-    draw_hotkeys_panel();
-    draw_materials_panel(model.rp_model);
-    draw_object_registry_panel();
+    if(ImGui::Begin("EDITOR", nullptr))
+    {
+      ImGui::Separator();
+      ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "STATS");
+      ImGui::Separator();
+      ImGui::Text("Update %.3f ms", fapplication::stat_update_time.get_last_time_ms());
+      ImGui::Text("Draw %.3f ms", fapplication::stat_draw_time.get_last_time_ms());
+      ImGui::Text("Render %.3f ms", fapplication::stat_render_time.get_last_time_ms());
+      float frame_time = fapplication::stat_frame_time.get_last_time_ms();
+      float fps = 1.0f/frame_time*1000.0f;
+      ImGui::Text("Frame %.3f ms  %.2f FPS", frame_time, fps);
+      draw_hotkeys_panel();
+      draw_materials_panel(model.rp_model);
+      draw_object_registry_panel();
+    }
     ImGui::End();
   }
   void feditor_window::draw_hotkeys_panel()
@@ -99,25 +101,27 @@ namespace editor
 
   void feditor_window::draw_scene_window(fscene_window_model& model)
   {
-    ImGui::Begin("SCENE", nullptr);
-    if (ImGui::MenuItem("SAVE SCENE"))
+    if(ImGui::Begin("SCENE", nullptr))
     {
-      fapplication::get_instance()->save_scene_state();
-      ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SAVED!");
-    }
-    ImGui::Separator();
+      if (ImGui::MenuItem("SAVE SCENE"))
+      {
+        fapplication::get_instance()->save_scene_state();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SAVED!");
+      }
+      ImGui::Separator();
 
-    if (ImGui::MenuItem("LOAD FROM FBX"))
-    {
-      ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Importing!");
-      engine::ffbx::load_fbx_assimp(model.import_file, get_editor_app()->scene_root);
-    }
-    fui_helper::input_text("FBX file", model.import_file);
+      if (ImGui::MenuItem("LOAD FROM FBX"))
+      {
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Importing!");
+        engine::ffbx::load_fbx_assimp(model.import_file, get_editor_app()->scene_root);
+      }
+      fui_helper::input_text("FBX file", model.import_file);
 
-    draw_renderer_panel(model.rp_model);
-    draw_camera_panel();
-    draw_scene_panel();
-    draw_scene_objects_panel(model.op_model);
+      draw_renderer_panel(model.rp_model);
+      draw_camera_panel();
+      draw_scene_panel();
+      draw_scene_objects_panel(model.op_model);
+    }
     ImGui::End();
   }
   void feditor_window::draw_renderer_panel(frenderer_panel_model& model)

@@ -29,6 +29,8 @@ namespace engine
     virtual void load_resources() override;
     void create_scene_physics_state();
     void update_scene_physics_state(float delta_time);
+    void set_scene_physics_state();
+    void reset_scene_physics_state();
     void destroy_scene_physics_state();
 
     void add(hhittable_base* object);

@@ -43,8 +43,7 @@ namespace engine
     if(physics_world)
     {
       LOG_INFO("Destroying physics scene");
-      physics_common->destroyPhysicsWorld(physics_world);
-      physics_world = nullptr;
+      end_physics();
     }
     
     LOG_INFO("Destroying other resources");
@@ -124,17 +123,18 @@ namespace engine
 #endif
     command_queue->flush();
 
+    LOG_INFO("Loading scene persistent state");
+    scene_root = hscene::spawn();
+    load_scene_state();
+    
     LOG_INFO("Creating physics scene");
     using namespace reactphysics3d;
-    scene_root = hscene::spawn();
     physics_common = std::make_shared<PhysicsCommon>();
     DefaultLogger* logger = physics_common->createDefaultLogger();
     uint log_level = static_cast<uint>(static_cast<uint>(Logger::Level::Warning) | static_cast<uint>(Logger::Level::Error));
     logger->addStreamDestination(std::cout, log_level, DefaultLogger::Format::Text);
     physics_common->setLogger(logger);
-
-    LOG_INFO("Loading scene persistent state");
-    load_scene_state();
+    begin_physics();
 
     LOG_INFO("Initiating the window");
     window->init(WndProc, factory, L"Editor");
@@ -197,7 +197,6 @@ namespace engine
   void fapplication::end_physics()
   {
     scene_root->destroy_scene_physics_state();
-
     physics_common->destroyPhysicsWorld(physics_world);
     physics_world = nullptr;
   }
@@ -214,15 +213,18 @@ namespace engine
     {
       if(wants_to_simulate_physics && !scene_root->is_simulating_physics)
       {
-        begin_physics();
+        scene_root->is_simulating_physics = true;
+        scene_root->set_scene_physics_state();
       }
       else if(!wants_to_simulate_physics && scene_root->is_simulating_physics)
       {
-        end_physics();
+        scene_root->is_simulating_physics = false;
+        scene_root->reset_scene_physics_state();
       }
       if(scene_root->is_simulating_physics && delta_time != 0.0f)
       {
         update_physics(delta_time);
+        
       }
       scene_root->camera.update(delta_time, scene_root->renderer->context.width, scene_root->renderer->context.height);
       window->update();
