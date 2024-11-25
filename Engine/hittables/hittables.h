@@ -1,10 +1,7 @@
 #pragma once
 
 #include "core/core.h"
-
 #include "math/vec3.h"
-#include "math/aabb.h"
-
 #include "object/object.h"
 
 namespace reactphysics3d
@@ -26,17 +23,15 @@ namespace engine
     virtual ~hhittable_base() override;
 
     virtual uint32_t get_hash() const override;
-
-    void set_transform(const fvec3& in_origin, const fvec3& in_rotation);
     
     virtual void load_resources()
     {
     };
 
     virtual void create_physics_state();
-    void set_physics_state();
-    void reset_physics_state();
-    void update_physics_state(float delta_time);
+    void save_pre_physics_state();
+    void restore_pre_physics_state();
+    void update_physics_state();
     virtual void destroy_physics_state();
 
     // Persistent members
@@ -47,7 +42,7 @@ namespace engine
     int32_t rigid_body_type = 0; // maps to reactphysics3d::BodyType
     
     // Runtime members
-    reactphysics3d::RigidBody* rigid_body;  // owned here, but managed by hscene
+    reactphysics3d::RigidBody* rigid_body;  // ownership
     fvec3 pre_physics_origin = fvec3(0.0f, 0.0f, 0.0f);
     fvec3 pre_physics_rotation = fvec3(0.0f, 0.0f, 0.0f); // degrees
   };

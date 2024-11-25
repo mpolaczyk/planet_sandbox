@@ -129,6 +129,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClInclude Include="core\concepts.h" />
     <ClInclude Include="core\gpu_crash_handler.h" />
     <ClInclude Include="core\window.h" />
+    <ClInclude Include="engine\physics.h" />
     <ClInclude Include="engine\string_tools.h" />
     <ClInclude Include="hittables\hittables.h" />
     <ClInclude Include="hittables\light.h" />
@@ -212,6 +213,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClCompile Include="core\core.cpp" />
     <ClCompile Include="core\gpu_crash_handler.cpp" />
     <ClCompile Include="core\window.cpp" />
+    <ClCompile Include="engine\physics.cpp" />
     <ClCompile Include="engine\string_tools.cpp" />
     <ClCompile Include="hittables\hittables.cpp" />
     <ClCompile Include="hittables\light.cpp" />

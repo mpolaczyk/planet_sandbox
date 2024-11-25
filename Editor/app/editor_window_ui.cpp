@@ -15,15 +15,12 @@
 #include "engine.h"
 #include "app/editor_app.h"
 #include "app/editor_window.h"
+#include "engine/physics.h"
 #include "engine/string_tools.h"
 #include "hittables/hittables.h"
 #include "hittables/static_mesh.h"
 #include "hittables/scene.h"
 #include "resources/ffbx.h"
-
-#include "reactphysics3d/engine/PhysicsWorld.h"
-#include "reactphysics3d/mathematics/Ray.h"
-#include "reactphysics3d/collision/RaycastInfo.h"
 
 namespace editor
 {
@@ -187,11 +184,11 @@ namespace editor
     ImGui::ColorEdit4("Ambient", temp_arr, ImGuiColorEditFlags_::ImGuiColorEditFlags_NoSidePreview);
     temp = { temp_arr[0],temp_arr[1],temp_arr[2],temp_arr[3] };
 
-    if(get_editor_app()->wants_to_simulate_physics)
+    if(get_editor_app()->physics->is_simulating())
     {
       if(ImGui::Button("Reset simulation"))
       {
-        get_editor_app()->wants_to_simulate_physics = false;
+        get_editor_app()->physics->stop_simulating();
       }
       ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "SIMULATING!");
     }
@@ -199,7 +196,7 @@ namespace editor
     {
       if(ImGui::Button("Start simulation"))
       {
-        get_editor_app()->wants_to_simulate_physics = true;
+        get_editor_app()->physics->start_simulating();
       }      
     }
   }
@@ -340,23 +337,10 @@ namespace editor
     const fray ray = camera.get_screen_space_ray(width, height, width/2, height/2);
     constexpr float ray_length = 15.0f;
     object_spawn_location = ray.at(ray_length);
-    
-    // Physics scene querry
-    if(!app->physics_world)
+    fraycast_result hit = fphysics::raycast_closest_body(ray, ray_length);
+    if(hit.body)
     {
-      return;
-    }
-    const reactphysics3d::Vector3 px_a(camera.location.x, camera.location.y, camera.location.z);
-    const reactphysics3d::Vector3 px_b(object_spawn_location.x, object_spawn_location.y, object_spawn_location.z);
-    const reactphysics3d::Ray px_ray(px_a, px_b);
-    raycast_callback px_callback;
-    app->physics_world->raycast(px_ray, &px_callback);
-    if(px_callback.get_closest_body())
-    {
-      reactphysics3d::Vector3 hit = px_callback.get_world_point();
-      object_spawn_location.x = hit.x;
-      object_spawn_location.y = hit.y;
-      object_spawn_location.z = hit.z;
+      object_spawn_location = hit.world_point;
     }
   }
   
@@ -374,7 +358,7 @@ namespace editor
         LOG_WARN("Can't trace scene, no scene!");
         return;
       }
-      if(!app->physics_world)
+      if(!app->physics->physics_world)
       {
         LOG_WARN("Can't trace scene, no physics world!")
         return;
@@ -394,25 +378,14 @@ namespace editor
 
       // World space ray based on screen space click coordinates
       const fray ray = camera.get_screen_space_ray(width, height, static_cast<uint32_t>(point.x - rect.left), static_cast<uint32_t>(point.y - rect.top));
-      constexpr float ray_length = 10000.0f;
-      const fvec3 b = ray.at(ray_length);
-
-      // Physics scene querry
-      const reactphysics3d::Vector3 px_a(camera.location.x, camera.location.y, camera.location.z);
-      const reactphysics3d::Vector3 px_b(b.x, b.y, b.z);
-      const reactphysics3d::Ray px_ray(px_a, px_b);
-      raycast_callback px_callback;
-      app->physics_world->raycast(px_ray, &px_callback);
-
-      // Find rigid body in world
-      // TODO Linear search, use a map
       bool found = false;
-      if(reactphysics3d::Body* hit_body = px_callback.get_closest_body())
+      fraycast_result hit = fphysics::raycast_closest_body(ray, 10000.0f);
+      if(hit.body)
       {
         std::vector<hstatic_mesh*> meshes = REG.get_all_by_type<hstatic_mesh>();
         for (hstatic_mesh* m : meshes)
         {
-          if (m->rigid_body == hit_body)
+          if (static_cast<void*>(m->rigid_body) == static_cast<void*>(hit.body))
           {
             selected_object = m;
             found = true;
@@ -445,7 +418,7 @@ namespace editor
     }
     if(ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Space), false))
     {
-      get_editor_app()->wants_to_simulate_physics = !get_editor_app()->wants_to_simulate_physics;
+      get_editor_app()->physics->toggle_simulating();
     }
 
     // Handle camera movement
@@ -519,7 +492,7 @@ namespace editor
       if (!fmath::is_zero(object_movement_axis) && mouse_delta != 0.0f && selected_object != nullptr)
       {
         fvec3 new_origin = selected_object->origin + object_movement_axis * mouse_delta/50.0f;
-        selected_object->set_transform(new_origin, selected_object->rotation);
+        fphysics::set_rigid_body_transform(new_origin, selected_object->rotation, selected_object->rigid_body);
       }
     }
   }

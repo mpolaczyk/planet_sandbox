@@ -89,4 +89,9 @@ namespace engine
 #endif
     return faabb(corner_min, corner_max);
   }
+
+  fbounding_box fbounding_box::from_min_max(const fvec3& min, const fvec3 max)
+  {
+    return fbounding_box((min + max) * 0.5f, (min - max) * 0.5f);
+  }
 };

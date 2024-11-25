@@ -5,6 +5,7 @@
 #include "draw_edit_panel.h"
 
 #include "ui_helper.h"
+#include "engine/physics.h"
 #include "hittables/hittables.h"
 #include "hittables/light.h"
 #include "hittables/sphere.h"
@@ -34,7 +35,7 @@ namespace editor
 
     if(origin != object.origin || rotation != object.rotation)
     {
-      object.set_transform(origin, rotation);
+      fphysics::set_rigid_body_transform(origin, rotation, object.rigid_body);
     }
   }
 

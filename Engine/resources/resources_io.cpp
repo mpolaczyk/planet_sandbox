@@ -115,10 +115,9 @@ namespace engine
 
       // Bounding box
       const aiAABB& box = ai_mesh->mAABB;
-      const aiVector3D center = (box.mMax + box.mMin) * 0.5f;
-      const aiVector3D extent = (box.mMin - box.mMax) * 0.5f;
-      out_static_mesh->bounding_box.Center = {center.x, center.y, center.z};
-      out_static_mesh->bounding_box.Extents = {extent.x, extent.y, extent.z};
+      const fvec3 min(box.mMin.x, box.mMin.y, box.mMin.z);
+      const fvec3 max(box.mMax.x, box.mMax.y, box.mMax.z);
+      out_static_mesh->bounding_box = fbounding_box::from_min_max(min, max);
     }
     else
     {

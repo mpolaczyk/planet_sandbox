@@ -1,9 +1,8 @@
 #pragma once
 
-#include <directxcollision.h>
-
 #include "core/core.h"
 #include "asset/asset.h"
+#include "math/aabb.h"
 #include "math/vertex_data.h"
 #include "renderer/gpu_resources.h"
 
@@ -24,7 +23,7 @@ namespace engine
     std::string obj_file_name;
 
     // Runtime state
-    DirectX::BoundingBox bounding_box;
+    fbounding_box bounding_box;
     std::vector<fvertex_data> vertex_list;
     std::vector<fface_data> face_list;
     

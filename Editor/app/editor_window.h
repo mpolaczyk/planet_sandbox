@@ -3,13 +3,6 @@
 #include "ui/ui.h"
 #include "core/window.h"
 
-#include "reactphysics3d/collision/RaycastInfo.h"
-
-namespace reactphysics3d
-{
-  class RigidBody;  
-}
-
 namespace engine
 {
   class hscene;
@@ -19,28 +12,6 @@ namespace engine
 namespace editor
 {
   class feditor_app;
-
-  class raycast_callback : public reactphysics3d::RaycastCallback
-  {
-  public:
-    reactphysics3d::Body* get_closest_body() const
-    {
-      return closest_body;
-    };
-
-    reactphysics3d::Vector3 get_world_point() const
-    {
-      return world_point;
-    }
-    
-  protected:
-    virtual float notifyRaycastHit(const reactphysics3d::RaycastInfo& info) override;
-
-  private:
-    float smallest_fraction = 1.0f;
-    reactphysics3d::Body* closest_body = nullptr;
-    reactphysics3d::Vector3 world_point;
-  };
   
   class feditor_window final : public engine::fwindow
   {
@@ -59,8 +30,6 @@ namespace editor
     // Runtime state
     feditor_window_model editor_window_model;
     fscene_window_model scene_window_model;
-
-    reactphysics3d::RigidBody* selected_body;
     
   private:
     static feditor_app* get_editor_app();

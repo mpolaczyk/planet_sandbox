@@ -1,11 +1,13 @@
 #include "core/application.h"
 
 #include <dxgi1_5.h>
+#include <fstream>
 
 #include "core/exceptions.h"
 #include "core/window.h"
-#include "engine/io.h"
 #include "object/object_registry.h"
+#include "engine/io.h"
+#include "engine/physics.h"
 #include "engine/log.h"
 #include "hittables/scene.h"
 #include "math/random.h"
@@ -18,8 +20,6 @@
 #include "resources/assimp_logger.h"
 
 #include "nlohmann/json.hpp"
-#include "reactphysics3d/engine/PhysicsCommon.h"
-#include "reactphysics3d/engine/PhysicsWorld.h"
 
 namespace engine
 {
@@ -40,12 +40,9 @@ namespace engine
     LOG_INFO("Destroying managed objects");
     REG.destroy_all();
 
-    if(physics_world)
-    {
-      LOG_INFO("Destroying physics scene");
-      end_physics();
-    }
-    
+    LOG_INFO("Destroying physics scene");
+    physics.reset();
+
     LOG_INFO("Destroying other resources");
     command_queue.reset();
     window.reset();
@@ -128,13 +125,8 @@ namespace engine
     load_scene_state();
     
     LOG_INFO("Creating physics scene");
-    using namespace reactphysics3d;
-    physics_common = std::make_shared<PhysicsCommon>();
-    DefaultLogger* logger = physics_common->createDefaultLogger();
-    uint log_level = static_cast<uint>(static_cast<uint>(Logger::Level::Warning) | static_cast<uint>(Logger::Level::Error));
-    logger->addStreamDestination(std::cout, log_level, DefaultLogger::Format::Text);
-    physics_common->setLogger(logger);
-    begin_physics();
+    physics = std::make_shared<fphysics>();
+    physics->create_physics(scene_root);
 
     LOG_INFO("Initiating the window");
     window->init(WndProc, factory, L"Editor");
@@ -185,49 +177,13 @@ namespace engine
     }
   }
 
-  void fapplication::begin_physics()
-  {
-    using namespace reactphysics3d;
-
-    PhysicsWorld::WorldSettings settings;
-    settings.isSleepingEnabled = false;
-    settings.gravity = Vector3(0, -9.81f, 0);
-    physics_world = physics_common->createPhysicsWorld(settings);
-    scene_root->create_scene_physics_state();
-  }
-
-  void fapplication::end_physics()
-  {
-    scene_root->destroy_scene_physics_state();
-    physics_common->destroyPhysicsWorld(physics_world);
-    physics_world = nullptr;
-  }
-
-  void fapplication::update_physics(float delta_time)
-  {
-    physics_world->update(delta_time);
-    scene_root->update_scene_physics_state(delta_time);
-  }
+ 
 
   void fapplication::update(float delta_time)
   {
     if(scene_root != nullptr && scene_root->renderer != nullptr)
     {
-      if(wants_to_simulate_physics && !scene_root->is_simulating_physics)
-      {
-        scene_root->is_simulating_physics = true;
-        scene_root->set_scene_physics_state();
-      }
-      else if(!wants_to_simulate_physics && scene_root->is_simulating_physics)
-      {
-        scene_root->is_simulating_physics = false;
-        scene_root->reset_scene_physics_state();
-      }
-      if(scene_root->is_simulating_physics && delta_time != 0.0f)
-      {
-        update_physics(delta_time);
-        
-      }
+      physics->update_physics(delta_time);  // TODO Fixed time step :) ?
       scene_root->camera.update(delta_time, scene_root->renderer->context.width, scene_root->renderer->context.height);
       window->update();
     }

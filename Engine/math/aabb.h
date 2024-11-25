@@ -4,14 +4,13 @@
 
 #include "math/ray.h"
 #include "math/vec3.h"
-#include "math/aabb.h"
 
 namespace engine
 {
-  class ENGINE_API faabb
+  struct ENGINE_API faabb
   {
   public:
-    faabb() = default;
+    CTOR_DEFAULT(faabb)
 
     faabb(const fvec3& in_minimum, const fvec3& in_maximum)
       : minimum(in_minimum), maximum(in_maximum)
@@ -25,5 +24,19 @@ namespace engine
     fvec3 maximum;
 
     static faabb merge(const faabb& box0, const faabb& box1);
+  };
+
+  struct ENGINE_API fbounding_box
+  {
+    CTOR_DEFAULT(fbounding_box)
+
+    fbounding_box(const fvec3& in_center, const fvec3& in_extents)
+      : center(in_center), extents(in_extents)
+    {}
+
+    static fbounding_box from_min_max(const fvec3& min, const fvec3 max);
+    
+    fvec3 center;
+    fvec3 extents;
   };
 }

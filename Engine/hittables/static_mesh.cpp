@@ -6,19 +6,24 @@
 #include "hittables/hittables.h"
 #include "engine/log.h"
 #include "engine/hash.h"
+#include "engine/physics.h"
 #include "math/math.h"
 #include "profile/stats.h"
 #include "object/object_registry.h"
 #include "object/object_visitor.h"
 
-#include "reactphysics3d/engine/PhysicsCommon.h"
-#include "reactphysics3d/mathematics/Vector3.h"
+#include "reactphysics3d/collision/shapes/BoxShape.h"
 
 namespace engine
 {
   OBJECT_DEFINE(hstatic_mesh, hhittable_base, Static mesh)
   OBJECT_DEFINE_SPAWN(hstatic_mesh)
   OBJECT_DEFINE_VISITOR(hstatic_mesh)
+
+  hstatic_mesh::~hstatic_mesh()
+  {
+    destroy_physics_state();
+  }
 
   inline uint32_t hstatic_mesh::get_hash() const
   {
@@ -34,16 +39,13 @@ namespace engine
 
   void hstatic_mesh::create_physics_state()
   {
-    using namespace reactphysics3d;
-
     hhittable_base::create_physics_state();
 
-    const DirectX::BoundingBox& box = mesh_asset_ptr.get()->bounding_box;
-    if(box.Extents.x != 0.0f && box.Extents.y != 0.0f && box.Extents.z != 0.0f)
+    const fbounding_box& box = mesh_asset_ptr.get()->bounding_box;
+    box_shape = fphysics::create_box_shape_collider(box, scale);
+    if(box_shape)
     {
-      const reactphysics3d::Vector3 positive_half_extents(fabs(box.Extents.x * scale.x), fabs(box.Extents.y * scale.y), fabs(box.Extents.z * scale.z));
-      box_shape = fapplication::get_instance()->physics_common->createBoxShape(positive_half_extents);      
-      collider = rigid_body->addCollider(box_shape, Transform::identity());
+      collider = fphysics::attach_collider(rigid_body, box_shape, box);
     }
     else
     {
@@ -55,19 +57,19 @@ namespace engine
   {
     if(collider)
     {
-      rigid_body->removeCollider(collider);
+      fphysics::detach_collider(rigid_body, collider);
       collider = nullptr;
     }
     if(box_shape)
     {
-      fapplication::get_instance()->physics_common->destroyBoxShape(box_shape);
+      fphysics::destroy_box_shape_collider(box_shape);
       box_shape = nullptr;
     }
 
     hhittable_base::destroy_physics_state();
   }
 
-  void hstatic_mesh::get_object_matrices(const XMFLOAT4X4& view_projection, fobject_data& out_data)
+  void hstatic_mesh::get_object_matrices(const XMFLOAT4X4& view_projection, fobject_data& out_data) const
   {
     const XMMATRIX translation_matrix = XMMatrixTranslation(origin.x, origin.y, origin.z);
     const XMMATRIX rotation_matrix =

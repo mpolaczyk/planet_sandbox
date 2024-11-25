@@ -6,10 +6,10 @@
 
 namespace engine
 {
-  class ENGINE_API fray
+  struct ENGINE_API fray
   {
   public:
-    fray() = default;
+    CTOR_DEFAULT(fray)
     fray(const fvec3& origin, const fvec3& direction);
 
     // Returns a point at distance "t" from the origin

@@ -16,22 +16,6 @@ namespace editor
     return static_cast<feditor_app*>(fapplication::get_instance());  
   }
 
-  float raycast_callback::notifyRaycastHit(const reactphysics3d::RaycastInfo& info)
-  {
-    const float ray_terminate = 0.0f;
-    const float ray_not_clipped_continue = 1.0f;
-    const float ray_ignore_collider_continue = -1.0f;
-    float ray_clip_continue = info.hitFraction;
-
-    if(info.hitFraction < smallest_fraction)
-    {
-      closest_body = info.body;
-      world_point = info.worldPoint;
-      return ray_clip_continue;
-    }
-    return smallest_fraction;
-  }
-
   feditor_window::~feditor_window()
   {
     get_editor_app()->save_window_state();
