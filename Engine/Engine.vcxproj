@@ -209,6 +209,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClCompile Include="assets\texture.cpp" />
     <ClCompile Include="assets\vertex_shader.cpp" />
     <ClCompile Include="asset\asset.cpp" />
+    <ClCompile Include="core\core.cpp" />
     <ClCompile Include="core\gpu_crash_handler.cpp" />
     <ClCompile Include="core\window.cpp" />
     <ClCompile Include="engine\string_tools.cpp" />

@@ -89,7 +89,8 @@ namespace engine
     vec3& operator *= (float t) { return *this *= t; }
     vec3& operator /= (float t) { return *this /= t; }
 #endif
-    bool operator==(const fvec3& v) { return x == v.x && y == v.y && z == v.z; }
+    bool operator==(const fvec3& v) const { return x == v.x && y == v.y && z == v.z; }
+    bool operator!=(const fvec3& v) const { return x != v.x || y != v.y || z != v.z; }
 
   public:
     union

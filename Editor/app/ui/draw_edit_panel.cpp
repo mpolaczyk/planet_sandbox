@@ -22,13 +22,20 @@ namespace editor
     {
       object.set_display_name(display_name);
     }
-    
-    ImGui::DragFloat3("Origin", object.origin.e);
-    ImGui::DragFloat3("Rotation", object.rotation.e);
+
+    fvec3 origin = object.origin;
+    fvec3 rotation = object.rotation;
+    ImGui::DragFloat3("Origin", origin.e);
+    ImGui::DragFloat3("Rotation", rotation.e);
     ImGui::DragFloat3("Scale", object.scale.e);
     ImGui::Checkbox("Gravity enabled", &object.gravity_enabled);
     static const char* rigid_body_types[] = {"Static", "Kinematic", "Dynamic"};
     ImGui::Combo("Rigid body type", &object.rigid_body_type, rigid_body_types, 3);
+
+    if(origin != object.origin || rotation != object.rotation)
+    {
+      object.set_transform(origin, rotation);
+    }
   }
 
   void vdraw_edit_panel::visit(hstatic_mesh& object) const

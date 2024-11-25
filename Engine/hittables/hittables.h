@@ -27,6 +27,8 @@ namespace engine
 
     virtual uint32_t get_hash() const override;
 
+    void set_transform(const fvec3& in_origin, const fvec3& in_rotation);
+    
     virtual void load_resources()
     {
     };

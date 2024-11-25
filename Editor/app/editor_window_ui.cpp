@@ -472,9 +472,15 @@ namespace editor
     // Handle camera rotation
     if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
     {
-      ImVec2 mouse_delta = ImGui::GetIO().MouseDelta;
-      camera.input_yaw = static_cast<int>(mouse_delta.x);
-      camera.input_pitch = static_cast<int>(mouse_delta.y);
+      const ImVec2& mouse_delta = ImGui::GetIO().MouseDelta;
+
+      last_yaw = yaw;
+      last_pitch = pitch;
+      yaw = static_cast<int32_t>(mouse_delta.x);
+      pitch = static_cast<int32_t>(mouse_delta.y);
+      
+      camera.input_yaw = (yaw+last_yaw)/2;
+      camera.input_pitch = (pitch+last_pitch)/2;
     }
     else
     {
@@ -512,8 +518,8 @@ namespace editor
       }
       if (!fmath::is_zero(object_movement_axis) && mouse_delta != 0.0f && selected_object != nullptr)
       {
-        fvec3 selected_origin = selected_object->origin;
-        selected_object->origin = selected_origin + object_movement_axis * mouse_delta;
+        fvec3 new_origin = selected_object->origin + object_movement_axis * mouse_delta/50.0f;
+        selected_object->set_transform(new_origin, selected_object->rotation);
       }
     }
   }

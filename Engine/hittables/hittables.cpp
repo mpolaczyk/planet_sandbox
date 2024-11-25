@@ -26,6 +26,19 @@ namespace engine
   {
     return fhash::combine(oobject::get_hash(), fhash::get(origin), fhash::get(rotation), fhash::get(scale));
   }
+
+  void hhittable_base::set_transform(const fvec3& in_origin, const fvec3& in_rotation)
+  {
+    using namespace reactphysics3d;
+
+    origin = in_origin;
+    rotation = in_rotation;
+    
+    const Vector3 position(origin.x, origin.y, origin.z);
+    const Quaternion& orientation = Quaternion::fromEulerAngles(fmath::degrees_to_radians(rotation.x), fmath::degrees_to_radians(rotation.y), fmath::degrees_to_radians(rotation.z));
+    const Transform transform(position, orientation);
+    rigid_body->setTransform(transform);
+  }
   
   void hhittable_base::create_physics_state()
   {

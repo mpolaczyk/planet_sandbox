@@ -9,7 +9,7 @@ namespace engine
 
   void flogger::init()
   {
-    spdlog::set_pattern("[%H:%M:%S.%e] [thread %t] [%^%l%$] %v");
+    spdlog::set_pattern("[%H:%M:%S.%e] [t %t] [%^%l%$] %v");
 
     s_console_logger = spdlog::stdout_color_mt("console");
 
@@ -20,34 +20,36 @@ namespace engine
 #endif
   }
 
+#define FORMAT_LOG(text) std::format("[f {}] [{:.2f}ms] {}", g_frame_number, g_frame_time_ms, text)
+  
   void flogger::trace(const char* fmt)
   {
-    s_console_logger->trace(fmt);
+    s_console_logger->trace(FORMAT_LOG(fmt));
   }
 
   void flogger::debug(const char* fmt)
   {
-    s_console_logger->debug(fmt);
+    s_console_logger->debug(FORMAT_LOG(fmt));
   }
 
   void flogger::info(const char* fmt)
   {
-    s_console_logger->info(fmt);
+    s_console_logger->info(FORMAT_LOG(fmt));
   }
 
   void flogger::warn(const char* fmt)
   {
-    s_console_logger->warn(fmt);
+    s_console_logger->warn(FORMAT_LOG(fmt));
   }
 
   void flogger::error(const char* fmt)
   {
-    s_console_logger->error(fmt);
+    s_console_logger->error(FORMAT_LOG(fmt));
   }
 
   void flogger::critical(const char* fmt)
   {
-    s_console_logger->critical(fmt);
+    s_console_logger->critical(FORMAT_LOG(fmt));
   }
 
   void flogger::flush()

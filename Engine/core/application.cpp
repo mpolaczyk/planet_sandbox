@@ -152,7 +152,9 @@ namespace engine
   {
     while(is_running)
     {
-      float delta_time = stat_frame_time.get_last_time_ms() / 1000.0f;
+      g_frame_number++;
+      g_frame_time_ms = stat_frame_time.get_last_time_ms();
+      float delta_time = g_frame_time_ms / 1000.0f;
       fscope_timer frame_timer(stat_frame_time);
       
       MSG msg;

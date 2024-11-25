@@ -83,6 +83,12 @@ namespace editor
     // Runtime state
     engine::fvec3 object_spawn_location;
 
+    // Camera smooting
+    int32_t yaw = 0;
+    int32_t pitch = 0;
+    int32_t last_yaw = 0;
+    int32_t last_pitch = 0;
+    
     engine::fdescriptor_heap ui_descriptor_heap; // srv, cbv, uav
   };
 }

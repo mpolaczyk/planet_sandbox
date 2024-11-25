@@ -83,3 +83,6 @@
 
 // warning C4275: non dll-interface class ? used as base for dll-interface class ? (compiling source file ?)
 #pragma warning( disable : 4275)
+
+extern int g_frame_number;
+extern float g_frame_time_ms;
