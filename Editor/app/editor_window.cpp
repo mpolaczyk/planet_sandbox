@@ -26,6 +26,7 @@ namespace editor
     if(info.hitFraction < smallest_fraction)
     {
       closest_body = info.body;
+      world_point = info.worldPoint;
       return ray_clip_continue;
     }
     return smallest_fraction;

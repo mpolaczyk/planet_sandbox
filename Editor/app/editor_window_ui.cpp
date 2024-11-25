@@ -275,7 +275,9 @@ namespace editor
 
       if (ImGui::Button("Add", ImVec2(120, 0)) && model.c_model.selected_object != nullptr)
       {
-        get_editor_app()->scene_root->add(REG.spawn_from_class<hhittable_base>(model.c_model.selected_object));
+        hhittable_base* obj = REG.spawn_from_class<hhittable_base>(model.c_model.selected_object);
+        obj->origin = object_spawn_location;
+        get_editor_app()->scene_root->add(obj);
         ImGui::CloseCurrentPopup();
       }
       ImGui::SetItemDefaultFocus();
@@ -322,27 +324,36 @@ namespace editor
   }
   void feditor_window::update_default_spawn_position()
   {
-    fcamera& camera = get_editor_app()->scene_root->camera;
+    fapplication* app = fapplication::get_instance();
+    fcamera& camera = app->scene_root->camera;
 
-    // Find center of the scene, new objects scan be spawned there
-    fvec3 look_from = camera.location;
-    fvec3 look_dir = fmath::to_vec3(camera.forward);
-    float dist_to_focus = 50.0f;
-
-    // Ray to the look at position to find non colliding spawn point
-    fray center_of_scene_ray(look_from, look_dir);
-    fhit_record center_of_scene_hit;
-    // TODO FIX
-    //if (state.scene_root->hit(center_of_scene_ray, 2.0f*dist_to_focus, center_of_scene_hit))
-    //{
-    //  state.center_of_scene = center_of_scene_hit.p;
-    //  state.distance_to_center_of_scene = fmath::length(center_of_scene_hit.p - look_from);
-    //}
-    //else
-    //{
-    //  state.center_of_scene = look_from - look_dir * dist_to_focus;
-    //  state.distance_to_center_of_scene = dist_to_focus;
-    //}
+    if(!app->scene_root)
+    {
+      return;
+    }
+    
+    // Trace from camera
+    const fray ray = camera.get_screen_space_ray(width, height, width/2, height/2);
+    constexpr float ray_length = 15.0f;
+    object_spawn_location = ray.at(ray_length);
+    
+    // Physics scene querry
+    if(!app->physics_world)
+    {
+      return;
+    }
+    const reactphysics3d::Vector3 px_a(camera.location.x, camera.location.y, camera.location.z);
+    const reactphysics3d::Vector3 px_b(object_spawn_location.x, object_spawn_location.y, object_spawn_location.z);
+    const reactphysics3d::Ray px_ray(px_a, px_b);
+    raycast_callback px_callback;
+    app->physics_world->raycast(px_ray, &px_callback);
+    if(px_callback.get_closest_body())
+    {
+      reactphysics3d::Vector3 hit = px_callback.get_world_point();
+      object_spawn_location.x = hit.x;
+      object_spawn_location.y = hit.y;
+      object_spawn_location.z = hit.z;
+    }
   }
   
   void feditor_window::handle_input()
@@ -378,7 +389,7 @@ namespace editor
       }
 
       // World space ray based on screen space click coordinates
-      const fray ray = camera.get_ray(width, height, static_cast<uint32_t>(point.x - rect.left), static_cast<uint32_t>(point.y - rect.top));
+      const fray ray = camera.get_screen_space_ray(width, height, static_cast<uint32_t>(point.x - rect.left), static_cast<uint32_t>(point.y - rect.top));
       constexpr float ray_length = 10000.0f;
       const fvec3 b = ray.at(ray_length);
 
@@ -390,6 +401,7 @@ namespace editor
       app->physics_world->raycast(px_ray, &px_callback);
 
       // Find rigid body in world
+      // TODO Linear search, use a map
       bool found = false;
       if(reactphysics3d::Body* hit_body = px_callback.get_closest_body())
       {

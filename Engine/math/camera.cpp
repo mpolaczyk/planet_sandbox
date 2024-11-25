@@ -68,7 +68,7 @@ namespace engine
     }
   }
 
-  fray fcamera::get_ray(uint32_t ss_width, uint32_t ss_height, uint32_t ss_x, uint32_t ss_y) const
+  fray fcamera::get_screen_space_ray(uint32_t ss_width, uint32_t ss_height, uint32_t ss_x, uint32_t ss_y) const
   {
     // Returns a ray in world space, based on screen space coordinates
     // Based on: https://antongerdelan.net/opengl/raycasting.html

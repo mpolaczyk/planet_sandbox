@@ -27,6 +27,11 @@ namespace editor
     {
       return closest_body;
     };
+
+    reactphysics3d::Vector3 get_world_point() const
+    {
+      return world_point;
+    }
     
   protected:
     virtual float notifyRaycastHit(const reactphysics3d::RaycastInfo& info) override;
@@ -34,6 +39,7 @@ namespace editor
   private:
     float smallest_fraction = 1.0f;
     reactphysics3d::Body* closest_body = nullptr;
+    reactphysics3d::Vector3 world_point;
   };
   
   class feditor_window final : public engine::fwindow
@@ -75,8 +81,7 @@ namespace editor
     void draw_delete_object_panel(fdelete_object_panel_model& model);
     
     // Runtime state
-    engine::fvec3 center_of_scene;
-    float distance_to_center_of_scene = 0.0f;    
+    engine::fvec3 object_spawn_location;
 
     engine::fdescriptor_heap ui_descriptor_heap; // srv, cbv, uav
   };
