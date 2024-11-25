@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include <stdio.h>
+
 #include "core/windows_minimal.h"
 
 #include "ui/draw_edit_panel.h"
@@ -19,6 +20,10 @@
 #include "hittables/static_mesh.h"
 #include "hittables/scene.h"
 #include "resources/ffbx.h"
+
+#include "reactphysics3d/engine/PhysicsWorld.h"
+#include "reactphysics3d/mathematics/Ray.h"
+#include "reactphysics3d/collision/RaycastInfo.h"
 
 namespace editor
 {
@@ -45,7 +50,7 @@ namespace editor
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "HOTKEYS");
     ImGui::Separator();
     ImGui::Text("LMB (on image) - select object");
-    ImGui::Text("Scroll - Camera speed (current speed: %f)", get_editor_app()->scene_root->camera_config.move_speed);
+    ImGui::Text("Scroll - Camera speed (current speed: %f)", get_editor_app()->scene_root->camera.move_speed);
     ImGui::Text("QWEASD - Camera movement");
     ImGui::Text("RMB - Camera rotation");
     ImGui::Text("ZXC + mouse - Object movement");
@@ -156,7 +161,7 @@ namespace editor
   }
   void feditor_window::draw_camera_panel()
   {
-    fcamera& camera = get_editor_app()->scene_root->camera_config;
+    fcamera& camera = get_editor_app()->scene_root->camera;
     ImGui::Separator();
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "CAMERA");
     ImGui::Separator();
@@ -206,8 +211,12 @@ namespace editor
 
     fui_helper::input_text("Name filter", model.object_name_filter);
 
+    if(selected_object == nullptr)
+    {
+      model.selected_id = -1;
+    }
     int num_objects = (int)get_editor_app()->scene_root->objects.size();
-    if (ImGui::BeginListBox("Objects", ImVec2(-FLT_MIN, fmath::min1(20, (float)num_objects + 1) * ImGui::GetTextLineHeightWithSpacing())))
+    if (ImGui::BeginListBox("Objects", ImVec2(-FLT_MIN, fmath::min1(10, (float)num_objects + 1) * ImGui::GetTextLineHeightWithSpacing())))
     {
       for (int n = 0; n < num_objects; n++)
       {
@@ -246,28 +255,6 @@ namespace editor
       selected_object = selected_obj;
 
       selected_obj->accept(vdraw_edit_panel());
-    }
-  }
-
-  void get_color_under_cursor(uint8_t& out_r, uint8_t& out_g, uint8_t& out_b)
-  {
-    out_r = 0;
-    out_g = 0;
-    out_b = 0;
-    if (HDC hDC = GetDC(nullptr))
-    {
-      POINT point;
-      if (GetCursorPos(&point))
-      {
-        COLORREF color = GetPixel(hDC, point.x, point.y);
-        if (color != CLR_INVALID)
-        {
-          ReleaseDC(GetDesktopWindow(), hDC);
-          out_r = static_cast<uint8_t>(GetRValue(color));
-          out_g = static_cast<uint8_t>(GetGValue(color));
-          out_b = static_cast<uint8_t>(GetBValue(color));
-        }
-      }
     }
   }
 
@@ -333,9 +320,9 @@ namespace editor
       ImGui::EndPopup();
     }
   }
-void feditor_window::update_default_spawn_position()
+  void feditor_window::update_default_spawn_position()
   {
-    fcamera& camera = get_editor_app()->scene_root->camera_config;
+    fcamera& camera = get_editor_app()->scene_root->camera;
 
     // Find center of the scene, new objects scan be spawned there
     fvec3 look_from = camera.location;
@@ -357,53 +344,73 @@ void feditor_window::update_default_spawn_position()
     //  state.distance_to_center_of_scene = dist_to_focus;
     //}
   }
-
+  
   void feditor_window::handle_input()
   {
-    // Object selection
-    // Hover the mouse over the input window and click to select.
-    // User will hold LMB until the next frame is rendered. Renderer will output the object id texture.
-    // Color under cursor will determine which hittable is hitted on the scene.
-    // I do it this way because imported mesh data is bonkers. Mesh instances are merged together across the whole scene.
-    // All of them have origin 0,0,0.
-    // Line-box hit detection will not work properly. Line-mesh - no time for that.
-    
-    if (!ImGui::IsMouseHoveringAnyWindow() && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+    ImGuiIO& io = ImGui::GetIO();
+    fapplication* app = fapplication::get_instance();
+    fcamera& camera = app->scene_root->camera;
+
+    // Handle screen selection
+    if (!ImGui::IsMouseHoveringAnyWindow() && ImGui::IsMouseClicked(ImGuiMouseButton_Left, false))
     {
-      get_editor_app()->scene_root->renderer->show_object_id = 1;
-
-      // First frame resets the selection, second frame sets a new one, third highlights the selected object
-      std::vector<hstatic_mesh*> meshes = REG.get_all_by_type<hstatic_mesh>();
-      bool found = false;
-      for (hstatic_mesh* m : meshes)
+      if(!app->scene_root)
       {
-        XMUINT4 hash = fmath::uint32_to_colori(m->get_hash());
+        LOG_WARN("Can't trace scene, no scene!");
+        return;
+      }
+      if(!app->physics_world)
+      {
+        LOG_WARN("Can't trace scene, no physics world!")
+        return;
+      }
+      RECT rect;
+      if(!GetWindowRect(get_window_handle(), &rect))
+      {
+        LOG_WARN("Can't trace scene, GetWindowRect failed!")
+        return;
+      }
+      POINT point;
+      if (!GetCursorPos(&point))
+      {
+        LOG_WARN("Can't trace scene, GetCursorPos failed!")
+        return;
+      }
 
-        uint8_t output_window_cursor_color[3] = {0};
-        get_color_under_cursor(output_window_cursor_color[0], output_window_cursor_color[1], output_window_cursor_color[2]);
-        
-        if (output_window_cursor_color[0] == hash.x
-          && output_window_cursor_color[1] == hash.y
-          && output_window_cursor_color[2] == hash.z)
+      // World space ray based on screen space click coordinates
+      const fray ray = camera.get_ray(width, height, static_cast<uint32_t>(point.x - rect.left), static_cast<uint32_t>(point.y - rect.top));
+      constexpr float ray_length = 10000.0f;
+      const fvec3 b = ray.at(ray_length);
+
+      // Physics scene querry
+      const reactphysics3d::Vector3 px_a(camera.location.x, camera.location.y, camera.location.z);
+      const reactphysics3d::Vector3 px_b(b.x, b.y, b.z);
+      const reactphysics3d::Ray px_ray(px_a, px_b);
+      raycast_callback px_callback;
+      app->physics_world->raycast(px_ray, &px_callback);
+
+      // Find rigid body in world
+      bool found = false;
+      if(reactphysics3d::Body* hit_body = px_callback.get_closest_body())
+      {
+        std::vector<hstatic_mesh*> meshes = REG.get_all_by_type<hstatic_mesh>();
+        for (hstatic_mesh* m : meshes)
         {
-          selected_object = m;
-          found = true;
-          break;
+          if (m->rigid_body == hit_body)
+          {
+            selected_object = m;
+            found = true;
+            break;
+          }
         }
       }
-      if (!found)
+      if(!found)
       {
         selected_object = nullptr;
       }
     }
-    else
-    {
-      get_editor_app()->scene_root->renderer->show_object_id = 0;
-    }
 
-    ImGuiIO& io = ImGui::GetIO();
-    fcamera& camera = get_editor_app()->scene_root->camera_config;
-
+    // Handle keyboard timings
     if (!io.WantCaptureKeyboard)
     {
       io.KeyRepeatDelay = 0.0f;
@@ -418,7 +425,7 @@ void feditor_window::update_default_spawn_position()
     // Handle hotkeys
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
     {
-      fapplication::get_instance()->is_running = false;
+      app->is_running = false;
     }
     if(ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Space), false))
     {

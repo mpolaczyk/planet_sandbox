@@ -4,6 +4,7 @@
 #include <DirectXMath.h>
 
 #include "core/core.h"
+#include "math/ray.h"
 #include "math/vec3.h"
 
 namespace engine
@@ -22,6 +23,7 @@ namespace engine
     uint32_t get_hash() const;
 
     void update(float delta_time, int32_t width, int32_t height);
+    fray get_ray(uint32_t ss_width, uint32_t ss_height, uint32_t ss_x, uint32_t ss_y) const;
 
     // Camera movement
     int32_t input_forward, input_left, input_backward, input_right = 0;
@@ -33,6 +35,8 @@ namespace engine
 
     // Runtime members
     XMFLOAT4X4 view_projection;
+    XMFLOAT4X4 view;
+    XMFLOAT4X4 projection;
     XMFLOAT4 forward;
     XMFLOAT4 right;
     XMFLOAT4 up;

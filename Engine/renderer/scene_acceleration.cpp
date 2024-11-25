@@ -79,7 +79,7 @@ namespace engine
 
         // Build objects data buffer
         fobject_data object_data;
-        h_mesh->get_object_matrices(scene->camera_config.view_projection, object_data);
+        h_mesh->get_object_matrices(scene->camera.view_projection, object_data);
         if(!scene_structure_changed)
         {
           continue; // TOFIX This des not work, modify the object_buffer!

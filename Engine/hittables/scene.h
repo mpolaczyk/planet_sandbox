@@ -40,7 +40,7 @@ namespace engine
     std::vector<hhittable_base*> objects;
     rrenderer_base* renderer = nullptr;   // TODO shared_ptr
     DirectX::XMFLOAT4 ambient_light_color;
-    fcamera camera_config;
+    fcamera camera;
 
     // Runtime members
     fscene_acceleration scene_acceleration;

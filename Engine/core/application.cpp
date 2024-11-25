@@ -190,7 +190,6 @@ namespace engine
     PhysicsWorld::WorldSettings settings;
     settings.isSleepingEnabled = false;
     settings.gravity = Vector3(0, -9.81f, 0);
-    settings.defaultTimeBeforeSleep = 5.0f;
     physics_world = physics_common->createPhysicsWorld(settings);
     scene_root->create_scene_physics_state();
   }
@@ -225,7 +224,7 @@ namespace engine
       {
         update_physics(delta_time);
       }
-      scene_root->camera_config.update(delta_time, scene_root->renderer->context.width, scene_root->renderer->context.height);
+      scene_root->camera.update(delta_time, scene_root->renderer->context.width, scene_root->renderer->context.height);
       window->update();
     }
   }

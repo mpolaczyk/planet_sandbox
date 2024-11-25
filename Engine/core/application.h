@@ -67,7 +67,6 @@ namespace engine
     bool wants_to_simulate_physics = false;
     
     hscene* scene_root; // managed object does not work well with shared_ptr, because they need to be destroyed through object registry
-    fcamera camera;
     
     bool is_running = true;
     std::shared_ptr<fwindow> window;

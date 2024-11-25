@@ -146,7 +146,7 @@ namespace engine
     // Process frame data CBV
     {
       fframe_data data;
-      data.camera_position = XMFLOAT4(context->scene->camera_config.location.e);
+      data.camera_position = XMFLOAT4(context->scene->camera.location.e);
       data.ambient_light = context->scene->ambient_light_color;
       data.show_ambient = show_ambient;
       data.show_diffuse = show_diffuse;

@@ -6,7 +6,6 @@
 
 #include "editor_window.h"
 #include "app/editor_app.h"
-#include "renderer/dx12_lib.h"
 #include "renderer/command_queue.h"
 #include "renderer/device.h"
 
@@ -15,6 +14,21 @@ namespace editor
   feditor_app* feditor_window::get_editor_app()
   {
     return static_cast<feditor_app*>(fapplication::get_instance());  
+  }
+
+  float raycast_callback::notifyRaycastHit(const reactphysics3d::RaycastInfo& info)
+  {
+    const float ray_terminate = 0.0f;
+    const float ray_not_clipped_continue = 1.0f;
+    const float ray_ignore_collider_continue = -1.0f;
+    float ray_clip_continue = info.hitFraction;
+
+    if(info.hitFraction < smallest_fraction)
+    {
+      closest_body = info.body;
+      return ray_clip_continue;
+    }
+    return smallest_fraction;
   }
 
   feditor_window::~feditor_window()

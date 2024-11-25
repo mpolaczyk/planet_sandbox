@@ -54,6 +54,8 @@ namespace engine
       XMMATRIX _translation_matrix = XMMatrixTranslationFromVector(XMVectorNegate(_location));
       XMMATRIX _view_matrix = _translation_matrix * _rotation_matrix;
       XMStoreFloat4x4(&view_projection, _view_matrix * _projection_matrix);
+      XMStoreFloat4x4(&view, _view_matrix);
+      XMStoreFloat4x4(&projection, _projection_matrix);
     }
     // Direction vectors
     {
@@ -64,5 +66,37 @@ namespace engine
       XMStoreFloat4(&right, _right);
       XMStoreFloat4(&up, _up);
     }
+  }
+
+  fray fcamera::get_ray(uint32_t ss_width, uint32_t ss_height, uint32_t ss_x, uint32_t ss_y) const
+  {
+    // Returns a ray in world space, based on screen space coordinates
+    // Based on: https://antongerdelan.net/opengl/raycasting.html
+
+    constexpr float axis_z_forward = 1.0f;
+    
+    // Normalised device coordinates
+    float ndc_x = (ss_x * 2.0f) / static_cast<float>(ss_width) - 1.0f;
+    float ndc_y = 1.0f - (2.0f * ss_y) / static_cast<float>(ss_height);
+
+    // Homogenous clip coordinates
+    XMVECTOR ray_clip = XMVectorSet(ndc_x, ndc_y, axis_z_forward, 1.f);
+
+    // Camera coordinates
+    XMMATRIX _projection = XMLoadFloat4x4(&projection);
+    XMMATRIX _inverse_projection = XMMatrixInverse(nullptr, _projection);
+    XMVECTOR _ray_eye = XMVector4Transform(ray_clip, _inverse_projection);
+    _ray_eye.m128_f32[2] = axis_z_forward;
+    _ray_eye.m128_f32[3] = 0.0f;
+
+    // World coordinates
+    XMMATRIX _view = XMLoadFloat4x4(&view);
+    XMMATRIX _inverse_view = XMMatrixInverse(nullptr, _view);
+    XMVECTOR _ray_world = XMVector4Transform(_ray_eye, _inverse_view);
+    _ray_world = XMVector4Normalize(_ray_world);
+    XMFLOAT4 ray_world2;
+    XMStoreFloat4(&ray_world2, _ray_world);
+    
+    return fray(location, fvec3(ray_world2.x, ray_world2.y, ray_world2.z));
   }
 }

@@ -81,7 +81,7 @@ namespace engine
       j["renderer"] = jrenderer;
     }
     j["ambient_light_color"] = fpersistence::serialize(object.ambient_light_color);
-    j["camera_config"] = fpersistence::serialize(object.camera_config);
+    j["camera_config"] = fpersistence::serialize(object.camera);
   }
 
   void vserialize_object::visit(hstatic_mesh& object) const
@@ -191,7 +191,7 @@ namespace engine
     }
 
     nlohmann::json jcamera_conf;
-    if(TRY_PARSE(nlohmann::json, j, "camera_config", jcamera_conf)) { fpersistence::deserialize(jcamera_conf, object.camera_config); }
+    if(TRY_PARSE(nlohmann::json, j, "camera_config", jcamera_conf)) { fpersistence::deserialize(jcamera_conf, object.camera); }
 
     nlohmann::json jobjects;
     if(TRY_PARSE(nlohmann::json, j, "objects", jobjects))

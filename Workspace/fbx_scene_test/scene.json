@@ -13,8 +13,8 @@
         "y": 0.0,
         "z": -20.0
       },
-      "pitch": 0.6710799932479858,
-      "yaw": -0.43722012639045715
+      "pitch": 0.0,
+      "yaw": 0.0
     },
     "objects": [
       {
@@ -32,7 +32,7 @@
           "y": 0.0,
           "z": 0.0
         },
-        "rigid_body_type": 2,
+        "rigid_body_type": 0,
         "rotation": {
           "x": 0.0,
           "y": 0.0,
@@ -59,7 +59,7 @@
           "y": 4.0,
           "z": 0.0
         },
-        "rigid_body_type": 2,
+        "rigid_body_type": 0,
         "rotation": {
           "x": 90.0,
           "y": 0.0,
@@ -171,7 +171,7 @@
           "y": 0.0,
           "z": 0.0
         },
-        "rigid_body_type": 2,
+        "rigid_body_type": 0,
         "rotation": {
           "x": 0.0,
           "y": 0.0,
@@ -198,7 +198,7 @@
           "y": 0.0,
           "z": 0.0
         },
-        "rigid_body_type": 2,
+        "rigid_body_type": 0,
         "rotation": {
           "x": -90.0,
           "y": 0.0,
@@ -225,7 +225,7 @@
           "y": 0.0,
           "z": 0.0
         },
-        "rigid_body_type": 2,
+        "rigid_body_type": 0,
         "rotation": {
           "x": -90.0,
           "y": 0.0,
@@ -252,7 +252,7 @@
           "y": 0.0,
           "z": 0.0
         },
-        "rigid_body_type": 2,
+        "rigid_body_type": 0,
         "rotation": {
           "x": 90.0,
           "y": 0.0,
@@ -275,7 +275,7 @@
           "name": "cube"
         },
         "origin": {
-          "x": 0.0,
+          "x": 18.0,
           "y": -5.0,
           "z": 0.0
         },
