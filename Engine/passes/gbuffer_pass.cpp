@@ -1,171 +1,139 @@
 #include "gbuffer_pass.h"
 
 #include "core/application.h"
-#include "core/core.h"
 #include "core/window.h"
-#include "engine/log.h"
 #include "renderer/render_context.h"
+#include "assets/material.h"
 #include "hittables/scene.h"
+#include "hittables/static_mesh.h"
+#include "math/vertex_data.h"
+#include "renderer/command_list.h"
+#include "renderer/device.h"
 #include "renderer/scene_acceleration.h"
 
 namespace engine
 {
   using namespace DirectX;
+
+  namespace
+  {
+    enum root_parameter_type : int
+    {
+      object_data = 0,
+      num
+    };
+  
+    DXGI_FORMAT rtv_formats[fgbuffer_pass::num_render_targets] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R8_UINT };
+    const char* rtv_names[fgbuffer_pass::num_render_targets] = { "position", "normal", "uv", "material_id"};
+  
+    DXGI_FORMAT depth_format = DXGI_FORMAT_D32_FLOAT;
+    const char* depth_name = "depth";
+  }
   
   void fgbuffer_pass::init()
   {
+    render_targets[0] = &position;
+    render_targets[1] = &normal;
+    render_targets[2] = &uv;
+    render_targets[3] = &material_id;
+    
     fpass_base::init();
-
+    
     // Set up graphics pipeline
     {
-      graphics_pipeline.reserve_parameters(1);
-      graphics_pipeline.add_constant_parameter(0, 0, 0, static_cast<uint32_t>(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_VERTEX);
-      graphics_pipeline.add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
+      graphics_pipeline.reserve_parameters(root_parameter_type::num);
+      graphics_pipeline.add_constant_parameter(root_parameter_type::object_data, 0, 0, static_cast<uint32_t>(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_PIXEL);
       graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->resource.blob);
       graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->resource.blob);
-      graphics_pipeline.setup_formats(
-        {
-          DXGI_FORMAT_R32G32B32A32_FLOAT,
-          DXGI_FORMAT_R32G32B32A32_FLOAT,
-          DXGI_FORMAT_R32G32B32A32_FLOAT,
-          DXGI_FORMAT_R32G32B32A32_FLOAT,
-          DXGI_FORMAT_R8_UINT,
-          DXGI_FORMAT_R8_UINT
-        }, DXGI_FORMAT_D32_FLOAT);
-      graphics_pipeline.setup_input_layout({
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-      });
+      graphics_pipeline.setup_formats(fgbuffer_pass::num_render_targets, rtv_formats, depth_format);
+      graphics_pipeline.setup_input_layout(fvertex_data::input_layout);
       graphics_pipeline.init("GBuffer pass");
     }
   }
 
-  void fgbuffer_pass::draw(fgraphics_command_list* command_list)
-  {
-    //fdescriptor_heap* heap = context->main_descriptor_heap;
-
-    //graphics_pipeline.bind_command_list(command_list.Get());
-
-    //command_list->SetDescriptorHeaps(1, heap->heap.GetAddressOf());
-
-    //const int back_buffer_index = context->back_buffer_index;
-    //const uint32_t N = static_cast<uint32_t>(context->scene.scene_acceleration->h_meshes.size());
-
-    
-//    for(int i = 0; i < egbuffer_type::count; i++)
-//    {
-//      dx.device_context->ClearRenderTargetView(output_rtv[i].Get(), scene->clear_color);
-//    }
-//    dx.device_context->ClearDepthStencilView(output_dsv.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-//    
-//    const D3D11_VIEWPORT viewport = {0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f};
-//    dx.device_context->RSSetViewports(1, &viewport);
-//    dx.device_context->RSSetState(rasterizer_state.Get());
-//    dx.device_context->OMSetDepthStencilState(depth_stencil_state.Get(), 0);
-//    ID3D11RenderTargetView* const* rtvsp[egbuffer_type::count];
-//    for(int i = 0; i < egbuffer_type::count; i++)
-//    {
-//      rtvsp[i] = output_rtv[i].GetAddressOf();
-//    }
-//    dx.device_context->OMSetRenderTargets(egbuffer_type::count, rtvsp[0], output_dsv.Get());
-//
-//    dx.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-//    dx.device_context->IASetInputLayout(input_layout.Get());
-//
-//    dx.device_context->VSSetShader(vertex_shader->shader.Get(), nullptr, 0);
-//    dx.device_context->VSSetConstantBuffers(0, 1, object_constant_buffer.GetAddressOf());
-//
-//    dx.device_context->PSSetShader(pixel_shader->shader.Get(), nullptr, 0);
-//    dx.device_context->PSSetConstantBuffers(0, 1, object_constant_buffer.GetAddressOf());
-//
-//    dx.device_context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
-//
-//    // Draw the scene
-//    for(const hstatic_mesh* sm : scene_acceleration->meshes)
-//    {
-//      const astatic_mesh* sma = sm->mesh_asset_ptr.get();
-//      if(sma == nullptr) { continue; }
-//      const fstatic_mesh_resource& smrs = sma->render_state;
-//      const amaterial* ma = sm->material_asset_ptr.get();
-//      if(ma == nullptr)
-//      {
-//        ma = default_material_asset.get();
-//      }
-//      const atexture* ta = ma->texture_asset_ptr.get();
-//
-//      // Update per-object constant buffer
-//      {
-//        XMMATRIX translation_matrix = XMMatrixTranslation(sm->origin.x, sm->origin.y, sm->origin.z);
-//        XMMATRIX rotation_matrix = XMMatrixRotationX(XMConvertToRadians(sm->rotation.x))
-//          * XMMatrixRotationY(XMConvertToRadians(sm->rotation.y))
-//          * XMMatrixRotationZ(XMConvertToRadians(sm->rotation.z));
-//        XMMATRIX scale_matrix = XMMatrixScaling(sm->scale.x, sm->scale.y, sm->scale.z);
-//        XMMATRIX world_matrix = scale_matrix * rotation_matrix * translation_matrix;
-//
-//        const XMMATRIX inverse_transpose_model_world = XMMatrixTranspose(XMMatrixInverse(nullptr, world_matrix));
-//        const XMMATRIX model_world_view_projection = XMMatrixMultiply(world_matrix, XMLoadFloat4x4(&scene->camera_config.view_projection));
-//
-//        fobject_data pod;
-//        XMStoreFloat4x4(&pod.model_world, world_matrix);
-//        XMStoreFloat4x4(&pod.inverse_transpose_model_world, inverse_transpose_model_world);
-//        XMStoreFloat4x4(&pod.model_world_view_projection, model_world_view_projection);
-//        if(const amaterial* material = sm->material_asset_ptr.get())
-//        {
-//          pod.material_id = scene_acceleration->material_map.at(material);
-//        }
-//        pod.is_selected = selected_object == sm ? 1 : 0;
-//        dx.update_constant_buffer<fobject_data>(&pod, object_constant_buffer);
-//      }
-//
-//      // Update texture
-//      if(ma->properties.use_texture)
-//      {
-//        if(ta == nullptr)
-//        {
-//          ta = default_material_asset.get()->texture_asset_ptr.get();
-//        }
-//        dx.device_context->PSSetShaderResources(0, 1, ta->render_state.texture_srv.GetAddressOf());
-//      }
-//
-//      // Update mesh
-//      dx.device_context->IASetVertexBuffers(0, 1, smrs.vertex_buffer.GetAddressOf(), &smrs.stride, &smrs.offset);
-//      dx.device_context->IASetIndexBuffer(smrs.index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-//      static_assert(sizeof(fface_data_type) == sizeof(uint32_t));
-//
-//      // Draw
-//      dx.device_context->DrawIndexed(smrs.num_faces, 0, 0);
-//    }
-  }
-
   void fgbuffer_pass::init_size_dependent(bool cleanup)
   {
-//    if(cleanup)
-//    {
-//      for(int i = 0; i < egbuffer_type::count; i++)
-//      {
-//        DX_RELEASE(output_rtv[i])
-//        DX_RELEASE(output_srv[i])
-//        DX_RELEASE(output_texture[i])
-//      }
-//      DX_RELEASE(output_dsv)
-//      DX_RELEASE(output_depth)
-//    }
-//
-//    fdx12& dx = fdx12::instance();
-//    for(int i = 0; i < egbuffer_type::count; i++)
-//    {
-//      DXGI_FORMAT format = (i == egbuffer_type::material_id || i == egbuffer_type::is_selected ? DXGI_FORMAT_R8_UINT : DXGI_FORMAT_R32G32B32A32_FLOAT);
-//      D3D11_BIND_FLAG bind_flag = static_cast<D3D11_BIND_FLAG>(D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
-//
-//      dx.create_texture(output_width, output_height, format, bind_flag, D3D11_USAGE_DEFAULT, output_texture[i]);
-//      dx.create_shader_resource_view(output_texture[i], format, D3D11_SRV_DIMENSION_TEXTURE2D, output_srv[i]);
-//      dx.create_render_target_view(output_texture[i], format, D3D11_RTV_DIMENSION_TEXTURE2D, output_rtv[i]);
-//    }
-//
-//    dx.create_texture(output_width, output_height, DXGI_FORMAT_D24_UNORM_S8_UINT, D3D11_BIND_DEPTH_STENCIL, D3D11_USAGE_DEFAULT, output_depth);
-//    dx.create_depth_stencil_view(output_depth, output_width, output_height, output_dsv);
+    fdevice* device = fapplication::get_instance()->device.get();
+  
+    if(cleanup)
+    {
+      for(uint32_t i = 0; i < fgbuffer_pass::num_render_targets; i++)
+      {
+        context->main_descriptor_heap->remove(render_targets[i]->srv.index);
+        context->rtv_descriptor_heap->remove(render_targets[i]->rtv.index);  
+      }
+      context->dsv_descriptor_heap->remove(depth.dsv.index);
+    }
+    for(uint32_t i = 0; i < fgbuffer_pass::num_render_targets; i++)
+    {
+      device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap, render_targets[i], context->width, context->height, rtv_formats[i], D3D12_RESOURCE_STATE_COPY_SOURCE, rtv_names[i]);
+    }
+    device->create_depth_stencil(context->dsv_descriptor_heap, &depth, context->width, context->height, depth_format, D3D12_RESOURCE_STATE_COPY_SOURCE, depth_name);
   }
+
+  void fgbuffer_pass::draw(fgraphics_command_list* command_list)
+  {
+    fpass_base::draw(command_list);
+
+    fdescriptor_heap* heap = context->main_descriptor_heap;
+    fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
+    ID3D12GraphicsCommandList* command_list_com = command_list->com.Get();
+    
+    // Move resurces to render target state and clean
+    for(uint32_t i = 0; i < fgbuffer_pass::num_render_targets; i++)
+    {
+      command_list->resource_barrier(render_targets[i]->com.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+      command_list->clear_render_target(render_targets[i]);
+    }
+    command_list->resource_barrier(depth.com.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+    command_list->clear_depth_stencil(&depth);
+    command_list->set_render_targets(num_render_targets, render_targets, &depth);
+    graphics_pipeline.bind_command_list(command_list_com);
+    command_list_com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
+
+    const uint32_t N = static_cast<uint32_t>(scene_acceleration.h_meshes.size());
+
+    // Process object data
+    for(uint32_t i = 0; i < N; i++)
+    {
+      fobject_data& object_data = scene_acceleration.object_buffer[i];
+      const hstatic_mesh* sm = scene_acceleration.h_meshes[i];
+      object_data.is_selected = context->selected_object == sm ? 1 : 0;
+    }
+
+    // Update vertex and index buffers
+    for(uint32_t i = 0; i < N; i++)
+    {
+      hstatic_mesh* hmesh = scene_acceleration.h_meshes[i];
+      astatic_mesh* amesh = hmesh->mesh_asset_ptr.get();
+      if(!amesh->is_resource_online)
+      {
+        std::string mesh_name = hmesh->get_display_name();
+        std::string asset_name = hmesh->mesh_asset_ptr.get()->name;
+        command_list->upload_vertex_buffer(amesh, std::format("{}{}", mesh_name, asset_name).c_str());
+        command_list->upload_index_buffer(amesh, std::format("{}{}", mesh_name, asset_name).c_str());
+      }
+    }
+    
+    // Draw
+    for(uint32_t i = 0; i < N; i++)
+    {
+      const fstatic_mesh_resource& smrs = context->scene->scene_acceleration.h_meshes[i]->mesh_asset_ptr.get()->resource;
+
+      command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, sizeof(fobject_data)/4, &scene_acceleration.object_buffer[i], 0);
+      command_list_com->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
+      command_list_com->IASetIndexBuffer(&smrs.index_buffer_view);
+      command_list_com->DrawIndexedInstanced(smrs.vertex_num, 1, 0, 0, 0);
+    }
+
+    // Move resources to copy source state
+    for(uint32_t i = 0; i < fgbuffer_pass::num_render_targets; i++)
+    {
+      command_list->resource_barrier(render_targets[i]->com.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
+    }
+    command_list->resource_barrier(depth.com.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_COPY_SOURCE);
+  }
+
+
+
 }

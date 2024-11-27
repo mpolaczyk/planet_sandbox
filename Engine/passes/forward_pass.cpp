@@ -25,16 +25,22 @@ namespace engine
   // Based on multiple training projects:
   // https://github.com/jpvanoosten/LearningDirectX12/tree/main/samples
   // https://github.com/microsoft/DirectX-Graphics-Samples/tree/master/Samples/Desktop
-  
-  enum root_parameter_type : int
+
+  namespace
   {
-    object_data = 0,
-    frame_data,
-    lights,
-    materials,
-    textures,
-    num
-  };
+    enum root_parameter_type : int
+    {
+      object_data = 0,
+      frame_data,
+      lights,
+      materials,
+      textures,
+      num
+    };
+
+    DXGI_FORMAT rtv_format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    DXGI_FORMAT depth_format = DXGI_FORMAT_D32_FLOAT;
+  }
   
   void fforward_pass::init()
   {
@@ -82,14 +88,8 @@ namespace engine
     graphics_pipeline.add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
     graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->resource.blob);
     graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->resource.blob);
-    graphics_pipeline.setup_formats({ DXGI_FORMAT_R8G8B8A8_UNORM }, DXGI_FORMAT_D32_FLOAT);
-    graphics_pipeline.setup_input_layout({
-      { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-    });
+    graphics_pipeline.setup_formats(1, &rtv_format, depth_format);
+    graphics_pipeline.setup_input_layout(fvertex_data::input_layout);
     graphics_pipeline.init("Forward pass");
   }
 
@@ -103,8 +103,8 @@ namespace engine
       context->rtv_descriptor_heap->remove(color.rtv.index);
       context->dsv_descriptor_heap->remove(depth.dsv.index);
     }
-    device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap, color, context->width, context->height, graphics_pipeline.get_rtv_format(0), D3D12_RESOURCE_STATE_COPY_SOURCE, "Forward pass");
-    device->create_depth_stencil(context->dsv_descriptor_heap, depth, context->width, context->height, graphics_pipeline.get_depth_format(), D3D12_RESOURCE_STATE_COPY_SOURCE, "Forward pass");
+    device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap, &color, context->width, context->height, rtv_format, D3D12_RESOURCE_STATE_COPY_SOURCE, "Forward pass");
+    device->create_depth_stencil(context->dsv_descriptor_heap, &depth, context->width, context->height, depth_format, D3D12_RESOURCE_STATE_COPY_SOURCE, "Forward pass");
   }
   
   void fforward_pass::draw(fgraphics_command_list* command_list)
@@ -123,9 +123,10 @@ namespace engine
     command_list->resource_barrier(color.com.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
     command_list->resource_barrier(depth.com.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
-    command_list->clear_render_target(color);
-    command_list->clear_depth_stencil(depth);
-    command_list->set_render_targets(color, &depth);
+    command_list->clear_render_target(&color);
+    command_list->clear_depth_stencil(&depth);
+    
+    command_list->set_render_targets1(&color, &depth);
         
     graphics_pipeline.bind_command_list(command_list_com);
 

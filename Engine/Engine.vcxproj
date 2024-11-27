@@ -220,6 +220,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClCompile Include="hittables\scene.cpp" />
     <ClCompile Include="hittables\sphere.cpp" />
     <ClCompile Include="hittables\static_mesh.cpp" />
+    <ClCompile Include="math\vertex_data.cpp" />
     <ClCompile Include="object\object.cpp" />
     <ClCompile Include="object\object_registry.cpp" />
     <ClCompile Include="object\object_registry_temp.cpp" />

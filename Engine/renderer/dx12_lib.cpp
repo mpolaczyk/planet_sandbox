@@ -16,7 +16,7 @@
 
 namespace engine
 {
-  void fdx12::enable_debug_layer()
+  void fdx12::enable_debug_layer_and_gpu_validation()
   {
     ComPtr<ID3D12Debug> debug;
     ComPtr<ID3D12Debug1> debug1;
@@ -47,14 +47,14 @@ namespace engine
     THROW_IF_FAILED(CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(out_factory4.GetAddressOf())))
   }
   
-  void fdx12::create_swap_chain(HWND hwnd, IDXGIFactory4* factory, ID3D12CommandQueue* command_queue, uint32_t back_buffer_count, bool allow_screen_tearing, ComPtr<IDXGISwapChain4>& out_swap_chain)
+  void fdx12::create_swap_chain(HWND hwnd, IDXGIFactory4* factory, ID3D12CommandQueue* command_queue, uint32_t back_buffer_count, DXGI_FORMAT format, bool allow_screen_tearing, ComPtr<IDXGISwapChain4>& out_swap_chain)
   {
     DXGI_SWAP_CHAIN_DESC1 desc = {};
     desc.BufferCount = back_buffer_count;
     desc.Flags = allow_screen_tearing ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
     desc.Width = 0;
     desc.Height = 0;
-    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    desc.Format = format;
     desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     desc.Scaling = DXGI_SCALING_STRETCH;

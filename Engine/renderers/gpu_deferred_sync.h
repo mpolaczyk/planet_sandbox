@@ -33,10 +33,10 @@ namespace engine
 
     // Runtime members
     fgbuffer_pass gbuffer_pass;
-    fdeferred_lighting_pass deferred_lighting_pass;
+    //fdeferred_lighting_pass deferred_lighting_pass;
 
-    virtual ftexture_resource* get_color() override {return nullptr;};
-    virtual ftexture_resource* get_depth() override {return nullptr;};
+    virtual ftexture_resource* get_color() override;
+    virtual ftexture_resource* get_depth() override;
 
   protected:
     virtual bool can_draw() override;

@@ -15,8 +15,15 @@ namespace engine
     virtual void init() override;
     virtual void draw(fgraphics_command_list* command_list) override;
     virtual void init_size_dependent(bool cleanup) override;
-    
-    
+
+    static constexpr uint32_t num_render_targets =  4;
+    ftexture_resource* render_targets[num_render_targets];  // Helper, set at runtime
+    ftexture_resource position;
+    ftexture_resource normal;
+    ftexture_resource uv;
+    ftexture_resource material_id;
+    ftexture_resource depth;
+
     // Output
  //   ComPtr<ID3D11Texture2D> output_texture[egbuffer_type::count];
  //   ComPtr<ID3D11RenderTargetView> output_rtv[egbuffer_type::count];

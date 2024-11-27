@@ -33,7 +33,7 @@ namespace engine
     fdevice* device = fapplication::get_instance()->device.get();
     
     screen_tearing = fdx12::enable_screen_tearing(factory);
-    fdx12::create_swap_chain(hwnd, factory.Get(), command_queue->com.Get(), back_buffer_count, screen_tearing, swap_chain);
+    fdx12::create_swap_chain(hwnd, factory.Get(), command_queue->com.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM, screen_tearing, swap_chain);
     
     device->create_render_target_descriptor_heap(rtv_descriptor_heap, "main");
     device->create_depth_stencil_descriptor_heap(dsv_descriptor_heap, "main");
@@ -149,7 +149,7 @@ namespace engine
       device->create_back_buffer(swap_chain.Get(), n, rtv_descriptor_heap, temp, std::format("{}",n).c_str());
       rtv.emplace_back(std::move(temp));
     }
-    device->create_depth_stencil(&dsv_descriptor_heap, dsv, width, height, DXGI_FORMAT_D32_FLOAT, D3D12_RESOURCE_STATE_DEPTH_WRITE, "main");
+    device->create_depth_stencil(&dsv_descriptor_heap, &dsv, width, height, DXGI_FORMAT_D32_FLOAT, D3D12_RESOURCE_STATE_DEPTH_WRITE, "main");
     return true;
   }
 }

@@ -71,8 +71,8 @@ namespace editor
     std::shared_ptr<fgraphics_command_list> command_list = command_queue->get_command_list(ecommand_list_purpose::ui, back_buffer_index);
 
     command_list->resource_barrier(rtv[back_buffer_index].com.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-    
-    command_list->set_render_targets(rtv[back_buffer_index], &dsv);
+
+    command_list->set_render_targets1(&rtv[back_buffer_index], &dsv);
     command_list->set_viewport(width, height);
     command_list->set_scissor(width, height);
     

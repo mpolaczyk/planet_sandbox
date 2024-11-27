@@ -95,16 +95,16 @@ namespace engine
 #if USE_NSIGHT_AFTERMATH
     gpu_crash_handler.pre_device_creation(window->back_buffer_count);
 #endif
-#if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH
-    fdx12::enable_debug_layer();
+#if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH && !USE_NSIGHT_GRAPHICS
+    fdx12::enable_debug_layer_and_gpu_validation();
 #else
     LOG_WARN("Disabling the DX12 debug layer and GPU validation!")
 #endif
     device.reset(fdevice::create(factory.Get()));
 #if USE_NSIGHT_AFTERMATH
-    gpu_crash_handler.post_device_creation(device.com.Get());
+    gpu_crash_handler.post_device_creation(device.get()->com.Get());
 #endif
-#if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH
+#if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH && !USE_NSIGHT_GRAPHICS
     device->enable_info_queue();
 #else
     LOG_WARN("Disabling the info queue!")

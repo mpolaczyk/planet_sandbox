@@ -7,11 +7,12 @@
 
 #include "core/core.h"
 
+#include "NsightAftermathGpuCrashTracker.h"
+
 struct IDxcBlob;
 struct ID3D12Device;
 struct ID3D12GraphicsCommandList;
 struct D3D12_SHADER_BYTECODE;
-class GpuCrashTracker;
 
 namespace engine
 {

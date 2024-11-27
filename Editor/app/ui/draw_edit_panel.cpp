@@ -214,8 +214,8 @@ namespace editor
         object.lighting_vertex_shader_asset.set_name(model.selected_object->name);
       }
     }
-    fui_helper::check_box("Show normal", object.deferred_lighting_pass.show_normal_ws);
-    fui_helper::check_box("Show position", object.deferred_lighting_pass.show_position_ws);
-    fui_helper::check_box("Show tex color", object.deferred_lighting_pass.show_tex_color);
+    //fui_helper::check_box("Show normal", object.deferred_lighting_pass.show_normal_ws);
+    //fui_helper::check_box("Show position", object.deferred_lighting_pass.show_position_ws);
+    //fui_helper::check_box("Show tex color", object.deferred_lighting_pass.show_tex_color);
   }
 }

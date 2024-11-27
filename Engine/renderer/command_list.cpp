@@ -22,10 +22,21 @@ namespace engine
     const CD3DX12_RESOURCE_BARRIER resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource, state_before, state_after);
     com->ResourceBarrier(1, &resource_barrier);
   }
-  
-  void fgraphics_command_list::set_render_targets(const ftexture_resource& rtv, const ftexture_resource* dsv) const
+
+  void fgraphics_command_list::set_render_targets1(ftexture_resource* render_target, const ftexture_resource* dsv) const
   {
-    com->OMSetRenderTargets(1, &rtv.rtv.cpu_handle, FALSE, dsv ? &dsv->dsv.cpu_handle : nullptr);
+    ftexture_resource* render_target_array[1] = { render_target };
+    set_render_targets(1, render_target_array, dsv);
+  }
+
+  void fgraphics_command_list::set_render_targets(uint32_t num_render_targets, ftexture_resource** render_targets, const ftexture_resource* dsv) const
+  {
+    std::vector<CD3DX12_CPU_DESCRIPTOR_HANDLE> rtv_handles;
+    for(uint32_t i = 0; i < num_render_targets; i++)
+    {
+      rtv_handles.push_back(render_targets[i]->rtv.cpu_handle);
+    }
+    com->OMSetRenderTargets(rtv_handles.size(), rtv_handles.data(), FALSE, dsv ? &dsv->dsv.cpu_handle : nullptr);
   }
 
   void fgraphics_command_list::set_viewport(uint32_t width, uint32_t height) const
@@ -40,14 +51,14 @@ namespace engine
     com->RSSetScissorRects(1, &scissor_rect);
   }
 
-  void fgraphics_command_list::clear_render_target(const ftexture_resource& rtv) const
+  void fgraphics_command_list::clear_render_target(const ftexture_resource* rtv) const
   {
-    com->ClearRenderTargetView(rtv.rtv.cpu_handle, DirectX::Colors::LightSlateGray, 0, nullptr);
+    com->ClearRenderTargetView(rtv->rtv.cpu_handle, DirectX::Colors::LightSlateGray, 0, nullptr);
   }
 
-  void fgraphics_command_list::clear_depth_stencil(const ftexture_resource& dsv) const
+  void fgraphics_command_list::clear_depth_stencil(const ftexture_resource* dsv) const
   {
-    com->ClearDepthStencilView(dsv.dsv.cpu_handle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+    com->ClearDepthStencilView(dsv->dsv.cpu_handle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
   }
 
   void fgraphics_command_list::upload_buffer_resource(uint64_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource) const

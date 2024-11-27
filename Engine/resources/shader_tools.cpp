@@ -99,7 +99,7 @@ namespace engine
     arguments.push_back(L"-Qembed_debug"); // Workaround for Aftermath 2024.2. I save DXC_OUT_OBJECT to .cso file, so it will have symbols.
                                               // Looks like this is related to a bug as confirmed by kleints
                                               // https://github.com/NVIDIA/nsight-aftermath-samples/pull/3#issuecomment-2435892147
-    arguments.push_back(DXC_ARG_WARNINGS_ARE_ERRORS);
+    //arguments.push_back(DXC_ARG_WARNINGS_ARE_ERRORS);
 #endif
     arguments.push_back(w_hlsl_file_name.c_str());
     

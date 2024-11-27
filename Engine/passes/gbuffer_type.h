@@ -6,9 +6,8 @@ namespace engine
   {
     position,
     normal,
-    tex_color,
     material_id,      // Material id for the bindless table.
-    is_selected,      // 0 if not, 1 if selected. I hate it, too expensive. TODO I need to do a proper trace.
+    uv,
     count,
   };
 }

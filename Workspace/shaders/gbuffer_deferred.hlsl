@@ -20,9 +20,8 @@ struct fps_output
 {
   float4 position_ws : SV_Target0;
   float4 normal_ws	 : SV_Target1;
-  float4 tex_color	 : SV_Target2;
+  float2 uv          : SV_Target2;
   uint material_id   : SV_Target3;
-  uint is_selected   : SV_Target4;
 };
 
 struct fobject_data
@@ -35,8 +34,6 @@ struct fobject_data
 };
 
 ConstantBuffer<fobject_data> object_data : register(b0);
-Texture2D texture0 : register(t0);
-SamplerState sampler_obj   : register(s0);
 
 fvs_output vs_main(fvs_input input)
 {
@@ -53,8 +50,7 @@ fps_output ps_main(fvs_output input) : SV_Target
   fps_output output;
   output.position_ws = input.position_ws;
   output.normal_ws   = float4(input.normal_ws, 1.0);
-  output.tex_color   = texture0.Sample(sampler_obj, input.uv);
+  output.uv          = input.uv;
   output.material_id = object_data.material_id;
-  output.is_selected = object_data.is_selected;
   return output;
 }

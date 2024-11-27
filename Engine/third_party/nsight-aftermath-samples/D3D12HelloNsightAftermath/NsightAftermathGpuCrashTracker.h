@@ -41,6 +41,7 @@ struct IDxcBlob;
 class GpuCrashTracker
 {
 public:
+    GpuCrashTracker() = default;
     ~GpuCrashTracker();
   
     void PreDeviceInitialize(int backBufferCount, const char* descriptionAppName);

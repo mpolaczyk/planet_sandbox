@@ -315,7 +315,7 @@ namespace engine
 #endif
 }
 
-  void fdevice::create_frame_buffer(fdescriptor_heap* main_heap, fdescriptor_heap* rtv_heap, ftexture_resource& texture, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES initial_state, const char* name) const
+  void fdevice::create_frame_buffer(fdescriptor_heap* main_heap, fdescriptor_heap* rtv_heap, ftexture_resource* texture, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES initial_state, const char* name) const
   {
     const CD3DX12_CLEAR_VALUE clear_color = { format, DirectX::Colors::LightSlateGray };
     const CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
@@ -337,13 +337,13 @@ namespace engine
       &desc,
       initial_state,
       &clear_color,
-      IID_PPV_ARGS(&texture.com)));
+      IID_PPV_ARGS(texture->com.GetAddressOf())));
 
     D3D12_RENDER_TARGET_VIEW_DESC rtv_desc = {};
     rtv_desc.Format = format;
     rtv_desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-    rtv_heap->push(texture.rtv);
-    com->CreateRenderTargetView(texture.com.Get(), &rtv_desc, texture.rtv.cpu_handle);
+    rtv_heap->push(texture->rtv);
+    com->CreateRenderTargetView(texture->com.Get(), &rtv_desc, texture->rtv.cpu_handle);
     
     D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
     srv_desc.Format = format;
@@ -351,15 +351,15 @@ namespace engine
     srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srv_desc.Texture2D.MostDetailedMip = 0;
     srv_desc.Texture2D.MipLevels = 1;
-    main_heap->push(texture.srv);
-    com->CreateShaderResourceView(texture.com.Get(), &srv_desc, texture.srv.cpu_handle);
+    main_heap->push(texture->srv);
+    com->CreateShaderResourceView(texture->com.Get(), &srv_desc, texture->srv.cpu_handle);
 
 #if BUILD_DEBUG
-    DX_SET_NAME(texture.com, "Frame buffer: {}", name)
+    DX_SET_NAME(texture->com, "Frame buffer: {}", name)
 #endif
   }
 
-  void fdevice::create_depth_stencil(fdescriptor_heap* dsv_heap, ftexture_resource& texture, uint32_t width, uint32_t height, DXGI_FORMAT format,  D3D12_RESOURCE_STATES initial_state, const char* name) const
+  void fdevice::create_depth_stencil(fdescriptor_heap* dsv_heap, ftexture_resource* texture, uint32_t width, uint32_t height, DXGI_FORMAT format,  D3D12_RESOURCE_STATES initial_state, const char* name) const
   {
     CD3DX12_CLEAR_VALUE clear_value = {format, 1.0f, 0};
     const CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
@@ -381,16 +381,16 @@ namespace engine
       &desc,
       initial_state,
       &clear_value,
-      IID_PPV_ARGS(&texture.com)));
+      IID_PPV_ARGS(texture->com.GetAddressOf())));
 
     D3D12_DEPTH_STENCIL_VIEW_DESC dsv_desc = {};
     dsv_desc.Format = format;
     dsv_desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-    dsv_heap->push(texture.dsv);
-    com->CreateDepthStencilView(texture.com.Get(), &dsv_desc, texture.dsv.cpu_handle);
+    dsv_heap->push(texture->dsv);
+    com->CreateDepthStencilView(texture->com.Get(), &dsv_desc, texture->dsv.cpu_handle);
 
 #if BUILD_DEBUG
-    DX_SET_NAME(texture.com, "Depth stencil: {}", name)
+    DX_SET_NAME(texture->com, "Depth stencil: {}", name)
 #endif
   }
   

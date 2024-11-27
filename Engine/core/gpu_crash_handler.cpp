@@ -3,8 +3,6 @@
 #include "core/exceptions.h"
 #include "engine/log.h"
 
-#include "NsightAftermathGpuCrashTracker.h"
-
 namespace engine
 {
   void fgpu_crash_tracker::pre_device_creation(uint32_t back_buffer_count)

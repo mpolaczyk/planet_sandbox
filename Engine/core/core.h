@@ -32,7 +32,8 @@
 #endif
 
 #define USE_NSIGHT_AFTERMATH 0
-#define USE_FXC 0
+#define USE_NSIGHT_GRAPHICS 0
+#define USE_FXC 0         // 0 means use DXC
 #define FORCE_COMPILE_SHADERS_ON_START 1
 
 #define RENDER_IMGUI 1  // TODO this is not engine, remove it

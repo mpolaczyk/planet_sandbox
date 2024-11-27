@@ -8,6 +8,8 @@
 
 #include <vector>
 
+#include "engine/log.h"
+
 struct ID3D12RootSignature;
 struct ID3D12PipelineState;
 
@@ -30,19 +32,28 @@ namespace engine
     void bind_vertex_shader(ComPtr<IDxcBlob>& shader);
     void bind_command_list(ID3D12GraphicsCommandList* command_list);
     
-    void setup_formats(const std::vector<DXGI_FORMAT>& render_targets, DXGI_FORMAT depth_buffer);
-    void setup_input_layout(std::vector<D3D12_INPUT_ELEMENT_DESC>&& in_input_layout);
+    void setup_formats(uint32_t num_rtv_formats, const DXGI_FORMAT* rtv_formats, DXGI_FORMAT depth_buffer);
+    void setup_input_layout(const std::vector<D3D12_INPUT_ELEMENT_DESC>& in_input_layout);
     
     void init(const char* name);
 
     DXGI_FORMAT get_depth_format() const
     {
+      if(depth_buffer_format == DXGI_FORMAT_UNKNOWN)
+      {
+        LOG_ERROR("Invalid depth format")
+      }
       return depth_buffer_format;
     }
     
     DXGI_FORMAT get_rtv_format(uint32_t index) const
     {
-      return render_target_formats.RTFormats[index];
+      DXGI_FORMAT format = render_target_formats.RTFormats[index];
+      if(format == DXGI_FORMAT_UNKNOWN)
+      {
+        LOG_ERROR("Invalid rtv format")
+      }
+      return format;
     }
     
   private:
@@ -53,8 +64,8 @@ namespace engine
     ComPtr<ID3D12PipelineState> pipeline_state;
     ComPtr<IDxcBlob> vertex_shader;
     ComPtr<IDxcBlob> pixel_shader;
-    DXGI_FORMAT depth_buffer_format = DXGI_FORMAT_D32_FLOAT;
-    D3D12_RT_FORMAT_ARRAY render_target_formats = {DXGI_FORMAT_R8G8B8A8_UNORM};
+    DXGI_FORMAT depth_buffer_format = DXGI_FORMAT_UNKNOWN;
+    D3D12_RT_FORMAT_ARRAY render_target_formats = {};
     std::vector<D3D12_INPUT_ELEMENT_DESC> input_layout;
   };
 }

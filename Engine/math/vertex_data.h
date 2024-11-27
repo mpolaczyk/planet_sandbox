@@ -1,6 +1,9 @@
 #pragma once
 
 #include <DirectXMath.h>
+#include "d3d12.h"
+
+#include <vector>
 
 #include "core/core.h"
 #include "math/vec3.h"
@@ -36,6 +39,8 @@ namespace engine
     XMFLOAT3 tangent = {0.f, 0.f, 0.f};
     XMFLOAT3 bitangent = {0.f, 0.f, 0.f};
     XMFLOAT2 uv = {0.f, 0.f};
+
+    static std::vector<D3D12_INPUT_ELEMENT_DESC> input_layout;
   };
 
   typedef uint32_t fface_data_type; // Remember to match what is in IASetIndexBuffer
