@@ -17,18 +17,22 @@
 #include "engine/log.h"
 #include "engine/string_tools.h"
 
-// The goal of this code is to catch all possible exception types (hardware, seh, c++)
-// Collect information, write log and minidump.
-// Assumption: Error handlers will allocate memory, for now I don't care about OOM situations. No reason to pre-allocate.
-// I also don't fork or handle this in a separate thread.
+/*
+   The goal of this code is to catch all possible exception types (hardware, seh, c++)
+   Collect information, write log and minidump.
+   Assumption: Error handlers will allocate memory, for now I don't care about OOM situations. No reason to pre-allocate.
+   I also don't fork or handle this in a separate thread.
 
+   Note:
+   https://stackoverflow.com/questions/3730654/whats-better-to-use-a-try-except-block-or-a-try-catch-block
+   https://docs.microsoft.com/en-us/cpp/cpp/exception-handling-differences?view=msvc-170
+
+   The major difference between C structured exception handling (SEH) and C++ exception handling is that the C++ exception handling model deals in types,
+   while the C structured exception handling model deals with exceptions of one type; specifically, unsigned int.
+   That is, C exceptions are identified by an unsigned integer value, whereas C++ exceptions are identified by data type.
+  */
 namespace engine
-{
-  namespace
-  {
-    std::mutex unhandled_exception_mutex;
-  }
-  
+{  
   void fwindows_error::set_all_exception_handlers()
   {
     // Based on https://stackoverflow.com/questions/13591334/what-actions-do-i-need-to-take-to-get-a-crash-dump-in-all-error-scenarios
@@ -59,7 +63,7 @@ namespace engine
     // Standard function
     std::set_terminate(std_terminate_handler);
   }
-
+  
   void fwindows_error::invalid_parameter_handler(const wchar_t* expr, const wchar_t* func, const wchar_t* file, unsigned int line, uintptr_t reserved)
   {
     unknown_exception_handler();
@@ -81,7 +85,11 @@ namespace engine
   {
     unknown_exception_handler();
   }
-  
+
+  namespace
+  {
+    std::mutex unhandled_exception_mutex;
+  }
   LONG WINAPI fwindows_error::unknown_exception_handler(EXCEPTION_POINTERS* info)
   {
     // Prevent other threads of crash-reporting at the same time to avoid ragnarok
@@ -108,6 +116,27 @@ namespace engine
     return 0;
   }
 
+  namespace
+  {
+    constexpr int call_stack_max_name_len = 1024;
+    constexpr int call_stack_max_frames = 100;
+    struct handle_exception_preallocation
+    {
+      handle_exception_preallocation()
+      {
+        message.reserve(1024 + call_stack_max_name_len * call_stack_max_frames);
+        oss = std::ostringstream(message);
+      }
+      ~handle_exception_preallocation() = default;
+      
+      std::string message{};
+      std::ostringstream oss{};
+      PEXCEPTION_RECORD record{};
+      DWORD code{};
+      PVOID address{};
+      PVOID program_counter{};  
+    } he_data;
+  }
   void fwindows_error::handle_exception(unsigned int in_code, EXCEPTION_POINTERS* info)
   {
     // Put this in every thread to handle SEH exception: _set_se_translator(throw_cpp_exception_from_seh_exception);
@@ -115,158 +144,178 @@ namespace engine
     // https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/set-se-translator?view=msvc-170
     // https://crashrpt.sourceforge.net/docs/html/exception_handling.html
     
-    const PEXCEPTION_RECORD record = info->ExceptionRecord;
-    const DWORD code = record->ExceptionCode;   // System code. See STATUS_* macros in winnt.h
-    const PVOID address = record->ExceptionAddress;
-    const PVOID program_counter = reinterpret_cast<PVOID>(info->ContextRecord->Rip);
+    he_data.record = info->ExceptionRecord;
+    he_data.code = he_data.record->ExceptionCode;   // System code. See STATUS_* macros in winnt.h
+    he_data.address = he_data.record->ExceptionAddress;
+    he_data.program_counter = reinterpret_cast<PVOID>(info->ContextRecord->Rip);
     
-    std::ostringstream oss;
-    oss << "GLOBAL EXCEPTION HANDLER!\n";
+    he_data.oss << "GLOBAL EXCEPTION HANDLER\n";
+    he_data.oss << std::format("Error code: {} program counter: {} address: {}\n", he_data.code, he_data.program_counter, he_data.address);
+    he_data.oss << "Message: " << std::strerror(he_data.code) << "\n";
+    he_data.oss << "Exception information: ";
+    for (uint32_t i = 0; i < he_data.record->NumberParameters; i++)
     {
-      char buffer[30];
-      sprintf(buffer, "Code: 0x%08x, program counter: 0x%p, address: 0x%p\n", code, program_counter, address);
-      oss << buffer;
+      he_data.oss << std::format("{} ", he_data.record->ExceptionInformation[i]);
     }
-    oss << std::strerror(code) << "\n";
+    he_data.oss << "\n";
     
-    oss << "Exception information:\n";
-    for (uint32_t i = 0; i < record->NumberParameters; i++)
-    {
-      char buffer[200];
-      sprintf(buffer, "%08Ix\n", record->ExceptionInformation[i]);
-      oss << buffer;
-    }
-    
-    oss << "Call stack:\n";
-    oss << get_seh_exception_call_stack(info->ContextRecord);
+    get_seh_exception_call_stack(info->ContextRecord, he_data.oss);
 
-    fwindows_error::mini_dump_write_dump(info);
+    mini_dump_write_dump(info, he_data.oss);
+    
     std::ofstream log_file("crash_log.txt");
-    log_file <<oss.str();
+    log_file << he_data.oss.str();
     log_file.close();
 
-    LOG_CRITICAL("{0}", oss.str())
-    flogger::flush();
     ::MessageBox(nullptr, L"Check the working directory for logs and crash dump.", L"Application crashed", MB_APPLMODAL | MB_ICONERROR | MB_OK);
+
+    LOG_CRITICAL("{0}", he_data.oss.str())
+    flogger::flush();
   }
 
-  std::string fwindows_error::get_hresult_description(HRESULT hr)
+  namespace
   {
-    std::ostringstream oss;
+    struct get_hresult_description_preallocation
     {
       wchar_t* message = nullptr;
-      const auto num_chars = FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK, nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&message, 0, nullptr);
-      if(num_chars > 0)
-      {
-        oss << fstring_tools::to_utf8(message) << "\n";
-      }
+      DWORD num_chars{};
+    } ghdp_data;
+  }
+  void fwindows_error::get_hresult_description(HRESULT hr, std::ostringstream& oss)
+  {
+    ghdp_data.num_chars = FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK, nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&ghdp_data.message, 0, nullptr);
+    if(ghdp_data.num_chars > 0)
+    {
+      oss << fstring_tools::to_utf8(ghdp_data.message) << "\n";
     }
     oss << std::system_category().message(hr);
-    return oss.str();
   }
-
-  std::string fwindows_error::get_seh_exception_call_stack(CONTEXT* in_context)
+  
+  namespace
+  {
+    struct get_seh_exception_call_stack_preallocation
+    {
+      char buffer[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR)]{};
+      char module[call_stack_max_name_len]{};
+      HANDLE process{};
+      HANDLE thread{};
+      HMODULE h_module{};
+      STACKFRAME64 stack{};
+      DWORD64 displacement{};
+      DWORD disp{};
+      IMAGEHLP_LINE64 line{};
+      PSYMBOL_INFO symbol_info{};
+      CONTEXT context_copy{};
+      int image_file_machne=0;
+      int frame=0;
+    } gsecsd_data;
+  }
+  void fwindows_error::get_seh_exception_call_stack(CONTEXT* in_context, std::ostringstream& oss)
   {
     // Shameless copy (and modified) from:
     // https://stackoverflow.com/questions/22467604/how-can-you-use-capturestackbacktrace-to-capture-the-exception-stack-not-the-ca
     // Thank you! MSDN.WhiteKnight
+    oss << "Call stack:\n";
     
-    const int max_name_len = 256;
-    const int max_frames = 30;
-    HANDLE process;
-    HANDLE thread;
-    HMODULE h_module;
-    STACKFRAME64 stack;
-    DWORD64 displacement;
-    DWORD disp;
-    IMAGEHLP_LINE64 *line;
-    std::ostringstream oss;
-
-    char buffer[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR)];
-    char module[max_name_len];
-    PSYMBOL_INFO symbol_info = (PSYMBOL_INFO)buffer;
+    gsecsd_data.symbol_info = (PSYMBOL_INFO)gsecsd_data.buffer;
 
     // On x64, StackWalk64 modifies the context record, that could cause crashes, so we create a copy to prevent it
-    CONTEXT context_copy;
-    memcpy(&context_copy, in_context, sizeof(CONTEXT));
-    memset(&stack, 0, sizeof(STACKFRAME64));
+    memcpy(&gsecsd_data.context_copy, in_context, sizeof(CONTEXT));
+    memset(&gsecsd_data.stack, 0, sizeof(STACKFRAME64));
 
-    process                = GetCurrentProcess();
-    thread                 = GetCurrentThread();
-    displacement           = 0;
+    gsecsd_data.process                = GetCurrentProcess();
+    gsecsd_data.thread                 = GetCurrentThread();
+    gsecsd_data.displacement           = 0;
 #if !defined(_M_AMD64)
-    stack.AddrPC.Offset    = (*in_context).Eip;
-    stack.AddrPC.Mode      = AddrModeFlat;
-    stack.AddrStack.Offset = (*in_context).Esp;
-    stack.AddrStack.Mode   = AddrModeFlat;
-    stack.AddrFrame.Offset = (*in_context).Ebp;
-    stack.AddrFrame.Mode   = AddrModeFlat;
+    gsecsd_data.stack.AddrPC.Offset    = (*in_context).Eip;
+    gsecsd_data.stack.AddrPC.Mode      = AddrModeFlat;
+    gsecsd_data.stack.AddrStack.Offset = (*in_context).Esp;
+    gsecsd_data.stack.AddrStack.Mode   = AddrModeFlat;
+    gsecsd_data.stack.AddrFrame.Offset = (*in_context).Ebp;
+    gsecsd_data.stack.AddrFrame.Mode   = AddrModeFlat;
 #endif
-
     // Load symbols
-    SymInitialize(process, nullptr, 1);
-
+    SymInitialize(gsecsd_data.process, nullptr, 1);
 #if defined(_M_AMD64)
-    int image_file_machne = IMAGE_FILE_MACHINE_AMD64;
+    gsecsd_data.image_file_machne = IMAGE_FILE_MACHINE_AMD64;
 #else
-    int image_file_machne = IMAGE_FILE_MACHINE_I386;
+    gsecsd_data.image_file_machne = IMAGE_FILE_MACHINE_I386;
 #endif
     
-    for(int frame = 0; frame < max_frames; frame++)
+    for(gsecsd_data.frame = 0; gsecsd_data.frame < call_stack_max_frames; gsecsd_data.frame++)
     {
-      if(!StackWalk64(image_file_machne, process, thread, &stack, &context_copy, nullptr, SymFunctionTableAccess64, SymGetModuleBase64, nullptr))
+      if(!StackWalk64(gsecsd_data.image_file_machne, gsecsd_data.process, gsecsd_data.thread, &gsecsd_data.stack, &gsecsd_data.context_copy, nullptr, SymFunctionTableAccess64, SymGetModuleBase64, nullptr))
       {
         break;
       }
       
       // Get symbol name for address
-      symbol_info->SizeOfStruct = sizeof(SYMBOL_INFO);
-      symbol_info->MaxNameLen = MAX_SYM_NAME;
-      SymFromAddr(process, (ULONG64)stack.AddrPC.Offset, &displacement, symbol_info);
+      gsecsd_data.symbol_info->SizeOfStruct = sizeof(SYMBOL_INFO);
+      gsecsd_data.symbol_info->MaxNameLen = MAX_SYM_NAME;
+      SymFromAddr(gsecsd_data.process, (ULONG64)gsecsd_data.stack.AddrPC.Offset, &gsecsd_data.displacement, gsecsd_data.symbol_info);
 
-      line = (IMAGEHLP_LINE64 *)malloc(sizeof(IMAGEHLP_LINE64));
-      line->SizeOfStruct = sizeof(IMAGEHLP_LINE64);       
+      gsecsd_data.line = {};
+      gsecsd_data.line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);       
 
       // Try to get line
-      if (SymGetLineFromAddr64(process, stack.AddrPC.Offset, &disp, line))
+      if (SymGetLineFromAddr64(gsecsd_data.process, gsecsd_data.stack.AddrPC.Offset, &gsecsd_data.disp, &gsecsd_data.line))
       {
-        oss << std::format("{0}: {1} in {2} line {3}\n", frame, symbol_info->Name, line->FileName, line->LineNumber);
+        oss << std::format("{0}: {1} in {2} line {3}\n", gsecsd_data.frame, gsecsd_data.symbol_info->Name, gsecsd_data.line.FileName, gsecsd_data.line.LineNumber);
       }
       else
       { 
         // Failed to get line, at least print symbol name and module
-        h_module = nullptr;
-        lstrcpyA(module, "");
-        GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCTSTR)(stack.AddrPC.Offset), &h_module);
-        if(h_module != nullptr)
+        gsecsd_data.h_module = nullptr;
+        lstrcpyA(gsecsd_data.module, "");
+        GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCTSTR)(gsecsd_data.stack.AddrPC.Offset), &gsecsd_data.h_module);
+        if(gsecsd_data.h_module != nullptr)
         {
-          GetModuleFileNameA(h_module, module, max_name_len);
+          GetModuleFileNameA(gsecsd_data.h_module, gsecsd_data.module, call_stack_max_name_len);
         }
-        oss << std::format("{0}: {1} address 0x{2:x} in {3}\n", frame, symbol_info->Name, symbol_info->Address, module);
+        oss << std::format("{0}: {1} address 0x{2:x} in {3}\n", gsecsd_data.frame, gsecsd_data.symbol_info->Name, gsecsd_data.symbol_info->Address, gsecsd_data.module);
       }       
-
-      free(line);
-      line = nullptr;
     }
-    return oss.str();
   }
 
-  LONG fwindows_error::mini_dump_write_dump(EXCEPTION_POINTERS* info)
+  namespace
   {
-    const std::string path = std::format("{}/crash_dump.dmp", fio::get_working_dir());
-    const std::wstring wpath = fstring_tools::to_utf16(path);
-    HANDLE dump_file_handle = CreateFile(wpath.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (dump_file_handle != INVALID_HANDLE_VALUE)
+    struct mini_dump_write_dump_preallocation
     {
-      MINIDUMP_EXCEPTION_INFORMATION dump_info;
-      dump_info.ExceptionPointers = info;
-      dump_info.ThreadId = GetCurrentThreadId();
-      dump_info.ClientPointers = true;
+      mini_dump_write_dump_preallocation()
+      {
+        wpath.reserve(MAX_PATH);
+      }
+      ~mini_dump_write_dump_preallocation() = default;
+      
+      std::wstring wpath{};
+      HANDLE dump_file_handle{};
+      MINIDUMP_EXCEPTION_INFORMATION dump_info{};
+    } mdwd_data;
+  }
+  void fwindows_error::mini_dump_write_dump(EXCEPTION_POINTERS* info, std::ostringstream& oss)
+  {
+    mdwd_data.wpath = L"crash_dump.dmp";
+    mdwd_data.dump_file_handle = CreateFile(mdwd_data.wpath.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (mdwd_data.dump_file_handle != INVALID_HANDLE_VALUE)
+    {
+      mdwd_data.dump_info.ExceptionPointers = info;
+      mdwd_data.dump_info.ThreadId = GetCurrentThreadId();
+      mdwd_data.dump_info.ClientPointers = true;
 
-      MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), dump_file_handle, MiniDumpNormal, &dump_info, nullptr, nullptr);
-      CloseHandle(dump_file_handle);
+      if(MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), mdwd_data.dump_file_handle, MiniDumpNormal, &mdwd_data.dump_info, nullptr, nullptr))
+      {
+        oss << "MiniDumpWriteDump succedded";
+      }
+      else
+      {
+        oss << "MiniDumpWriteDump failed!";
+      }
+      CloseHandle(mdwd_data.dump_file_handle);
     }
-    return EXCEPTION_EXECUTE_HANDLER;
+    else
+    {
+      oss << "Invalid crash dump handle!";
+    }
   }
 
   void fwindows_error::test_seh_exception()
@@ -306,24 +355,11 @@ namespace engine
   {
     std::ostringstream oss;
     oss << "HR code: " << std::to_string(static_cast<uint32_t>(code)) << "\n";
-    oss << fwindows_error::get_hresult_description(code) << "\n";
+    fwindows_error::get_hresult_description(code, oss);
     oss << "Context: " << context;
     std::string str = oss.str();
     char* buff = new char[str.size() + 1];
     strcpy_s(buff, str.size() + 1, str.c_str());
     return buff;
   }
-
-  char const* fseh_exception::what() const
-  {
-    std::ostringstream oss;
-    oss << "SEH code: " << std::format("{:x}", code) << "\n";
-    oss << "Context: " << context;
-    std::string str = oss.str();
-    char* buff = new char[str.size() + 1];
-    strcpy_s(buff, str.size() + 1, str.c_str());
-    return buff;
-  }
-
-
 }

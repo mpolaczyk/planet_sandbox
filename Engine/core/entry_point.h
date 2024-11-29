@@ -45,15 +45,12 @@ void inline main_impl(int argc, char** argv)
 
 inline int main(int argc, char** argv)
 {
-  if (IsDebuggerPresent())
-  {
-    main_impl(argc, argv);
-  }
-  else
+  if (!IsDebuggerPresent())
   {
     fwindows_error::set_all_exception_handlers();
-    main_impl(argc, argv);
   }
+  main_impl(argc, argv);
+
   return 0;
 }
 
