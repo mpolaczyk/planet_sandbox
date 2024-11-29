@@ -12,12 +12,30 @@ namespace engine
 {
   struct ENGINE_API fwindows_error
   {
+    static void set_all_exception_handlers();
+
+    // Handlers
+    static void invalid_parameter_handler(const wchar_t* expr, const wchar_t* func, const wchar_t* file, unsigned int line, uintptr_t reserved);
+    static void pure_virtual_call_handler();
+    static void sig_abort_handler(int sig);
+    static void std_terminate_handler();
+    static LONG WINAPI unknown_exception_handler(EXCEPTION_POINTERS* info = nullptr);
+    
+    static void handle_exception(unsigned int in_code, EXCEPTION_POINTERS* info);
+
+    // Other tools
+    static void enable_crashes_on_crashes();
     static std::string get_hresult_description(HRESULT hr);
     static std::string get_seh_exception_call_stack(CONTEXT* in_context);
-    static void throw_cpp_exception_from_seh_exception(unsigned int in_code, EXCEPTION_POINTERS* info);
+    static LONG WINAPI mini_dump_write_dump(EXCEPTION_POINTERS* pExceptionPointers);
+
+    // Testing functions
     static void test_seh_exception();
     static void test_hresult_exception();
     static void test_cpp_exception();
+    static void test_abort();
+    static void test_std_terminate();
+    static void test_std_exit();
   };
   
   class ENGINE_API fhresult_exception : public std::runtime_error

@@ -43,35 +43,16 @@ void inline main_impl(int argc, char** argv)
   LOG_INFO("Goodbye!");
 }
 
-void inline guarded_main_impl(int argc, char** argv)
+inline int main(int argc, char** argv)
 {
-  // Catch SEH exception and raise C++ typed exception. This needs to be done per thread!
-  _set_se_translator(fwindows_error::throw_cpp_exception_from_seh_exception);
-
-  try
-  {
-    main_impl(argc, argv);
-  }
-  catch (const std::exception& e)
-  {
-    std::ostringstream oss;
-    oss << "Global exception hadler!\n" << e.what();
-    LOG_CRITICAL("{0}", oss.str())
-    flogger::flush();
-    ::MessageBox(nullptr, fstring_tools::to_utf16(oss.str()).c_str(), L"Error Message", MB_APPLMODAL | MB_ICONERROR | MB_OK);
-  }
-}
-
-int main(int argc, char** argv)
-{
-  // Don't guard code with try/catch block and error handling so that IDE can catch all exceptions
   if (IsDebuggerPresent())
   {
     main_impl(argc, argv);
   }
   else
   {
-    guarded_main_impl(argc, argv);
+    fwindows_error::set_all_exception_handlers();
+    main_impl(argc, argv);
   }
   return 0;
 }
