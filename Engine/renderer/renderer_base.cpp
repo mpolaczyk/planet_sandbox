@@ -20,7 +20,7 @@ namespace engine
     {
       throw std::runtime_error("Failed to validate renderer context");
     }
-    bool resolution_changed = context.width != in_context.width || context.height != in_context.height;
+    const bool resolution_changed = (context.width != in_context.width) || (context.height != in_context.height);
     context = std::move(in_context);
     context.resolution_changed = resolution_changed;
   }

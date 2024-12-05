@@ -24,7 +24,7 @@ namespace engine
     parameters[index] = param;
   }
 
-  void fgraphics_pipeline::add_shader_respurce_view_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, D3D12_ROOT_DESCRIPTOR_FLAGS flags, D3D12_SHADER_VISIBILITY visibility)
+  void fgraphics_pipeline::add_shader_resource_view_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, D3D12_ROOT_DESCRIPTOR_FLAGS flags, D3D12_SHADER_VISIBILITY visibility)
   {
     CD3DX12_ROOT_PARAMETER1 param;
     param.InitAsShaderResourceView(shader_register, register_space, flags, visibility);
@@ -47,13 +47,13 @@ namespace engine
   
   void fgraphics_pipeline::add_descriptor_table_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, uint32_t num_descriptors, D3D12_DESCRIPTOR_RANGE_TYPE range_type, D3D12_DESCRIPTOR_RANGE_FLAGS range_flags, D3D12_SHADER_VISIBILITY visibility)
   {
-    constexpr uint32_t offset_in_descriptors_from_table_start = 0;
-    CD3DX12_DESCRIPTOR_RANGE1 range(range_type, num_descriptors, shader_register, register_space, range_flags, offset_in_descriptors_from_table_start);
+    //constexpr uint32_t offset_in_descriptors_from_table_start = 0;
+    CD3DX12_DESCRIPTOR_RANGE1 range(range_type, num_descriptors, shader_register, register_space, range_flags);//, offset_in_descriptors_from_table_start);
     ranges.push_back(range);
     
     CD3DX12_ROOT_PARAMETER1 param;
-    uint32_t num_descriptor_ranges = static_cast<uint32_t>(ranges.size());
-    param.InitAsDescriptorTable(num_descriptor_ranges, &ranges.back(), visibility);
+    //uint32_t num_descriptor_ranges = static_cast<uint32_t>(ranges.size());
+    param.InitAsDescriptorTable(1, &ranges.back(), visibility);
     parameters[index] = param;
   }
 

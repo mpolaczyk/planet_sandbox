@@ -25,8 +25,8 @@ namespace engine
     DTOR_DEFAULT(fdescriptor)
     fdescriptor(fdescriptor_heap* heap, uint32_t in_index);
 
-    CD3DX12_CPU_DESCRIPTOR_HANDLE cpu_handle;
-    CD3DX12_GPU_DESCRIPTOR_HANDLE gpu_handle;
+    CD3DX12_CPU_DESCRIPTOR_HANDLE cpu_descriptor_handle{};
+    CD3DX12_GPU_DESCRIPTOR_HANDLE gpu_descriptor_handle{};
 
     fdescriptor_heap* parent_heap = nullptr;  // weak ptr, no ownership
     uint32_t index = -1;   // index in parent heap

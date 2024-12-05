@@ -6,7 +6,7 @@
 #define MAX_MATERIALS 32
 #define MAX_LIGHTS 16
 #define MAX_TEXTURES 32
-#define MAX_MAIN_DESCRIPTORS 128
+#define MAX_MAIN_DESCRIPTORS 128    // TODO those should not be here, fpass_base?
 #define MAX_RTV_DESCRIPTORS 8
 #define MAX_DSV_DESCRIPTORS 4
 
@@ -58,20 +58,7 @@ namespace engine
 
   ALIGNED_STRUCT_END(flight_properties)
 
-  ALIGNED_STRUCT_BEGIN(fframe_data)
-  {
-    XMFLOAT4 camera_position; // 16
-    XMFLOAT4 ambient_light; // 16
-    int32_t show_emissive; // 4    // TODO pack bits
-    int32_t show_ambient; // 4
-    int32_t show_specular; // 4
-    int32_t show_diffuse; // 4
-    int32_t show_normals; // 4
-    int32_t padding[2]; // 8
-  };
-
-  ALIGNED_STRUCT_END(fframe_data)
-
+  // Warning! object data is shared by all rendring passes because it is used in the fscene_acceleration
   ALIGNED_STRUCT_BEGIN(fobject_data)
   {
     XMFLOAT4X4 model_world; // 64 Used to transform the vertex position from object space to world space

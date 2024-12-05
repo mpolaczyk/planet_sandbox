@@ -10,11 +10,11 @@ namespace engine
   fdescriptor::fdescriptor(fdescriptor_heap* heap, uint32_t in_index)
     : parent_heap(heap), index(in_index)
   {
-    cpu_handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(heap->com->GetCPUDescriptorHandleForHeapStart(), index, heap->increment_size);
+    cpu_descriptor_handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(heap->com->GetCPUDescriptorHandleForHeapStart(), index, heap->increment_size);
     if(parent_heap->heap_type != D3D12_DESCRIPTOR_HEAP_TYPE_RTV && parent_heap->heap_type != D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
     {
-      // Only for D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE heaps
-      gpu_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(heap->com->GetGPUDescriptorHandleForHeapStart(), index, heap->increment_size);
+      // Only for heap of a type: D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
+      gpu_descriptor_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(heap->com->GetGPUDescriptorHandleForHeapStart(), index, heap->increment_size);
     }
   }
 

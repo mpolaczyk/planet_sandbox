@@ -1,8 +1,8 @@
 #include "phong.hlsl"
 #include "material_properties.hlsl"
 
-#define MAX_LIGHTS 16
 #define MAX_MATERIALS 32
+#define MAX_LIGHTS 16
 
 #define POINT_LIGHT 0
 #define DIRECTIONAL_LIGHT 1

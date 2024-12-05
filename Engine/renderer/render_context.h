@@ -27,7 +27,7 @@ namespace engine
     ftexture_resource* dsv = nullptr;
     uint32_t width = 1920;
     uint32_t height = 1080;
-    bool resolution_changed;
+    bool resolution_changed = false;
     
     bool validate() const
     {

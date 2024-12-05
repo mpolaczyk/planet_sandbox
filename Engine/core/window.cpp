@@ -75,13 +75,13 @@ namespace engine
         renderer->set_renderer_context(std::move(context));
         renderer->draw(command_list.get());
 
-        command_list->resource_barrier(rtv[back_buffer_index].com.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_COPY_DEST);
+        fresource_barrier_scope c(command_list.get(), renderer->get_color()->com.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
+        fresource_barrier_scope d(command_list.get(), renderer->get_depth()->com.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_COPY_SOURCE);
+        fresource_barrier_scope a(command_list.get(), rtv[back_buffer_index].com.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_COPY_DEST);
+        fresource_barrier_scope b(command_list.get(), dsv.com.Get(),                    D3D12_RESOURCE_STATE_DEPTH_READ, D3D12_RESOURCE_STATE_COPY_DEST);
+        
         command_list->com->CopyResource(rtv[back_buffer_index].com.Get(), renderer->get_color()->com.Get());
-        command_list->resource_barrier(rtv[back_buffer_index].com.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PRESENT);
-
-        command_list->resource_barrier(dsv.com.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_COPY_DEST);
         command_list->com->CopyResource(dsv.com.Get(), renderer->get_depth()->com.Get());
-        command_list->resource_barrier(dsv.com.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_DEPTH_WRITE);
       }
     }
   }
@@ -149,7 +149,7 @@ namespace engine
       device->create_back_buffer(swap_chain.Get(), n, rtv_descriptor_heap, temp, std::format("{}",n).c_str());
       rtv.emplace_back(std::move(temp));
     }
-    device->create_depth_stencil(&dsv_descriptor_heap, &dsv, width, height, DXGI_FORMAT_D32_FLOAT, D3D12_RESOURCE_STATE_DEPTH_WRITE, "main");
+    device->create_depth_stencil(&dsv_descriptor_heap, &dsv, width, height, DXGI_FORMAT_D32_FLOAT, D3D12_RESOURCE_STATE_DEPTH_READ, "main");
     return true;
   }
 }

@@ -276,7 +276,7 @@ namespace engine
     D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
     cbv_desc.BufferLocation = out_buffer.resource->GetGPUVirtualAddress();
     cbv_desc.SizeInBytes = static_cast<uint32_t>(out_buffer.size);
-    com->CreateConstantBufferView(&cbv_desc, out_buffer.cbv.cpu_handle);
+    com->CreateConstantBufferView(&cbv_desc, out_buffer.cbv.cpu_descriptor_handle);
     
 #if BUILD_DEBUG
     DX_SET_NAME(out_buffer.resource, "{}", name)
@@ -297,7 +297,7 @@ namespace engine
     srv_desc.Buffer.NumElements = 1;
     srv_desc.Buffer.StructureByteStride = static_cast<uint32_t>(out_buffer.size);
     srv_desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-    com->CreateShaderResourceView(out_buffer.resource.Get(), &srv_desc, out_buffer.srv.cpu_handle);
+    com->CreateShaderResourceView(out_buffer.resource.Get(), &srv_desc, out_buffer.srv.cpu_descriptor_handle);
     
 #if BUILD_DEBUG
     DX_SET_NAME(out_buffer.resource, "{}", name)
@@ -308,7 +308,7 @@ namespace engine
   {
     THROW_IF_FAILED(swap_chain->GetBuffer(swap_chain_buffer_id, IID_PPV_ARGS(out_rtv.com.GetAddressOf())))
     descriptor_heap.push(out_rtv.rtv);
-    com->CreateRenderTargetView(out_rtv.com.Get(), nullptr, out_rtv.rtv.cpu_handle);
+    com->CreateRenderTargetView(out_rtv.com.Get(), nullptr, out_rtv.rtv.cpu_descriptor_handle);
 
 #if BUILD_DEBUG
     DX_SET_NAME(out_rtv.com, "Back buffer: {}", name)
@@ -343,7 +343,7 @@ namespace engine
     rtv_desc.Format = format;
     rtv_desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
     rtv_heap->push(texture->rtv);
-    com->CreateRenderTargetView(texture->com.Get(), &rtv_desc, texture->rtv.cpu_handle);
+    com->CreateRenderTargetView(texture->com.Get(), &rtv_desc, texture->rtv.cpu_descriptor_handle);
     
     D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
     srv_desc.Format = format;
@@ -352,7 +352,7 @@ namespace engine
     srv_desc.Texture2D.MostDetailedMip = 0;
     srv_desc.Texture2D.MipLevels = 1;
     main_heap->push(texture->srv);
-    com->CreateShaderResourceView(texture->com.Get(), &srv_desc, texture->srv.cpu_handle);
+    com->CreateShaderResourceView(texture->com.Get(), &srv_desc, texture->srv.cpu_descriptor_handle);
 
 #if BUILD_DEBUG
     DX_SET_NAME(texture->com, "Frame buffer: {}", name)
@@ -387,7 +387,7 @@ namespace engine
     dsv_desc.Format = format;
     dsv_desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
     dsv_heap->push(texture->dsv);
-    com->CreateDepthStencilView(texture->com.Get(), &dsv_desc, texture->dsv.cpu_handle);
+    com->CreateDepthStencilView(texture->com.Get(), &dsv_desc, texture->dsv.cpu_descriptor_handle);
 
 #if BUILD_DEBUG
     DX_SET_NAME(texture->com, "Depth stencil: {}", name)
@@ -426,7 +426,7 @@ namespace engine
     srv_desc.Format = texture_desc.Format;
     srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
     srv_desc.Texture2D.MipLevels = 1;
-    com->CreateShaderResourceView(texture.com.Get(), &srv_desc, texture.srv.cpu_handle);
+    com->CreateShaderResourceView(texture.com.Get(), &srv_desc, texture.srv.cpu_descriptor_handle);
     
 #if BUILD_DEBUG
     DX_SET_NAME(texture.com, "Texture: {}", name)

@@ -2,168 +2,211 @@
 
 #include <vector>
 
+#include "core/application.h"
 #include "core/core.h"
 #include "hittables/scene.h"
+#include "hittables/static_mesh.h"
 #include "math/vertex_data.h"
 #include "renderer/aligned_structs.h"
+#include "renderer/command_list.h"
+#include "renderer/render_context.h"
 #include "renderer/scene_acceleration.h"
+#include "renderer/device.h"
 
 namespace engine
 {
   using namespace DirectX;
 
-  //namespace
-  //{
-  //  ALIGNED_STRUCT_BEGIN(fframe_data)
-  //  {
-  //    DirectX::XMFLOAT4 camera_position; // 16
-  //    XMFLOAT4 ambient_light; // 16
-  //    XMFLOAT4X4 model_world_view_projection; // 64
-  //    int32_t show_position_ws; // 4    // TODO pack bits
-  //    int32_t show_normal_ws; // 4
-  //    int32_t show_tex_color; // 4
-  //    flight_properties lights[MAX_LIGHTS]; // 80xN
-  //    fmaterial_properties materials[MAX_MATERIALS]; // 80xN
-  //  };
-  //
-  //  ALIGNED_STRUCT_END(fframe_data)
-  //}
+  namespace
+  {
+    enum root_parameter_type : int
+    {
+      frame_data = 0,
+      lights,
+      materials,
+      gbuffer_position,
+      gbuffer_normal,
+      gbuffer_uv,
+      gbuffer_material_id,
+      textures,   // TODO! gbuffer position, gbuffer normal, gbuffer uv, gbuffer material_id, default texture, scene textures (unbound)
+      num
+    };
+    
+    ALIGNED_STRUCT_BEGIN(fframe_data)
+    {
+      XMFLOAT4 camera_position; // 16
+      XMFLOAT4 ambient_light; // 16
+      int32_t show_position; // 4    // TODO pack bits
+      int32_t show_normal; // 4
+      int32_t show_uv; // 4
+      int32_t show_material_id; // 4
+    };
+  
+    ALIGNED_STRUCT_END(fframe_data)
+
+    DXGI_FORMAT rtv_formats[1] = { DXGI_FORMAT_R8G8B8A8_UNORM };
+    const char* rtv_names[1] = { "color"};
+  }
 
   void fdeferred_lighting_pass::init()
   {
-//    fdx12& dx = fdx12::instance();
-//    {
-//      D3D11_INPUT_ELEMENT_DESC input_element_desc[] =
-//      {
-//        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-//        {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-//        {"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
-//        {"BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0},
-//        {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0}
-//      };
-//      dx.create_input_layout(input_element_desc, ARRAYSIZE(input_element_desc), vertex_shader->blob, input_layout);
-//    }
-//    dx.create_sampler_state(sampler_state);
-//    dx.create_constant_buffer(sizeof(fframe_data), frame_constant_buffer);
-//    dx.create_rasterizer_state(rasterizer_state);
-//    dx.create_depth_stencil_state(depth_stencil_state);
-//
-//    // Define quad
-//    std::vector<fvertex_data> vertex_list;
-//    vertex_list.reserve(4);
-//    for(int i = 0; i < 4; i++)
-//    {
-//      vertex_list.push_back(fvertex_data());
-//    }
-//    vertex_list[0].position = {-1.0f, -1.0f, 0.0f};
-//    vertex_list[1].position = {-1.0f, 1.0f, 0.0f};
-//    vertex_list[2].position = {1.0f, 1.0f, 0.0f};
-//    vertex_list[3].position = {1.0f, -1.0f, 0.0f};
-//    vertex_list[0].normal = {0.0f, 0.0f, -1.0f};
-//    vertex_list[1].normal = {0.0f, 0.0f, -1.0f};
-//    vertex_list[2].normal = {0.0f, 0.0f, -1.0f};
-//    vertex_list[3].normal = {0.0f, 0.0f, -1.0f};
-//    vertex_list[0].tangent = {1.0f, 0.0f, 0.0f};
-//    vertex_list[1].tangent = {1.0f, 0.0f, 0.0f};
-//    vertex_list[2].tangent = {1.0f, 0.0f, 0.0f};
-//    vertex_list[3].tangent = {1.0f, 0.0f, 0.0f};
-//    vertex_list[0].uv = {0.0f, 1.0f};
-//    vertex_list[1].uv = {0.0f, 0.0f};
-//    vertex_list[2].uv = {1.0f, 0.0f};
-//    vertex_list[3].uv = {1.0f, 1.0f};
-//    fdx12::instance().create_vertex_buffer(vertex_list, quad_render_state.vertex_buffer);
-//    quad_render_state.offset = 0;
-//    quad_render_state.stride = sizeof(fvertex_data);
-//
-//    std::vector<fface_data> face_list;
-//    face_list.reserve(2);
-//    for(int i = 0; i < 2; i++)
-//    {
-//      face_list.push_back(fface_data());
-//    }
-//    face_list[0] = {0, 1, 2};
-//    face_list[1] = {0, 2, 3};
-//    fdx12::instance().create_index_buffer(face_list, quad_render_state.index_buffer);
-//    quad_render_state.num_faces = static_cast<int32_t>(face_list.size()) * 3;
+    fpass_base::init();
+
+    uint32_t back_buffer_count = context->back_buffer_count;
+    fdescriptor_heap* heap = context->main_descriptor_heap;
+    fdevice* device = fapplication::get_instance()->device.get();
+
+    // Create frame data CBV
+    for(uint32_t i = 0; i < back_buffer_count; i++)
+    {
+      fconst_buffer buffer;
+      device->create_const_buffer(heap, sizeof(fframe_data), buffer, std::format("CBV frame: back buffer {}", i).c_str());
+      frame_data.emplace_back(buffer);
+    }
+
+    // Create light and material data SRV
+    for(uint32_t i = 0; i < back_buffer_count; i++)
+    {
+      fshader_resource_buffer buffer;
+      device->create_shader_resource_buffer(heap, sizeof(flight_properties) * MAX_LIGHTS, buffer, std::format("SRV lights: back buffer {}", i).c_str());
+      lights_data.emplace_back(buffer);
+    }
+    for(uint32_t i = 0; i < back_buffer_count; i++)
+    {
+      fshader_resource_buffer buffer;
+      device->create_shader_resource_buffer(heap, sizeof(fmaterial_properties) * MAX_MATERIALS, buffer, std::format("SRV materials: back buffer {}", i).c_str());
+      materials_data.emplace_back(buffer);
+    }
+    
+    // Create first texture SRV (handles only)
+    fsoft_asset_ptr<amaterial> default_material_asset;
+    default_material_asset.set_name("default");
+    atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
+    device->create_texture_buffer(heap, default_texture, "default");
+    
+    // Set up graphics pipeline
+    {
+      graphics_pipeline.reserve_parameters(root_parameter_type::num);
+      graphics_pipeline.add_constant_parameter(root_parameter_type::frame_data, 0, 0, static_cast<uint32_t>(sizeof(fframe_data)), D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_shader_resource_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_shader_resource_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+      // TODO GBuffer as one table, or maybe all textures...
+      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::gbuffer_position, 2, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::gbuffer_normal, 3, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::gbuffer_uv, 4, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::gbuffer_material_id, 5, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::textures, 6, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
+      graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->resource.blob);
+      graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->resource.blob);
+      graphics_pipeline.setup_formats(1, rtv_formats, DXGI_FORMAT_UNKNOWN);
+      graphics_pipeline.setup_input_layout(fvertex_data::input_layout);
+      graphics_pipeline.init("Deferred lighting pass");
+    }
+    
+    // Create quad mesh
+    quad_mesh = astatic_mesh::spawn();
+    quad_mesh->set_display_name("quad");
+    quad_mesh->vertex_list = fvertex_data::get_quad_vertex_list();
+    quad_mesh->face_list = fface_data::get_quad_face_list();
+  }
+
+  void fdeferred_lighting_pass::init_size_dependent(bool cleanup)
+  {
+    fdevice* device = fapplication::get_instance()->device.get();
+  
+    if(cleanup)
+    {
+      context->main_descriptor_heap->remove(color.srv.index);
+      context->rtv_descriptor_heap->remove(color.rtv.index);  
+    }
+    device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap, &color, context->width, context->height, rtv_formats[0], D3D12_RESOURCE_STATE_RENDER_TARGET, rtv_names[0]);
   }
   
   void fdeferred_lighting_pass::draw(fgraphics_command_list* command_list)
   {
-//    fdx12& dx = fdx12::instance();
-//    
-//    dx.device_context->ClearRenderTargetView(output_rtv.Get(), scene->clear_color);
-//    dx.device_context->ClearDepthStencilView(output_dsv.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-//
-//    const D3D11_VIEWPORT viewport = {0.0f, 0.0f, static_cast<float>(output_width), static_cast<float>(output_height), 0.0f, 1.0f};
-//    dx.device_context->RSSetViewports(1, &viewport);
-//    dx.device_context->RSSetState(rasterizer_state.Get());
-//    dx.device_context->OMSetDepthStencilState(depth_stencil_state.Get(), 0);
-//    dx.device_context->OMSetRenderTargets(1, output_rtv.GetAddressOf(), output_dsv.Get());
-//    
-//    dx.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-//    dx.device_context->IASetInputLayout(input_layout.Get());
-//
-//    dx.device_context->VSSetShader(vertex_shader->shader.Get(), nullptr, 0);
-//    dx.device_context->VSSetConstantBuffers(0, 1, frame_constant_buffer.GetAddressOf());
-//    
-//    dx.device_context->PSSetShader(pixel_shader->shader.Get(), nullptr, 0);
-//    dx.device_context->PSSetConstantBuffers(0, 1, frame_constant_buffer.GetAddressOf());
-//    
-//    const XMMATRIX model_world_view_projection = XMMatrixIdentity();
-//    
-//    // Update per-frame constant buffer
-//    {
-//      fframe_data pfd;
-//      scene_acceleration->get_lights_array(pfd.lights);
-//      scene_acceleration->get_materials_array(pfd.materials);
-//      XMStoreFloat4x4(&pfd.model_world_view_projection, model_world_view_projection); // TODO REMOVE!
-//      pfd.camera_position = XMFLOAT4(scene->camera_config.location.e);
-//      pfd.ambient_light = scene->ambient_light_color;
-//      pfd.show_normal_ws = show_normal_ws;
-//      pfd.show_position_ws = show_position_ws;
-//      pfd.show_tex_color = show_tex_color;
-//      dx.update_constant_buffer<fframe_data>(&pfd, frame_constant_buffer);
-//    }
-//
-//    for(int i = 0; i < egbuffer_type::count; i++)
-//    {
-//      dx.device_context->PSSetShaderResources(i, 1, gbuffer_srvs[i].GetAddressOf());
-//    }
-//
-//    dx.device_context->IASetVertexBuffers(0, 1, quad_render_state.vertex_buffer.GetAddressOf(), &quad_render_state.stride, &quad_render_state.offset);
-//    dx.device_context->IASetIndexBuffer(quad_render_state.index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-//
-//    dx.device_context->DrawIndexed(quad_render_state.num_faces, 0, 0);
-//
-//    // Do this to prevent:
-//    // WARNING: ID3D11DeviceContext::OMSetRenderTargets: Resource being set to OM RenderTarget slot 0 is still bound on input! [ STATE_SETTING WARNING #9: DEVICE_OMSETRENDERTARGETS_HAZARD]
-//    // In the second frame
-//    for(int i = 0; i < egbuffer_type::count; i++)
-//    {
-//      ID3D11ShaderResourceView* null_srv = nullptr;
-//      dx.device_context->PSSetShaderResources(i, 1, &null_srv);
-//    }
-  }
-  
-  void fdeferred_lighting_pass::init_size_dependent(bool cleanup)
-  {
-    //    if(cleanup)
-    //    {
-    //      DX_RELEASE(output_rtv)
-    //      DX_RELEASE(output_srv)
-    //      DX_RELEASE(output_dsv)
-    //      DX_RELEASE(output_texture)
-    //      DX_RELEASE(output_depth)
-    //    }
-    //
-    //    fdx12& dx = fdx12::instance();
-    //    DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    //    D3D11_BIND_FLAG bind_flag = static_cast<D3D11_BIND_FLAG>(D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
-    //    dx.create_texture(output_width, output_height, format, bind_flag, D3D11_USAGE_DEFAULT, output_texture);
-    //    dx.create_shader_resource_view(output_texture, format, D3D11_SRV_DIMENSION_TEXTURE2D, output_srv);
-    //    dx.create_render_target_view(output_texture, format, D3D11_RTV_DIMENSION_TEXTURE2D, output_rtv);
-    //
-    //    dx.create_texture(output_width, output_height, DXGI_FORMAT_D24_UNORM_S8_UINT, D3D11_BIND_DEPTH_STENCIL, D3D11_USAGE_DEFAULT, output_depth);
-    //    dx.create_depth_stencil_view(output_depth, output_width, output_height, output_dsv);
+    fpass_base::draw(command_list);
+    
+    fdevice* device = fapplication::get_instance()->device.get();
+    fdescriptor_heap* heap = context->main_descriptor_heap;
+    fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
+    ID3D12GraphicsCommandList* command_list_com = command_list->com.Get();
+    
+    fsoft_asset_ptr<amaterial> default_material_asset;
+    default_material_asset.set_name("default");
+    atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
+
+    // Clear and setup
+    command_list->clear_render_target(&color);
+    command_list->set_render_targets1(&color, nullptr);
+    graphics_pipeline.bind_command_list(command_list_com);
+    command_list_com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
+
+    const uint32_t back_buffer_index = context->back_buffer_index;
+
+    // Process frame data CBV
+    {
+      fframe_data data;
+      data.camera_position = XMFLOAT4(context->scene->camera.location.e);
+      data.ambient_light = context->scene->ambient_light_color;
+      data.show_position = show_position;
+      data.show_normal = show_normal;
+      data.show_uv = show_uv;
+      data.show_material_id = show_material_id;
+      frame_data[back_buffer_index].upload(&data);
+    }
+
+    // Process light and material SRVs
+    {
+      lights_data[back_buffer_index].upload(scene_acceleration.lights_buffer.data());
+      materials_data[back_buffer_index].upload(scene_acceleration.materials_buffer.data());
+    }
+
+    // Process texture SRVs
+    {
+      const uint32_t num_textures_in_scene = static_cast<uint32_t>(scene_acceleration.a_textures.size());
+
+      // Upload default texture first
+      if(!default_texture->is_online)
+      {
+        command_list->upload_texture(default_texture);
+      }
+      
+      // Upload other textures
+      for(uint32_t i = 0; i < MAX_TEXTURES-1; i++)
+      {
+        if(i < num_textures_in_scene && scene_acceleration.a_textures[i] != default_texture)
+        {
+          atexture* texture = scene_acceleration.a_textures[i];
+          if(!texture->is_online)
+          {
+            device->create_texture_buffer(heap, texture, texture->get_display_name().c_str());
+            
+            command_list->upload_texture(texture);
+          }
+        }
+      }
+    }
+    
+    // Upload quad mesh
+    if(!quad_mesh->is_resource_online)
+    {
+      command_list->upload_vertex_buffer(quad_mesh, "quad");
+      command_list->upload_index_buffer(quad_mesh, "quad");
+    }
+
+    // Draw
+    const fstatic_mesh_resource& smrs = quad_mesh->resource;
+    command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::frame_data, sizeof(fframe_data)/4, &frame_data[back_buffer_index], 0);
+    command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::lights, lights_data[back_buffer_index].resource->GetGPUVirtualAddress());
+    command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::materials, materials_data[back_buffer_index].resource->GetGPUVirtualAddress());
+    command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::gbuffer_position, position->srv.gpu_descriptor_handle);
+    command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::gbuffer_normal, normal->srv.gpu_descriptor_handle);
+    command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::gbuffer_uv, uv->srv.gpu_descriptor_handle);
+    command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::gbuffer_material_id, material_id->srv.gpu_descriptor_handle);
+    command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::textures, default_texture->gpu_resource.srv.gpu_descriptor_handle);
+    command_list_com->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
+    command_list_com->IASetIndexBuffer(&smrs.index_buffer_view);
+    command_list_com->DrawIndexedInstanced(smrs.vertex_num, 1, 0, 0, 0);
   }
 }

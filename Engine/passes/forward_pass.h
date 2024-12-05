@@ -23,6 +23,7 @@ namespace engine
     int show_diffuse = 1;
     int show_normals = 0;
 
+    // Output
     ftexture_resource color;
     ftexture_resource depth;
 

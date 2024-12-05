@@ -33,6 +33,8 @@ namespace engine
     {
     }
 
+    static const std::vector<fvertex_data>& get_quad_vertex_list();
+    
     // Don't change the layout, this needs to match the input layout for vertex buffers
     XMFLOAT3 position = {0.f, 0.f, 0.f};
     XMFLOAT3 normal = {0.f, 0.f, 0.f};
@@ -46,6 +48,8 @@ namespace engine
   typedef uint32_t fface_data_type; // Remember to match what is in IASetIndexBuffer
   struct ENGINE_API fface_data
   {
+    static const std::vector<fface_data>& get_quad_face_list();
+
     fface_data_type v1 = 0;
     fface_data_type v2 = 0;
     fface_data_type v3 = 0;

@@ -18,7 +18,7 @@ namespace engine
   struct ftexture_resource;
   
   using namespace Microsoft::WRL;
-  
+    
   struct ENGINE_API fgraphics_command_list final
   {
     void resource_barrier(ID3D12Resource* resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after) const;
@@ -37,5 +37,19 @@ namespace engine
     void upload_texture(atexture* texture_asset) const;
     
     ComPtr<ID3D12GraphicsCommandList> com;
+  };
+
+  // Helper struct used as a scope guard. Sets resource transition on construction and applies the oppposite one on destruction.
+  struct ENGINE_API fresource_barrier_scope final
+  {
+    fresource_barrier_scope(fgraphics_command_list* in_command_list, ID3D12Resource* in_resource, D3D12_RESOURCE_STATES in_before, D3D12_RESOURCE_STATES in_after);
+    ~fresource_barrier_scope();
+
+    CTOR_MOVE_COPY_DELETE(fresource_barrier_scope)
+    
+    D3D12_RESOURCE_STATES before;
+    D3D12_RESOURCE_STATES after;
+    fgraphics_command_list* command_list = nullptr;
+    ID3D12Resource* resource = nullptr;
   };
 }

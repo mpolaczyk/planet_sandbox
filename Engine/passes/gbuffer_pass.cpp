@@ -27,7 +27,7 @@ namespace engine
     const char* rtv_names[fgbuffer_pass::num_render_targets] = { "position", "normal", "uv", "material_id"};
   
     DXGI_FORMAT depth_format = DXGI_FORMAT_D32_FLOAT;
-    const char* depth_name = "depth";
+    const char* depth_name = "gbuffer pass depth";
   }
   
   void fgbuffer_pass::init()
@@ -66,9 +66,9 @@ namespace engine
     }
     for(uint32_t i = 0; i < fgbuffer_pass::num_render_targets; i++)
     {
-      device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap, render_targets[i], context->width, context->height, rtv_formats[i], D3D12_RESOURCE_STATE_COPY_SOURCE, rtv_names[i]);
+      device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap, render_targets[i], context->width, context->height, rtv_formats[i], D3D12_RESOURCE_STATE_RENDER_TARGET, rtv_names[i]);
     }
-    device->create_depth_stencil(context->dsv_descriptor_heap, &depth, context->width, context->height, depth_format, D3D12_RESOURCE_STATE_COPY_SOURCE, depth_name);
+    device->create_depth_stencil(context->dsv_descriptor_heap, &depth, context->width, context->height, depth_format, D3D12_RESOURCE_STATE_DEPTH_WRITE, depth_name);
   }
 
   void fgbuffer_pass::draw(fgraphics_command_list* command_list)
@@ -79,13 +79,11 @@ namespace engine
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
     ID3D12GraphicsCommandList* command_list_com = command_list->com.Get();
     
-    // Move resurces to render target state and clean
+    // Cleanup and setup
     for(uint32_t i = 0; i < fgbuffer_pass::num_render_targets; i++)
     {
-      command_list->resource_barrier(render_targets[i]->com.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
       command_list->clear_render_target(render_targets[i]);
     }
-    command_list->resource_barrier(depth.com.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE);
     command_list->clear_depth_stencil(&depth);
     command_list->set_render_targets(num_render_targets, render_targets, &depth);
     graphics_pipeline.bind_command_list(command_list_com);
@@ -125,15 +123,5 @@ namespace engine
       command_list_com->IASetIndexBuffer(&smrs.index_buffer_view);
       command_list_com->DrawIndexedInstanced(smrs.vertex_num, 1, 0, 0, 0);
     }
-
-    // Move resources to copy source state
-    for(uint32_t i = 0; i < fgbuffer_pass::num_render_targets; i++)
-    {
-      command_list->resource_barrier(render_targets[i]->com.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
-    }
-    command_list->resource_barrier(depth.com.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_COPY_SOURCE);
   }
-
-
-
 }

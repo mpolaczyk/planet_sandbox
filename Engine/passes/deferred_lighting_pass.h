@@ -2,17 +2,12 @@
 
 #include <wrl/client.h>
 
-#include "passes/gbuffer_type.h"
 #include "passes/pass_base.h"
-
-//struct ID3D11Texture2D;
-//struct ID3D11Buffer;
-//struct ID3D11RenderTargetView;
-//struct ID3D11ShaderResourceView;
-//struct ID3D11DepthStencilView;
 
 namespace engine
 {
+  class astatic_mesh;
+  
   using Microsoft::WRL::ComPtr;
   
   struct fdeferred_lighting_pass : public fpass_base
@@ -22,20 +17,25 @@ namespace engine
     virtual void init_size_dependent(bool cleanup) override;
 
     // Input
-    int show_normal_ws = 0;
-    int show_position_ws = 0;
-    int show_tex_color = 0;
-    //    ComPtr<ID3D11ShaderResourceView> gbuffer_srvs[egbuffer_type::count];
-    //    
-    //    // Output
-    //    ComPtr<ID3D11Texture2D> output_texture;
-    //    ComPtr<ID3D11Texture2D> output_depth;
-    //    ComPtr<ID3D11ShaderResourceView> output_srv;
-    //    ComPtr<ID3D11RenderTargetView> output_rtv;
-    //    ComPtr<ID3D11DepthStencilView> output_dsv;
-    //
-    //  private:
-    //    ComPtr<ID3D11Buffer> frame_constant_buffer;
-    fstatic_mesh_resource quad_render_state;
+    int show_position = 0;
+    int show_normal = 0;
+    int show_uv = 0;
+    int show_material_id = 0;
+    // GBuffer
+    ftexture_resource* position;
+    ftexture_resource* normal;
+    ftexture_resource* uv;
+    ftexture_resource* material_id;
+
+    // Output
+    ftexture_resource color;
+
+  private:
+    std::vector<fconst_buffer> frame_data; // index is back buffer id
+    std::vector<fshader_resource_buffer> lights_data;
+    std::vector<fshader_resource_buffer> materials_data;
+    std::vector<ftexture_resource> textures_data;
+    astatic_mesh* quad_mesh = nullptr;  // TODO fix the leak
+    bool is_gbuffer_on_the_heap = false;
   };
 }

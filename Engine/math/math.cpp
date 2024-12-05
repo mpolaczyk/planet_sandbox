@@ -314,17 +314,17 @@ namespace engine
     // roll (x-axis rotation)
     double sinr_cosp = 2 * (w * x + y * z);
     double cosr_cosp = 1 - 2 * (x * x + y * y);
-    angles.x = atan2(sinr_cosp, cosr_cosp);
+    angles.x = static_cast<float>(atan2(sinr_cosp, cosr_cosp));
 
     // pitch (y-axis rotation)
     double sinp = sqrt(1 + 2 * (w * y - x * z));
     double cosp = sqrt(1 - 2 * (w * y - x * z));
-    angles.y = 2 * atan2(sinp, cosp) - 3.14159265 / 2;
+    angles.y = static_cast<float>(2 * atan2(sinp, cosp) - 3.14159265 / 2);
 
     // yaw (z-axis rotation)
     double siny_cosp = 2 * (w * z + x * y);
     double cosy_cosp = 1 - 2 * (y * y + z * z);
-    angles.z = atan2(siny_cosp, cosy_cosp);
+    angles.z = static_cast<float>(atan2(siny_cosp, cosy_cosp));
 
     return angles;
   }

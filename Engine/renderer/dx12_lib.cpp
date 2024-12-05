@@ -146,4 +146,12 @@ namespace engine
     fclose(file);
     return true;
   }
+
+  std::string fdx12::get_resource_name(ID3D12Resource* resource)
+  {
+    wchar_t name[128] = {};
+    UINT size = sizeof(name);
+    resource->GetPrivateData(WKPDID_D3DDebugObjectNameW, &size, name);
+    return fstring_tools::to_utf8(name);
+  }
 }

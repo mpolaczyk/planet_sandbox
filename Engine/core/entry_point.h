@@ -43,7 +43,7 @@ void inline main_impl(int argc, char** argv)
   LOG_INFO("Goodbye!");
 }
 
-inline int main(int argc, char** argv)
+int main(int argc, char** argv)
 {
   if (!IsDebuggerPresent())
   {

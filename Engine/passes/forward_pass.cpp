@@ -38,6 +38,18 @@ namespace engine
       num
     };
 
+    ALIGNED_STRUCT_BEGIN(fframe_data)
+    {
+      XMFLOAT4 camera_position; // 16
+      XMFLOAT4 ambient_light; // 16
+      int32_t show_emissive; // 4    // TODO pack bits
+      int32_t show_ambient; // 4
+      int32_t show_specular; // 4
+      int32_t show_diffuse; // 4
+      int32_t show_normals; // 4
+      int32_t padding[2]; // 8
+    };
+
     DXGI_FORMAT rtv_format = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT depth_format = DXGI_FORMAT_D32_FLOAT;
   }
@@ -82,8 +94,8 @@ namespace engine
     graphics_pipeline.reserve_parameters(root_parameter_type::num);
     graphics_pipeline.add_constant_parameter(root_parameter_type::object_data, 0, 0, static_cast<uint32_t>(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_VERTEX);
     graphics_pipeline.add_constant_buffer_view_parameter(root_parameter_type::frame_data, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline.add_shader_respurce_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline.add_shader_respurce_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline.add_shader_resource_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline.add_shader_resource_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::textures, 2, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     graphics_pipeline.add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
     graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->resource.blob);
@@ -103,8 +115,8 @@ namespace engine
       context->rtv_descriptor_heap->remove(color.rtv.index);
       context->dsv_descriptor_heap->remove(depth.dsv.index);
     }
-    device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap, &color, context->width, context->height, rtv_format, D3D12_RESOURCE_STATE_COPY_SOURCE, "Forward pass");
-    device->create_depth_stencil(context->dsv_descriptor_heap, &depth, context->width, context->height, depth_format, D3D12_RESOURCE_STATE_COPY_SOURCE, "Forward pass");
+    device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap, &color, context->width, context->height, rtv_format, D3D12_RESOURCE_STATE_RENDER_TARGET, "Forward pass");
+    device->create_depth_stencil(context->dsv_descriptor_heap, &depth, context->width, context->height, depth_format, D3D12_RESOURCE_STATE_DEPTH_WRITE, "Forward pass");
   }
   
   void fforward_pass::draw(fgraphics_command_list* command_list)
@@ -119,9 +131,6 @@ namespace engine
     fsoft_asset_ptr<amaterial> default_material_asset;
     default_material_asset.set_name("default");
     atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
-    
-    command_list->resource_barrier(color.com.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
-    command_list->resource_barrier(depth.com.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
     command_list->clear_render_target(&color);
     command_list->clear_depth_stencil(&depth);
@@ -206,18 +215,14 @@ namespace engine
     for(uint32_t i = 0; i < N; i++)
     {
       const fstatic_mesh_resource& smrs = context->scene->scene_acceleration.h_meshes[i]->mesh_asset_ptr.get()->resource;
-
       command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, sizeof(fobject_data)/4, &scene_acceleration.object_buffer[i], 0);
       command_list_com->SetGraphicsRootConstantBufferView(root_parameter_type::frame_data, frame_data[back_buffer_index].resource->GetGPUVirtualAddress());
       command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::lights, lights_data[back_buffer_index].resource->GetGPUVirtualAddress());
       command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::materials, materials_data[back_buffer_index].resource->GetGPUVirtualAddress());
-      command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::textures, default_texture->gpu_resource.srv.gpu_handle);
+      command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::textures, default_texture->gpu_resource.srv.gpu_descriptor_handle);
       command_list_com->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list_com->IASetIndexBuffer(&smrs.index_buffer_view);
       command_list_com->DrawIndexedInstanced(smrs.vertex_num, 1, 0, 0, 0);
     }
-    
-    command_list->resource_barrier(color.com.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
-    command_list->resource_barrier(depth.com.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_COPY_SOURCE);
   }
 }

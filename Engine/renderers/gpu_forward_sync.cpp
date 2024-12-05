@@ -27,6 +27,8 @@ namespace engine
 
   void rgpu_forward_sync::draw_internal(fgraphics_command_list* command_list)
   {
+    fresource_barrier_scope a(command_list, forward_pass.color.com.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    fresource_barrier_scope b(command_list, forward_pass.depth.com.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE);
     forward_pass.set_renderer_context(&context);
     forward_pass.draw(command_list);
   }

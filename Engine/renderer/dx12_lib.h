@@ -52,6 +52,8 @@ namespace engine
     static bool get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlob>& out_blob);
     static bool get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlobUtf8>& out_blob);
     static bool save_dxc_blob(IDxcBlob* blob, const char* path);
+
+    static std::string get_resource_name(ID3D12Resource* resource);
     
     static uint64_t align_size_to(uint64_t size, uint64_t value)
     {
