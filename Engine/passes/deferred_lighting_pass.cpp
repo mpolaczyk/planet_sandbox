@@ -6,6 +6,7 @@
 #include "core/core.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
+#include "math/math.h"
 #include "math/vertex_data.h"
 #include "renderer/aligned_structs.h"
 #include "renderer/command_list.h"
@@ -87,7 +88,7 @@ namespace engine
     // Set up graphics pipeline
     {
       graphics_pipeline.reserve_parameters(root_parameter_type::num);
-      graphics_pipeline.add_constant_parameter(root_parameter_type::frame_data, 0, 0, static_cast<uint32_t>(sizeof(fframe_data)), D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_constant_parameter(root_parameter_type::frame_data, 0, 0, fmath::to_uint32(sizeof(fframe_data)), D3D12_SHADER_VISIBILITY_PIXEL);
       graphics_pipeline.add_shader_resource_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
       graphics_pipeline.add_shader_resource_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
       // TODO GBuffer as one table, or maybe all textures...
@@ -105,10 +106,8 @@ namespace engine
     }
     
     // Create quad mesh
-    quad_mesh = astatic_mesh::spawn();
-    quad_mesh->set_display_name("quad");
-    quad_mesh->vertex_list = fvertex_data::get_quad_vertex_list();
-    quad_mesh->face_list = fface_data::get_quad_face_list();
+    quad_asset.set_name("plane");
+    quad_asset.get();
   }
 
   void fdeferred_lighting_pass::init_size_dependent(bool cleanup)
@@ -164,7 +163,7 @@ namespace engine
 
     // Process texture SRVs
     {
-      const uint32_t num_textures_in_scene = static_cast<uint32_t>(scene_acceleration.a_textures.size());
+      const uint32_t num_textures_in_scene = fmath::to_uint32(scene_acceleration.a_textures.size());
 
       // Upload default texture first
       if(!default_texture->is_online)
@@ -189,6 +188,7 @@ namespace engine
     }
     
     // Upload quad mesh
+    astatic_mesh* quad_mesh = quad_asset.get();
     if(!quad_mesh->is_resource_online)
     {
       command_list->upload_vertex_buffer(quad_mesh, "quad");

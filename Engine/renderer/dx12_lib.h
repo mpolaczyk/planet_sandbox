@@ -46,7 +46,7 @@ namespace engine
     
     static void report_live_objects();
     
-    static void upload_host_buffer(ID3D12Resource* resource, uint64_t buffer_size, const void* in_buffer);
+    static void upload_host_buffer(ID3D12Resource* resource, uint32_t buffer_size, const void* in_buffer);
     
     static bool get_dxc_hash(IDxcResult* result, std::string& out_hash);
     static bool get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlob>& out_blob);
@@ -55,7 +55,7 @@ namespace engine
 
     static std::string get_resource_name(ID3D12Resource* resource);
     
-    static uint64_t align_size_to(uint64_t size, uint64_t value)
+    static uint32_t align_size_to(uint32_t size, uint32_t value)
     {
       return (size + value) & ~value;
     }

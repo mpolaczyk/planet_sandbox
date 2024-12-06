@@ -2,12 +2,11 @@
 
 #include <wrl/client.h>
 
+#include "hittables/static_mesh.h"
 #include "passes/pass_base.h"
 
 namespace engine
 {
-  class astatic_mesh;
-  
   using Microsoft::WRL::ComPtr;
   
   struct fdeferred_lighting_pass : public fpass_base
@@ -35,7 +34,7 @@ namespace engine
     std::vector<fshader_resource_buffer> lights_data;
     std::vector<fshader_resource_buffer> materials_data;
     std::vector<ftexture_resource> textures_data;
-    astatic_mesh* quad_mesh = nullptr;  // TODO fix the leak
+    fsoft_asset_ptr<astatic_mesh> quad_asset;
     bool is_gbuffer_on_the_heap = false;
   };
 }

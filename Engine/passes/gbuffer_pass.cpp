@@ -6,6 +6,7 @@
 #include "assets/material.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
+#include "math/math.h"
 #include "math/vertex_data.h"
 #include "renderer/command_list.h"
 #include "renderer/device.h"
@@ -42,7 +43,7 @@ namespace engine
     // Set up graphics pipeline
     {
       graphics_pipeline.reserve_parameters(root_parameter_type::num);
-      graphics_pipeline.add_constant_parameter(root_parameter_type::object_data, 0, 0, static_cast<uint32_t>(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_constant_parameter(root_parameter_type::object_data, 0, 0, fmath::to_uint32(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_PIXEL);
       graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->resource.blob);
       graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->resource.blob);
       graphics_pipeline.setup_formats(fgbuffer_pass::num_render_targets, rtv_formats, depth_format);
@@ -89,7 +90,7 @@ namespace engine
     graphics_pipeline.bind_command_list(command_list_com);
     command_list_com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
 
-    const uint32_t N = static_cast<uint32_t>(scene_acceleration.h_meshes.size());
+    const uint32_t N = fmath::to_uint32(scene_acceleration.h_meshes.size());
 
     // Process object data
     for(uint32_t i = 0; i < N; i++)
@@ -108,8 +109,8 @@ namespace engine
       {
         std::string mesh_name = hmesh->get_display_name();
         std::string asset_name = hmesh->mesh_asset_ptr.get()->name;
-        command_list->upload_vertex_buffer(amesh, std::format("{}{}", mesh_name, asset_name).c_str());
-        command_list->upload_index_buffer(amesh, std::format("{}{}", mesh_name, asset_name).c_str());
+        command_list->upload_vertex_buffer(amesh, std::format("{} {}", mesh_name, asset_name).c_str());
+        command_list->upload_index_buffer(amesh, std::format("{} {}", mesh_name, asset_name).c_str());
       }
     }
     

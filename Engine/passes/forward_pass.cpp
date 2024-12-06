@@ -92,7 +92,7 @@ namespace engine
     
     // Set up graphics pipeline
     graphics_pipeline.reserve_parameters(root_parameter_type::num);
-    graphics_pipeline.add_constant_parameter(root_parameter_type::object_data, 0, 0, static_cast<uint32_t>(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_VERTEX);
+    graphics_pipeline.add_constant_parameter(root_parameter_type::object_data, 0, 0, fmath::to_uint32(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_VERTEX);
     graphics_pipeline.add_constant_buffer_view_parameter(root_parameter_type::frame_data, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     graphics_pipeline.add_shader_resource_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     graphics_pipeline.add_shader_resource_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
@@ -142,7 +142,7 @@ namespace engine
     command_list_com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
 
     const uint32_t back_buffer_index = context->back_buffer_index;
-    const uint32_t N = static_cast<uint32_t>(scene_acceleration.h_meshes.size());
+    const uint32_t N = fmath::to_uint32(scene_acceleration.h_meshes.size());
     
     // Process object data
     for(uint32_t i = 0; i < N; i++)
@@ -173,7 +173,7 @@ namespace engine
 
     // Process texture SRVs
     {
-      const uint32_t num_textures_in_scene = static_cast<uint32_t>(scene_acceleration.a_textures.size());
+      const uint32_t num_textures_in_scene = fmath::to_uint32(scene_acceleration.a_textures.size());
 
       // Upload default texture first
       if(!default_texture->is_online)
@@ -206,8 +206,8 @@ namespace engine
       {
         std::string mesh_name = hmesh->get_display_name();
         std::string asset_name = hmesh->mesh_asset_ptr.get()->name;
-        command_list->upload_vertex_buffer(amesh, std::format("{}{}", mesh_name, asset_name).c_str());
-        command_list->upload_index_buffer(amesh, std::format("{}{}", mesh_name, asset_name).c_str());
+        command_list->upload_vertex_buffer(amesh, std::format("{} {}", mesh_name, asset_name).c_str());
+        command_list->upload_index_buffer(amesh, std::format("{} {}", mesh_name, asset_name).c_str());
       }
     }
     

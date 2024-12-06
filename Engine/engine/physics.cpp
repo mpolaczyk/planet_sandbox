@@ -104,12 +104,8 @@ namespace engine
 
   BoxShape* fphysics::create_box_shape_collider(const fbounding_box& box, const fvec3& scale)
   {
-    if(!fmath::is_near_zero(box.extents))
-    {
-      const reactphysics3d::Vector3 positive_half_extents(fabs(box.extents.x * scale.x), fabs(box.extents.y * scale.y), fabs(box.extents.z * scale.z));
-      return fphysics::instance->physics_common->createBoxShape(positive_half_extents);
-    }
-    return nullptr;
+    const reactphysics3d::Vector3 positive_extents(fabs(box.extents.x * scale.x), fabs(box.extents.y * scale.y), fabs(box.extents.z * scale.z));
+    return fphysics::instance->physics_common->createBoxShape(positive_extents);
   }
 
   void fphysics::destroy_box_shape_collider(BoxShape* box_shape)

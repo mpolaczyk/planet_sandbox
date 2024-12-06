@@ -31,7 +31,7 @@ namespace engine
     void clear_render_target(const ftexture_resource* rtv) const;
     void clear_depth_stencil(const ftexture_resource* dsv) const;
 
-    void upload_buffer_resource(uint64_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource) const;
+    void upload_buffer_resource(uint32_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource) const;
     void upload_vertex_buffer(astatic_mesh* mesh, const char* name) const;
     void upload_index_buffer(astatic_mesh* mesh, const char* name) const;
     void upload_texture(atexture* texture_asset) const;

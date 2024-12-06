@@ -4,6 +4,7 @@
 #include "d3dx12/d3dx12_core.h"
 
 #include "core/application.h"
+#include "math/math.h"
 #include "renderer/device.h"
 #include "renderer/pipeline_state.h"
 
@@ -52,7 +53,7 @@ namespace engine
     ranges.push_back(range);
     
     CD3DX12_ROOT_PARAMETER1 param;
-    //uint32_t num_descriptor_ranges = static_cast<uint32_t>(ranges.size());
+    //uint32_t num_descriptor_ranges = fmath::to_uint32(ranges.size());
     param.InitAsDescriptorTable(1, &ranges.back(), visibility);
     parameters[index] = param;
   }
@@ -107,7 +108,7 @@ namespace engine
 
     fpipeline_state_stream pipeline_state_stream;
     pipeline_state_stream.root_signature = root_signature.Get();
-    pipeline_state_stream.input_layout = { input_layout.data(), static_cast<uint32_t>(input_layout.size()) };
+    pipeline_state_stream.input_layout = { input_layout.data(), fmath::to_uint32(input_layout.size()) };
     pipeline_state_stream.primitive_topology_type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     pipeline_state_stream.vertex_shader = CD3DX12_SHADER_BYTECODE(vertex_shader->GetBufferPointer(), vertex_shader->GetBufferSize());
     pipeline_state_stream.pixel_shader = CD3DX12_SHADER_BYTECODE(pixel_shader->GetBufferPointer(), pixel_shader->GetBufferSize());

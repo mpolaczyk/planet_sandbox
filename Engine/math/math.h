@@ -66,5 +66,7 @@ namespace engine
     static DirectX::XMFLOAT4 to_xmfloat4(const fvec3& a);
     static DirectX::XMFLOAT4 uint32_to_colorf(uint32_t value);
     static DirectX::XMUINT4 uint32_to_colori(uint32_t value);
+    static uint32_t to_uint32(uint64_t value);
+    static uint32_t to_uint32(int64_t value);
   };
 }

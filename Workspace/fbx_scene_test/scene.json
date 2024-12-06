@@ -266,13 +266,13 @@
       },
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "cube",
+        "custom_display_name": "floor",
         "gravity_enabled": false,
         "material_asset": {
           "name": "default"
         },
         "mesh_asset": {
-          "name": "cube"
+          "name": "plane"
         },
         "origin": {
           "x": 0.0,
@@ -350,8 +350,7 @@
         }
       }
     ],
-    "renderer": 
-    {
+    "renderer": {
       "class_name": "rgpu_deferred_sync",
       "gbuffer_pixel_shader_asset": {
         "name": "gbuffer_deferred"

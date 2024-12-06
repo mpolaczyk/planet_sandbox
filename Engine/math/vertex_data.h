@@ -22,6 +22,7 @@ namespace engine
     fvec3 pad3;
   };
 
+  // Don't change the layout, this needs to match the input layout for vertex buffers
   struct ENGINE_API fvertex_data
   {
     CTOR_DEFAULT(fvertex_data)
@@ -32,10 +33,7 @@ namespace engine
       : position(in_position), normal(in_normal), tangent(in_tangent), bitangent(in_bitangent), uv(in_uv)
     {
     }
-
-    static const std::vector<fvertex_data>& get_quad_vertex_list();
     
-    // Don't change the layout, this needs to match the input layout for vertex buffers
     XMFLOAT3 position = {0.f, 0.f, 0.f};
     XMFLOAT3 normal = {0.f, 0.f, 0.f};
     XMFLOAT3 tangent = {0.f, 0.f, 0.f};
@@ -44,14 +42,13 @@ namespace engine
 
     static std::vector<D3D12_INPUT_ELEMENT_DESC> input_layout;
   };
+  static_assert(sizeof(fvertex_data) == 14 * sizeof(float));
 
-  typedef uint32_t fface_data_type; // Remember to match what is in IASetIndexBuffer
   struct ENGINE_API fface_data
   {
-    static const std::vector<fface_data>& get_quad_face_list();
-
-    fface_data_type v1 = 0;
-    fface_data_type v2 = 0;
-    fface_data_type v3 = 0;
+    uint32_t v1 = 0;
+    uint32_t v2 = 0;
+    uint32_t v3 = 0;
   };
+  static_assert(sizeof(fface_data) == 3 * sizeof(uint32_t)); // Remember to match what is in IASetIndexBuffer
 }

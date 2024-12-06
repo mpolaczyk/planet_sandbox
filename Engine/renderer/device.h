@@ -58,8 +58,8 @@ namespace engine
     void create_cbv_srv_uav_descriptor_heap(fdescriptor_heap& out_descriptor_heap, const char* name) const;
 
     // TODO heaps should be owned by the device, move them there 
-    void create_const_buffer(fdescriptor_heap* heap, uint64_t in_size, fconst_buffer& out_buffer, const char* name) const;
-    void create_shader_resource_buffer(fdescriptor_heap* heap, uint64_t in_size, fshader_resource_buffer& out_buffer, const char* name) const;
+    void create_const_buffer(fdescriptor_heap* heap, uint32_t in_size, fconst_buffer& out_buffer, const char* name) const;
+    void create_shader_resource_buffer(fdescriptor_heap* heap, uint32_t in_size, fshader_resource_buffer& out_buffer, const char* name) const;
     void create_back_buffer(IDXGISwapChain4* swap_chain, uint32_t swap_chain_buffer_id, fdescriptor_heap& descriptor_heap, ftexture_resource& out_rtv, const char* name) const;
     void create_frame_buffer(fdescriptor_heap* main_heap, fdescriptor_heap* rtv_heap, ftexture_resource* texture, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES initial_state, const char* name) const;
     void create_depth_stencil(fdescriptor_heap* dsv_heap, ftexture_resource* texture, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES
@@ -67,10 +67,10 @@ namespace engine
     void create_texture_buffer(fdescriptor_heap* heap, ftexture_resource& texture, uint32_t width, uint32_t height, DXGI_FORMAT format, const char* name) const;
     void create_texture_buffer(fdescriptor_heap* heap, atexture* texture_asset, const char* name) const;
 
-    void create_upload_resource(uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const;
-    void create_buffer_resource(uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const;
+    void create_upload_resource(uint32_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const;
+    void create_buffer_resource(uint32_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const;
 
-    DXGI_SAMPLE_DESC get_multisample_quality_levels(DXGI_FORMAT format, UINT num_samples, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags) const;
+    DXGI_SAMPLE_DESC get_multisample_quality_levels(DXGI_FORMAT format, uint32_t num_samples, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags) const;
     void enable_info_queue() const;
 
     ComPtr<ID3D12Device2> com;

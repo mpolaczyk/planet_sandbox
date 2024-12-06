@@ -92,6 +92,10 @@ namespace engine
 
   fbounding_box fbounding_box::from_min_max(const fvec3& min, const fvec3 max)
   {
-    return fbounding_box((min + max) * 0.5f, (min - max) * 0.5f);
+    fbounding_box value((min + max) * 0.5f, (min - max) * 0.5f);
+    if(fmath::is_almost_zero(value.extents.x)) value.extents.x = fmath::epsilon;
+    if(fmath::is_almost_zero(value.extents.y)) value.extents.y = fmath::epsilon;
+    if(fmath::is_almost_zero(value.extents.z)) value.extents.z = fmath::epsilon;
+    return value;
   }
 };

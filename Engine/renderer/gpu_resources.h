@@ -17,7 +17,7 @@ namespace engine
   struct ENGINE_API fbuffer
   {
     ComPtr<ID3D12Resource> resource;
-    uint64_t size = 0;
+    uint32_t size = 0;
 
     void upload(const void* data) const;
   };

@@ -2,7 +2,7 @@
 
 #include <corecrt_math.h>
 #include <cassert>
-#include <stdint.h>
+#include <cstdint>
 #include <DirectXMath.h>
 
 #include "math/math.h"
@@ -378,5 +378,23 @@ namespace engine
     uint8_t bf = static_cast<uint8_t>(value >> 8);
     uint8_t cf = static_cast<uint8_t>(value >> 16);
     return DirectX::XMUINT4(af, bf, cf, 255);
+  }
+
+  uint32_t fmath::to_uint32(uint64_t value)
+  {
+    if(value > UINT32_MAX)
+    {
+      abort();
+    }
+    return static_cast<uint32_t>(value);
+  }
+
+  uint32_t fmath::to_uint32(int64_t value)
+  {
+    if(value > UINT32_MAX || value < 0)
+    {
+      abort();
+    }
+    return static_cast<uint32_t>(value);
   }
 }

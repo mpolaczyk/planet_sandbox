@@ -15,6 +15,7 @@
 #include "core/exceptions.h"
 #include "engine/log.h"
 #include "engine/string_tools.h"
+#include "math/math.h"
 #include "renderer/aligned_structs.h"
 #include "renderer/descriptor_heap.h"
 #include "renderer/dx12_lib.h"
@@ -137,7 +138,7 @@ namespace engine
     ComPtr<ID3DBlob> root_signature_serialized;
     ComPtr<ID3DBlob> error_blob;
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC root_signature_desc;
-    root_signature_desc.Init_1_1(static_cast<uint32_t>(root_parameters.size()), root_parameters.data(), static_cast<uint32_t>(static_samplers.size()), static_samplers.data(), root_signature_flags);
+    root_signature_desc.Init_1_1(fmath::to_uint32(root_parameters.size()), root_parameters.data(), fmath::to_uint32(static_samplers.size()), static_samplers.data(), root_signature_flags);
     
     HRESULT hr;
     hr = D3DX12SerializeVersionedRootSignature(&root_signature_desc, feature_data.HighestVersion, root_signature_serialized.GetAddressOf(), error_blob.GetAddressOf());
@@ -263,7 +264,7 @@ namespace engine
 #endif
   }
 
-  void fdevice::create_const_buffer(fdescriptor_heap* heap, uint64_t in_size, fconst_buffer& out_buffer, const char* name) const
+  void fdevice::create_const_buffer(fdescriptor_heap* heap, uint32_t in_size, fconst_buffer& out_buffer, const char* name) const
   {
     out_buffer.size = fdx12::align_size_to(in_size, 255);
     heap->push(out_buffer.cbv);
@@ -275,7 +276,7 @@ namespace engine
     
     D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {};
     cbv_desc.BufferLocation = out_buffer.resource->GetGPUVirtualAddress();
-    cbv_desc.SizeInBytes = static_cast<uint32_t>(out_buffer.size);
+    cbv_desc.SizeInBytes = out_buffer.size;
     com->CreateConstantBufferView(&cbv_desc, out_buffer.cbv.cpu_descriptor_handle);
     
 #if BUILD_DEBUG
@@ -283,7 +284,7 @@ namespace engine
 #endif
   }
 
-  void fdevice::create_shader_resource_buffer(fdescriptor_heap* heap, uint64_t in_size, fshader_resource_buffer& out_buffer, const char* name) const
+  void fdevice::create_shader_resource_buffer(fdescriptor_heap* heap, uint32_t in_size, fshader_resource_buffer& out_buffer, const char* name) const
   {
     out_buffer.size = fdx12::align_size_to(in_size, 255);
     heap->push(out_buffer.srv);
@@ -295,7 +296,7 @@ namespace engine
     srv_desc.Format = DXGI_FORMAT_UNKNOWN;
     srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srv_desc.Buffer.NumElements = 1;
-    srv_desc.Buffer.StructureByteStride = static_cast<uint32_t>(out_buffer.size);
+    srv_desc.Buffer.StructureByteStride = out_buffer.size;
     srv_desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
     com->CreateShaderResourceView(out_buffer.resource.Get(), &srv_desc, out_buffer.srv.cpu_descriptor_handle);
     
@@ -418,7 +419,7 @@ namespace engine
       nullptr,
       IID_PPV_ARGS(&texture.com)));
 
-    const uint64_t buffer_size = GetRequiredIntermediateSize(texture.com.Get(), 0, 1);
+    const uint32_t buffer_size = fmath::to_uint32(GetRequiredIntermediateSize(texture.com.Get(), 0, 1));
     create_upload_resource(buffer_size, texture.upload_com);
     
     D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
@@ -439,7 +440,7 @@ namespace engine
     create_texture_buffer(heap, texture_asset->gpu_resource, texture_asset->width, texture_asset->height, texture_asset->format, name);
   }
 
-  void fdevice::create_upload_resource(uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const
+  void fdevice::create_upload_resource(uint32_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const
   {
     const CD3DX12_HEAP_PROPERTIES type_upload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
     const CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
@@ -452,7 +453,7 @@ namespace engine
       IID_PPV_ARGS(out_resource.GetAddressOf())));
   }
 
-  void fdevice::create_buffer_resource(uint64_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const
+  void fdevice::create_buffer_resource(uint32_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const
   {
     const CD3DX12_HEAP_PROPERTIES type_default = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
     const CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size, D3D12_RESOURCE_FLAG_NONE);
@@ -465,7 +466,7 @@ namespace engine
       IID_PPV_ARGS(out_resource.GetAddressOf())));
   }
 
-  DXGI_SAMPLE_DESC fdevice::get_multisample_quality_levels(DXGI_FORMAT format, UINT num_samples, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags) const
+  DXGI_SAMPLE_DESC fdevice::get_multisample_quality_levels(DXGI_FORMAT format, uint32_t num_samples, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags) const
   {
     DXGI_SAMPLE_DESC desc = { 1, 0 };
 

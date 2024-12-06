@@ -78,6 +78,7 @@ namespace engine
         return false;
       }
       // Vertex list
+      // TODO Waste! Vertices are repeated for each triangle they are in (triangle list)!
       {
         std::vector<fvertex_data>& vertex_list = out_static_mesh->vertex_list;
         vertex_list.resize(ai_mesh->mNumVertices, fvertex_data());

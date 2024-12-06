@@ -83,7 +83,7 @@ namespace engine
     debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
   }
 
-  void fdx12::upload_host_buffer(ID3D12Resource* resource, uint64_t buffer_size, const void* in_buffer)
+  void fdx12::upload_host_buffer(ID3D12Resource* resource, uint32_t buffer_size, const void* in_buffer)
   {
     CD3DX12_RANGE read_range(0, 0);
     uint8_t* mapping = nullptr;

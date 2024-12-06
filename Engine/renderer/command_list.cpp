@@ -12,6 +12,7 @@
 #include "engine/log.h"
 #include "engine/string_tools.h"
 #include "hittables/static_mesh.h"
+#include "math/math.h"
 #include "math/vertex_data.h"
 #include "renderer/dx12_lib.h"
 #include "renderer/device.h"
@@ -23,7 +24,7 @@ namespace engine
     const CD3DX12_RESOURCE_BARRIER resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource, state_before, state_after);
     com->ResourceBarrier(1, &resource_barrier);
 
-    LOG_INFO("Barrier for {} from {} to {}", fdx12::get_resource_name(resource), static_cast<uint32_t>(state_before), static_cast<uint32_t>(state_after));
+    //LOG_INFO("Barrier for {} from {} to {}", fdx12::get_resource_name(resource), static_cast<uint32_t>(state_before), static_cast<uint32_t>(state_after));
   }
 
   void fgraphics_command_list::set_render_targets1(ftexture_resource* render_target, const ftexture_resource* dsv) const
@@ -39,8 +40,7 @@ namespace engine
     {
       rtv_handles.push_back(render_targets[i]->rtv.cpu_descriptor_handle);
     }
-    com->OMSetRenderTargets(static_cast<uint32_t>(rtv_handles.size()), rtv_handles.data(), FALSE,
-                            dsv ? &dsv->dsv.cpu_descriptor_handle : nullptr);
+    com->OMSetRenderTargets(fmath::to_uint32(rtv_handles.size()), rtv_handles.data(), FALSE, dsv ? &dsv->dsv.cpu_descriptor_handle : nullptr);
   }
 
   void fgraphics_command_list::set_viewport(uint32_t width, uint32_t height) const
@@ -65,9 +65,7 @@ namespace engine
     com->ClearDepthStencilView(dsv->dsv.cpu_descriptor_handle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
   }
 
-  void fgraphics_command_list::upload_buffer_resource(uint64_t buffer_size, const void* in_buffer,
-                                                      ComPtr<ID3D12Resource>& out_upload_intermediate,
-                                                      ComPtr<ID3D12Resource>& out_gpu_resource) const
+  void fgraphics_command_list::upload_buffer_resource(uint32_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource) const
   {
     fdevice* device = fapplication::get_instance()->device.get();
 
@@ -78,7 +76,7 @@ namespace engine
 
       D3D12_SUBRESOURCE_DATA data;
       data.pData = in_buffer;
-      data.RowPitch = static_cast<uint32_t>(buffer_size);
+      data.RowPitch = buffer_size;
       data.SlicePitch = data.RowPitch;
 
       UpdateSubresources(com.Get(), out_gpu_resource.Get(), out_upload_intermediate.Get(), 0, 0, 1, &data);
@@ -88,14 +86,14 @@ namespace engine
   void fgraphics_command_list::upload_vertex_buffer(astatic_mesh* mesh, const char* name) const
   {
     fstatic_mesh_resource& smr = mesh->resource;
-    const uint64_t vertex_list_size = mesh->vertex_list.size() * sizeof(fvertex_data);
+    const uint32_t vertex_list_size = fmath::to_uint32(mesh->vertex_list.size() * sizeof(fvertex_data));
 
     upload_buffer_resource(vertex_list_size, mesh->vertex_list.data(), smr.vertex_buffer_upload, smr.vertex_buffer);
 
     smr.vertex_buffer_view.BufferLocation = smr.vertex_buffer->GetGPUVirtualAddress();
-    smr.vertex_buffer_view.SizeInBytes = static_cast<uint32_t>(vertex_list_size);
-    smr.vertex_buffer_view.StrideInBytes = sizeof(fvertex_data);
-    smr.vertex_num = static_cast<uint32_t>(mesh->vertex_list.size());
+    smr.vertex_buffer_view.SizeInBytes = vertex_list_size;
+    smr.vertex_buffer_view.StrideInBytes = fmath::to_uint32(sizeof(fvertex_data));
+    smr.vertex_num = fmath::to_uint32(mesh->vertex_list.size());
 
 #if BUILD_DEBUG
     DX_SET_NAME(smr.vertex_buffer, "Vertex buffer {}", name)
@@ -110,13 +108,13 @@ namespace engine
   void fgraphics_command_list::upload_index_buffer(astatic_mesh* mesh, const char* name) const
   {
     fstatic_mesh_resource& smr = mesh->resource;
-    const uint64_t face_list_size = mesh->face_list.size() * sizeof(fface_data);
+    const uint32_t face_list_size = fmath::to_uint32(mesh->face_list.size() * sizeof(fface_data));
 
     upload_buffer_resource(face_list_size, mesh->face_list.data(), smr.index_buffer_upload, smr.index_buffer);
 
     smr.index_buffer_view.BufferLocation = smr.index_buffer->GetGPUVirtualAddress();
     smr.index_buffer_view.Format = DXGI_FORMAT_R32_UINT;
-    smr.index_buffer_view.SizeInBytes = static_cast<uint32_t>(face_list_size);
+    smr.index_buffer_view.SizeInBytes = face_list_size;
 
 #if BUILD_DEBUG
     DX_SET_NAME(smr.index_buffer, "Index buffer {}", name)
