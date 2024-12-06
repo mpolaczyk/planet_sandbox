@@ -69,4 +69,29 @@ namespace engine
   };
   static_assert(sizeof(fobject_data)/4 < 64); // "Root Constant size is greater than 64 DWORDs. Additional indirection may be added by the driver."
   ALIGNED_STRUCT_END(fobject_data)
+
+  ALIGNED_STRUCT_BEGIN(fforward_pass_frame_data)
+  {
+    XMFLOAT4 camera_position; // 16
+    XMFLOAT4 ambient_light; // 16
+    int32_t show_emissive; // 4    // TODO pack bits
+    int32_t show_ambient; // 4
+    int32_t show_specular; // 4
+    int32_t show_diffuse; // 4
+    int32_t show_normals; // 4
+    int32_t padding[2]; // 8
+  };
+  ALIGNED_STRUCT_END(fforward_pass_frame_data)
+  
+  ALIGNED_STRUCT_BEGIN(fdeferred_lighting_pass_frame_data)
+  {
+    XMFLOAT4 camera_position; // 16
+    XMFLOAT4 ambient_light; // 16
+    int32_t show_position; // 4    // TODO pack bits
+    int32_t show_normal; // 4
+    int32_t show_uv; // 4
+    int32_t show_material_id; // 4
+  };
+  static_assert(sizeof(fdeferred_lighting_pass_frame_data)/4 < 64); // "Root Constant size is greater than 64 DWORDs. Additional indirection may be added by the driver."
+  ALIGNED_STRUCT_END(fdeferred_lighting_pass_frame_data)
 }

@@ -38,18 +38,6 @@ namespace engine
       num
     };
 
-    ALIGNED_STRUCT_BEGIN(fframe_data)
-    {
-      XMFLOAT4 camera_position; // 16
-      XMFLOAT4 ambient_light; // 16
-      int32_t show_emissive; // 4    // TODO pack bits
-      int32_t show_ambient; // 4
-      int32_t show_specular; // 4
-      int32_t show_diffuse; // 4
-      int32_t show_normals; // 4
-      int32_t padding[2]; // 8
-    };
-
     DXGI_FORMAT rtv_format = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT depth_format = DXGI_FORMAT_D32_FLOAT;
   }
@@ -66,7 +54,7 @@ namespace engine
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
       fconst_buffer buffer;
-      device->create_const_buffer(heap, sizeof(fframe_data), buffer, std::format("CBV frame: back buffer {}", i).c_str());
+      device->create_const_buffer(heap, sizeof(fforward_pass_frame_data), buffer, std::format("CBV frame: back buffer {}", i).c_str());
       frame_data.emplace_back(buffer);
     }
 
@@ -154,7 +142,7 @@ namespace engine
 
     // Process frame data CBV
     {
-      fframe_data data;
+      fforward_pass_frame_data data;
       data.camera_position = XMFLOAT4(context->scene->camera.location.e);
       data.ambient_light = context->scene->ambient_light_color;
       data.show_ambient = show_ambient;

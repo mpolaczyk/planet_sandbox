@@ -30,7 +30,7 @@ namespace engine
     ftexture_resource color;
 
   private:
-    std::vector<fconst_buffer> frame_data; // index is back buffer id
+    fdeferred_lighting_pass_frame_data frame_data;
     std::vector<fshader_resource_buffer> lights_data;
     std::vector<fshader_resource_buffer> materials_data;
     std::vector<ftexture_resource> textures_data;

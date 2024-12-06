@@ -32,18 +32,6 @@ namespace engine
       textures,   // TODO! gbuffer position, gbuffer normal, gbuffer uv, gbuffer material_id, default texture, scene textures (unbound)
       num
     };
-    
-    ALIGNED_STRUCT_BEGIN(fframe_data)
-    {
-      XMFLOAT4 camera_position; // 16
-      XMFLOAT4 ambient_light; // 16
-      int32_t show_position; // 4    // TODO pack bits
-      int32_t show_normal; // 4
-      int32_t show_uv; // 4
-      int32_t show_material_id; // 4
-    };
-  
-    ALIGNED_STRUCT_END(fframe_data)
 
     DXGI_FORMAT rtv_formats[1] = { DXGI_FORMAT_R8G8B8A8_UNORM };
     const char* rtv_names[1] = { "color"};
@@ -56,14 +44,6 @@ namespace engine
     uint32_t back_buffer_count = context->back_buffer_count;
     fdescriptor_heap* heap = context->main_descriptor_heap;
     fdevice* device = fapplication::get_instance()->device.get();
-
-    // Create frame data CBV
-    for(uint32_t i = 0; i < back_buffer_count; i++)
-    {
-      fconst_buffer buffer;
-      device->create_const_buffer(heap, sizeof(fframe_data), buffer, std::format("CBV frame: back buffer {}", i).c_str());
-      frame_data.emplace_back(buffer);
-    }
 
     // Create light and material data SRV
     for(uint32_t i = 0; i < back_buffer_count; i++)
@@ -88,7 +68,7 @@ namespace engine
     // Set up graphics pipeline
     {
       graphics_pipeline.reserve_parameters(root_parameter_type::num);
-      graphics_pipeline.add_constant_parameter(root_parameter_type::frame_data, 0, 0, fmath::to_uint32(sizeof(fframe_data)), D3D12_SHADER_VISIBILITY_PIXEL);
+      graphics_pipeline.add_constant_parameter(root_parameter_type::frame_data, 0, 0, fmath::to_uint32(sizeof(fdeferred_lighting_pass_frame_data)), D3D12_SHADER_VISIBILITY_PIXEL);
       graphics_pipeline.add_shader_resource_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
       graphics_pipeline.add_shader_resource_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
       // TODO GBuffer as one table, or maybe all textures...
@@ -143,17 +123,13 @@ namespace engine
 
     const uint32_t back_buffer_index = context->back_buffer_index;
 
-    // Process frame data CBV
-    {
-      fframe_data data;
-      data.camera_position = XMFLOAT4(context->scene->camera.location.e);
-      data.ambient_light = context->scene->ambient_light_color;
-      data.show_position = show_position;
-      data.show_normal = show_normal;
-      data.show_uv = show_uv;
-      data.show_material_id = show_material_id;
-      frame_data[back_buffer_index].upload(&data);
-    }
+    // Process frame data constants
+    frame_data.camera_position = XMFLOAT4(context->scene->camera.location.e);
+    frame_data.ambient_light = context->scene->ambient_light_color;
+    frame_data.show_position = show_position;
+    frame_data.show_normal = show_normal;
+    frame_data.show_uv = show_uv;
+    frame_data.show_material_id = show_material_id;
 
     // Process light and material SRVs
     {
@@ -197,7 +173,7 @@ namespace engine
 
     // Draw
     const fstatic_mesh_resource& smrs = quad_mesh->resource;
-    command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::frame_data, sizeof(fframe_data)/4, &frame_data[back_buffer_index], 0);
+    command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::frame_data, sizeof(fdeferred_lighting_pass_frame_data)/4, &frame_data, 0);
     command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::lights, lights_data[back_buffer_index].resource->GetGPUVirtualAddress());
     command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::materials, materials_data[back_buffer_index].resource->GetGPUVirtualAddress());
     command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::gbuffer_position, position->srv.gpu_descriptor_handle);
