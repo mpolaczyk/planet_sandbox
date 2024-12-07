@@ -26,5 +26,9 @@ namespace engine
 
     // Runtime
     fshader_resource resource;
+    int64_t hlsl_file_timestamp = 0;
+    bool compilation_successful = false;
+    bool hot_swap_requested = false;
+    bool hot_swap_done = false;
   };
 }

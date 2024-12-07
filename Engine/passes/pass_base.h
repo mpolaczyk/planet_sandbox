@@ -27,7 +27,7 @@ namespace engine
     void init();
     virtual void draw(fgraphics_command_list* command_list);
     virtual void set_renderer_context(frenderer_context* in_context) { context = in_context; }
-    bool get_can_draw() const { return can_draw; }
+    bool get_can_draw() const;
     
     fsoft_asset_ptr<apixel_shader> pixel_shader_asset;
     fsoft_asset_ptr<avertex_shader> vertex_shader_asset;
@@ -39,7 +39,6 @@ namespace engine
     
     frenderer_context* context = nullptr; // weak ptr, owned by renderer
     std::unique_ptr<fgraphics_pipeline> graphics_pipeline;
-    bool can_draw = true;
   };
 
 }

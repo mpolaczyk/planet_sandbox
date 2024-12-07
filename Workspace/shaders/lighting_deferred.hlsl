@@ -107,10 +107,10 @@ float4 ps_main(fvs_output input) : SV_Target
     tex_color = texture_data[texture_id].Sample(sampler_obj, uv);
   }
 
-  float4 emissive = material.emissive;//  * frame_data.show_emissive;
-  float4 ambient = material.ambient * frame_data.ambient_light;// * frame_data.show_ambient;
-  float4 diffuse = material.diffuse * light_final.diffuse;// * frame_data.show_diffuse;
-  float4 specular = material.specular * light_final.specular;// * frame_data.show_specular;
+  float4 emissive = material.emissive;
+  float4 ambient = material.ambient * frame_data.ambient_light;
+  float4 diffuse = material.diffuse * light_final.diffuse;
+  float4 specular = material.specular * light_final.specular;
     
   return tex_color * (emissive + ambient + diffuse + specular);
 }

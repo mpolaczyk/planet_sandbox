@@ -14,7 +14,9 @@ namespace engine
   
   bool rgpu_forward_sync::can_draw()
   {
-    return forward_pass.get_can_draw() && rrenderer_base::can_draw();
+    return vertex_shader_asset.is_loaded() && vertex_shader_asset.get()->compilation_successful
+      && pixel_shader_asset.is_loaded() && pixel_shader_asset.get()->compilation_successful
+      && rrenderer_base::can_draw(); 
   }
   
   void rgpu_forward_sync::init()

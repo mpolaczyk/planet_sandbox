@@ -55,6 +55,7 @@ namespace engine
     virtual void render();
     void load_scene_state() const;
     void save_scene_state() const;
+    void try_hot_swap_shaders();
 
     void set_window(fwindow* in_window);
     void main_loop();

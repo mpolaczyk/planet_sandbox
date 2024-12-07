@@ -16,7 +16,11 @@ namespace engine
 
   bool rgpu_deferred_sync::can_draw()
   {
-    return gbuffer_pass.get_can_draw() && rrenderer_base::can_draw(); //deferred_lighting_pass.get_can_draw() && 
+    return gbuffer_vertex_shader_asset.is_loaded() && gbuffer_vertex_shader_asset.get()->compilation_successful
+      && gbuffer_pixel_shader_asset.is_loaded() && gbuffer_pixel_shader_asset.get()->compilation_successful
+        && lighting_vertex_shader_asset.is_loaded() && lighting_vertex_shader_asset.get()->compilation_successful
+        && lighting_pixel_shader_asset.is_loaded() && lighting_pixel_shader_asset.get()->compilation_successful
+        && rrenderer_base::can_draw(); 
   }
 
   void rgpu_deferred_sync::init()

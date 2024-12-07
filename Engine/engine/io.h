@@ -64,5 +64,8 @@ namespace engine
     static std::vector<std::string> discover_mesh_files(bool include_extension = true);
     static std::vector<std::string> discover_pixel_shader_files(bool include_extension = true);
     static std::vector<std::string> discover_vertex_shader_files(bool include_extension = true);
+
+    // Other
+    static int64_t get_last_write_time(const char* file_path);
   };
 }

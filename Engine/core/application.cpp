@@ -13,6 +13,7 @@
 #include "math/random.h"
 #include "persistence/object_persistence.h"
 #include "persistence/persistence_helper.h"
+#include "assets/shader.h"
 #include "renderer/dx12_lib.h"
 #include "renderer/command_queue.h"
 #include "renderer/renderer_base.h"
@@ -177,10 +178,11 @@ namespace engine
     }
   }
 
- 
-
   void fapplication::update(float delta_time)
   {
+    try_hot_swap_shaders();     // TODO does not have to happen every frame
+    
+    // Generic update
     if(scene_root != nullptr && scene_root->renderer != nullptr)
     {
       physics->update_physics(delta_time);  // TODO Fixed time step :) ?
@@ -243,5 +245,34 @@ namespace engine
       o.write(str.data(), str.length());
     }
     o.close();
+  }
+
+  void fapplication::try_hot_swap_shaders()
+  {
+    const std::vector<ashader*> shader_assets = REG.get_all_by_type<ashader>();
+    std::vector<ashader*> shader_assets_to_hot_swap;
+    for(ashader* asset : shader_assets)
+    {
+      const std::string file_path = fio::get_shader_file_path(asset->shader_file_name.c_str());
+      const int64_t timestamp = fio::get_last_write_time(file_path.c_str());
+      if(asset->hot_swap_done)
+      {
+        asset->hot_swap_requested = false;
+        asset->hot_swap_done = false;
+        continue;
+      }
+      if(timestamp != asset->hlsl_file_timestamp)
+      {
+        shader_assets_to_hot_swap.push_back(asset);
+      }
+    }
+    for(ashader* asset : shader_assets_to_hot_swap)
+    {
+      LOG_INFO("Detected HLSL changes in shader: {}", asset->get_display_name())
+      if(asset->load(asset->name))
+      {
+        asset->hot_swap_requested = true;
+      }
+    }
   }
 }

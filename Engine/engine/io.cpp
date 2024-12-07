@@ -239,4 +239,14 @@ namespace engine
   {
     return discover_files(get_shaders_dir(), get_vertex_shader_extension(), include_extension);
   }
+
+  int64_t fio::get_last_write_time(const char* file_path)
+  {
+    using namespace std::filesystem;
+    using namespace std::chrono;
+    auto write_time = last_write_time(file_path);
+    auto write_time_ms = time_point_cast<milliseconds>(write_time);
+    auto write_time_ms_since_epoch = write_time_ms.time_since_epoch();
+    return write_time_ms_since_epoch.count();
+  }
 }

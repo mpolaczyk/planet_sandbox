@@ -25,11 +25,11 @@ namespace engine
     context.resolution_changed = resolution_changed;
   }
   
-  void rrenderer_base::draw(fgraphics_command_list* command_list)
+  bool rrenderer_base::draw(fgraphics_command_list* command_list)
   {
     if(!can_draw())
     {
-      return;
+      return false;
     }
     
     // Initialize
@@ -39,23 +39,23 @@ namespace engine
       init_done = true;
     }
     
-    if(!can_draw())
-    {
-      // Second check as something could've gone wrong in init()
-      return;
-    }
-    
     context.scene->scene_acceleration.build(context.scene);
     if(!context.scene->scene_acceleration.validate())
     {
-      return;
+      return false;
     }
 
     draw_internal(command_list);
+    return true;
   }
 
   bool rrenderer_base::can_draw()
   {
+    if(MAX_TEXTURES + context.back_buffer_count * (MAX_MATERIALS + MAX_LIGHTS) > MAX_MAIN_DESCRIPTORS)
+    {
+      LOG_ERROR("Invalid main heap layout.");
+      return false;
+    }
     if(context.scene == nullptr)
     {
       LOG_ERROR("Can't draw. Scene is missing.");

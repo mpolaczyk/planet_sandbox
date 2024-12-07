@@ -28,7 +28,7 @@ namespace engine
   
   bool ashader::load(const std::string& name)
   {
-    LOG_DEBUG("Loading shader: {0} {1}", name, get_extension());
+    LOG_DEBUG("Loading shader: {0} {1}", name, get_extension())
 
     aasset_base::load(name);
     
@@ -38,7 +38,8 @@ namespace engine
     std::ifstream input_stream(file_path.c_str());
     if(input_stream.fail())
     {
-      LOG_ERROR("Unable to load shader: {0}", file_path);
+      LOG_ERROR("Unable to load shader: {0}", file_path)
+      compilation_successful = false;
       return false;
     }
 
@@ -46,23 +47,27 @@ namespace engine
     input_stream >> j;
     accept(vdeserialize_object(j));
     set_display_name(name);
+    hlsl_file_timestamp = fio::get_last_write_time(fio::get_shader_file_path(shader_file_name.c_str()).c_str());
 
+    DX_RELEASE(resource.blob)
     if(fshader_tools::load_compiled_shader(cache_file_name, resource.blob))
     {
+      compilation_successful = true;
       return true;
     }
     std::string new_cache_file_name;
     if(!fshader_tools::load_and_compile_hlsl(shader_file_name, entrypoint, target, resource.blob, new_cache_file_name))
     {
-      DX_RELEASE(resource.blob)
+      compilation_successful = false;
       return false;
     }
-    if(new_cache_file_name != "" && cache_file_name != new_cache_file_name)
+    if(new_cache_file_name.empty() && cache_file_name != new_cache_file_name)
     {
       cache_file_name = new_cache_file_name;
       save();
     }
-    LOG_INFO("Compilation successful.");
+    LOG_INFO("Compilation successful.")
+    compilation_successful = true;
     return true;
   }
 

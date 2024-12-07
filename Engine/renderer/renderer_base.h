@@ -32,7 +32,7 @@ namespace engine
     
     // Main public interface
     void set_renderer_context(frenderer_context&& in_context);
-    void draw(fgraphics_command_list* command_list);
+    bool draw(fgraphics_command_list* command_list);
     virtual ftexture_resource* get_color() = 0;
     virtual ftexture_resource* get_depth() = 0;
     
