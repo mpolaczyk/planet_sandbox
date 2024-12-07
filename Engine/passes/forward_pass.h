@@ -12,17 +12,11 @@ namespace engine
   
   struct fforward_pass : public fpass_base
   {
-    virtual void init() override;
-    virtual void init_size_dependent(bool cleanup) override;
+    virtual void init_pipeline() override;
+    virtual void init_size_independent_resources() override;
+    virtual void init_size_dependent_resources(bool cleanup) override;
     virtual void draw(fgraphics_command_list* command_list) override;
     
-    // Input
-    int show_emissive = 1;
-    int show_ambient = 1;
-    int show_specular = 1;
-    int show_diffuse = 1;
-    int show_normals = 0;
-
     // Output
     ftexture_resource color;
     ftexture_resource depth;

@@ -41,11 +41,23 @@ namespace engine
     DXGI_FORMAT rtv_format = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT depth_format = DXGI_FORMAT_D32_FLOAT;
   }
-  
-  void fforward_pass::init()
+
+  void fforward_pass::init_pipeline()
   {
-    fpass_base::init();
-    
+    fpass_base::init_pipeline();
+    graphics_pipeline->reserve_parameters(root_parameter_type::num);
+    graphics_pipeline->add_constant_parameter(root_parameter_type::object_data, 0, 0, fmath::to_uint32(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_VERTEX);
+    graphics_pipeline->add_constant_buffer_view_parameter(root_parameter_type::frame_data, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline->add_shader_resource_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline->add_shader_resource_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::textures, 2, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline->add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
+    graphics_pipeline->setup_formats(1, &rtv_format, depth_format);
+    graphics_pipeline->init("Forward pass");
+  }
+
+  void fforward_pass::init_size_independent_resources()
+  {
     uint32_t back_buffer_count = context->back_buffer_count;
     fdescriptor_heap* heap = context->main_descriptor_heap;
     fdevice* device = fapplication::get_instance()->device.get();
@@ -54,7 +66,7 @@ namespace engine
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
       fconst_buffer buffer;
-      device->create_const_buffer(heap, sizeof(fforward_pass_frame_data), buffer, std::format("CBV frame: back buffer {}", i).c_str());
+      device->create_const_buffer(heap, sizeof(fframe_data), buffer, std::format("CBV frame: back buffer {}", i).c_str());
       frame_data.emplace_back(buffer);
     }
 
@@ -77,23 +89,9 @@ namespace engine
     default_material_asset.set_name("default");
     atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
     device->create_texture_buffer(heap, default_texture, "default");
-    
-    // Set up graphics pipeline
-    graphics_pipeline.reserve_parameters(root_parameter_type::num);
-    graphics_pipeline.add_constant_parameter(root_parameter_type::object_data, 0, 0, fmath::to_uint32(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_VERTEX);
-    graphics_pipeline.add_constant_buffer_view_parameter(root_parameter_type::frame_data, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline.add_shader_resource_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline.add_shader_resource_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::textures, 2, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline.add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
-    graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->resource.blob);
-    graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->resource.blob);
-    graphics_pipeline.setup_formats(1, &rtv_format, depth_format);
-    graphics_pipeline.setup_input_layout(fvertex_data::input_layout);
-    graphics_pipeline.init("Forward pass");
   }
 
-  void fforward_pass::init_size_dependent(bool cleanup)
+  void fforward_pass::init_size_dependent_resources(bool cleanup)
   {
     fdevice* device = fapplication::get_instance()->device.get();
 
@@ -125,7 +123,7 @@ namespace engine
     
     command_list->set_render_targets1(&color, &depth);
         
-    graphics_pipeline.bind_command_list(command_list_com);
+    graphics_pipeline->bind_command_list(command_list_com);
 
     command_list_com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
 
@@ -142,14 +140,9 @@ namespace engine
 
     // Process frame data CBV
     {
-      fforward_pass_frame_data data;
+      fframe_data data;
       data.camera_position = XMFLOAT4(context->scene->camera.location.e);
       data.ambient_light = context->scene->ambient_light_color;
-      data.show_ambient = show_ambient;
-      data.show_diffuse = show_diffuse;
-      data.show_emissive = show_emissive;
-      data.show_normals = show_normals;
-      data.show_specular = show_specular;
       frame_data[back_buffer_index].upload(&data);
     }
 

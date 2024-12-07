@@ -30,29 +30,25 @@ namespace engine
     DXGI_FORMAT depth_format = DXGI_FORMAT_D32_FLOAT;
     const char* depth_name = "gbuffer pass depth";
   }
-  
-  void fgbuffer_pass::init()
+
+  void fgbuffer_pass::init_pipeline()
+  {
+    fpass_base::init_pipeline();
+    graphics_pipeline->reserve_parameters(root_parameter_type::num);
+    graphics_pipeline->add_constant_parameter(root_parameter_type::object_data, 0, 0, fmath::to_uint32(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline->setup_formats(fgbuffer_pass::num_render_targets, rtv_formats, depth_format);
+    graphics_pipeline->init("GBuffer pass");
+  }
+
+  void fgbuffer_pass::init_size_independent_resources()
   {
     render_targets[0] = &position;
     render_targets[1] = &normal;
     render_targets[2] = &uv;
     render_targets[3] = &material_id;
-    
-    fpass_base::init();
-    
-    // Set up graphics pipeline
-    {
-      graphics_pipeline.reserve_parameters(root_parameter_type::num);
-      graphics_pipeline.add_constant_parameter(root_parameter_type::object_data, 0, 0, fmath::to_uint32(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_PIXEL);
-      graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->resource.blob);
-      graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->resource.blob);
-      graphics_pipeline.setup_formats(fgbuffer_pass::num_render_targets, rtv_formats, depth_format);
-      graphics_pipeline.setup_input_layout(fvertex_data::input_layout);
-      graphics_pipeline.init("GBuffer pass");
-    }
   }
 
-  void fgbuffer_pass::init_size_dependent(bool cleanup)
+  void fgbuffer_pass::init_size_dependent_resources(bool cleanup)
   {
     fdevice* device = fapplication::get_instance()->device.get();
   
@@ -87,7 +83,7 @@ namespace engine
     }
     command_list->clear_depth_stencil(&depth);
     command_list->set_render_targets(num_render_targets, render_targets, &depth);
-    graphics_pipeline.bind_command_list(command_list_com);
+    graphics_pipeline->bind_command_list(command_list_com);
     command_list_com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
 
     const uint32_t N = fmath::to_uint32(scene_acceleration.h_meshes.size());

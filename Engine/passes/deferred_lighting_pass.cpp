@@ -7,7 +7,6 @@
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
 #include "math/math.h"
-#include "math/vertex_data.h"
 #include "renderer/aligned_structs.h"
 #include "renderer/command_list.h"
 #include "renderer/render_context.h"
@@ -37,10 +36,26 @@ namespace engine
     const char* rtv_names[1] = { "color"};
   }
 
-  void fdeferred_lighting_pass::init()
+  void fdeferred_lighting_pass::init_pipeline()
   {
-    fpass_base::init();
+    fpass_base::init_pipeline();
+    graphics_pipeline->reserve_parameters(root_parameter_type::num);
+    graphics_pipeline->add_constant_parameter(root_parameter_type::frame_data, 0, 0, fmath::to_uint32(sizeof(fframe_data)), D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline->add_shader_resource_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline->add_shader_resource_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+    // TODO GBuffer as one table, or maybe all textures...
+    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_position, 2, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_normal, 3, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_uv, 4, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_material_id, 5, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::textures, 6, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline->add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
+    graphics_pipeline->setup_formats(1, rtv_formats, DXGI_FORMAT_UNKNOWN);
+    graphics_pipeline->init("Deferred lighting pass");
+  }
 
+  void fdeferred_lighting_pass::init_size_independent_resources()
+  {
     uint32_t back_buffer_count = context->back_buffer_count;
     fdescriptor_heap* heap = context->main_descriptor_heap;
     fdevice* device = fapplication::get_instance()->device.get();
@@ -59,38 +74,18 @@ namespace engine
       materials_data.emplace_back(buffer);
     }
     
-    // Create first texture SRV (handles only)
+    // Load and create default texture resource
     fsoft_asset_ptr<amaterial> default_material_asset;
     default_material_asset.set_name("default");
     atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
     device->create_texture_buffer(heap, default_texture, "default");
     
-    // Set up graphics pipeline
-    {
-      graphics_pipeline.reserve_parameters(root_parameter_type::num);
-      graphics_pipeline.add_constant_parameter(root_parameter_type::frame_data, 0, 0, fmath::to_uint32(sizeof(fdeferred_lighting_pass_frame_data)), D3D12_SHADER_VISIBILITY_PIXEL);
-      graphics_pipeline.add_shader_resource_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-      graphics_pipeline.add_shader_resource_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-      // TODO GBuffer as one table, or maybe all textures...
-      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::gbuffer_position, 2, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
-      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::gbuffer_normal, 3, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
-      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::gbuffer_uv, 4, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
-      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::gbuffer_material_id, 5, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
-      graphics_pipeline.add_descriptor_table_parameter(root_parameter_type::textures, 6, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-      graphics_pipeline.add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
-      graphics_pipeline.bind_pixel_shader(pixel_shader_asset.get()->resource.blob);
-      graphics_pipeline.bind_vertex_shader(vertex_shader_asset.get()->resource.blob);
-      graphics_pipeline.setup_formats(1, rtv_formats, DXGI_FORMAT_UNKNOWN);
-      graphics_pipeline.setup_input_layout(fvertex_data::input_layout);
-      graphics_pipeline.init("Deferred lighting pass");
-    }
-    
-    // Create quad mesh
+    // Load and create quad mesh
     quad_asset.set_name("plane");
     quad_asset.get();
   }
 
-  void fdeferred_lighting_pass::init_size_dependent(bool cleanup)
+  void fdeferred_lighting_pass::init_size_dependent_resources(bool cleanup)
   {
     fdevice* device = fapplication::get_instance()->device.get();
   
@@ -99,7 +94,8 @@ namespace engine
       context->main_descriptor_heap->remove(color.srv.index);
       context->rtv_descriptor_heap->remove(color.rtv.index);  
     }
-    device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap, &color, context->width, context->height, rtv_formats[0], D3D12_RESOURCE_STATE_RENDER_TARGET, rtv_names[0]);
+    device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap,
+      &color, context->width, context->height, rtv_formats[0], D3D12_RESOURCE_STATE_RENDER_TARGET, rtv_names[0]);
   }
   
   void fdeferred_lighting_pass::draw(fgraphics_command_list* command_list)
@@ -118,7 +114,7 @@ namespace engine
     // Clear and setup
     command_list->clear_render_target(&color);
     command_list->set_render_targets1(&color, nullptr);
-    graphics_pipeline.bind_command_list(command_list_com);
+    graphics_pipeline->bind_command_list(command_list_com);
     command_list_com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
 
     const uint32_t back_buffer_index = context->back_buffer_index;
@@ -126,10 +122,6 @@ namespace engine
     // Process frame data constants
     frame_data.camera_position = XMFLOAT4(context->scene->camera.location.e);
     frame_data.ambient_light = context->scene->ambient_light_color;
-    frame_data.show_position = show_position;
-    frame_data.show_normal = show_normal;
-    frame_data.show_uv = show_uv;
-    frame_data.show_material_id = show_material_id;
 
     // Process light and material SRVs
     {
@@ -142,6 +134,7 @@ namespace engine
       const uint32_t num_textures_in_scene = fmath::to_uint32(scene_acceleration.a_textures.size());
 
       // Upload default texture first
+      // TODO move to init
       if(!default_texture->is_online)
       {
         command_list->upload_texture(default_texture);
@@ -164,6 +157,7 @@ namespace engine
     }
     
     // Upload quad mesh
+    // TODO move to init
     astatic_mesh* quad_mesh = quad_asset.get();
     if(!quad_mesh->is_resource_online)
     {
@@ -173,7 +167,7 @@ namespace engine
 
     // Draw
     const fstatic_mesh_resource& smrs = quad_mesh->resource;
-    command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::frame_data, sizeof(fdeferred_lighting_pass_frame_data)/4, &frame_data, 0);
+    command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::frame_data, sizeof(fframe_data)/4, &frame_data, 0);
     command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::lights, lights_data[back_buffer_index].resource->GetGPUVirtualAddress());
     command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::materials, materials_data[back_buffer_index].resource->GetGPUVirtualAddress());
     command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::gbuffer_position, position->srv.gpu_descriptor_handle);

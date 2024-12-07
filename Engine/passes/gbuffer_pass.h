@@ -12,9 +12,10 @@ namespace engine
   
   struct fgbuffer_pass : public fpass_base
   {
-    virtual void init() override;
+    virtual void init_pipeline() override;
+    virtual void init_size_independent_resources() override;
+    virtual void init_size_dependent_resources(bool cleanup) override;
     virtual void draw(fgraphics_command_list* command_list) override;
-    virtual void init_size_dependent(bool cleanup) override;
 
     // Outputs
     static constexpr uint32_t num_render_targets =  4;

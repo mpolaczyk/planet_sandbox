@@ -27,10 +27,6 @@ struct fframe_data
 {
   float4 camera_position;   // 16
   float4 ambient_light;     // 16
-  int show_position;  			// 4        // TODO bit flags
-  int show_normal;  			  // 4
-  int show_uv;			        // 4
-  int show_material_id;     // 4
 };
 
 ConstantBuffer<fframe_data> frame_data : register(b0);
@@ -100,40 +96,21 @@ float4 ps_main(fvs_output input) : SV_Target
   const float2 uv       = gbuffer_uv.Sample(sampler_obj, input.uv).xy;
   const int material_id = gbuffer_material_id.Sample(sampler_obj, input.uv).x;
   
-  if(frame_data.show_position)
-  {
-    return position;
-  }
-  else if(frame_data.show_normal)
-  {
-    return float4(normal, 1);
-  }
-  else if(frame_data.show_uv)
-  {
-    return float4(uv,0,1);
-  }
-  else if(frame_data.show_material_id)
-  {
-    return float4(material_id,material_id,material_id,material_id);
-  }
-  else
-  {
-    const fmaterial_properties material = materials_data[material_id];
-    const uint texture_id = NonUniformResourceIndex(material.texture_id);
+  const fmaterial_properties material = materials_data[material_id];
+  const uint texture_id = NonUniformResourceIndex(material.texture_id);
     
-    const flight_components light_final = compute_light(position, normal, material.specular_power);
+  const flight_components light_final = compute_light(position, normal, material.specular_power);
 
-    float4 tex_color = { 1, 1, 1, 1 };
-    if (texture_id != -1)
-    {
-      tex_color = texture_data[texture_id].Sample(sampler_obj, uv);
-    }
-
-    float4 emissive = material.emissive;//  * frame_data.show_emissive;
-    float4 ambient = material.ambient * frame_data.ambient_light;// * frame_data.show_ambient;
-    float4 diffuse = material.diffuse * light_final.diffuse;// * frame_data.show_diffuse;
-    float4 specular = material.specular * light_final.specular;// * frame_data.show_specular;
-    
-    return tex_color * (emissive + ambient + diffuse + specular);
+  float4 tex_color = { 1, 1, 1, 1 };
+  if (texture_id != -1)
+  {
+    tex_color = texture_data[texture_id].Sample(sampler_obj, uv);
   }
+
+  float4 emissive = material.emissive;//  * frame_data.show_emissive;
+  float4 ambient = material.ambient * frame_data.ambient_light;// * frame_data.show_ambient;
+  float4 diffuse = material.diffuse * light_final.diffuse;// * frame_data.show_diffuse;
+  float4 specular = material.specular * light_final.specular;// * frame_data.show_specular;
+    
+  return tex_color * (emissive + ambient + diffuse + specular);
 }

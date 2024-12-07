@@ -163,12 +163,6 @@ namespace editor
         object.vertex_shader_asset.set_name(model.selected_object->name);
       }
     }
-    
-    fui_helper::check_box("Show emissive", object.forward_pass.show_emissive);
-    fui_helper::check_box("Show ambient", object.forward_pass.show_ambient);
-    fui_helper::check_box("Show diffuse", object.forward_pass.show_diffuse);
-    fui_helper::check_box("Show specular", object.forward_pass.show_specular);
-    fui_helper::check_box("Show normals", object.forward_pass.show_normals);
   }
 
   void vdraw_edit_panel::visit(rgpu_deferred_sync& object) const
