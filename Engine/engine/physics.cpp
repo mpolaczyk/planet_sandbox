@@ -108,6 +108,12 @@ namespace engine
     return fphysics::instance->physics_common->createBoxShape(positive_extents);
   }
 
+  void fphysics::edit_box_shape_collider(BoxShape* box_shape, const fbounding_box& box, const fvec3& scale)
+  {
+    const reactphysics3d::Vector3 positive_extents(fabs(box.extents.x * scale.x), fabs(box.extents.y * scale.y), fabs(box.extents.z * scale.z));
+    box_shape->setHalfExtents(positive_extents);
+  }
+
   void fphysics::destroy_box_shape_collider(BoxShape* box_shape)
   {
     fphysics::instance->physics_common->destroyBoxShape(box_shape);

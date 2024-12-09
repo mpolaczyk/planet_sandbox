@@ -4,6 +4,8 @@
 
 #include "draw_edit_panel.h"
 
+#include <reactphysics3d/collision/shapes/BoxShape.h>
+
 #include "ui_helper.h"
 #include "engine/physics.h"
 #include "hittables/hittables.h"
@@ -26,16 +28,18 @@ namespace editor
 
     fvec3 origin = object.origin;
     fvec3 rotation = object.rotation;
+    fvec3 scale = object.scale;
+
     ImGui::DragFloat3("Origin", origin.e);
     ImGui::DragFloat3("Rotation", rotation.e);
-    ImGui::DragFloat3("Scale", object.scale.e);
+    ImGui::DragFloat3("Scale", scale.e);
     ImGui::Checkbox("Gravity enabled", &object.gravity_enabled);
     static const char* rigid_body_types[] = {"Static", "Kinematic", "Dynamic"};
     ImGui::Combo("Rigid body type", &object.rigid_body_type, rigid_body_types, 3);
-
-    if(origin != object.origin || rotation != object.rotation)
+    
+    if(origin != object.origin || rotation != object.rotation || scale != object.scale)
     {
-      fphysics::set_rigid_body_transform(origin, rotation, object.rigid_body);
+      object.transform(origin, rotation, scale);
     }
   }
 

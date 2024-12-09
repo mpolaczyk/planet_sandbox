@@ -33,7 +33,9 @@ namespace engine
     void restore_pre_physics_state();
     void update_physics_state();
     virtual void destroy_physics_state();
-
+    
+    virtual void transform(const fvec3& in_origin, const fvec3& in_rotation, const fvec3& in_scale);
+    
     // Persistent members
     fvec3 origin = fvec3(0.0f, 0.0f, 0.0f);
     fvec3 scale = fvec3(1.0f, 1.0f, 1.0f);

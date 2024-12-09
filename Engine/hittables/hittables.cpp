@@ -59,4 +59,15 @@ namespace engine
     fphysics::destroy_rigid_body(rigid_body);
     rigid_body = nullptr;
   }
+
+  void hhittable_base::transform(const fvec3& in_origin, const fvec3& in_rotation, const fvec3& in_scale)
+  {
+    if(origin != in_origin || rotation != in_rotation)
+    {
+      origin = in_origin;
+      rotation = in_rotation;
+      fphysics::set_rigid_body_transform(origin, rotation, rigid_body);
+    }
+    scale = in_scale;
+  }
 }

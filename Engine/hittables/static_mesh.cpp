@@ -69,6 +69,17 @@ namespace engine
     hhittable_base::destroy_physics_state();
   }
 
+  void hstatic_mesh::transform(const fvec3& in_origin, const fvec3& in_rotation, const fvec3& in_scale)
+  {
+    if(scale != in_scale)
+    {
+      const fbounding_box& box = mesh_asset_ptr.get()->bounding_box;
+      fphysics::edit_box_shape_collider(box_shape, box, in_scale);
+    }
+    
+    hhittable_base::transform(in_origin, in_rotation, in_scale);
+  }
+
   void hstatic_mesh::get_object_matrices(const XMFLOAT4X4& view_projection, fobject_data& out_data) const
   {
     const XMMATRIX translation_matrix = XMMatrixTranslation(origin.x, origin.y, origin.z);

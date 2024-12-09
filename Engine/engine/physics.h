@@ -47,6 +47,7 @@ namespace engine
     static void get_rigid_body_transform(RigidBody* rigid_body, fvec3& out_origin, fvec3& out_rotation);
     static Transform get_transform(const fvec3& origin, const fvec3& rotation);
     static BoxShape* create_box_shape_collider(const fbounding_box& box, const fvec3& scale);
+    static void edit_box_shape_collider(BoxShape* box_shape, const fbounding_box& box, const fvec3& scale);
     static void destroy_box_shape_collider(BoxShape* box_shape);
     static Collider* attach_collider(RigidBody* rigid_body, CollisionShape* shape, const fbounding_box& box);
     static void detach_collider(RigidBody* rigid_body, Collider* collider);

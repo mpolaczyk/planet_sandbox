@@ -31,7 +31,9 @@ namespace engine
     virtual void load_resources() override;
     virtual void create_physics_state() override;
     virtual void destroy_physics_state() override;
-    
+
+    virtual void transform(const fvec3& in_origin, const fvec3& in_rotation, const fvec3& in_scale) override;
+
     void get_object_matrices(const XMFLOAT4X4& view_projection, fobject_data& out_data) const;
 
     // Persistent state
