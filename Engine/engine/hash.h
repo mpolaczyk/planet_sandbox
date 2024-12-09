@@ -6,6 +6,7 @@ namespace DirectX
 {
   struct XMFLOAT3;
   struct XMFLOAT4;
+  struct XMFLOAT4X4;
 }
 
 namespace engine
@@ -27,6 +28,7 @@ namespace engine
     static uint32_t get(const fvec3& a);
     static uint32_t get(const DirectX::XMFLOAT3& a);
     static uint32_t get(const DirectX::XMFLOAT4& a);
+    static uint32_t get(const DirectX::XMFLOAT4X4& a);
     static uint32_t get(const char* a);
   };
 }

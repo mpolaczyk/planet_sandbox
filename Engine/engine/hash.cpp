@@ -97,7 +97,16 @@ namespace engine
   {
     return combine(get(a.x), get(a.y), get(a.z), get(a.w));
   }
-
+  
+  uint32_t fhash::get(const DirectX::XMFLOAT4X4& a)
+  {
+    uint32_t x = combine(get(a.m[0][0]), get(a.m[1][0]), get(a.m[2][0]), get(a.m[3][0]));
+    uint32_t y = combine(get(a.m[0][1]), get(a.m[1][1]), get(a.m[2][1]), get(a.m[3][1]));
+    uint32_t z = combine(get(a.m[0][2]), get(a.m[1][2]), get(a.m[2][2]), get(a.m[3][2]));
+    uint32_t w = combine(get(a.m[0][3]), get(a.m[1][3]), get(a.m[2][3]), get(a.m[3][3]));
+    return combine(x,y,z,w);
+  }
+  
   uint32_t fhash::get(const char* a)
   {
     return static_cast<uint32_t>(std::hash<std::string>{}(a));

@@ -307,6 +307,11 @@ namespace engine
 
   void fdevice::create_back_buffer(IDXGISwapChain4* swap_chain, uint32_t swap_chain_buffer_id, fdescriptor_heap& descriptor_heap, ftexture_resource& out_rtv, const char* name) const
   {
+    if(out_rtv.com)
+    {
+      LOG_ERROR("Overwriting object in existing COM pointer (create_back_buffer)")
+    }
+    
     THROW_IF_FAILED(swap_chain->GetBuffer(swap_chain_buffer_id, IID_PPV_ARGS(out_rtv.com.GetAddressOf())))
     descriptor_heap.push(out_rtv.rtv);
     com->CreateRenderTargetView(out_rtv.com.Get(), nullptr, out_rtv.rtv.cpu_descriptor_handle);
@@ -367,14 +372,14 @@ namespace engine
 
   void fdevice::create_depth_stencil(fdescriptor_heap* dsv_heap, ftexture_resource* out_texture, uint32_t width, uint32_t height, DXGI_FORMAT format,  D3D12_RESOURCE_STATES initial_state, const char* name) const
   {
-    CD3DX12_CLEAR_VALUE clear_value = {format, 1.0f, 0};
-    const CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
-
     if(out_texture->com)
     {
       LOG_ERROR("Overwriting object in existing COM pointer (create_depth_stencil)")
     }
     
+    CD3DX12_CLEAR_VALUE clear_value = {format, 1.0f, 0};
+    const CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
+
     D3D12_RESOURCE_DESC desc = {};
     desc.MipLevels = 1;
     desc.Format = format;

@@ -151,4 +151,14 @@ namespace engine
     device->create_depth_stencil(&dsv_descriptor_heap, &dsv, width, height, DXGI_FORMAT_D32_FLOAT, D3D12_RESOURCE_STATE_DEPTH_READ, "main");
     return true;
   }
+
+  uint32_t fwindow::get_width() const
+  {
+    return width == 0 ? requested_width : width;
+  }
+
+  uint32_t fwindow::get_height() const
+  {
+    return height == 0 ? requested_height : height;
+  }
 }

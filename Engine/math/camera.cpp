@@ -7,7 +7,8 @@ namespace engine
 {
   uint32_t fcamera::get_hash() const
   {
-    return fhash::combine(fhash::get(location), fhash::get(yaw), fhash::get(pitch), fhash::get(field_of_view));
+    uint32_t y = fhash::combine(fhash::get(location), fhash::get(yaw), fhash::get(pitch), fhash::get(field_of_view));
+    return fhash::combine(y, fhash::get(view_projection), 1, 1);
   }
 
   void fcamera::update(float delta_time, int32_t width, int32_t height)

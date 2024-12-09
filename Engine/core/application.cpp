@@ -188,7 +188,7 @@ namespace engine
     if(scene_root != nullptr && scene_root->renderer != nullptr)
     {
       physics->update_physics(delta_time);  // TODO Fixed time step :) ?
-      scene_root->camera.update(delta_time, scene_root->renderer->context.width, scene_root->renderer->context.height);
+      scene_root->camera.update(delta_time, window->get_width(), window->get_height());
       window->update();
     }
   }

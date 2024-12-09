@@ -37,7 +37,9 @@ namespace engine
     void present(fgpu_crash_tracker* gpu_crash_handler);
     void request_resize(uint32_t in_width, uint32_t in_height);
     bool try_apply_resize();
-
+    uint32_t get_width() const;
+    uint32_t get_height() const;
+    
     static constexpr uint32_t back_buffer_count = 2;
 
     uint32_t get_back_buffer_index() const { return back_buffer_index; }
