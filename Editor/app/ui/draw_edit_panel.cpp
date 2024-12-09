@@ -147,73 +147,10 @@ namespace editor
   void vdraw_edit_panel::visit(rgpu_forward_sync& object) const
   {
     visit_rrenderer_base(object);
-    {
-      fselection_combo_model<apixel_shader> model;
-      model.objects = REG.get_all_by_type<const apixel_shader>();
-      fui_helper::draw_selection_combo<apixel_shader>(model, "Pixel shader", [=](const apixel_shader* obj) -> bool{ return true; }, object.pixel_shader_asset.get());
-
-      if (model.selected_object != nullptr)
-      {
-        object.pixel_shader_asset.set_name(model.selected_object->name);
-      }
-    }
-    {
-      fselection_combo_model<avertex_shader> model;
-      model.objects = REG.get_all_by_type<const avertex_shader>();
-      fui_helper::draw_selection_combo<avertex_shader>(model, "Vertex shader", [=](const avertex_shader* obj) -> bool{ return true; }, object.vertex_shader_asset.get());
-
-      if (model.selected_object != nullptr)
-      {
-        object.vertex_shader_asset.set_name(model.selected_object->name);
-      }
-    }
   }
 
   void vdraw_edit_panel::visit(rgpu_deferred_sync& object) const
   {
     visit_rrenderer_base(object);
-    {
-      fselection_combo_model<apixel_shader> model;
-      model.objects = REG.get_all_by_type<const apixel_shader>();
-      fui_helper::draw_selection_combo<apixel_shader>(model, "GBuffer pixel shader", [=](const apixel_shader* obj) -> bool{ return true; }, object.gbuffer_pixel_shader_asset.get());
-
-      if (model.selected_object != nullptr)
-      {
-        object.gbuffer_pixel_shader_asset.set_name(model.selected_object->name);
-      }
-    }
-    {
-      fselection_combo_model<avertex_shader> model;
-      model.objects = REG.get_all_by_type<const avertex_shader>();
-      fui_helper::draw_selection_combo<avertex_shader>(model, "GBuffer vertex shader", [=](const avertex_shader* obj) -> bool{ return true; }, object.gbuffer_vertex_shader_asset.get());
-
-      if (model.selected_object != nullptr)
-      {
-        object.gbuffer_vertex_shader_asset.set_name(model.selected_object->name);
-      }
-    }
-    {
-      fselection_combo_model<apixel_shader> model;
-      model.objects = REG.get_all_by_type<const apixel_shader>();
-      fui_helper::draw_selection_combo<apixel_shader>(model, "Lighting pixel shader", [=](const apixel_shader* obj) -> bool{ return true; }, object.lighting_pixel_shader_asset.get());
-
-      if (model.selected_object != nullptr)
-      {
-        object.lighting_pixel_shader_asset.set_name(model.selected_object->name);
-      }
-    }
-    {
-      fselection_combo_model<avertex_shader> model;
-      model.objects = REG.get_all_by_type<const avertex_shader>();
-      fui_helper::draw_selection_combo<avertex_shader>(model, "Lighting vertex shader", [=](const avertex_shader* obj) -> bool{ return true; }, object.lighting_vertex_shader_asset.get());
-
-      if (model.selected_object != nullptr)
-      {
-        object.lighting_vertex_shader_asset.set_name(model.selected_object->name);
-      }
-    }
-    //fui_helper::check_box("Show normal", object.deferred_lighting_pass.show_normal_ws);
-    //fui_helper::check_box("Show position", object.deferred_lighting_pass.show_position_ws);
-    //fui_helper::check_box("Show tex color", object.deferred_lighting_pass.show_tex_color);
   }
 }

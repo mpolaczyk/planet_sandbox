@@ -24,10 +24,6 @@ namespace engine
     OBJECT_DECLARE(rgpu_forward_sync, rrenderer_base)
     OBJECT_DECLARE_VISITOR
 
-    // Persistent members
-    fsoft_asset_ptr<apixel_shader> pixel_shader_asset;
-    fsoft_asset_ptr<avertex_shader> vertex_shader_asset;
-
     // Runtime members
     fforward_pass forward_pass;
 
@@ -35,8 +31,7 @@ namespace engine
     virtual ftexture_resource* get_depth() override;
     
   protected:
-    virtual bool can_draw() override;
-    virtual void init() override;
+    virtual bool init_passes() override;
     virtual void draw_internal(fgraphics_command_list* command_list) override;
   };
 }

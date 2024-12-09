@@ -36,6 +36,12 @@ namespace engine
     const char* rtv_names[1] = { "color"};
   }
 
+  void fdeferred_lighting_pass::init_shaders()
+  {
+    pixel_shader_asset.set_name("lighting_deferred");
+    vertex_shader_asset.set_name("lighting_deferred");
+  }
+
   void fdeferred_lighting_pass::init_pipeline()
   {
     fpass_base::init_pipeline();
@@ -93,9 +99,9 @@ namespace engine
     device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap, &color, context->width, context->height, rtv_formats[0], D3D12_RESOURCE_STATE_RENDER_TARGET, rtv_names[0]);
   }
   
-  void fdeferred_lighting_pass::draw(fgraphics_command_list* command_list)
+  void fdeferred_lighting_pass::draw(frenderer_context* in_context, fgraphics_command_list* command_list)
   {
-    fpass_base::draw(command_list);
+    fpass_base::draw(in_context, command_list);
     
     fdevice* device = fapplication::get_instance()->device.get();
     fdescriptor_heap* heap = context->main_descriptor_heap;

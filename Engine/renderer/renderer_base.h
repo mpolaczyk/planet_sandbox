@@ -31,17 +31,17 @@ namespace engine
     frenderer_context context;
     
     // Main public interface
-    void set_renderer_context(frenderer_context&& in_context);
-    bool draw(fgraphics_command_list* command_list);
+    bool draw(frenderer_context&& in_context, fgraphics_command_list* command_list);
     virtual ftexture_resource* get_color() = 0;
     virtual ftexture_resource* get_depth() = 0;
     
   protected:
-    virtual bool can_draw();
-    virtual void init() = 0;
+    bool can_draw() const;
+    virtual bool init_passes() = 0;
     virtual void draw_internal(fgraphics_command_list* command_list) = 0;
   
   private:
+    void set_renderer_context(frenderer_context&& in_context);
     bool init_done = false;
   };
 }

@@ -7,6 +7,12 @@
 namespace engine
 {
   template <derives_from<aasset_base> T>
+  fsoft_asset_ptr<T>::fsoft_asset_ptr(const std::string& in_name)
+  {
+    set_name(in_name);
+  }
+
+  template <derives_from<aasset_base> T>
   void fsoft_asset_ptr<T>::set_name(const std::string& in_name)
   {
     if(in_name != name)

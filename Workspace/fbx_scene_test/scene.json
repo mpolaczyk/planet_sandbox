@@ -351,19 +351,7 @@
       }
     ],
     "renderer": {
-      "class_name": "rgpu_deferred_sync",
-      "gbuffer_pixel_shader_asset": {
-        "name": "gbuffer_deferred"
-      },
-      "gbuffer_vertex_shader_asset": {
-        "name": "gbuffer_deferred"
-      },
-      "lighting_pixel_shader_asset": {
-        "name": "lighting_deferred"
-      },
-      "lighting_vertex_shader_asset": {
-        "name": "lighting_deferred"
-      }
+      "class_name": "rgpu_deferred_sync"
     }
   }
 }

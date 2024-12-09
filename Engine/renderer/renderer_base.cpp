@@ -25,8 +25,10 @@ namespace engine
     context.resolution_changed = resolution_changed;
   }
   
-  bool rrenderer_base::draw(fgraphics_command_list* command_list)
+  bool rrenderer_base::draw(frenderer_context&& in_context, fgraphics_command_list* command_list)
   {
+    set_renderer_context(std::move(in_context));
+
     if(!can_draw())
     {
       return false;
@@ -35,7 +37,10 @@ namespace engine
     // Initialize
     if(!init_done)
     {
-      init();
+      if(!init_passes())
+      {
+        return false;
+      }
       init_done = true;
     }
     
@@ -49,7 +54,7 @@ namespace engine
     return true;
   }
 
-  bool rrenderer_base::can_draw()
+  bool rrenderer_base::can_draw() const
   {
     if(MAX_TEXTURES + context.back_buffer_count * (MAX_MATERIALS + MAX_LIGHTS) > MAX_MAIN_DESCRIPTORS)
     {

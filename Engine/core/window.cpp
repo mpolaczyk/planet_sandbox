@@ -72,8 +72,7 @@ namespace engine
         context.dsv = &dsv;
         context.width = width;
         context.height = height;
-        renderer->set_renderer_context(std::move(context));
-        if(renderer->draw(command_list.get()))
+        if(renderer->draw(std::move(context), command_list.get()))
         {
           fresource_barrier_scope c(command_list.get(), renderer->get_color()->com.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
           fresource_barrier_scope d(command_list.get(), renderer->get_depth()->com.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_COPY_SOURCE);

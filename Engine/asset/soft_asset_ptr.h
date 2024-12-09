@@ -28,6 +28,11 @@ namespace engine
   template <derives_from<aasset_base> T>
   struct ENGINE_API fsoft_asset_ptr : public fsoft_asset_ptr_base
   {
+    fsoft_asset_ptr(const std::string& in_name);
+    CTOR_DEFAULT(fsoft_asset_ptr)
+    CTOR_MOVE_COPY_DEFAULT(fsoft_asset_ptr)
+    DTOR_DEFAULT(fsoft_asset_ptr)
+    
     void set_name(const std::string& in_name);
     std::string get_name() const;
 

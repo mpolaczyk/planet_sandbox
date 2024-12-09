@@ -12,27 +12,17 @@ namespace engine
   OBJECT_DEFINE_SPAWN(rgpu_forward_sync)
   OBJECT_DEFINE_VISITOR(rgpu_forward_sync)
   
-  bool rgpu_forward_sync::can_draw()
+  bool rgpu_forward_sync::init_passes()
   {
-    return vertex_shader_asset.is_loaded() && vertex_shader_asset.get()->compilation_successful
-      && pixel_shader_asset.is_loaded() && pixel_shader_asset.get()->compilation_successful
-      && rrenderer_base::can_draw(); 
-  }
-  
-  void rgpu_forward_sync::init()
-  {
-    forward_pass.set_renderer_context(&context);
-    forward_pass.vertex_shader_asset = vertex_shader_asset;
-    forward_pass.pixel_shader_asset = pixel_shader_asset;
-    forward_pass.init();
+    return forward_pass.init(&context);
   }
 
   void rgpu_forward_sync::draw_internal(fgraphics_command_list* command_list)
   {
     fresource_barrier_scope a(command_list, forward_pass.color.com.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
     fresource_barrier_scope b(command_list, forward_pass.depth.com.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-    forward_pass.set_renderer_context(&context);
-    forward_pass.draw(command_list);
+    
+    forward_pass.draw(&context, command_list);
   }
 
   ftexture_resource* rgpu_forward_sync::get_color()

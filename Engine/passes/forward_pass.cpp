@@ -42,6 +42,12 @@ namespace engine
     DXGI_FORMAT depth_format = DXGI_FORMAT_D32_FLOAT;
   }
 
+  void fforward_pass::init_shaders()
+  {
+    vertex_shader_asset.set_name("forward");
+    pixel_shader_asset.set_name("forward");
+  }
+
   void fforward_pass::init_pipeline()
   {
     fpass_base::init_pipeline();
@@ -105,9 +111,9 @@ namespace engine
     device->create_depth_stencil(context->dsv_descriptor_heap, &depth, context->width, context->height, depth_format, D3D12_RESOURCE_STATE_DEPTH_WRITE, "Forward pass");
   }
   
-  void fforward_pass::draw(fgraphics_command_list* command_list)
-  {
-    fpass_base::draw(command_list);
+  void fforward_pass::draw(frenderer_context* in_context, fgraphics_command_list* command_list)
+  {    
+    fpass_base::draw(in_context, command_list);
     
     fdevice* device = fapplication::get_instance()->device.get();
     fdescriptor_heap* heap = context->main_descriptor_heap;

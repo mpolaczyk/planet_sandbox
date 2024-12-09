@@ -14,34 +14,16 @@ namespace engine
   OBJECT_DEFINE_SPAWN(rgpu_deferred_sync)
   OBJECT_DEFINE_VISITOR(rgpu_deferred_sync)
 
-  bool rgpu_deferred_sync::can_draw()
+  bool rgpu_deferred_sync::init_passes()
   {
-    return gbuffer_vertex_shader_asset.is_loaded() && gbuffer_vertex_shader_asset.get()->compilation_successful
-      && gbuffer_pixel_shader_asset.is_loaded() && gbuffer_pixel_shader_asset.get()->compilation_successful
-        && lighting_vertex_shader_asset.is_loaded() && lighting_vertex_shader_asset.get()->compilation_successful
-        && lighting_pixel_shader_asset.is_loaded() && lighting_pixel_shader_asset.get()->compilation_successful
-        && rrenderer_base::can_draw(); 
+    return gbuffer_pass.init(&context) && deferred_lighting_pass.init(&context);
   }
-
-  void rgpu_deferred_sync::init()
-  {
-    gbuffer_pass.set_renderer_context(&context);
-    gbuffer_pass.vertex_shader_asset = gbuffer_vertex_shader_asset;
-    gbuffer_pass.pixel_shader_asset = gbuffer_pixel_shader_asset;
-    gbuffer_pass.init();
-
-    deferred_lighting_pass.set_renderer_context(&context);
-    deferred_lighting_pass.vertex_shader_asset = lighting_vertex_shader_asset;
-    deferred_lighting_pass.pixel_shader_asset = lighting_pixel_shader_asset;
-    deferred_lighting_pass.init();
-  }
-
+  
   void rgpu_deferred_sync::draw_internal(fgraphics_command_list* command_list)
   {
     // GBuffer pass
     {
-      gbuffer_pass.set_renderer_context(&context);
-      gbuffer_pass.draw(command_list);
+      gbuffer_pass.draw(&context, command_list);
     }
 
     // Deferred lighting pass
@@ -56,8 +38,7 @@ namespace engine
       deferred_lighting_pass.uv = &gbuffer_pass.uv;
       deferred_lighting_pass.material_id = &gbuffer_pass.material_id;
       
-      deferred_lighting_pass.set_renderer_context(&context);
-      deferred_lighting_pass.draw(command_list);
+      deferred_lighting_pass.draw(&context, command_list);
     }
   }
 

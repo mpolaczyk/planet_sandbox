@@ -114,17 +114,11 @@ namespace engine
   void vserialize_object::visit(rgpu_forward_sync& object) const
   {
     visit_rrenderer_base(object);
-    j["pixel_shader_asset"] = fpersistence::serialize(object.pixel_shader_asset);
-    j["vertex_shader_asset"] = fpersistence::serialize(object.vertex_shader_asset);
   }
 
   void vserialize_object::visit(rgpu_deferred_sync& object) const
   {
     visit_rrenderer_base(object);
-    j["gbuffer_pixel_shader_asset"] = fpersistence::serialize(object.gbuffer_pixel_shader_asset);
-    j["gbuffer_vertex_shader_asset"] = fpersistence::serialize(object.gbuffer_vertex_shader_asset);
-    j["lighting_pixel_shader_asset"] = fpersistence::serialize(object.lighting_pixel_shader_asset);
-    j["lighting_vertex_shader_asset"] = fpersistence::serialize(object.lighting_vertex_shader_asset);
   }
 
   void vdeserialize_object::visit(amaterial& object) const
@@ -248,22 +242,10 @@ namespace engine
   void vdeserialize_object::visit(rgpu_forward_sync& object) const
   {
     visit_rrenderer_base(object);
-    nlohmann::json jpixel_shader;
-    if(TRY_PARSE(nlohmann::json, j, "pixel_shader_asset", jpixel_shader)) { fpersistence::deserialize(jpixel_shader, object.pixel_shader_asset); }
-    nlohmann::json jvertex_shader;
-    if(TRY_PARSE(nlohmann::json, j, "vertex_shader_asset", jvertex_shader)) { fpersistence::deserialize(jvertex_shader, object.vertex_shader_asset); }
   }
 
   void vdeserialize_object::visit(rgpu_deferred_sync& object) const
   {
     visit_rrenderer_base(object);
-    nlohmann::json jgbuffer_pixel_shader;
-    if(TRY_PARSE(nlohmann::json, j, "gbuffer_pixel_shader_asset", jgbuffer_pixel_shader)) { fpersistence::deserialize(jgbuffer_pixel_shader, object.gbuffer_pixel_shader_asset); }
-    nlohmann::json jgbuffer_vertex_shader;
-    if(TRY_PARSE(nlohmann::json, j, "gbuffer_vertex_shader_asset", jgbuffer_vertex_shader)) { fpersistence::deserialize(jgbuffer_vertex_shader, object.gbuffer_vertex_shader_asset); }
-    nlohmann::json jlighting_pixel_shader;
-    if(TRY_PARSE(nlohmann::json, j, "lighting_pixel_shader_asset", jlighting_pixel_shader)) { fpersistence::deserialize(jlighting_pixel_shader, object.lighting_pixel_shader_asset); }
-    nlohmann::json jlighting_vertex_shader;
-    if(TRY_PARSE(nlohmann::json, j, "lighting_vertex_shader_asset", jlighting_vertex_shader)) { fpersistence::deserialize(jlighting_vertex_shader, object.lighting_vertex_shader_asset); }
   }
 }

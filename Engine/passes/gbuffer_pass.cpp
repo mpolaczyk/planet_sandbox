@@ -31,6 +31,12 @@ namespace engine
     const char* depth_name = "gbuffer pass depth";
   }
 
+  void fgbuffer_pass::init_shaders()
+  {
+    pixel_shader_asset.set_name("gbuffer_deferred");
+    vertex_shader_asset.set_name("gbuffer_deferred");
+  }
+
   void fgbuffer_pass::init_pipeline()
   {
     fpass_base::init_pipeline();
@@ -61,9 +67,9 @@ namespace engine
     device->create_depth_stencil(context->dsv_descriptor_heap, &depth, context->width, context->height, depth_format, D3D12_RESOURCE_STATE_DEPTH_WRITE, depth_name);
   }
 
-  void fgbuffer_pass::draw(fgraphics_command_list* command_list)
+  void fgbuffer_pass::draw(frenderer_context* in_context, fgraphics_command_list* command_list)
   {
-    fpass_base::draw(command_list);
+    fpass_base::draw(in_context, command_list);
 
     fdescriptor_heap* heap = context->main_descriptor_heap;
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
