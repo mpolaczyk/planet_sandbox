@@ -88,14 +88,9 @@ namespace engine
   void fdeferred_lighting_pass::init_size_dependent_resources(bool cleanup)
   {
     fdevice* device = fapplication::get_instance()->device.get();
-  
-    if(cleanup)
-    {
-      context->main_descriptor_heap->remove(color.srv.index);
-      context->rtv_descriptor_heap->remove(color.rtv.index);  
-    }
-    device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap,
-      &color, context->width, context->height, rtv_formats[0], D3D12_RESOURCE_STATE_RENDER_TARGET, rtv_names[0]);
+    
+    color.release();
+    device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap, &color, context->width, context->height, rtv_formats[0], D3D12_RESOURCE_STATE_RENDER_TARGET, rtv_names[0]);
   }
   
   void fdeferred_lighting_pass::draw(fgraphics_command_list* command_list)

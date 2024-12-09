@@ -146,9 +146,8 @@ namespace engine
     rtv.reserve(back_buffer_count);
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
-      ftexture_resource temp;
-      device->create_back_buffer(swap_chain.Get(), n, rtv_descriptor_heap, temp, std::format("{}",n).c_str());
-      rtv.emplace_back(std::move(temp));
+      rtv.emplace_back(ftexture_resource());
+      device->create_back_buffer(swap_chain.Get(), n, rtv_descriptor_heap, rtv.back(), std::format("{}",n).c_str());
     }
     device->create_depth_stencil(&dsv_descriptor_heap, &dsv, width, height, DXGI_FORMAT_D32_FLOAT, D3D12_RESOURCE_STATE_DEPTH_READ, "main");
     return true;

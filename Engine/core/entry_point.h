@@ -26,9 +26,9 @@ void inline main_impl(int argc, char** argv)
     return;
   }
 
-  // Application lifecycle scope
+  // Application lifecycle scope, don't remove brackets.
   {
-    std::shared_ptr<fapplication> app;
+    std::unique_ptr<fapplication> app;
     app.reset(create_application());
     fapplication::set_instance(app.get());
     app->set_window(create_window());
@@ -37,6 +37,9 @@ void inline main_impl(int argc, char** argv)
   }
   
 #ifdef BUILD_DEBUG
+  // Notes:
+  // 1. Everything owned by an application should be destroyed at this point.
+  // 2. Command queue flushes GPU on destruction.
   fdx12::report_live_objects();
 #endif
   

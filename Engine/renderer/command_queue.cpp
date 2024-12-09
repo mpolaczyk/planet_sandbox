@@ -5,6 +5,7 @@
 #include "command_queue.h"
 
 #include "core/exceptions.h"
+#include "engine/log.h"
 #include "renderer/device.h"
 #include "renderer/dx12_lib.h"
 
@@ -72,6 +73,7 @@ namespace engine
 
   void fcommand_queue::flush()
   {
+    LOG_INFO("GPU Flush!")
     wait_for_fence_value(signal());
   }
 

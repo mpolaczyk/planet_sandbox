@@ -40,7 +40,7 @@ namespace engine
 
     // Persistent members
     std::vector<hhittable_base*> objects;
-    rrenderer_base* renderer = nullptr;   // TODO shared_ptr
+    rrenderer_base* renderer = nullptr;   // No need for shared ptr, managed object
     DirectX::XMFLOAT4 ambient_light_color;
     fcamera camera;
 

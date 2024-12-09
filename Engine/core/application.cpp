@@ -38,15 +38,7 @@ namespace engine
 
   fapplication::~fapplication()
   {
-    LOG_INFO("Destroying managed objects");
     REG.destroy_all();
-
-    LOG_INFO("Destroying physics scene");
-    physics.reset();
-
-    LOG_INFO("Destroying other resources");
-    command_queue.reset();
-    window.reset();
     flogger::flush();
   }
 

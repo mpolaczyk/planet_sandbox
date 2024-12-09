@@ -18,6 +18,19 @@ namespace engine
     }
   }
 
+  fdescriptor::~fdescriptor()
+  {
+    release();
+  }
+
+  void fdescriptor::release()
+  {
+    if(parent_heap)
+    {
+      parent_heap->remove(index);
+    }
+  }
+
   fdescriptor_heap::fdescriptor_heap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE in_heap_type, uint32_t in_max_descriptors)
     : heap_type(in_heap_type), max_descriptors(in_max_descriptors)
   {

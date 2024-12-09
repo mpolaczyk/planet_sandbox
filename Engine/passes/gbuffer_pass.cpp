@@ -51,20 +51,13 @@ namespace engine
   void fgbuffer_pass::init_size_dependent_resources(bool cleanup)
   {
     fdevice* device = fapplication::get_instance()->device.get();
-  
-    if(cleanup)
-    {
-      for(uint32_t i = 0; i < fgbuffer_pass::num_render_targets; i++)
-      {
-        context->main_descriptor_heap->remove(render_targets[i]->srv.index);
-        context->rtv_descriptor_heap->remove(render_targets[i]->rtv.index);  
-      }
-      context->dsv_descriptor_heap->remove(depth.dsv.index);
-    }
+    
     for(uint32_t i = 0; i < fgbuffer_pass::num_render_targets; i++)
     {
+      render_targets[i]->release();
       device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap, render_targets[i], context->width, context->height, rtv_formats[i], D3D12_RESOURCE_STATE_RENDER_TARGET, rtv_names[i]);
     }
+    depth.release();
     device->create_depth_stencil(context->dsv_descriptor_heap, &depth, context->width, context->height, depth_format, D3D12_RESOURCE_STATE_DEPTH_WRITE, depth_name);
   }
 

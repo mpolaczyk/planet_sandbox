@@ -316,10 +316,15 @@ namespace engine
 #endif
 }
 
-  void fdevice::create_frame_buffer(fdescriptor_heap* main_heap, fdescriptor_heap* rtv_heap, ftexture_resource* texture, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES initial_state, const char* name) const
+  void fdevice::create_frame_buffer(fdescriptor_heap* main_heap, fdescriptor_heap* rtv_heap, ftexture_resource* out_texture, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES initial_state, const char* name) const
   {
     const CD3DX12_CLEAR_VALUE clear_color = { format, DirectX::Colors::LightSlateGray };
     const CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
+
+    if(out_texture->com)
+    {
+      LOG_ERROR("Overwriting object in existing COM pointer (create_frame_buffer)")
+    }
     
     D3D12_RESOURCE_DESC desc = {};
     desc.MipLevels = 1;
@@ -338,13 +343,13 @@ namespace engine
       &desc,
       initial_state,
       &clear_color,
-      IID_PPV_ARGS(texture->com.GetAddressOf())));
+      IID_PPV_ARGS(out_texture->com.GetAddressOf())));
 
     D3D12_RENDER_TARGET_VIEW_DESC rtv_desc = {};
     rtv_desc.Format = format;
     rtv_desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-    rtv_heap->push(texture->rtv);
-    com->CreateRenderTargetView(texture->com.Get(), &rtv_desc, texture->rtv.cpu_descriptor_handle);
+    rtv_heap->push(out_texture->rtv);
+    com->CreateRenderTargetView(out_texture->com.Get(), &rtv_desc, out_texture->rtv.cpu_descriptor_handle);
     
     D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
     srv_desc.Format = format;
@@ -352,25 +357,30 @@ namespace engine
     srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srv_desc.Texture2D.MostDetailedMip = 0;
     srv_desc.Texture2D.MipLevels = 1;
-    main_heap->push(texture->srv);
-    com->CreateShaderResourceView(texture->com.Get(), &srv_desc, texture->srv.cpu_descriptor_handle);
+    main_heap->push(out_texture->srv);
+    com->CreateShaderResourceView(out_texture->com.Get(), &srv_desc, out_texture->srv.cpu_descriptor_handle);
 
 #if BUILD_DEBUG
-    DX_SET_NAME(texture->com, "Frame buffer: {}", name)
+    DX_SET_NAME(out_texture->com, "Frame buffer: {}", name)
 #endif
   }
 
-  void fdevice::create_depth_stencil(fdescriptor_heap* dsv_heap, ftexture_resource* texture, uint32_t width, uint32_t height, DXGI_FORMAT format,  D3D12_RESOURCE_STATES initial_state, const char* name) const
+  void fdevice::create_depth_stencil(fdescriptor_heap* dsv_heap, ftexture_resource* out_texture, uint32_t width, uint32_t height, DXGI_FORMAT format,  D3D12_RESOURCE_STATES initial_state, const char* name) const
   {
     CD3DX12_CLEAR_VALUE clear_value = {format, 1.0f, 0};
     const CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
+
+    if(out_texture->com)
+    {
+      LOG_ERROR("Overwriting object in existing COM pointer (create_depth_stencil)")
+    }
     
     D3D12_RESOURCE_DESC desc = {};
     desc.MipLevels = 1;
     desc.Format = format;
     desc.Width = width;
     desc.Height = height;
-    desc.Flags  = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL | D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE;
+    desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL | D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE;
     desc.DepthOrArraySize = 1;
     desc.SampleDesc.Count = 1;
     desc.SampleDesc.Quality = 0;
@@ -382,22 +392,27 @@ namespace engine
       &desc,
       initial_state,
       &clear_value,
-      IID_PPV_ARGS(texture->com.GetAddressOf())));
+      IID_PPV_ARGS(out_texture->com.GetAddressOf())));
 
     D3D12_DEPTH_STENCIL_VIEW_DESC dsv_desc = {};
     dsv_desc.Format = format;
     dsv_desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-    dsv_heap->push(texture->dsv);
-    com->CreateDepthStencilView(texture->com.Get(), &dsv_desc, texture->dsv.cpu_descriptor_handle);
+    dsv_heap->push(out_texture->dsv);
+    com->CreateDepthStencilView(out_texture->com.Get(), &dsv_desc, out_texture->dsv.cpu_descriptor_handle);
 
 #if BUILD_DEBUG
-    DX_SET_NAME(texture->com, "Depth stencil: {}", name)
+    DX_SET_NAME(out_texture->com, "Depth stencil: {}", name)
 #endif
   }
   
-  void fdevice::create_texture_buffer(fdescriptor_heap* heap, ftexture_resource& texture, uint32_t width, uint32_t height, DXGI_FORMAT format, const char* name) const
+  void fdevice::create_texture_buffer(fdescriptor_heap* heap, ftexture_resource& out_texture, uint32_t width, uint32_t height, DXGI_FORMAT format, const char* name) const
   {
-    heap->push(texture.srv);
+    if(out_texture.com)
+    {
+      LOG_ERROR("Overwriting object in existing COM pointer (create_texture_buffer)")
+    }
+    
+    heap->push(out_texture.srv);
 
     D3D12_RESOURCE_DESC texture_desc = {};
     texture_desc.MipLevels = 1;
@@ -417,21 +432,21 @@ namespace engine
       &texture_desc,
       D3D12_RESOURCE_STATE_COPY_DEST,
       nullptr,
-      IID_PPV_ARGS(&texture.com)));
+      IID_PPV_ARGS(out_texture.com.GetAddressOf())));
 
-    const uint32_t buffer_size = fmath::to_uint32(GetRequiredIntermediateSize(texture.com.Get(), 0, 1));
-    create_upload_resource(buffer_size, texture.upload_com);
+    const uint32_t buffer_size = fmath::to_uint32(GetRequiredIntermediateSize(out_texture.com.Get(), 0, 1));
+    create_upload_resource(buffer_size, out_texture.upload_com);
     
     D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
     srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srv_desc.Format = texture_desc.Format;
     srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
     srv_desc.Texture2D.MipLevels = 1;
-    com->CreateShaderResourceView(texture.com.Get(), &srv_desc, texture.srv.cpu_descriptor_handle);
+    com->CreateShaderResourceView(out_texture.com.Get(), &srv_desc, out_texture.srv.cpu_descriptor_handle);
     
 #if BUILD_DEBUG
-    DX_SET_NAME(texture.com, "Texture: {}", name)
-    DX_SET_NAME(texture.upload_com, "Texture upload: {}", name)
+    DX_SET_NAME(out_texture.com, "Texture: {}", name)
+    DX_SET_NAME(out_texture.upload_com, "Texture upload: {}", name)
 #endif
   }
   
@@ -442,6 +457,11 @@ namespace engine
 
   void fdevice::create_upload_resource(uint32_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const
   {
+    if(out_resource)
+    {
+      LOG_ERROR("Overwriting object in existing COM pointer (create_upload_resource)")
+    }
+    
     const CD3DX12_HEAP_PROPERTIES type_upload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
     const CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
     THROW_IF_FAILED(com->CreateCommittedResource(
@@ -455,6 +475,11 @@ namespace engine
 
   void fdevice::create_buffer_resource(uint32_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const
   {
+    if(out_resource)
+    {
+      LOG_ERROR("Overwriting object in existing COM pointer (create_buffer_resource)")
+    }
+    
     const CD3DX12_HEAP_PROPERTIES type_default = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
     const CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size, D3D12_RESOURCE_FLAG_NONE);
     THROW_IF_FAILED(com->CreateCommittedResource(

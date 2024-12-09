@@ -34,25 +34,13 @@ namespace engine
   
   struct ENGINE_API ftexture_resource
   {
-    CTOR_DEFAULT(ftexture_resource)
-    CTOR_COPY_DELETE(ftexture_resource)   // Avoid copying to not increase the reference count, this makes cleanup harder
-    CTOR_MOVE_DEFAULT(ftexture_resource)
-    DTOR_DEFAULT(ftexture_resource)
+    void release();
 
     ComPtr<ID3D12Resource> com;
     ComPtr<ID3D12Resource> upload_com;
     fdescriptor srv;
     fdescriptor rtv;
     fdescriptor dsv;
-
-    void release()
-    {
-      if(srv.parent_heap) { srv.parent_heap->remove(srv.index); }
-      if(rtv.parent_heap) { rtv.parent_heap->remove(rtv.index); }
-      if(dsv.parent_heap) { dsv.parent_heap->remove(dsv.index); }
-      DX_RELEASE(com)
-      DX_RELEASE(upload_com)
-    }
   };
 
   struct ENGINE_API fshader_resource
