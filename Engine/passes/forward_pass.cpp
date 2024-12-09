@@ -94,7 +94,10 @@ namespace engine
     fsoft_asset_ptr<amaterial> default_material_asset;
     default_material_asset.set_name("default");
     atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
-    device->create_texture_buffer(heap, default_texture, "default");
+    if(!default_texture->is_online)
+    {
+      device->create_texture_buffer(heap, default_texture, "default");
+    }
   }
 
   void fforward_pass::init_size_dependent_resources(bool cleanup)
@@ -107,7 +110,9 @@ namespace engine
       context->rtv_descriptor_heap->remove(color.rtv.index);
       context->dsv_descriptor_heap->remove(depth.dsv.index);
     }
+    color.release();
     device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap, &color, context->width, context->height, rtv_format, D3D12_RESOURCE_STATE_RENDER_TARGET, "Forward pass");
+    depth.release();
     device->create_depth_stencil(context->dsv_descriptor_heap, &depth, context->width, context->height, depth_format, D3D12_RESOURCE_STATE_DEPTH_WRITE, "Forward pass");
   }
   

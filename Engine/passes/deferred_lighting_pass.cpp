@@ -84,7 +84,10 @@ namespace engine
     fsoft_asset_ptr<amaterial> default_material_asset;
     default_material_asset.set_name("default");
     atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
-    device->create_texture_buffer(heap, default_texture, "default");
+    if(!default_texture->is_online)
+    {
+      device->create_texture_buffer(heap, default_texture, "default");
+    }
     
     // Load and create quad mesh
     quad_asset.set_name("plane");
