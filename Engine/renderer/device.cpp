@@ -92,7 +92,14 @@ namespace engine
     get_hw_adapter(factory, &adapter1, true);
     DXGI_ADAPTER_DESC adapter_desc;
     adapter1->GetDesc(&adapter_desc);
-    LOG_INFO("Graphics Device: {0}", fstring_tools::to_utf8(adapter_desc.Description))
+    std::string adapter_name =  fstring_tools::to_utf8(adapter_desc.Description);
+    LOG_INFO("Graphics Device: {0}", adapter_name)
+#if USE_NSIGHT_GRAPHICS
+    if(!fstring_tools::contains(adapter_name, "nvidia"))
+    {
+      throw std::runtime_error("No Nvidia GPU detected, Nsight Graphics will not work properly!");
+    }
+#endif
     
     ComPtr<ID3D12Device2> temp_device;  // Used only to check feature level and shader model
     THROW_IF_FAILED((D3D12CreateDevice(adapter1.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(temp_device.GetAddressOf()))))
@@ -309,7 +316,7 @@ namespace engine
   {
     if(out_rtv.com)
     {
-      LOG_ERROR("Overwriting object in existing COM pointer (create_back_buffer)")
+      throw std::runtime_error("Overwriting object in existing COM pointer (create_back_buffer)");
     }
     
     THROW_IF_FAILED(swap_chain->GetBuffer(swap_chain_buffer_id, IID_PPV_ARGS(out_rtv.com.GetAddressOf())))
@@ -328,7 +335,7 @@ namespace engine
 
     if(out_texture->com)
     {
-      LOG_ERROR("Overwriting object in existing COM pointer (create_frame_buffer)")
+      throw std::runtime_error("Overwriting object in existing COM pointer (create_frame_buffer)");
     }
     
     D3D12_RESOURCE_DESC desc = {};
@@ -374,7 +381,7 @@ namespace engine
   {
     if(out_texture->com)
     {
-      LOG_ERROR("Overwriting object in existing COM pointer (create_depth_stencil)")
+      throw std::runtime_error("Overwriting object in existing COM pointer (create_depth_stencil)");
     }
     
     CD3DX12_CLEAR_VALUE clear_value = {format, 1.0f, 0};
@@ -414,7 +421,7 @@ namespace engine
   {
     if(out_texture.com)
     {
-      LOG_ERROR("Overwriting object in existing COM pointer (create_texture_buffer)")
+      throw std::runtime_error("Overwriting object in existing COM pointer (create_texture_buffer)");
     }
     
     heap->push(out_texture.srv);
@@ -464,7 +471,7 @@ namespace engine
   {
     if(out_resource)
     {
-      LOG_ERROR("Overwriting object in existing COM pointer (create_upload_resource)")
+      throw std::runtime_error("Overwriting object in existing COM pointer (create_upload_resource)");
     }
     
     const CD3DX12_HEAP_PROPERTIES type_upload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
@@ -482,7 +489,7 @@ namespace engine
   {
     if(out_resource)
     {
-      LOG_ERROR("Overwriting object in existing COM pointer (create_buffer_resource)")
+      throw std::runtime_error("Overwriting object in existing COM pointer (create_buffer_resource)");
     }
     
     const CD3DX12_HEAP_PROPERTIES type_default = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);

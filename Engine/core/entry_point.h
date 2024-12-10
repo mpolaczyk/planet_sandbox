@@ -20,7 +20,7 @@ namespace engine
 void inline main_impl(int argc, char** argv)
 {
   flogger::init();
-  if (argc == 0)
+  if (argc == 1)
   {
     LOG_ERROR("Command line argument required: project name");
     return;
