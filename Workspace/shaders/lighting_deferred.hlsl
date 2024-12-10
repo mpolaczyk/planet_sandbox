@@ -95,6 +95,8 @@ float4 ps_main(fvs_output input) : SV_Target
   const float3 normal   = gbuffer_normal.Sample(sampler_obj, input.uv).xyz;
   const float2 uv       = gbuffer_uv.Sample(sampler_obj, input.uv).xy;
   const int material_id = gbuffer_material_id.Sample(sampler_obj, input.uv).x;
+
+  return float4(material_id,0,0,1)/4.0;
   
   const fmaterial_properties material = materials_data[NonUniformResourceIndex(material_id)];
   const uint texture_id = NonUniformResourceIndex(material.texture_id);

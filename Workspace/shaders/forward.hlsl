@@ -104,7 +104,7 @@ float4 ps_main(fvs_output input) : SV_Target
 {
   const uint material_id = NonUniformResourceIndex(object_data.material_id);
   const fmaterial_properties material = materials_data[material_id];
-  const uint texture_id = NonUniformResourceIndex(material.texture_id);
+  const int texture_id = NonUniformResourceIndex(material.texture_id);
 
   const flight_components light_final = compute_light(input.position_ws, input.normal_ws, material.specular_power);
  
