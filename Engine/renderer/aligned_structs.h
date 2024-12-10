@@ -14,6 +14,7 @@ namespace engine
 {
   using namespace DirectX;
 
+  // Nsight type: vec4f emissive; vec4f ambient; vec4f diffuse; vec4f specular; float specular_power; int32 texture_id; float pad; float pad;
   ALIGNED_STRUCT_BEGIN(fmaterial_properties)
   {
     XMFLOAT4 emissive{0.0f, 0.0f, 0.0f, 1.0f}; // 16
@@ -38,6 +39,7 @@ namespace engine
     spotlight
   };
 
+  // Nsight type: vec4f position; vec4f direction; vec4f color; float spot_angle; float constant_attenuation; float linear_attenuation; float quadratic_attenuation; int32 light_type; int32 enabled; int64 pad;
   ALIGNED_STRUCT_BEGIN(flight_properties)
   {
     XMFLOAT4 position{0.0f, 0.0f, 0.0f, 1.0f}; // 16

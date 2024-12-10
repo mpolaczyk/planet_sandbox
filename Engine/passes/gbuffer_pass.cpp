@@ -24,7 +24,7 @@ namespace engine
       num
     };
   
-    DXGI_FORMAT rtv_formats[fgbuffer_pass::num_render_targets] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R8_UINT };
+    DXGI_FORMAT rtv_formats[fgbuffer_pass::num_render_targets] = { DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R8_UINT };
     const char* rtv_names[fgbuffer_pass::num_render_targets] = { "position", "normal", "uv", "material_id"};
   
     DXGI_FORMAT depth_format = DXGI_FORMAT_D32_FLOAT;

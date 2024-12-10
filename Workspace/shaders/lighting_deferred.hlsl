@@ -96,9 +96,9 @@ float4 ps_main(fvs_output input) : SV_Target
   const float2 uv       = gbuffer_uv.Sample(sampler_obj, input.uv).xy;
   const int material_id = gbuffer_material_id.Sample(sampler_obj, input.uv).x;
   
-  const fmaterial_properties material = materials_data[material_id];
+  const fmaterial_properties material = materials_data[NonUniformResourceIndex(material_id)];
   const uint texture_id = NonUniformResourceIndex(material.texture_id);
-    
+
   const flight_components light_final = compute_light(position, normal, material.specular_power);
 
   float4 tex_color = { 1, 1, 1, 1 };

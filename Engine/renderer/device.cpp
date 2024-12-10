@@ -95,9 +95,9 @@ namespace engine
     std::string adapter_name =  fstring_tools::to_utf8(adapter_desc.Description);
     LOG_INFO("Graphics Device: {0}", adapter_name)
 #if USE_NSIGHT_GRAPHICS
-    if(!fstring_tools::contains(adapter_name, "nvidia"))
+    if(!fstring_tools::contains(adapter_name, "NVIDIA"))
     {
-      throw std::runtime_error("No Nvidia GPU detected, Nsight Graphics will not work properly!");
+      throw std::runtime_error("No NVIDIA GPU detected, Nsight Graphics will not work properly!");
     }
 #endif
     

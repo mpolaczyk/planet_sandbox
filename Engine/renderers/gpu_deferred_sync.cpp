@@ -3,7 +3,6 @@
 #include "object/object_visitor.h"
 #include "gpu_deferred_sync.h"
 
-#include "engine/log.h"
 #include "renderer/command_list.h"
 
 using namespace DirectX;
