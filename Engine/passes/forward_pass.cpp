@@ -72,7 +72,7 @@ namespace engine
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
       fconst_buffer buffer;
-      device->create_const_buffer(heap, sizeof(fframe_data), buffer, std::format("CBV frame: back buffer {}", i).c_str());
+      device->create_const_buffer(heap, fmath::to_uint32(sizeof(fframe_data)), buffer, std::format("CBV frame: back buffer {}", i).c_str());
       frame_data.emplace_back(buffer);
     }
 
@@ -154,6 +154,8 @@ namespace engine
       fframe_data data;
       data.camera_position = XMFLOAT4(context->scene->camera.location.e);
       data.ambient_light = context->scene->ambient_light_color;
+      data.height = context->height;
+      data.width = context->width;
       frame_data[back_buffer_index].upload(&data);
     }
 
@@ -207,7 +209,7 @@ namespace engine
     for(uint32_t i = 0; i < N; i++)
     {
       const fstatic_mesh_resource& smrs = context->scene->scene_acceleration.h_meshes[i]->mesh_asset_ptr.get()->resource;
-      command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, sizeof(fobject_data)/4, &scene_acceleration.object_buffer[i], 0);
+      command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, fmath::to_uint32(sizeof(fobject_data))/4, &scene_acceleration.object_buffer[i], 0);
       command_list_com->SetGraphicsRootConstantBufferView(root_parameter_type::frame_data, frame_data[back_buffer_index].resource->GetGPUVirtualAddress());
       command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::lights, lights_data[back_buffer_index].resource->GetGPUVirtualAddress());
       command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::materials, materials_data[back_buffer_index].resource->GetGPUVirtualAddress());

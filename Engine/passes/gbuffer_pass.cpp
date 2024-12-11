@@ -24,7 +24,7 @@ namespace engine
       num
     };
   
-    DXGI_FORMAT rtv_formats[fgbuffer_pass::num_render_targets] = { DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R8_UINT };
+    DXGI_FORMAT rtv_formats[fgbuffer_pass::num_render_targets] = { DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32_UINT };
     const char* rtv_names[fgbuffer_pass::num_render_targets] = { "position", "normal", "uv", "material_id"};
   
     DXGI_FORMAT depth_format = DXGI_FORMAT_D32_FLOAT;
@@ -114,7 +114,7 @@ namespace engine
     {
       const fstatic_mesh_resource& smrs = context->scene->scene_acceleration.h_meshes[i]->mesh_asset_ptr.get()->resource;
 
-      command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, sizeof(fobject_data)/4, &scene_acceleration.object_buffer[i], 0);
+      command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, fmath::to_uint32(sizeof(fobject_data))/4, &scene_acceleration.object_buffer[i], 0);
       command_list_com->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list_com->IASetIndexBuffer(&smrs.index_buffer_view);
       command_list_com->DrawIndexedInstanced(smrs.vertex_num, 1, 0, 0, 0);

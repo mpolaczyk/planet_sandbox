@@ -76,7 +76,10 @@ namespace engine
   ALIGNED_STRUCT_BEGIN(fframe_data)
   {
     XMFLOAT4 camera_position; // 16
-    XMFLOAT4 ambient_light; // 16
+    XMFLOAT4 ambient_light;   // 16
+    uint32_t height;          // 4
+    uint32_t width;           // 4
+    uint32_t pad[2];          // 8
   };
   ALIGNED_STRUCT_END(fframe_data)
   static_assert(sizeof(fframe_data)/4 < 64); // "Root Constant size is greater than 64 DWORDs. Additional indirection may be added by the driver."

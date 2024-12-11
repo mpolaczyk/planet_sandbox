@@ -38,6 +38,9 @@ struct fframe_data
 {
   float4 camera_position;     // 16
   float4 ambient_light;       // 16
+  uint width;                 // 4
+  uint height;                // 4
+  uint2 pad;                  // 8
 };
 
 ConstantBuffer<fobject_data> object_data : register(b0);

@@ -126,6 +126,8 @@ namespace engine
     // Process frame data constants
     frame_data.camera_position = XMFLOAT4(context->scene->camera.location.e);
     frame_data.ambient_light = context->scene->ambient_light_color;
+    frame_data.width = context->width;
+    frame_data.height = context->height;
 
     // Process light and material SRVs
     {
@@ -171,7 +173,7 @@ namespace engine
 
     // Draw
     const fstatic_mesh_resource& smrs = quad_mesh->resource;
-    command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::frame_data, sizeof(fframe_data)/4, &frame_data, 0);
+    command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::frame_data, fmath::to_uint32(sizeof(fframe_data))/4, &frame_data, 0);
     command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::lights, lights_data[back_buffer_index].resource->GetGPUVirtualAddress());
     command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::materials, materials_data[back_buffer_index].resource->GetGPUVirtualAddress());
     command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::gbuffer_position, position->srv.gpu_descriptor_handle);

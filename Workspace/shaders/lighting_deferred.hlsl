@@ -27,6 +27,9 @@ struct fframe_data
 {
   float4 camera_position;   // 16
   float4 ambient_light;     // 16
+  uint width;               // 4
+  uint height;              // 4
+  uint2 pad;                // 8
 };
 
 ConstantBuffer<fframe_data> frame_data : register(b0);
@@ -35,7 +38,7 @@ StructuredBuffer<fmaterial_properties> materials_data : register(t1);
 Texture2D gbuffer_position : register(t2);
 Texture2D gbuffer_normal : register(t3);
 Texture2D gbuffer_uv : register(t4);
-Texture2D gbuffer_material_id : register(t5);
+Texture2D<uint> gbuffer_material_id : register(t5);
 Texture2D texture_data[] : register(t6);
 SamplerState sampler_obj : register(s0);
 
@@ -94,8 +97,8 @@ float4 ps_main(fvs_output input) : SV_Target
   const float4 position = gbuffer_position.Sample(sampler_obj, input.uv);
   const float3 normal   = gbuffer_normal.Sample(sampler_obj, input.uv).xyz;
   const float2 uv       = gbuffer_uv.Sample(sampler_obj, input.uv).xy;
-  const uint material_id = gbuffer_material_id.Sample(sampler_obj, input.uv).x;
-  
+  const uint material_id = gbuffer_material_id.Load(int3(input.uv.x*frame_data.height, input.uv.y*frame_data.width, 0));
+
   const fmaterial_properties material = materials_data[NonUniformResourceIndex(material_id)];
   const uint texture_id = NonUniformResourceIndex(material.texture_id);
 
