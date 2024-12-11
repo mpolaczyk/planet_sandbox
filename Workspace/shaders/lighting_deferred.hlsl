@@ -32,14 +32,19 @@ struct fframe_data
   uint2 pad;                // 8
 };
 
+// b
 ConstantBuffer<fframe_data> frame_data : register(b0);
-StructuredBuffer<flight_properties> lights_data : register(t0);
-StructuredBuffer<fmaterial_properties> materials_data : register(t1);
-Texture2D gbuffer_position : register(t2);
-Texture2D gbuffer_normal : register(t3);
-Texture2D gbuffer_uv : register(t4);
-Texture2D<uint> gbuffer_material_id : register(t5);
-Texture2D texture_data[] : register(t6);
+// t space0
+StructuredBuffer<flight_properties> lights_data : register(t0, space0);
+StructuredBuffer<fmaterial_properties> materials_data : register(t1, space0);
+// t space1
+Texture2D<float4> gbuffer_position : register(t0, space1);
+Texture2D<float4> gbuffer_normal : register(t1, space1);
+Texture2D<float2> gbuffer_uv : register(t2, space1);
+Texture2D<uint> gbuffer_material_id : register(t3, space1);
+// t space2
+Texture2D texture_data[] : register(t0, space2);
+// s
 SamplerState sampler_obj : register(s0);
 
 flight_components compute_light(float4 P, float3 N, float specular_power)
@@ -107,7 +112,7 @@ float4 ps_main(fvs_output input) : SV_Target
   float4 tex_color = { 1, 1, 1, 1 };
   if (texture_id != -1)
   {
-    tex_color = texture_data[texture_id].Sample(sampler_obj, uv);
+    tex_color = texture_data[NonUniformResourceIndex(texture_id)].Sample(sampler_obj, uv);
   }
 
   float4 emissive = material.emissive;

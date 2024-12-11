@@ -66,7 +66,7 @@ namespace engine
     bool is_running = true;
     std::shared_ptr<fwindow> window;
     std::shared_ptr<fdevice> device;
-    std::shared_ptr<fcommand_queue> command_queue;  // TODO move as a member of fdevice
+    std::shared_ptr<fcommand_queue> command_queue;
 
 #if USE_NSIGHT_AFTERMATH
     fgpu_crash_tracker gpu_crash_handler;

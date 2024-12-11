@@ -61,7 +61,6 @@ namespace engine
     void create_depth_stencil_descriptor_heap(fdescriptor_heap& out_descriptor_heap, const char* name) const;
     void create_cbv_srv_uav_descriptor_heap(fdescriptor_heap& out_descriptor_heap, const char* name) const;
 
-    // TODO heaps should be owned by the device, move them there 
     void create_const_buffer(fdescriptor_heap* heap, uint32_t in_size, fconst_buffer& out_buffer, const char* name) const;
     void create_shader_resource_buffer(fdescriptor_heap* heap, uint32_t in_size, fshader_resource_buffer& out_buffer, const char* name) const;
     void create_back_buffer(IDXGISwapChain4* swap_chain, uint32_t swap_chain_buffer_id, fdescriptor_heap& descriptor_heap, ftexture_resource& out_rtv, const char* name) const;

@@ -28,7 +28,7 @@ namespace engine
       gbuffer_normal,
       gbuffer_uv,
       gbuffer_material_id,
-      textures,   // TODO! gbuffer position, gbuffer normal, gbuffer uv, gbuffer material_id, default texture, scene textures (unbound)
+      textures,
       num
     };
 
@@ -46,15 +46,22 @@ namespace engine
   {
     fpass_base::init_pipeline();
     graphics_pipeline->reserve_parameters(root_parameter_type::num);
+    // b
     graphics_pipeline->add_constant_parameter(root_parameter_type::frame_data, 0, 0, fmath::to_uint32(sizeof(fframe_data)), D3D12_SHADER_VISIBILITY_PIXEL);
+    // t space0
     graphics_pipeline->add_shader_resource_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     graphics_pipeline->add_shader_resource_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-    // TODO GBuffer as one table, or maybe all textures...
-    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_position, 2, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_normal, 3, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_uv, 4, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_material_id, 5, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::textures, 6, 0, 1, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+    // t space1
+    // TODO Convert gbuffer to one descriptor table parameter with 1 range and 4 descriptors. I failed to do it, something is wrong somewhere...
+    // ID3D12Device::CreateRootSignature: RootParameterIndex [5] defines an empty root descriptor table. This may not have been intended, as it wastes space in the root signature. [ STATE_CREATION WARNING #1347: EMPTY_ROOT_DESCRIPTOR_TABLE]
+    // Also, those textures can't be shader resource view parameters - SRV or UAV root descriptors can only be Raw or Structured buffers.
+    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_position, 0, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_normal, 1, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_uv, 2, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_material_id, 3, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+    // t space2
+    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::textures, 0, 2, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+    // s
     graphics_pipeline->add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
     graphics_pipeline->setup_formats(1, rtv_formats, DXGI_FORMAT_UNKNOWN);
     graphics_pipeline->init("Deferred lighting pass");
@@ -140,7 +147,6 @@ namespace engine
       const uint32_t num_textures_in_scene = fmath::to_uint32(scene_acceleration.a_textures.size());
 
       // Upload default texture first
-      // TODO move to init
       if(!default_texture->is_online)
       {
         command_list->upload_texture(default_texture);
@@ -163,7 +169,6 @@ namespace engine
     }
     
     // Upload quad mesh
-    // TODO move to init
     astatic_mesh* quad_mesh = quad_asset.get();
     if(!quad_mesh->is_resource_online)
     {

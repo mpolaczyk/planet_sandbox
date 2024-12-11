@@ -29,7 +29,7 @@ namespace engine
     ::RegisterClassEx(&wc);
     hwnd = ::CreateWindow(wc.lpszClassName, name, WS_OVERLAPPEDWINDOW, 100, 100, 1920, 1080, NULL, NULL, wc.hInstance, NULL);
 
-    std::shared_ptr<fcommand_queue> command_queue = fapplication::get_instance()->command_queue;
+    fcommand_queue* command_queue = fapplication::get_instance()->command_queue.get();
     fdevice* device = fapplication::get_instance()->device.get();
     
     screen_tearing = fdx12::enable_screen_tearing(factory);
@@ -53,8 +53,8 @@ namespace engine
 
   void fwindow::draw()
   {
-    std::shared_ptr<fcommand_queue> command_queue = fapplication::get_instance()->command_queue;
-    std::shared_ptr<fgraphics_command_list> command_list = command_queue->get_command_list(ecommand_list_purpose::main, back_buffer_index);
+    fcommand_queue* command_queue = fapplication::get_instance()->command_queue.get();
+    fgraphics_command_list* command_list = command_queue->get_command_list(ecommand_list_purpose::main, back_buffer_index);
     
     if(hscene* scene_root = fapplication::get_instance()->scene_root)
     {
@@ -72,12 +72,12 @@ namespace engine
         context.dsv = &dsv;
         context.width = width;
         context.height = height;
-        if(renderer->draw(std::move(context), command_list.get()))
+        if(renderer->draw(std::move(context), command_list))
         {
-          fresource_barrier_scope c(command_list.get(), renderer->get_color()->com.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
-          fresource_barrier_scope d(command_list.get(), renderer->get_depth()->com.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_COPY_SOURCE);
-          fresource_barrier_scope a(command_list.get(), rtv[back_buffer_index].com.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_COPY_DEST);
-          fresource_barrier_scope b(command_list.get(), dsv.com.Get(),                    D3D12_RESOURCE_STATE_DEPTH_READ, D3D12_RESOURCE_STATE_COPY_DEST);
+          fresource_barrier_scope c(command_list, renderer->get_color()->com.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
+          fresource_barrier_scope d(command_list, renderer->get_depth()->com.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_COPY_SOURCE);
+          fresource_barrier_scope a(command_list, rtv[back_buffer_index].com.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_COPY_DEST);
+          fresource_barrier_scope b(command_list, dsv.com.Get(),                    D3D12_RESOURCE_STATE_DEPTH_READ, D3D12_RESOURCE_STATE_COPY_DEST);
         
           command_list->com->CopyResource(rtv[back_buffer_index].com.Get(), renderer->get_color()->com.Get());
           command_list->com->CopyResource(dsv.com.Get(), renderer->get_depth()->com.Get());
@@ -120,7 +120,7 @@ namespace engine
     }
     width = requested_width;
     height = requested_height;
-    std::shared_ptr<fcommand_queue> command_queue = fapplication::get_instance()->command_queue;
+    fcommand_queue* command_queue = fapplication::get_instance()->command_queue.get();
     fdevice* device = fapplication::get_instance()->device.get();
 
     // Release resources if they already exist

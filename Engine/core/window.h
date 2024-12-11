@@ -47,6 +47,7 @@ namespace engine
     
     ComPtr<IDXGISwapChain4> swap_chain;
 
+    // TODO move heaps to the fdevice
     fdescriptor_heap rtv_descriptor_heap;
     fdescriptor_heap dsv_descriptor_heap;
     fdescriptor_heap main_descriptor_heap; // srv, cbv, uav

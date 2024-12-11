@@ -67,10 +67,10 @@ namespace editor
 
     fwindow::draw();
 
-    std::shared_ptr<fcommand_queue> command_queue = fapplication::get_instance()->command_queue;
-    std::shared_ptr<fgraphics_command_list> command_list = command_queue->get_command_list(ecommand_list_purpose::ui, back_buffer_index);
+    fcommand_queue* command_queue = fapplication::get_instance()->command_queue.get();
+    fgraphics_command_list* command_list = command_queue->get_command_list(ecommand_list_purpose::ui, back_buffer_index);
 
-    fresource_barrier_scope a(command_list.get(), rtv[back_buffer_index].com.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    fresource_barrier_scope a(command_list, rtv[back_buffer_index].com.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
     command_list->set_render_targets1(&rtv[back_buffer_index], &dsv);
     command_list->set_viewport(width, height);

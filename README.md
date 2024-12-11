@@ -9,13 +9,23 @@ The goal is to achieve the same result but with DX12 and DXR.
 
 Features added so far:
 
-2.0 - Work in progress
-- DX12 support
+[3.0] - DX12 with DXR version
+ - in progress
 
-[1.0] - Initial release
-- DX11 support for simple scene rendering, forward renderer, deferred renderer, Phong lighting model
+[2.0] - DX12 version
+- All points included in [1.0] release
+- GPU resources and heap management
+- Multi pass architecture
+- Bindless textures (dynamic indexing and unbounded arrays)
+- Hot-reloadable DXC shader compilation pipeline with shader cache
+- Physics system for object selection and simulations
+- Crash handling and dumping for both C++ and structured exceptions
+- Aftermath integration for GPU crash handling and crash dumps
+
+[1.0] - DX11 version
+- Simple scene rendering, forward renderer, deferred renderer, Phong lighting model
 - Engine and editor separated to a DLL and EXE
-- Custom RTTI and memory menegament for resources like scene objects, assets, shaders etc.
+- Custom RTTI and memory manegament for resources like scene objects, assets, shaders etc.
 - Persistent soft asset pointers
 - FBX scene import
 - Support to multiple project folders (use command line argument fbx_scene_test or cozy_kitchen)
@@ -63,6 +73,7 @@ NVidia R445 or newer is required
 [//]: # (links)
 
    [1.0]: <https://bitbucket.org/planet620/planetsandbox/src/release_1.0/>
+   [2.0]: <https://bitbucket.org/planet620/planetsandbox/src/release_1.0/>
    [2.3]: <https://bitbucket.org/planet620/raytracer/src/release_2.3/>
    [ocornut/imgui]: <https://github.com/ocornut/imgui>
    [nlohmann/json]: <https://github.com/nlohmann/json>

@@ -45,7 +45,7 @@ namespace engine
     
     void reset_allocator(uint32_t back_buffer_id) const;
 
-    std::shared_ptr<fgraphics_command_list> get_command_list(ecommand_list_purpose type, uint32_t back_buffer_id) const;
+    fgraphics_command_list* get_command_list(ecommand_list_purpose type, uint32_t back_buffer_id);
     uint64_t execute_command_lists(uint32_t back_buffer_id);
 
     ComPtr<ID3D12CommandQueue> com;

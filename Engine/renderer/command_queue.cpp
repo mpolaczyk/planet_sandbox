@@ -77,9 +77,9 @@ namespace engine
     wait_for_fence_value(signal());
   }
 
-  std::shared_ptr<fgraphics_command_list> fcommand_queue::get_command_list(ecommand_list_purpose type, uint32_t back_buffer_id) const
+  fgraphics_command_list* fcommand_queue::get_command_list(ecommand_list_purpose type, uint32_t back_buffer_id)
   {
-    return std::make_shared<fgraphics_command_list>(command_pairs[type].command_list);
+    return &command_pairs[type].command_list;
   }
 
   void fcommand_queue::reset_allocator(uint32_t back_buffer_id) const
