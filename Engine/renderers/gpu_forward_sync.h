@@ -4,10 +4,8 @@
 
 #include "core/core.h"
 #include "renderer/renderer_base.h"
-#include "asset/soft_asset_ptr.h"
-#include "assets/pixel_shader.h"
-#include "assets/vertex_shader.h"
 #include "passes/forward_pass.h"
+#include "passes/debug_pass.h"
 
 struct ID3D12GraphicsCommandList;
 
@@ -26,6 +24,7 @@ namespace engine
 
     // Runtime members
     fforward_pass forward_pass;
+    fdebug_pass debug_pass;
 
     virtual ftexture_resource* get_color() override;
     virtual ftexture_resource* get_depth() override;

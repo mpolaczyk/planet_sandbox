@@ -78,6 +78,13 @@
 #define ALIGNED_STRUCT_BEGIN(NAME) struct alignas(16) NAME
 #define ALIGNED_STRUCT_END(NAME) static_assert(sizeof(NAME) % 16 == 0);
 
+#define MAX_MATERIALS 32
+#define MAX_LIGHTS 16
+#define MAX_TEXTURES 32
+#define MAX_MAIN_DESCRIPTORS 128
+#define MAX_RTV_DESCRIPTORS 16
+#define MAX_DSV_DESCRIPTORS 4
+
 // warning C4251 : ? needs to have dll - interface to be used by clients of struct ? (compiling source file ?)
 // for standard library types!
 #pragma warning( disable : 4251)

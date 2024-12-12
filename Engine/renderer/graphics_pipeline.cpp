@@ -104,6 +104,14 @@ namespace engine
     input_layout = in_input_layout;
   }
 
+  void fgraphics_pipeline::setup_blend(uint32_t render_target_index, D3D12_BLEND source_blend, D3D12_BLEND destination_blend, D3D12_BLEND_OP blend_operation)
+  {
+    blend_desc.RenderTarget[render_target_index].BlendEnable = true;
+    blend_desc.RenderTarget[render_target_index].SrcBlend = source_blend;
+    blend_desc.RenderTarget[render_target_index].DestBlend = destination_blend;
+    blend_desc.RenderTarget[render_target_index].BlendOp = blend_operation;
+  }
+
   void fgraphics_pipeline::init(const char* name)
   {
     fdevice* device = fapplication::get_instance()->device.get();
@@ -112,12 +120,12 @@ namespace engine
     fpipeline_state_stream pipeline_state_stream;
     pipeline_state_stream.root_signature = root_signature.Get();
     pipeline_state_stream.input_layout = { input_layout.data(), fmath::to_uint32(input_layout.size()) };
-    pipeline_state_stream.primitive_topology_type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    pipeline_state_stream.primitive_topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     pipeline_state_stream.vertex_shader = CD3DX12_SHADER_BYTECODE(vertex_shader->GetBufferPointer(), vertex_shader->GetBufferSize());
     pipeline_state_stream.pixel_shader = CD3DX12_SHADER_BYTECODE(pixel_shader->GetBufferPointer(), pixel_shader->GetBufferSize());
-    pipeline_state_stream.dsv_format = depth_buffer_format;
-    pipeline_state_stream.rtv_formats = render_target_formats;
+    pipeline_state_stream.depth_stencil_format = depth_buffer_format;
+    pipeline_state_stream.render_target_formats = render_target_formats;
+    pipeline_state_stream.blend_desc = blend_desc;
     device->create_pipeline_state(pipeline_state_stream, pipeline_state, name);
   }
-
 }

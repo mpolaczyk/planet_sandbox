@@ -2,11 +2,11 @@
 
 #include <list>
 #include <wrl/client.h>
+#include <vector>
 
 #include "dxcapi.h"
 #include "d3dx12/d3dx12_root_signature.h"
-
-#include <vector>
+#include "d3dx12/d3dx12_core.h"
 
 #include "engine/log.h"
 
@@ -34,7 +34,8 @@ namespace engine
     
     void setup_formats(uint32_t num_rtv_formats, const DXGI_FORMAT* rtv_formats, DXGI_FORMAT depth_buffer);
     void setup_input_layout(const std::vector<D3D12_INPUT_ELEMENT_DESC>& in_input_layout);
-    
+    void setup_blend(uint32_t render_target_index, D3D12_BLEND source_blend, D3D12_BLEND destination_blend, D3D12_BLEND_OP blend_operation);
+
     void init(const char* name);
 
     DXGI_FORMAT get_depth_format() const
@@ -55,7 +56,7 @@ namespace engine
       }
       return format;
     }
-    
+  
   private:
     std::vector<CD3DX12_ROOT_PARAMETER1> parameters;  // Keep in memory. This need to exist until root signature is created
     std::list<CD3DX12_DESCRIPTOR_RANGE1> ranges;      // Keep in memory. This need to exist until root signature is created
@@ -65,7 +66,8 @@ namespace engine
     ComPtr<IDxcBlob> vertex_shader;
     ComPtr<IDxcBlob> pixel_shader;
     DXGI_FORMAT depth_buffer_format = DXGI_FORMAT_UNKNOWN;
-    D3D12_RT_FORMAT_ARRAY render_target_formats = {};
+    D3D12_RT_FORMAT_ARRAY render_target_formats{};
     std::vector<D3D12_INPUT_ELEMENT_DESC> input_layout;
+    CD3DX12_BLEND_DESC blend_desc{D3D12_DEFAULT};
   };
 }

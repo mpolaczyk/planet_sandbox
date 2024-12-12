@@ -23,7 +23,7 @@ namespace engine
       return false;
     }
 
-    // Continue with the reso if initialization
+    // Continue with the rest of initialization
     init_pipeline();
     init_size_independent_resources();
     init_size_dependent_resources(false);

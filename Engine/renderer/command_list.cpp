@@ -55,9 +55,9 @@ namespace engine
     com->RSSetScissorRects(1, &scissor_rect);
   }
 
-  void fgraphics_command_list::clear_render_target(const ftexture_resource* rtv) const
+  void fgraphics_command_list::clear_render_target(const ftexture_resource* rtv, const float color[4]) const
   {
-    com->ClearRenderTargetView(rtv->rtv.cpu_descriptor_handle, DirectX::Colors::LightSlateGray, 0, nullptr);
+    com->ClearRenderTargetView(rtv->rtv.cpu_descriptor_handle, color, 0, nullptr);
   }
 
   void fgraphics_command_list::clear_depth_stencil(const ftexture_resource* dsv) const

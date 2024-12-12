@@ -30,7 +30,6 @@ struct fobject_data
   matrix inverse_transpose_model_world;
   matrix model_world_view_projection;
   uint material_id;
-  uint is_selected;
 };
 
 ConstantBuffer<fobject_data> object_data : register(b0);

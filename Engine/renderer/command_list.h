@@ -28,7 +28,7 @@ namespace engine
     void set_viewport(uint32_t width, uint32_t height) const;
     void set_scissor(uint32_t width, uint32_t height) const;
 
-    void clear_render_target(const ftexture_resource* rtv) const;
+    void clear_render_target(const ftexture_resource* rtv, const float color[4]) const;
     void clear_depth_stencil(const ftexture_resource* dsv) const;
 
     void upload_buffer_resource(uint32_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource) const;

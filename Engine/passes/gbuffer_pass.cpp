@@ -1,5 +1,7 @@
 #include "gbuffer_pass.h"
 
+#include <DirectXColors.h>
+
 #include "core/application.h"
 #include "core/window.h"
 #include "renderer/render_context.h"
@@ -78,7 +80,7 @@ namespace engine
     // Cleanup and setup
     for(uint32_t i = 0; i < fgbuffer_pass::num_render_targets; i++)
     {
-      command_list->clear_render_target(render_targets[i]);
+      command_list->clear_render_target(render_targets[i], DirectX::Colors::LightSlateGray);
     }
     command_list->clear_depth_stencil(&depth);
     command_list->set_render_targets(num_render_targets, render_targets, &depth);
@@ -86,14 +88,6 @@ namespace engine
     command_list_com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
 
     const uint32_t N = fmath::to_uint32(scene_acceleration.h_meshes.size());
-
-    // Process object data
-    for(uint32_t i = 0; i < N; i++)
-    {
-      fobject_data& object_data = scene_acceleration.object_buffer[i];
-      const hstatic_mesh* sm = scene_acceleration.h_meshes[i];
-      object_data.is_selected = context->selected_object == sm ? 1 : 0;
-    }
 
     // Update vertex and index buffers
     for(uint32_t i = 0; i < N; i++)

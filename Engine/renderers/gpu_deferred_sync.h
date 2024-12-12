@@ -4,9 +4,7 @@
 
 #include "core/core.h"
 #include "renderer/renderer_base.h"
-#include "asset/soft_asset_ptr.h"
-#include "assets/pixel_shader.h"
-#include "assets/vertex_shader.h"
+#include "passes/debug_pass.h"
 #include "passes/deferred_lighting_pass.h"
 #include "passes/gbuffer_pass.h"
 
@@ -28,6 +26,7 @@ namespace engine
     // Runtime members
     fgbuffer_pass gbuffer_pass;
     fdeferred_lighting_pass deferred_lighting_pass;
+    fdebug_pass debug_pass;
 
     virtual ftexture_resource* get_color() override;
     virtual ftexture_resource* get_depth() override;

@@ -1,0 +1,6 @@
+{
+  "cache_file_name": "debug_ps_main",
+  "entrypoint": "ps_main",
+  "shader_file_name": "debug.hlsl",
+  "target": "ps_6_0"
+}

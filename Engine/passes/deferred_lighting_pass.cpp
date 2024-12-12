@@ -1,5 +1,6 @@
 #include "deferred_lighting_pass.h"
 
+#include <DirectXColors.h>
 #include <vector>
 
 #include "core/application.h"
@@ -123,7 +124,7 @@ namespace engine
     atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
 
     // Clear and setup
-    command_list->clear_render_target(&color);
+    command_list->clear_render_target(&color, DirectX::Colors::LightSlateGray);
     command_list->set_render_targets1(&color, nullptr);
     graphics_pipeline->bind_command_list(command_list_com);
     command_list_com->SetDescriptorHeaps(1, heap->com.GetAddressOf());

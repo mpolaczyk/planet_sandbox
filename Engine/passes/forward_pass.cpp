@@ -1,6 +1,7 @@
 
 #include "forward_pass.h"
 
+#include <DirectXColors.h>
 #include <format>
 
 #include "d3dx12/d3dx12.h"
@@ -129,25 +130,14 @@ namespace engine
     default_material_asset.set_name("default");
     atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
 
-    command_list->clear_render_target(&color);
+    command_list->clear_render_target(&color, DirectX::Colors::LightSlateGray);
     command_list->clear_depth_stencil(&depth);
-    
     command_list->set_render_targets1(&color, &depth);
-        
     graphics_pipeline->bind_command_list(command_list_com);
-
     command_list_com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
 
     const uint32_t back_buffer_index = context->back_buffer_index;
     const uint32_t N = fmath::to_uint32(scene_acceleration.h_meshes.size());
-    
-    // Process object data
-    for(uint32_t i = 0; i < N; i++)
-    {
-      fobject_data& object_data = scene_acceleration.object_buffer[i];
-      const hstatic_mesh* sm = scene_acceleration.h_meshes[i];
-      object_data.is_selected = context->selected_object == sm ? 1 : 0;
-    }
 
     // Process frame data CBV
     {

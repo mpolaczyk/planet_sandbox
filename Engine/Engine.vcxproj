@@ -146,6 +146,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClInclude Include="engine.h" />
     <ClInclude Include="core\application.h" />
     <ClInclude Include="object\object_visitor.h" />
+    <ClInclude Include="passes\debug_pass.h" />
     <ClInclude Include="passes\deferred_lighting_pass.h" />
     <ClInclude Include="passes\forward_pass.h" />
     <ClInclude Include="passes\gbuffer_pass.h" />
@@ -231,6 +232,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClCompile Include="asset\soft_asset_ptr_inst.cpp" />
     <ClCompile Include="core\application.cpp" />
     <ClCompile Include="object\object_visitor.cpp" />
+    <ClCompile Include="passes\debug_pass.cpp" />
     <ClCompile Include="passes\deferred_lighting_pass.cpp" />
     <ClCompile Include="passes\forward_pass.cpp" />
     <ClCompile Include="passes\gbuffer_pass.cpp" />

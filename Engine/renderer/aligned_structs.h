@@ -3,13 +3,6 @@
 #include <DirectXMath.h>
 #include "core/core.h"
 
-#define MAX_MATERIALS 32
-#define MAX_LIGHTS 16
-#define MAX_TEXTURES 32
-#define MAX_MAIN_DESCRIPTORS 128    // TODO those should not be here, fpass_base?
-#define MAX_RTV_DESCRIPTORS 8
-#define MAX_DSV_DESCRIPTORS 4
-
 namespace engine
 {
   using namespace DirectX;
@@ -67,7 +60,6 @@ namespace engine
     XMFLOAT4X4 inverse_transpose_model_world; // 64 Used to transform the vertex normal from object space to world space
     XMFLOAT4X4 model_world_view_projection; // 64 Used to transform the vertex position from object space to projected clip space
     uint32_t material_id; // 4
-    uint32_t is_selected; // 4
   };
   ALIGNED_STRUCT_END(fobject_data)
   static_assert(sizeof(fobject_data)/4 < 64); // "Root Constant size is greater than 64 DWORDs. Additional indirection may be added by the driver."

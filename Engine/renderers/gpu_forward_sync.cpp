@@ -14,12 +14,16 @@ namespace engine
   
   bool rgpu_forward_sync::init_passes()
   {
-    return forward_pass.init(&context);
+    return forward_pass.init(&context) && debug_pass.init(&context);
   }
 
   void rgpu_forward_sync::draw_internal(fgraphics_command_list* command_list)
   {
     forward_pass.draw(&context, command_list);
+
+    debug_pass.blend_on = &forward_pass.color;
+    
+    debug_pass.draw(&context, command_list);
   }
 
   ftexture_resource* rgpu_forward_sync::get_color()

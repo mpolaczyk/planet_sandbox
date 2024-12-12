@@ -31,7 +31,6 @@ struct fobject_data
   matrix inverse_transpose_model_world;
   matrix model_world_view_projection;
   uint material_id;
-  uint is_selected;
 };
 
 struct fframe_data
@@ -117,8 +116,7 @@ float4 ps_main(fvs_output input) : SV_Target
     tex_color = texture_data[texture_id].Sample(sampler_obj, input.uv);
   }
   
-  const float4 selection_emissive = { 0.5, 0.5, 0.5, 1 };
-  float4 emissive = max(material.emissive, object_data.is_selected * selection_emissive);
+  float4 emissive = material.emissive;
   float4 ambient = material.ambient * frame_data.ambient_light;
   float4 diffuse = material.diffuse * light_final.diffuse;
   float4 specular = material.specular * light_final.specular;
