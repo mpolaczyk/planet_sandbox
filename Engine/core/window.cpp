@@ -4,6 +4,7 @@
 
 #include "core/window.h"
 
+#include <algorithm>
 #include <format>
 
 #include "core/application.h"
@@ -13,6 +14,7 @@
 #include "renderer/command_queue.h"
 #include "renderer/device.h"
 #include "hittables/scene.h"
+#include "math/math.h"
 #include "renderer/command_list.h"
 
 namespace engine
@@ -108,8 +110,8 @@ namespace engine
 
   void fwindow::request_resize(uint32_t in_width, uint32_t in_height)
   {
-    requested_width = in_width;
-    requested_height = in_height;
+    requested_width = std::clamp(static_cast<int>(in_width), 640, 3840);
+    requested_height = std::clamp(static_cast<int>(in_height), 480, 2160);
   }
 
   bool fwindow::try_apply_resize()

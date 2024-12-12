@@ -134,6 +134,10 @@ namespace editor
       return co->get_parent_class_name() == rrenderer_base::get_class_static()->get_class_name();
     });
 
+    // Resolution
+    ImGui::Text(std::format("Width: {}", width).c_str());
+    ImGui::Text(std::format("Height: {}", height).c_str());
+    
     // Renderer class selection combo box
     rrenderer_base* renderer = get_editor_app()->scene_root->renderer;
     const oclass_object* renderer_class = renderer->get_class();
@@ -152,7 +156,6 @@ namespace editor
 
     // Renderer edit panel
     get_editor_app()->scene_root->renderer->accept(vdraw_edit_panel());
-    ImGui::Separator();
 
     if (get_editor_app()->scene_root->renderer == nullptr)
     {
@@ -492,7 +495,7 @@ namespace editor
       if (!fmath::is_zero(object_movement_axis) && mouse_delta != 0.0f && selected_object != nullptr)
       {
         fvec3 new_origin = selected_object->origin + object_movement_axis * mouse_delta/50.0f;
-        fphysics::set_rigid_body_transform(new_origin, selected_object->rotation, selected_object->rigid_body);
+        selected_object->transform(new_origin, selected_object->rotation, selected_object->scale);
       }
     }
   }
