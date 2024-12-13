@@ -27,7 +27,8 @@ namespace engine
     bool init(frenderer_context* in_context);
     virtual void draw(frenderer_context* in_context, fgraphics_command_list* command_list);
     bool can_draw() const;
-    
+    void upload_all_textures(fgraphics_command_list* command_list); // TODO potentially move somewhere else
+
     fsoft_asset_ptr<apixel_shader> pixel_shader_asset;
     fsoft_asset_ptr<avertex_shader> vertex_shader_asset;
     

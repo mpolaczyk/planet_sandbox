@@ -26,13 +26,13 @@ namespace engine
    *     Materials can be added/removed as they are used or not on the scene.
    *     One material can be reused on multiple static meshes - the list is unique.
    *     Material properties (colors, textures used) can change.
-   *  3. Textures are resident in GPU. Buffer keeps track of what is in the GPU memory.
-   *     Textures can be added as new ones are used in materials.
-   *     Not used textures stays on the GPU and in the dictionary here.
+   *  3. Textures are resident in GPU.
+   *     All textures are loaded, independently of what is used on the scene.
    */
   struct ENGINE_API fscene_acceleration
   {
-    void build_buffers(hscene* scene);
+    void build_texture_buffer();
+    void build_scene_buffers(hscene* scene);
     bool validate() const;
         
     // All static meshes on the scene

@@ -125,7 +125,7 @@ namespace editor
     {
       object.texture_asset_ptr.set_name(model.selected_object->name);
     }
-    if(model.selected_object && model.selected_object->name != "default")
+    if(model.selected_object && object.get_display_name() !=  "default")
     {
       if (ImGui::MenuItem("Reset texture"))
       {

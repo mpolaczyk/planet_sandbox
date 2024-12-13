@@ -5,6 +5,7 @@
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
 #include "math/math.h"
+#include "object/object_registry.h"
 
 namespace engine
 {
@@ -48,15 +49,30 @@ namespace engine
     a_textures.push_back(texture);
     return next_GPU_texture_id++;
   }
+
+  void fscene_acceleration::build_texture_buffer()
+  {
+    // Register all possible textures
+    static bool textures_registered = false;
+    if(!textures_registered)
+    {
+      for(atexture* a_texture : REG.get_all_by_type<atexture>())
+      {
+        register_texture(a_texture);
+      }
+      textures_registered = true;
+    }
+  }
   
-  void fscene_acceleration::build_buffers(hscene* scene)
+  void fscene_acceleration::build_scene_buffers(hscene* scene)
   {
     pre_frame_clear();
     
     fsoft_asset_ptr<amaterial> default_material_asset;
     default_material_asset.set_name("default");
     amaterial* default_material = default_material_asset.get();
-    
+
+    // Traverse the scene
     for(hhittable_base* hittable : scene->objects)
     {
       if(hittable->get_class() == hstatic_mesh::get_class_static())
@@ -80,10 +96,6 @@ namespace engine
         if(a_texture)
         {
           int32_t texture_gpu_id = get_texture_gpu_id(a_texture);
-          if(texture_gpu_id == GPU_INDEX_NONE)
-          {
-            texture_gpu_id = register_texture(a_texture);
-          }
           materials_buffer[material_gpu_id].texture_id = texture_gpu_id;
         }
         else

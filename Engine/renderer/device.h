@@ -66,7 +66,7 @@ namespace engine
     void create_back_buffer(IDXGISwapChain4* swap_chain, uint32_t swap_chain_buffer_id, fdescriptor_heap& descriptor_heap, ftexture_resource& out_rtv, const char* name) const;
     void create_frame_buffer(fdescriptor_heap* main_heap, fdescriptor_heap* rtv_heap, ftexture_resource* out_texture, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES initial_state, const char* name) const;
     void create_depth_stencil(fdescriptor_heap* dsv_heap, ftexture_resource* out_texture, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES initial_state, const char* name) const;
-    void create_texture_buffer(fdescriptor_heap* heap, ftexture_resource& out_texture, uint32_t width, uint32_t height, DXGI_FORMAT format, const char* name) const;
+    void create_texture_buffer(fdescriptor_heap* heap, ftexture_resource& out_resource, uint32_t width, uint32_t height, DXGI_FORMAT format, const char* name) const;
     void create_texture_buffer(fdescriptor_heap* heap, atexture* texture_asset, const char* name) const;
 
     void create_upload_resource(uint32_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const;

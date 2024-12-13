@@ -417,14 +417,14 @@ namespace engine
 #endif
   }
   
-  void fdevice::create_texture_buffer(fdescriptor_heap* heap, ftexture_resource& out_texture, uint32_t width, uint32_t height, DXGI_FORMAT format, const char* name) const
+  void fdevice::create_texture_buffer(fdescriptor_heap* heap, ftexture_resource& out_resource, uint32_t width, uint32_t height, DXGI_FORMAT format, const char* name) const
   {
-    if(out_texture.com)
+    if(out_resource.com)
     {
       throw std::runtime_error("Overwriting object in existing COM pointer (create_texture_buffer)");
     }
     
-    heap->push(out_texture.srv, name);
+    heap->push(out_resource.srv, name);
 
     D3D12_RESOURCE_DESC texture_desc = {};
     texture_desc.MipLevels = 1;
@@ -444,21 +444,21 @@ namespace engine
       &texture_desc,
       D3D12_RESOURCE_STATE_COPY_DEST,
       nullptr,
-      IID_PPV_ARGS(out_texture.com.GetAddressOf())));
+      IID_PPV_ARGS(out_resource.com.GetAddressOf())));
 
-    const uint32_t buffer_size = fmath::to_uint32(GetRequiredIntermediateSize(out_texture.com.Get(), 0, 1));
-    create_upload_resource(buffer_size, out_texture.upload_com);
+    const uint32_t buffer_size = fmath::to_uint32(GetRequiredIntermediateSize(out_resource.com.Get(), 0, 1));
+    create_upload_resource(buffer_size, out_resource.upload_com);
     
     D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
     srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srv_desc.Format = texture_desc.Format;
     srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
     srv_desc.Texture2D.MipLevels = 1;
-    com->CreateShaderResourceView(out_texture.com.Get(), &srv_desc, out_texture.srv.cpu_descriptor_handle);
+    com->CreateShaderResourceView(out_resource.com.Get(), &srv_desc, out_resource.srv.cpu_descriptor_handle);
     
 #if BUILD_DEBUG
-    DX_SET_NAME(out_texture.com, "Texture: {}", name)
-    DX_SET_NAME(out_texture.upload_com, "Texture upload: {}", name)
+    DX_SET_NAME(out_resource.com, "Texture: {}", name)
+    DX_SET_NAME(out_resource.upload_com, "Texture upload: {}", name)
 #endif
   }
   

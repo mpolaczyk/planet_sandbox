@@ -1,11 +1,14 @@
 
 #include "passes/pass_base.h"
 
+#include "assets/texture.h"
 #include "core/application.h"
 #include "core/window.h"
 #include "engine/log.h"
+#include "hittables/scene.h"
 #include "math/vertex_data.h"
 #include "renderer/command_list.h"
+#include "renderer/device.h"
 #include "renderer/render_context.h"
 
 namespace engine
@@ -66,5 +69,31 @@ namespace engine
   {
     return pixel_shader_asset.is_loaded() && pixel_shader_asset.get()->compilation_successful
       && vertex_shader_asset.is_loaded() && vertex_shader_asset.get()->compilation_successful;
+  }
+
+  void fpass_base::upload_all_textures(fgraphics_command_list* command_list)
+  {
+    static bool textures_uploaded = false;
+    if(textures_uploaded) return;
+    
+    fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
+    fdescriptor_heap* heap = context->main_descriptor_heap;
+    fdevice* device = fapplication::get_instance()->device.get();
+
+    // Process all textures: create SRVs and upload
+    // This should happen once in the first draw
+    for(uint32_t i = 0; i < scene_acceleration.a_textures.size(); i++)
+    {
+      atexture* texture = scene_acceleration.a_textures[i];
+      if(!texture->gpu_resource.com)
+      {
+        device->create_texture_buffer(heap, texture, texture->get_display_name().c_str());
+      }
+      if(!texture->is_online)
+      {
+        command_list->upload_texture(texture);
+      }
+    }
+    textures_uploaded = true;
   }
 }
