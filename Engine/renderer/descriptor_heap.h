@@ -7,6 +7,9 @@
 #include "d3dx12/d3dx12_root_signature.h"
 
 #include "core/core.h"
+#if BUILD_DEBUG
+#include <string>
+#endif
 
 struct ID3D12DescriptorHeap;
 
@@ -28,6 +31,9 @@ namespace engine
 
     fdescriptor_heap* parent_heap = nullptr;  // weak ptr, no ownership
     uint32_t index = -1;   // index in parent heap
+#if BUILD_DEBUG
+    std::string context;
+#endif
   };
 
   // Heap management. Copyable.
@@ -45,10 +51,11 @@ namespace engine
     CTOR_MOVE_COPY_DEFAULT(fdescriptor_heap)
     ~fdescriptor_heap();
     
-    void push(fdescriptor& out_desc);
+    void push(fdescriptor& out_desc, const char* name);
     void remove(uint32_t index);
     fdescriptor* get(uint32_t index);
-
+    void log_audit() const;
+    
     ComPtr<ID3D12DescriptorHeap> com;
     
 private:

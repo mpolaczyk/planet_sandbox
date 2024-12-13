@@ -3,6 +3,7 @@
 #include "d3d12.h"
 
 #include "core/application.h"
+#include "engine/log.h"
 
 namespace engine
 {
@@ -44,10 +45,13 @@ namespace engine
     }
   }
 
-  void fdescriptor_heap::push(fdescriptor& out_desc)
+  void fdescriptor_heap::push(fdescriptor& out_desc, const char* name)
   {
     uint32_t index = find_free_index();
     out_desc.init(this, index);
+#if BUILD_DEBUG
+    out_desc.context = name;
+#endif
     descriptors[index] = out_desc;
     is_valid[index] = true;
   }
@@ -66,6 +70,20 @@ namespace engine
     return &descriptors[index];
   }
 
+  void fdescriptor_heap::log_audit() const
+  {
+    LOG_INFO("### Auditing heap: {} ###", static_cast<int>(heap_type))
+    LOG_INFO("Increment size {} Max descriptors {}", increment_size, max_descriptors);
+    for(uint32_t i = 0; i < is_valid.size(); i++)
+    {
+      if(is_valid[i])
+      {
+        const fdescriptor& d = descriptors[i];
+        LOG_INFO("Index {}:{}  GPU {}  CPU {}  Context {}", i, d.index, d.gpu_descriptor_handle.ptr, d.cpu_descriptor_handle.ptr, d.context);
+      }
+    }
+  }
+
   uint32_t fdescriptor_heap::find_free_index() const
   {
     // TODO Linear search is ok for now. Switch to sth better later
@@ -79,3 +97,5 @@ namespace engine
     throw std::runtime_error("Can't push more descriptors on a heap");
   }
 }
+
+  

@@ -106,6 +106,11 @@ namespace editor
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SAVED!");
       }
       ImGui::Separator();
+      if (ImGui::MenuItem("AUDIT HEAPS"))
+      {
+        get_editor_app()->log_heap_descriptors();
+      }
+      ImGui::Separator();
 
       if (ImGui::MenuItem("LOAD FROM FBX"))
       {

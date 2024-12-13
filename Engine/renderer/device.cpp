@@ -274,7 +274,7 @@ namespace engine
   void fdevice::create_const_buffer(fdescriptor_heap* heap, uint32_t in_size, fconst_buffer& out_buffer, const char* name) const
   {
     out_buffer.size = fdx12::align_size_to(in_size, 255);
-    heap->push(out_buffer.cbv);
+    heap->push(out_buffer.cbv, name);
 
     // https://logins.github.io/graphics/2020/07/31/DX12ResourceHandling.html#resource-mapping
     // https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-constant-buffers-root-descriptor-tables#c0
@@ -294,8 +294,8 @@ namespace engine
   void fdevice::create_shader_resource_buffer(fdescriptor_heap* heap, uint32_t in_size, fshader_resource_buffer& out_buffer, const char* name) const
   {
     out_buffer.size = fdx12::align_size_to(in_size, 255);
-    heap->push(out_buffer.srv);
-
+    heap->push(out_buffer.srv, name);
+    
     create_upload_resource(out_buffer.size, out_buffer.resource);
 
     D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
@@ -320,7 +320,7 @@ namespace engine
     }
     
     THROW_IF_FAILED(swap_chain->GetBuffer(swap_chain_buffer_id, IID_PPV_ARGS(out_rtv.com.GetAddressOf())))
-    descriptor_heap.push(out_rtv.rtv);
+    descriptor_heap.push(out_rtv.rtv, name);
     com->CreateRenderTargetView(out_rtv.com.Get(), nullptr, out_rtv.rtv.cpu_descriptor_handle);
 
 #if BUILD_DEBUG
@@ -360,7 +360,7 @@ namespace engine
     D3D12_RENDER_TARGET_VIEW_DESC rtv_desc = {};
     rtv_desc.Format = format;
     rtv_desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-    rtv_heap->push(out_texture->rtv);
+    rtv_heap->push(out_texture->rtv, name);
     com->CreateRenderTargetView(out_texture->com.Get(), &rtv_desc, out_texture->rtv.cpu_descriptor_handle);
     
     D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
@@ -369,7 +369,7 @@ namespace engine
     srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srv_desc.Texture2D.MostDetailedMip = 0;
     srv_desc.Texture2D.MipLevels = 1;
-    main_heap->push(out_texture->srv);
+    main_heap->push(out_texture->srv, name);
     com->CreateShaderResourceView(out_texture->com.Get(), &srv_desc, out_texture->srv.cpu_descriptor_handle);
 
 #if BUILD_DEBUG
@@ -409,7 +409,7 @@ namespace engine
     D3D12_DEPTH_STENCIL_VIEW_DESC dsv_desc = {};
     dsv_desc.Format = format;
     dsv_desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-    dsv_heap->push(out_texture->dsv);
+    dsv_heap->push(out_texture->dsv, name);
     com->CreateDepthStencilView(out_texture->com.Get(), &dsv_desc, out_texture->dsv.cpu_descriptor_handle);
 
 #if BUILD_DEBUG
@@ -424,7 +424,7 @@ namespace engine
       throw std::runtime_error("Overwriting object in existing COM pointer (create_texture_buffer)");
     }
     
-    heap->push(out_texture.srv);
+    heap->push(out_texture.srv, name);
 
     D3D12_RESOURCE_DESC texture_desc = {};
     texture_desc.MipLevels = 1;

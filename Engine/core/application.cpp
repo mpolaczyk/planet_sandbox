@@ -277,4 +277,14 @@ namespace engine
       }
     }
   }
+
+  void fapplication::log_heap_descriptors() const
+  {
+    if(window)
+    {
+      window->rtv_descriptor_heap.log_audit();
+      window->dsv_descriptor_heap.log_audit();
+      window->main_descriptor_heap.log_audit();
+    }
+  }
 }
