@@ -18,11 +18,6 @@ namespace engine
     }
   }
 
-  fdescriptor::~fdescriptor()
-  {
-    //release();
-  }
-
   void fdescriptor::release()
   {
     if(parent_heap)
@@ -39,6 +34,14 @@ namespace engine
     descriptors.resize(in_max_descriptors, temp);
     bool temp2 = false;
     is_valid.resize(in_max_descriptors, temp2);
+  }
+
+  fdescriptor_heap::~fdescriptor_heap()
+  {
+    for(uint32_t i = 0; i < is_valid.size(); i++)
+    {
+      remove(i);
+    }
   }
 
   void fdescriptor_heap::push(fdescriptor& out_desc)

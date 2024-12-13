@@ -20,11 +20,7 @@ namespace engine
   // Does not own the ComPtr resource.
   struct ENGINE_API fdescriptor final
   {
-    CTOR_DEFAULT(fdescriptor)
-    CTOR_MOVE_COPY_DEFAULT(fdescriptor)
     void init(fdescriptor_heap* heap, uint32_t in_index);
-    ~fdescriptor();
-
     void release();
     
     CD3DX12_CPU_DESCRIPTOR_HANDLE cpu_descriptor_handle{};
@@ -47,7 +43,7 @@ namespace engine
     fdescriptor_heap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE in_heap_type, uint32_t in_max_descriptors);
     CTOR_DEFAULT(fdescriptor_heap)
     CTOR_MOVE_COPY_DEFAULT(fdescriptor_heap)
-    DTOR_DEFAULT(fdescriptor_heap)
+    ~fdescriptor_heap();
     
     void push(fdescriptor& out_desc);
     void remove(uint32_t index);
