@@ -6,9 +6,10 @@
 
 namespace engine
 {
-  fdescriptor::fdescriptor(fdescriptor_heap* heap, uint32_t in_index)
-    : parent_heap(heap), index(in_index)
+  void fdescriptor::init(fdescriptor_heap* heap, uint32_t in_index)
   {
+    index = in_index;
+    parent_heap = heap;
     cpu_descriptor_handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(heap->com->GetCPUDescriptorHandleForHeapStart(), index, heap->increment_size);
     if(parent_heap->heap_type != D3D12_DESCRIPTOR_HEAP_TYPE_RTV && parent_heap->heap_type != D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
     {
@@ -19,7 +20,7 @@ namespace engine
 
   fdescriptor::~fdescriptor()
   {
-    release();
+    //release();
   }
 
   void fdescriptor::release()
@@ -43,7 +44,7 @@ namespace engine
   void fdescriptor_heap::push(fdescriptor& out_desc)
   {
     uint32_t index = find_free_index();
-    out_desc = fdescriptor(this, index);
+    out_desc.init(this, index);
     descriptors[index] = out_desc;
     is_valid[index] = true;
   }
@@ -64,7 +65,7 @@ namespace engine
 
   uint32_t fdescriptor_heap::find_free_index() const
   {
-    // TODO Linear search is ok for now. Switch to a ring buffer later
+    // TODO Linear search is ok for now. Switch to sth better later
     for(uint32_t i = 0; i < is_valid.size(); i++)
     {
       if(!is_valid[i])

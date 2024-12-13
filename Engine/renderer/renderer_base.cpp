@@ -44,7 +44,7 @@ namespace engine
       init_done = true;
     }
     
-    context.scene->scene_acceleration.build(context.scene);
+    context.scene->scene_acceleration.build_buffers(context.scene);
     if(!context.scene->scene_acceleration.validate())
     {
       return false;

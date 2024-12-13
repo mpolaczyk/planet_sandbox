@@ -22,7 +22,7 @@ namespace engine
   {
     CTOR_DEFAULT(fdescriptor)
     CTOR_MOVE_COPY_DEFAULT(fdescriptor)
-    fdescriptor(fdescriptor_heap* heap, uint32_t in_index);
+    void init(fdescriptor_heap* heap, uint32_t in_index);
     ~fdescriptor();
 
     void release();

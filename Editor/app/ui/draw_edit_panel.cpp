@@ -117,22 +117,20 @@ namespace editor
     fui_helper::color_edit4("Diffuse", object.properties.diffuse);
     fui_helper::color_edit4("Specular", object.properties.specular);
     ImGui::DragFloat("Specular power", &object.properties.specular_power, 0.1f, 1.0f, 100.0f);
-    int use_texture = object.texture_asset_ptr.get_name() != "";
-    fui_helper::check_box("Use texture", use_texture);
-    if (use_texture)
-    {
-      fselection_combo_model<atexture> model;
-      model.objects = REG.get_all_by_type<const atexture>();
-      fui_helper::draw_selection_combo<atexture>(model, "Texture", [=](const atexture* obj) -> bool{ return true; }, object.texture_asset_ptr.get());
 
-      if (model.selected_object != nullptr)
-      {
-        object.texture_asset_ptr.set_name(model.selected_object->name);
-      }
-    }
-    else
+    fselection_combo_model<atexture> model;
+    model.objects = REG.get_all_by_type<const atexture>();
+    fui_helper::draw_selection_combo<atexture>(model, "Texture", [=](const atexture* obj) -> bool{ return true; }, object.texture_asset_ptr.get());
+    if (model.selected_object != nullptr)
     {
-      object.texture_asset_ptr.set_name("");
+      object.texture_asset_ptr.set_name(model.selected_object->name);
+    }
+    if(model.selected_object && model.selected_object->name != "default")
+    {
+      if (ImGui::MenuItem("Reset texture"))
+      {
+        object.texture_asset_ptr.set_name("");
+      }
     }
   }
 

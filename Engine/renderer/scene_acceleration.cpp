@@ -10,7 +10,7 @@ namespace engine
 {
   constexpr int32_t GPU_INDEX_NONE = -1;
   
-  void fscene_acceleration::clear()
+  void fscene_acceleration::pre_frame_clear()
   {
     h_meshes.clear();
 
@@ -20,11 +20,6 @@ namespace engine
     material_map.clear();
     materials_buffer.clear();
     materials_buffer.reserve(MAX_MATERIALS);
-    
-    next_GPU_texture_id = 0;
-    texture_map.clear();
-    a_textures.clear();
-    a_textures.reserve(MAX_TEXTURES);
 
     lights_buffer.clear();
     lights_buffer.reserve(MAX_LIGHTS);
@@ -45,7 +40,6 @@ namespace engine
     material_map.insert(std::pair<amaterial*, uint32_t>(material, next_GPU_material_id));
     materials_buffer.push_back(material->properties);
     return next_GPU_material_id++;
-    
   }
   
   int32_t fscene_acceleration::register_texture(atexture* texture)
@@ -55,53 +49,25 @@ namespace engine
     return next_GPU_texture_id++;
   }
   
-  void fscene_acceleration::build(hscene* scene)
+  void fscene_acceleration::build_buffers(hscene* scene)
   {
-    uint32_t scene_hash = scene->get_hash();
-    bool scene_structure_changed = previous_scene_hash != scene_hash;
-    previous_scene_hash = scene_hash;
-
-    if(scene_structure_changed)
-    {
-      clear();
-    }
-
+    pre_frame_clear();
+    
+    fsoft_asset_ptr<amaterial> default_material_asset;
+    default_material_asset.set_name("default");
+    amaterial* default_material = default_material_asset.get();
+    
     for(hhittable_base* hittable : scene->objects)
     {
-      fsoft_asset_ptr<amaterial> default_material_asset;
-      default_material_asset.set_name("default");
-      amaterial* default_material = default_material_asset.get();
-      
       if(hittable->get_class() == hstatic_mesh::get_class_static())
       {
-        // Find base objects: hittable mesh
+        // Find base objects: hittable mesh and asset, then material and texture
         hstatic_mesh* h_mesh = static_cast<hstatic_mesh*>(hittable);
-
-        // Build objects data buffer
-        fobject_data object_data;
-        h_mesh->get_object_matrices(scene->camera.view_projection, object_data);
-        if(!scene_structure_changed)
-        {
-          continue; // TOFIX This des not work, modify the object_buffer!
-        }
-
-        // Find other base objects: mesh asset, material asset and texture asset
         astatic_mesh* a_mesh = h_mesh->mesh_asset_ptr.get();
-        if(!a_mesh)
-        {
-          continue;
-        }
-        h_meshes.push_back(h_mesh);
+        if(!a_mesh) { continue; }
         amaterial* a_material = h_mesh->material_asset_ptr.get();
-        if(!a_material)
-        {
-          a_material = default_material;
-        }
+        if(!a_material) { a_material = default_material; }
         atexture* a_texture = a_material->texture_asset_ptr.get();
-        if(!a_texture)
-        {
-          a_texture = default_material->texture_asset_ptr.get();
-        }
         
         // Find material GPU id or register new one -> save in object
         int32_t material_gpu_id = get_material_gpu_id(a_material);
@@ -109,29 +75,40 @@ namespace engine
         {
           material_gpu_id = register_material(a_material);
         }
+
+        // Find texture GPU id or register new one -> save in material
+        if(a_texture)
+        {
+          int32_t texture_gpu_id = get_texture_gpu_id(a_texture);
+          if(texture_gpu_id == GPU_INDEX_NONE)
+          {
+            texture_gpu_id = register_texture(a_texture);
+          }
+          materials_buffer[material_gpu_id].texture_id = texture_gpu_id;
+        }
+        else
+        {
+          materials_buffer[material_gpu_id].texture_id = GPU_INDEX_NONE;
+        }
+
+        // Build objects data buffer
+        fobject_data object_data;
+        h_mesh->get_object_matrices(scene->camera.view_projection, object_data);
+        h_meshes.push_back(h_mesh);
         object_data.material_id = material_gpu_id;
         object_buffer.push_back(object_data);
-        
-        // Find texture GPU id or register new one -> save in material
-        int32_t texture_gpu_id = get_texture_gpu_id(a_texture);
-        if(texture_gpu_id == GPU_INDEX_NONE)
-        {
-          texture_gpu_id = register_texture(a_texture);
-        }
-        materials_buffer[material_gpu_id].texture_id = texture_gpu_id;
       }
       else if(hittable->get_class() == hlight::get_class_static())
       {
-        if(scene_structure_changed)
+        hlight* light = static_cast<hlight*>(hittable);
+        if(light->properties.enabled)
         {
-          hlight* light = static_cast<hlight*>(hittable);
-          if(light->properties.enabled)
-          {
-            lights_buffer.push_back(light->properties);
-            lights_buffer.back().position = fmath::to_xmfloat4(light->origin);
-          }
+          lights_buffer.push_back(light->properties);
+          lights_buffer.back().position = fmath::to_xmfloat4(light->origin);
         }
       }
+
+     
     }
   }
 

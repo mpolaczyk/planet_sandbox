@@ -88,15 +88,6 @@ namespace engine
       materials_data.emplace_back(buffer);
     }
     
-    // Load and create default texture resource
-    fsoft_asset_ptr<amaterial> default_material_asset;
-    default_material_asset.set_name("default");
-    atexture* default_texture = default_material_asset.get()->texture_asset_ptr.get();
-    if(!default_texture->is_online)
-    {
-      device->create_texture_buffer(heap, default_texture, "default");
-    }
-    
     // Load and create quad mesh
     quad_asset.set_name("plane");
     quad_asset.get();
@@ -144,28 +135,16 @@ namespace engine
     }
 
     // Process texture SRVs
+    for(uint32_t i = 0; i < fmath::to_uint32(scene_acceleration.a_textures.size()); i++)
     {
-      const uint32_t num_textures_in_scene = fmath::to_uint32(scene_acceleration.a_textures.size());
-
-      // Upload default texture first
-      if(!default_texture->is_online)
+      atexture* texture = scene_acceleration.a_textures[i];
+      if(!texture->gpu_resource.com)
       {
-        command_list->upload_texture(default_texture);
+        device->create_texture_buffer(heap, texture, texture->get_display_name().c_str());
       }
-      
-      // Upload other textures
-      for(uint32_t i = 0; i < MAX_TEXTURES-1; i++)
+      if(!texture->is_online)
       {
-        if(i < num_textures_in_scene && scene_acceleration.a_textures[i] != default_texture)
-        {
-          atexture* texture = scene_acceleration.a_textures[i];
-          if(!texture->is_online)
-          {
-            device->create_texture_buffer(heap, texture, texture->get_display_name().c_str());
-            
-            command_list->upload_texture(texture);
-          }
-        }
+        command_list->upload_texture(texture);
       }
     }
     

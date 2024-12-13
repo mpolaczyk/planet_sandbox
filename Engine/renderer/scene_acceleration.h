@@ -13,27 +13,32 @@ namespace engine
   class hstatic_mesh;
   class hlight;
   class hhittable_base;
-
-  /* Scene acceleration:
-   * - Helps push the scene to GPU friendly buffers
-   * - Translates material pointer to material GPU index
-   * - Translates texture pointer to texture GPU index
-   * - In case the scene structure does not change:
-   *    - Rebuilds only camera view projection depnedent data
-   *    - Skips the buffers rebuild
-   * - Else:
-   *    - Clears and rebuilds all the buffers
-   * - Not clever enough to analyze the diff between this and last frame, effectively update instead of build from scratch
+  
+   /* Building the scene data buffers that will be sent to the GPU.
+   *  Nothing sophisticated, lots of optimisation opportunities, but I don't care for now.
+   *  Data is orientes in buffers that can be pushed to the GPU directly.
+   *  Material ids and texture ids are trnaslated to GPU equivalents (scene is a subset of all the content available in editor).
+   *  1. Objects buffer is built every frame.
+   *     Objects can be added/removed dynamically.
+   *  1. Lights buffer is built every frame.
+   *     Lights can be added/removed dynamically.
+   *  2. Materials buffer is built every frame.
+   *     Materials can be added/removed as they are used or not on the scene.
+   *     One material can be reused on multiple static meshes - the list is unique.
+   *     Material properties (colors, textures used) can change.
+   *  3. Textures are resident in GPU. Buffer keeps track of what is in the GPU memory.
+   *     Textures can be added as new ones are used in materials.
+   *     Not used textures stays on the GPU and in the dictionary here.
    */
   struct ENGINE_API fscene_acceleration
   {
-    void build(hscene* scene);
+    void build_buffers(hscene* scene);
     bool validate() const;
         
     // All static meshes on the scene
     std::vector<hstatic_mesh*> h_meshes;
     
-    // All textures on the scene
+    // All textures in the GPU memory
     std::vector<atexture*> a_textures;
     
     // All objects on the scene
@@ -46,7 +51,7 @@ namespace engine
     std::vector<flight_properties> lights_buffer;
 
   private:
-    void clear();
+    void pre_frame_clear();
     
     int32_t get_material_gpu_id(amaterial* material);
     int32_t get_texture_gpu_id(atexture* texture);
@@ -59,6 +64,5 @@ namespace engine
     
     int32_t next_GPU_material_id = 0;
     int32_t next_GPU_texture_id = 0;
-    uint32_t previous_scene_hash = 0;
   };
 }
