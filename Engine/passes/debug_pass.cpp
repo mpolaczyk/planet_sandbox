@@ -81,13 +81,10 @@ namespace engine
   {
     fpass_base::draw(in_context, command_list);
     
-    fdescriptor_heap* heap = context->main_descriptor_heap;
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
     ID3D12GraphicsCommandList* command_list_com = command_list->com.Get();
     
     command_list->set_render_targets1(blend_on, nullptr);
-    graphics_pipeline->bind_command_list(command_list_com);
-    command_list_com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
 
     const uint32_t back_buffer_index = context->back_buffer_index;
     
@@ -110,16 +107,7 @@ namespace engine
       }
     }
 
-    // Update vertex and index buffers
-    hstatic_mesh* hmesh = scene_acceleration.h_meshes[index];
-    astatic_mesh* amesh = hmesh->mesh_asset_ptr.get();
-    if(!amesh->is_resource_online)
-    {
-      std::string mesh_name = hmesh->get_display_name();
-      std::string asset_name = hmesh->mesh_asset_ptr.get()->name;
-      command_list->upload_vertex_buffer(amesh, std::format("{} {}", mesh_name, asset_name).c_str());
-      command_list->upload_index_buffer(amesh, std::format("{} {}", mesh_name, asset_name).c_str());
-    }
+    update_vertex_and_index_buffers(command_list);
 
     // Draw
     const fstatic_mesh_resource& smrs = context->scene->scene_acceleration.h_meshes[index]->mesh_asset_ptr.get()->resource;

@@ -106,18 +106,14 @@ namespace engine
   {
     fpass_base::draw(in_context, command_list);
     
-    fdescriptor_heap* heap = context->main_descriptor_heap;
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
     ID3D12GraphicsCommandList* command_list_com = command_list->com.Get();
-    
+    const uint32_t back_buffer_index = context->back_buffer_index;
+
     // Clear and setup
     command_list->clear_render_target(&color, DirectX::Colors::LightSlateGray);
     command_list->set_render_targets1(&color, nullptr);
-    graphics_pipeline->bind_command_list(command_list_com);
-    command_list_com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
-
-    const uint32_t back_buffer_index = context->back_buffer_index;
-
+    
     // Process frame data constants
     frame_data.camera_position = XMFLOAT4(context->scene->camera.location.e);
     frame_data.ambient_light = context->scene->ambient_light_color;
@@ -138,7 +134,7 @@ namespace engine
       command_list->upload_index_buffer(quad_mesh, "quad");
     }
 
-    upload_all_textures(command_list);
+    upload_all_textures_once(command_list);
 
     // Draw
     const fstatic_mesh_resource& smrs = quad_mesh->resource;
@@ -149,7 +145,7 @@ namespace engine
     command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::gbuffer_normal, normal->srv.gpu_descriptor_handle);
     command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::gbuffer_uv, uv->srv.gpu_descriptor_handle);
     command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::gbuffer_material_id, material_id->srv.gpu_descriptor_handle);
-    command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::textures, scene_acceleration.a_textures[0]->gpu_resource.srv.gpu_descriptor_handle);
+    command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::textures, get_textures_gpu_handle());
     command_list_com->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
     command_list_com->IASetIndexBuffer(&smrs.index_buffer_view);
     command_list_com->DrawIndexedInstanced(smrs.vertex_num, 1, 0, 0, 0);

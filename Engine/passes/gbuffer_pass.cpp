@@ -72,11 +72,11 @@ namespace engine
   void fgbuffer_pass::draw(frenderer_context* in_context, fgraphics_command_list* command_list)
   {
     fpass_base::draw(in_context, command_list);
-
-    fdescriptor_heap* heap = context->main_descriptor_heap;
+    
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
     ID3D12GraphicsCommandList* command_list_com = command_list->com.Get();
-    
+    const uint32_t N = fmath::to_uint32(scene_acceleration.h_meshes.size());
+
     // Cleanup and setup
     for(uint32_t i = 0; i < fgbuffer_pass::num_render_targets; i++)
     {
@@ -84,24 +84,8 @@ namespace engine
     }
     command_list->clear_depth_stencil(&depth);
     command_list->set_render_targets(num_render_targets, render_targets, &depth);
-    graphics_pipeline->bind_command_list(command_list_com);
-    command_list_com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
-
-    const uint32_t N = fmath::to_uint32(scene_acceleration.h_meshes.size());
-
-    // Update vertex and index buffers
-    for(uint32_t i = 0; i < N; i++)
-    {
-      hstatic_mesh* hmesh = scene_acceleration.h_meshes[i];
-      astatic_mesh* amesh = hmesh->mesh_asset_ptr.get();
-      if(!amesh->is_resource_online)
-      {
-        std::string mesh_name = hmesh->get_display_name();
-        std::string asset_name = hmesh->mesh_asset_ptr.get()->name;
-        command_list->upload_vertex_buffer(amesh, std::format("{} {}", mesh_name, asset_name).c_str());
-        command_list->upload_index_buffer(amesh, std::format("{} {}", mesh_name, asset_name).c_str());
-      }
-    }
+    
+    update_vertex_and_index_buffers(command_list);
     
     // Draw
     for(uint32_t i = 0; i < N; i++)

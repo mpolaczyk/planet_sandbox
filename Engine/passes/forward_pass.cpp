@@ -113,18 +113,14 @@ namespace engine
   {    
     fpass_base::draw(in_context, command_list);
     
-    fdescriptor_heap* heap = context->main_descriptor_heap;
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
     ID3D12GraphicsCommandList* command_list_com = command_list->com.Get();
-
+    const uint32_t back_buffer_index = context->back_buffer_index;
+    const uint32_t N = fmath::to_uint32(scene_acceleration.h_meshes.size());
+    
     command_list->clear_render_target(&color, DirectX::Colors::LightSlateGray);
     command_list->clear_depth_stencil(&depth);
     command_list->set_render_targets1(&color, &depth);
-    graphics_pipeline->bind_command_list(command_list_com);
-    command_list_com->SetDescriptorHeaps(1, heap->com.GetAddressOf());
-
-    const uint32_t back_buffer_index = context->back_buffer_index;
-    const uint32_t N = fmath::to_uint32(scene_acceleration.h_meshes.size());
 
     // Process frame data CBV
     {
@@ -142,27 +138,14 @@ namespace engine
       materials_data[back_buffer_index].upload(scene_acceleration.materials_buffer.data());
     }
     
-    // Update vertex and index buffers
-    for(uint32_t i = 0; i < N; i++)
-    {
-      hstatic_mesh* hmesh = scene_acceleration.h_meshes[i];
-      astatic_mesh* amesh = hmesh->mesh_asset_ptr.get();
-      if(!amesh->is_resource_online)
-      {
-        std::string mesh_name = hmesh->get_display_name();
-        std::string asset_name = hmesh->mesh_asset_ptr.get()->name;
-        command_list->upload_vertex_buffer(amesh, std::format("{} {}", mesh_name, asset_name).c_str());
-        command_list->upload_index_buffer(amesh, std::format("{} {}", mesh_name, asset_name).c_str());
-      }
-    }
-
-    // TODO This and code sbove can be reused, think about moving it somewhere.
-    upload_all_textures(command_list);
+    update_vertex_and_index_buffers(command_list);
+    
+    upload_all_textures_once(command_list);
     
     // Draw
     command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::lights, lights_data[back_buffer_index].resource->GetGPUVirtualAddress());
     command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::materials, materials_data[back_buffer_index].resource->GetGPUVirtualAddress());
-    command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::textures, scene_acceleration.a_textures[0]->gpu_resource.srv.gpu_descriptor_handle);
+    command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::textures, get_textures_gpu_handle());
     for(uint32_t i = 0; i < N; i++)
     {
       const fstatic_mesh_resource& smrs = context->scene->scene_acceleration.h_meshes[i]->mesh_asset_ptr.get()->resource;

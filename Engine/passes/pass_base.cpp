@@ -6,6 +6,8 @@
 #include "core/window.h"
 #include "engine/log.h"
 #include "hittables/scene.h"
+#include "hittables/static_mesh.h"
+#include "math/math.h"
 #include "math/vertex_data.h"
 #include "renderer/command_list.h"
 #include "renderer/device.h"
@@ -47,6 +49,9 @@ namespace engine
 
   void fpass_base::draw(frenderer_context* in_context, fgraphics_command_list* command_list)
   {
+    context = in_context;
+
+    // Handle shaders hotswap
     if(pixel_shader_asset.get()->hot_swap_requested || vertex_shader_asset.get()->hot_swap_requested)
     {
       LOG_INFO("Recreating pipeline state.")
@@ -56,11 +61,15 @@ namespace engine
       vertex_shader_asset.get()->hot_swap_done = true;
     }
 
-    context = in_context;
+    // Handle resize
     if(context && context->resolution_changed)
     {
       init_size_dependent_resources(true);
     }
+
+    // Handle command list
+    graphics_pipeline->bind_command_list(command_list->com.Get());
+    command_list->com.Get()->SetDescriptorHeaps(1, context->main_descriptor_heap->com.GetAddressOf());
     command_list->set_viewport(context->width, context->height);
     command_list->set_scissor(context->width, context->height);
   }
@@ -71,7 +80,27 @@ namespace engine
       && vertex_shader_asset.is_loaded() && vertex_shader_asset.get()->compilation_successful;
   }
 
-  void fpass_base::upload_all_textures(fgraphics_command_list* command_list)
+  void fpass_base::update_vertex_and_index_buffers(fgraphics_command_list* command_list) const
+  {
+    fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
+    const uint32_t N = fmath::to_uint32(scene_acceleration.h_meshes.size());
+
+    // Update vertex and index buffers
+    for(uint32_t i = 0; i < N; i++)
+    {
+      hstatic_mesh* hmesh = scene_acceleration.h_meshes[i];
+      astatic_mesh* amesh = hmesh->mesh_asset_ptr.get();
+      if(!amesh->is_resource_online)
+      {
+        std::string mesh_name = hmesh->get_display_name();
+        std::string asset_name = hmesh->mesh_asset_ptr.get()->name;
+        command_list->upload_vertex_buffer(amesh, std::format("{} {}", mesh_name, asset_name).c_str());
+        command_list->upload_index_buffer(amesh, std::format("{} {}", mesh_name, asset_name).c_str());
+      }
+    }
+  }
+  
+  void fpass_base::upload_all_textures_once(fgraphics_command_list* command_list) const
   {
     static bool textures_uploaded = false;
     if(textures_uploaded) return;
@@ -95,5 +124,12 @@ namespace engine
       }
     }
     textures_uploaded = true;
+  }
+
+  CD3DX12_GPU_DESCRIPTOR_HANDLE fpass_base::get_textures_gpu_handle() const
+  {
+    fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
+
+    return scene_acceleration.a_textures[0]->gpu_resource.srv.gpu_descriptor_handle;
   }
 }
