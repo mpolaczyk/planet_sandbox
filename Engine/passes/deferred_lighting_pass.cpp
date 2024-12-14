@@ -111,7 +111,7 @@ namespace engine
     const uint32_t back_buffer_index = context->back_buffer_index;
 
     // Clear and setup
-    command_list->clear_render_target(&color, DirectX::Colors::LightSlateGray);
+    command_list->clear_render_target(&color, DirectX::Colors::Black);
     command_list->set_render_targets1(&color, nullptr);
     
     // Process frame data constants

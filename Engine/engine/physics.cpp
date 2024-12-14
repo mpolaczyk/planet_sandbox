@@ -62,11 +62,13 @@ namespace engine
 
   void fphysics::destroy_rigid_body(RigidBody* rigid_body)
   {
+    if(!rigid_body) return;
     fphysics::instance->physics_world->destroyRigidBody(rigid_body);
   }
 
   void fphysics::reset_rigid_body(const fvec3& origin, const fvec3& rotation, RigidBody* out_rigid_body)
   {
+    if(!out_rigid_body) return;
     out_rigid_body->setTransform(fphysics::get_transform(origin, rotation));
     out_rigid_body->setLinearVelocity(Vector3::zero());
     out_rigid_body->setAngularVelocity(Vector3::zero());
@@ -76,11 +78,13 @@ namespace engine
 
   void fphysics::set_rigid_body_transform(const fvec3& origin, const fvec3& rotation, RigidBody* out_rigid_body)
   {
+    if(!out_rigid_body) return;
     out_rigid_body->setTransform(fphysics::get_transform(origin, rotation));
   }
 
   void fphysics::get_rigid_body_transform(RigidBody* rigid_body, fvec3& out_origin, fvec3& out_rotation)
   {
+    if(!rigid_body) return;
     const Transform& transform = rigid_body->getTransform();
 
     const Vector3& position = transform.getPosition();

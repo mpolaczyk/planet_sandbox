@@ -118,7 +118,7 @@ namespace engine
     const uint32_t back_buffer_index = context->back_buffer_index;
     const uint32_t N = fmath::to_uint32(scene_acceleration.h_meshes.size());
     
-    command_list->clear_render_target(&color, DirectX::Colors::LightSlateGray);
+    command_list->clear_render_target(&color, DirectX::Colors::Black);
     command_list->clear_depth_stencil(&depth);
     command_list->set_render_targets1(&color, &depth);
 

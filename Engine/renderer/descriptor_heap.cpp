@@ -79,7 +79,11 @@ namespace engine
       if(is_valid[i])
       {
         const fdescriptor& d = descriptors[i];
+#if BUILD_DEBUG
         LOG_INFO("Index {}:{}  GPU {}  CPU {}  Context {}", i, d.index, d.gpu_descriptor_handle.ptr, d.cpu_descriptor_handle.ptr, d.context);
+#elif BUILD_RELEASE
+        LOG_INFO("Index {}:{}  GPU {}  CPU {}", i, d.index, d.gpu_descriptor_handle.ptr, d.cpu_descriptor_handle.ptr);
+#endif
       }
     }
   }

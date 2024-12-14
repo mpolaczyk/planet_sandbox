@@ -30,7 +30,7 @@ namespace engine
     int32_t input_down, input_up = 0;
     int32_t input_yaw = 0;
     int32_t input_pitch = 0;
-    float move_speed = 7.f;
+    float move_speed = 15.f;
     float rotate_speed = 7.f;
 
     // Runtime members

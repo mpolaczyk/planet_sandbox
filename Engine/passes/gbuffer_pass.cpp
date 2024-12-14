@@ -80,7 +80,7 @@ namespace engine
     // Cleanup and setup
     for(uint32_t i = 0; i < fgbuffer_pass::num_render_targets; i++)
     {
-      command_list->clear_render_target(render_targets[i], DirectX::Colors::LightSlateGray);
+      command_list->clear_render_target(render_targets[i], DirectX::Colors::Black);
     }
     command_list->clear_depth_stencil(&depth);
     command_list->set_render_targets(num_render_targets, render_targets, &depth);

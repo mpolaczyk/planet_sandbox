@@ -330,7 +330,7 @@ namespace engine
 
   void fdevice::create_frame_buffer(fdescriptor_heap* main_heap, fdescriptor_heap* rtv_heap, ftexture_resource* out_texture, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES initial_state, const char* name) const
   {
-    const CD3DX12_CLEAR_VALUE clear_color = { format, DirectX::Colors::LightSlateGray };
+    const CD3DX12_CLEAR_VALUE clear_color = { format, DirectX::Colors::Black };
     const CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
 
     if(out_texture->com)

@@ -44,7 +44,7 @@ namespace engine
     int32_t rigid_body_type = 0; // maps to reactphysics3d::BodyType
     
     // Runtime members
-    reactphysics3d::RigidBody* rigid_body;  // ownership
+    reactphysics3d::RigidBody* rigid_body = nullptr;  // ownership
     fvec3 pre_physics_origin = fvec3(0.0f, 0.0f, 0.0f);
     fvec3 pre_physics_rotation = fvec3(0.0f, 0.0f, 0.0f); // degrees
   };

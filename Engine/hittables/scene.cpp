@@ -86,6 +86,7 @@ namespace engine
   void hscene::add(hhittable_base* object)
   {
     objects.push_back(object);
+    object->create_physics_state();
   }
 
   void hscene::remove(int object_id)

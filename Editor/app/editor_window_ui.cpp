@@ -286,6 +286,11 @@ namespace editor
       {
         hhittable_base* obj = REG.spawn_from_class<hhittable_base>(model.c_model.selected_object);
         obj->origin = object_spawn_location;
+        if(obj->get_class() == hstatic_mesh::get_class_static())
+        {
+          static_cast<hstatic_mesh*>(obj)->mesh_asset_ptr.set_name("cube");
+          static_cast<hstatic_mesh*>(obj)->material_asset_ptr.set_name("default");
+        }
         get_editor_app()->scene_root->add(obj);
         ImGui::CloseCurrentPopup();
       }
