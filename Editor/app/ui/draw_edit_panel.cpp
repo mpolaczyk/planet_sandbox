@@ -13,8 +13,8 @@
 #include "hittables/sphere.h"
 #include "hittables/static_mesh.h"
 
-#include "renderers/gpu_forward_sync.h"
-#include "renderers/gpu_deferred_sync.h"
+#include "renderers/forward.h"
+#include "renderers/deferred.h"
 
 namespace editor
 {
@@ -134,12 +134,12 @@ namespace editor
     }
   }
 
-  void vdraw_edit_panel::visit(rgpu_forward_sync& object) const
+  void vdraw_edit_panel::visit(rforward& object) const
   {
     visit_rrenderer_base(object);
   }
 
-  void vdraw_edit_panel::visit(rgpu_deferred_sync& object) const
+  void vdraw_edit_panel::visit(rdeferred& object) const
   {
     visit_rrenderer_base(object);
   }

@@ -17,10 +17,10 @@ namespace engine
   
   using Microsoft::WRL::ComPtr;
 
-  class ENGINE_API rgpu_deferred_sync : public rrenderer_base
+  class ENGINE_API rdeferred : public rrenderer_base
   {
   public:
-    OBJECT_DECLARE(rgpu_deferred_sync, rrenderer_base)
+    OBJECT_DECLARE(rdeferred, rrenderer_base)
     OBJECT_DECLARE_VISITOR
 
     // Runtime members

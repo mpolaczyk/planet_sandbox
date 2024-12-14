@@ -18,12 +18,12 @@
 #include "hittables/scene.h"
 
 #include "renderer/renderer_base.h"
-#include "renderers/gpu_forward_sync.h"
+#include "renderers/forward.h"
 
 #include "engine/log.h"
 #include "hittables/light.h"
 #include "object/object_registry.h"
-#include "renderers/gpu_deferred_sync.h"
+#include "renderers/deferred.h"
 
 namespace engine
 {
@@ -111,12 +111,12 @@ namespace engine
 
   }
 
-  void vserialize_object::visit(rgpu_forward_sync& object) const
+  void vserialize_object::visit(rforward& object) const
   {
     visit_rrenderer_base(object);
   }
 
-  void vserialize_object::visit(rgpu_deferred_sync& object) const
+  void vserialize_object::visit(rdeferred& object) const
   {
     visit_rrenderer_base(object);
   }
@@ -239,12 +239,12 @@ namespace engine
 
   }
 
-  void vdeserialize_object::visit(rgpu_forward_sync& object) const
+  void vdeserialize_object::visit(rforward& object) const
   {
     visit_rrenderer_base(object);
   }
 
-  void vdeserialize_object::visit(rgpu_deferred_sync& object) const
+  void vdeserialize_object::visit(rdeferred& object) const
   {
     visit_rrenderer_base(object);
   }

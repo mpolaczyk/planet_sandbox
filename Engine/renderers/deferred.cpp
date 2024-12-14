@@ -1,7 +1,7 @@
 
 #include "object/object_registry.h"
 #include "object/object_visitor.h"
-#include "gpu_deferred_sync.h"
+#include "deferred.h"
 
 #include "renderer/command_list.h"
 
@@ -9,16 +9,16 @@ using namespace DirectX;
 
 namespace engine
 {
-  OBJECT_DEFINE(rgpu_deferred_sync, rrenderer_base, GPU deferred sync)
-  OBJECT_DEFINE_SPAWN(rgpu_deferred_sync)
-  OBJECT_DEFINE_VISITOR(rgpu_deferred_sync)
+  OBJECT_DEFINE(rdeferred, rrenderer_base, Deferred renderer)
+  OBJECT_DEFINE_SPAWN(rdeferred)
+  OBJECT_DEFINE_VISITOR(rdeferred)
 
-  bool rgpu_deferred_sync::init_passes()
+  bool rdeferred::init_passes()
   {
     return gbuffer_pass.init(&context) && deferred_lighting_pass.init(&context) && debug_pass.init(&context);
   }
   
-  void rgpu_deferred_sync::draw_internal(fgraphics_command_list* command_list)
+  void rdeferred::draw_internal(fgraphics_command_list* command_list)
   {
     {
       gbuffer_pass.draw(&context, command_list);
@@ -41,12 +41,12 @@ namespace engine
     debug_pass.draw(&context, command_list);
   }
 
-  ftexture_resource* rgpu_deferred_sync::get_color()
+  ftexture_resource* rdeferred::get_color()
   {
     return &deferred_lighting_pass.color;
   }
 
-  ftexture_resource* rgpu_deferred_sync::get_depth()
+  ftexture_resource* rdeferred::get_depth()
   {
     return &gbuffer_pass.depth;
   }

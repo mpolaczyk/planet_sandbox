@@ -16,10 +16,10 @@ namespace engine
 
   using Microsoft::WRL::ComPtr;
   
-  class ENGINE_API rgpu_forward_sync : public rrenderer_base
+  class ENGINE_API rforward : public rrenderer_base
   {
   public:
-    OBJECT_DECLARE(rgpu_forward_sync, rrenderer_base)
+    OBJECT_DECLARE(rforward, rrenderer_base)
     OBJECT_DECLARE_VISITOR
 
     // Runtime members

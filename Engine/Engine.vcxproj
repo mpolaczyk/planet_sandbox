@@ -153,8 +153,8 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClInclude Include="passes\pass_base.h" />
     <ClInclude Include="persistence\object_persistence.h" />
     <ClInclude Include="persistence\persistence.h" />
-    <ClInclude Include="renderers\gpu_deferred_sync.h" />
-    <ClInclude Include="renderers\gpu_forward_sync.h" />
+    <ClInclude Include="renderers\deferred.h" />
+    <ClInclude Include="renderers\forward.h" />
     <ClInclude Include="renderer\aligned_structs.h" />
     <ClInclude Include="renderer\command_list.h" />
     <ClInclude Include="renderer\command_queue.h" />
@@ -239,8 +239,8 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClCompile Include="passes\pass_base.cpp" />
     <ClCompile Include="persistence\object_persistence.cpp" />
     <ClCompile Include="persistence\persistence.cpp" />
-    <ClCompile Include="renderers\gpu_deferred_sync.cpp" />
-    <ClCompile Include="renderers\gpu_forward_sync.cpp" />
+    <ClCompile Include="renderers\deferred.cpp" />
+    <ClCompile Include="renderers\forward.cpp" />
     <ClCompile Include="renderer\command_list.cpp" />
     <ClCompile Include="renderer\command_queue.cpp" />
     <ClCompile Include="renderer\descriptor_heap.cpp" />
