@@ -1,267 +1,47 @@
 {
   "scene": {
     "ambient_light_color": {
-      "w": 1.0,
-      "x": 0.2745097875595093,
-      "y": 0.2745097875595093,
-      "z": 0.2745097875595093
+      "w": 0.874509871006012,
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
     },
     "camera_config": {
       "field_of_view": 40.0,
       "look_from": {
-        "x": 0.035905782133340836,
-        "y": 3.946425676345825,
-        "z": -19.488218307495117
+        "x": -34.719146728515625,
+        "y": 19.532230377197266,
+        "z": -34.10190200805664
       },
-      "pitch": 12.97818660736084,
-      "yaw": -0.9041446447372437
+      "pitch": 16.1024112701416,
+      "yaw": 761.7576904296875
     },
     "objects": [
       {
         "class_name": "hstatic_mesh",
-        "custom_display_name": "ico3",
-        "gravity_enabled": true,
-        "material_asset": {
-          "name": "red"
-        },
-        "mesh_asset": {
-          "name": "icosphere3"
-        },
-        "origin": {
-          "x": 4.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rigid_body_type": 2,
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "torus",
-        "gravity_enabled": true,
-        "material_asset": {
-          "name": "green"
-        },
-        "mesh_asset": {
-          "name": "torus"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": 4.0,
-          "z": 0.0
-        },
-        "rigid_body_type": 2,
-        "rotation": {
-          "x": 90.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "suzanne",
+        "custom_display_name": "dragon1",
         "gravity_enabled": false,
         "material_asset": {
           "name": "white"
         },
         "mesh_asset": {
-          "name": "suzanne"
+          "name": "dragon"
         },
         "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 250.0
+          "x": 20.0,
+          "y": 0.5,
+          "z": 0.0
         },
         "rigid_body_type": 0,
         "rotation": {
           "x": 0.0,
-          "y": 174.0,
+          "y": 90.0,
           "z": 0.0
         },
         "scale": {
-          "x": 70.0,
-          "y": 70.0,
-          "z": 70.0
-        }
-      },
-      {
-        "class_name": "hlight",
-        "custom_display_name": "sun",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "properties": {
-          "color": {
-            "w": 1.0,
-            "x": 0.5098038911819458,
-            "y": 0.5098038911819458,
-            "z": 0.5098038911819458
-          },
-          "constant_attenuation": 0.5899999737739563,
-          "direction": {
-            "w": 1.0,
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.10000000149011612
-          },
-          "enabled": 1,
-          "light_type": 1,
-          "linear_attenuation": 0.15000000596046448,
-          "quadratic_attenuation": 0.05000000074505806,
-          "spot_angle": 0.800000011920929
-        }
-      },
-      {
-        "class_name": "hlight",
-        "custom_display_name": "zaroweczka centrum",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "properties": {
-          "color": {
-            "w": 1.0,
-            "x": 0.3970588445663452,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "constant_attenuation": 0.23999999463558197,
-          "direction": {
-            "w": 0.0,
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0
-          },
-          "enabled": 1,
-          "light_type": 0,
-          "linear_attenuation": 0.09000000357627869,
-          "quadratic_attenuation": 0.009999999776482582,
-          "spot_angle": 1.5707963705062866
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "ico4",
-        "gravity_enabled": true,
-        "material_asset": {
-          "name": "blue"
-        },
-        "mesh_asset": {
-          "name": "icosphere4"
-        },
-        "origin": {
-          "x": -4.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rigid_body_type": 2,
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "torusknot1",
-        "gravity_enabled": false,
-        "material_asset": {
-          "name": "white"
-        },
-        "mesh_asset": {
-          "name": "torusknot1"
-        },
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rigid_body_type": 2,
-        "rotation": {
-          "x": -90.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 0.5,
-          "y": 0.5,
-          "z": 0.5
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "torusknot2",
-        "gravity_enabled": true,
-        "material_asset": {
-          "name": "white"
-        },
-        "mesh_asset": {
-          "name": "torusknot2"
-        },
-        "origin": {
-          "x": 8.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rigid_body_type": 2,
-        "rotation": {
-          "x": -90.0,
-          "y": 0.0,
-          "z": 90.0
-        },
-        "scale": {
-          "x": 0.5,
-          "y": 0.5,
-          "z": 0.5
-        }
-      },
-      {
-        "class_name": "hstatic_mesh",
-        "custom_display_name": "torusknot3",
-        "gravity_enabled": true,
-        "material_asset": {
-          "name": "white"
-        },
-        "mesh_asset": {
-          "name": "torusknot3"
-        },
-        "origin": {
-          "x": -8.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "rigid_body_type": 2,
-        "rotation": {
-          "x": 90.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 0.5,
-          "y": 0.5,
-          "z": 0.5
+          "x": 0.6000000238418579,
+          "y": 0.6000000238418579,
+          "z": 0.6000000238418579
         }
       },
       {
@@ -269,14 +49,14 @@
         "custom_display_name": "floor",
         "gravity_enabled": false,
         "material_asset": {
-          "name": "default"
+          "name": "white"
         },
         "mesh_asset": {
           "name": "plane"
         },
         "origin": {
           "x": 0.0,
-          "y": -5.0,
+          "y": 0.0,
           "z": 0.0
         },
         "rigid_body_type": 0,
@@ -286,25 +66,25 @@
           "z": 0.0
         },
         "scale": {
-          "x": 10.0,
-          "y": 10.0,
+          "x": 500.0,
+          "y": 500.0,
           "z": 1.0
         }
       },
       {
         "class_name": "hlight",
-        "custom_display_name": "zaroweczka lewo",
+        "custom_display_name": "red light",
         "origin": {
-          "x": -8.0,
-          "y": -1.0,
-          "z": 0.0
+          "x": -15.0,
+          "y": 10.0,
+          "z": -15.0
         },
         "properties": {
           "color": {
             "w": 1.0,
-            "x": 0.015011191368103027,
-            "y": 0.22058820724487305,
-            "z": 0.002162636024877429
+            "x": 0.46078431606292725,
+            "y": 0.0,
+            "z": 0.0
           },
           "constant_attenuation": 0.44999998807907104,
           "direction": {
@@ -322,18 +102,18 @@
       },
       {
         "class_name": "hlight",
-        "custom_display_name": "zaroweczka prawo",
+        "custom_display_name": "blue light",
         "origin": {
-          "x": 8.0,
-          "y": 0.0,
-          "z": 0.0
+          "x": 15.0,
+          "y": 10.0,
+          "z": -15.0
         },
         "properties": {
           "color": {
             "w": 1.0,
-            "x": 0.002330827061086893,
-            "y": 0.016247514635324478,
-            "z": 0.4754902124404907
+            "x": 0.22361595928668976,
+            "y": 0.6911764740943909,
+            "z": 0.0
           },
           "constant_attenuation": 0.17000000178813934,
           "direction": {
@@ -348,10 +128,284 @@
           "quadratic_attenuation": 0.0,
           "spot_angle": 1.2910000085830688
         }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "cube",
+        "gravity_enabled": false,
+        "material_asset": {
+          "name": "default"
+        },
+        "mesh_asset": {
+          "name": "cube"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 2.0,
+          "z": 0.0
+        },
+        "rigid_body_type": 0,
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        }
+      },
+      {
+        "class_name": "hlight",
+        "custom_display_name": "yellow light",
+        "origin": {
+          "x": -15.0,
+          "y": 10.0,
+          "z": 15.0
+        },
+        "properties": {
+          "color": {
+            "w": 1.0,
+            "x": 0.44117647409439087,
+            "y": 0.38927334547042847,
+            "z": 0.0
+          },
+          "constant_attenuation": 1.0,
+          "direction": {
+            "w": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "enabled": 1,
+          "light_type": 0,
+          "linear_attenuation": 0.0,
+          "quadratic_attenuation": 0.0,
+          "spot_angle": 1.5707963705062866
+        }
+      },
+      {
+        "class_name": "hlight",
+        "custom_display_name": "blue light",
+        "origin": {
+          "x": 15.0,
+          "y": 10.0,
+          "z": 15.0
+        },
+        "properties": {
+          "color": {
+            "w": 1.0,
+            "x": 0.0,
+            "y": 0.11000574380159378,
+            "z": 0.5343137383460999
+          },
+          "constant_attenuation": 1.0,
+          "direction": {
+            "w": 0.0,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "enabled": 1,
+          "light_type": 0,
+          "linear_attenuation": 0.0,
+          "quadratic_attenuation": 0.0,
+          "spot_angle": 1.5707963705062866
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "suzanne1",
+        "gravity_enabled": false,
+        "material_asset": {
+          "name": "white"
+        },
+        "mesh_asset": {
+          "name": "suzanne"
+        },
+        "origin": {
+          "x": -20.0,
+          "y": 4.0,
+          "z": -20.0
+        },
+        "rigid_body_type": 0,
+        "rotation": {
+          "x": 0.0,
+          "y": 45.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 4.0,
+          "y": 4.0,
+          "z": 4.0
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "suzanne2",
+        "gravity_enabled": false,
+        "material_asset": {
+          "name": "white"
+        },
+        "mesh_asset": {
+          "name": "suzanne"
+        },
+        "origin": {
+          "x": 20.0,
+          "y": 4.0,
+          "z": 20.0
+        },
+        "rigid_body_type": 0,
+        "rotation": {
+          "x": 0.0,
+          "y": 225.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 4.0,
+          "y": 4.0,
+          "z": 4.0
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "suzanne3",
+        "gravity_enabled": false,
+        "material_asset": {
+          "name": "white"
+        },
+        "mesh_asset": {
+          "name": "suzanne"
+        },
+        "origin": {
+          "x": -20.0,
+          "y": 4.0,
+          "z": 20.0
+        },
+        "rigid_body_type": 0,
+        "rotation": {
+          "x": 0.0,
+          "y": 135.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 4.0,
+          "y": 4.0,
+          "z": 4.0
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "suzanne4",
+        "gravity_enabled": false,
+        "material_asset": {
+          "name": "white"
+        },
+        "mesh_asset": {
+          "name": "suzanne"
+        },
+        "origin": {
+          "x": 20.0,
+          "y": 4.0,
+          "z": -20.0
+        },
+        "rigid_body_type": 0,
+        "rotation": {
+          "x": 0.0,
+          "y": -45.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 4.0,
+          "y": 4.0,
+          "z": 4.0
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "dragon2",
+        "gravity_enabled": false,
+        "material_asset": {
+          "name": "white"
+        },
+        "mesh_asset": {
+          "name": "dragon"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.5,
+          "z": 20.0
+        },
+        "rigid_body_type": 0,
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.6000000238418579,
+          "y": 0.6000000238418579,
+          "z": 0.6000000238418579
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "dragon3",
+        "gravity_enabled": false,
+        "material_asset": {
+          "name": "white"
+        },
+        "mesh_asset": {
+          "name": "dragon"
+        },
+        "origin": {
+          "x": 0.0,
+          "y": 0.5,
+          "z": -20.0
+        },
+        "rigid_body_type": 0,
+        "rotation": {
+          "x": 0.0,
+          "y": 180.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.6000000238418579,
+          "y": 0.6000000238418579,
+          "z": 0.6000000238418579
+        }
+      },
+      {
+        "class_name": "hstatic_mesh",
+        "custom_display_name": "dragon4",
+        "gravity_enabled": false,
+        "material_asset": {
+          "name": "white"
+        },
+        "mesh_asset": {
+          "name": "dragon"
+        },
+        "origin": {
+          "x": -20.0,
+          "y": 0.5,
+          "z": 0.0
+        },
+        "rigid_body_type": 0,
+        "rotation": {
+          "x": 0.0,
+          "y": -90.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 0.6000000238418579,
+          "y": 0.6000000238418579,
+          "z": 0.6000000238418579
+        }
       }
     ],
     "renderer": {
-      "class_name": "rgpu_forward_sync"
+      "class_name": "rforward"
     }
   }
 }

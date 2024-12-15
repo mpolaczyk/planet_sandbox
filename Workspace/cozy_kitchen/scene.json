@@ -3711,7 +3711,7 @@
       }
     ],
     "renderer": {
-      "class_name": "rgpu_deferred_sync",
+      "class_name": "rdeferred",
       "default_material_asset": {
         "name": "default"
       },
