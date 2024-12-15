@@ -3,22 +3,22 @@
 #include <dxgi1_5.h>
 #include <fstream>
 
-#include "core/exceptions.h"
-#include "core/window.h"
-#include "object/object_registry.h"
+#include "core/exceptions/windows_error.h"
+#include "engine/window.h"
+#include "rtti/object_registry.h"
 #include "engine/io.h"
 #include "engine/physics.h"
 #include "engine/log.h"
 #include "hittables/scene.h"
-#include "math/random.h"
-#include "persistence/object_persistence.h"
-#include "persistence/persistence_helper.h"
+#include "engine/math/random.h"
+#include "engine/persistence/object_persistence.h"
+#include "engine/persistence/persistence_helper.h"
 #include "assets/shader.h"
-#include "renderer/dx12_lib.h"
-#include "renderer/command_queue.h"
-#include "renderer/renderer_base.h"
-#include "renderer/device.h"
-#include "resources/assimp_logger.h"
+#include "engine/renderer/dx12_lib.h"
+#include "engine/renderer/command_queue.h"
+#include "engine/renderer/renderer_base.h"
+#include "engine/renderer/device.h"
+#include "engine/resources/assimp_logger.h"
 
 #include "nlohmann/json.hpp"
 

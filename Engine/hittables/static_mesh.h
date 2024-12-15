@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include "hittables.h"
+#include "engine/hittable.h"
 
-#include "asset/soft_asset_ptr.h"
+#include "engine/asset/soft_asset_ptr.h"
 #include "assets/mesh.h"
 #include "assets/material.h"
 

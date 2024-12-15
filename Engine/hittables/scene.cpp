@@ -2,14 +2,13 @@
 
 #include "light.h"
 #include "core/application.h"
-#include "hittables/hittables.h"
+#include "engine/hittable.h"
 #include "engine/log.h"
-#include "profile/stats.h"
-#include "engine/hash.h"
-#include "object/object_registry.h"
-#include "object/object_visitor.h"
-#include "math/math.h"
-#include "renderer/renderer_base.h"
+#include "engine/math/hash.h"
+#include "core/rtti/object_registry.h"
+#include "core/rtti/object_visitor.h"
+#include "engine/math/math.h"
+#include "engine/renderer/renderer_base.h"
 
 namespace engine
 {

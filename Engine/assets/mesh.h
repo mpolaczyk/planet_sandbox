@@ -1,10 +1,10 @@
 #pragma once
 
 #include "core/core.h"
-#include "asset/asset.h"
-#include "math/aabb.h"
-#include "math/vertex_data.h"
-#include "renderer/gpu_resources.h"
+#include "engine/asset/asset.h"
+#include "engine/math/aabb.h"
+#include "engine/math/vertex_data.h"
+#include "engine/renderer/gpu_resources.h"
 
 namespace engine
 {

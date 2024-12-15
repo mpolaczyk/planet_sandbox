@@ -6,8 +6,8 @@
 
 #include "editor_window.h"
 #include "app/editor_app.h"
-#include "renderer/command_queue.h"
-#include "renderer/device.h"
+#include "engine/renderer/command_queue.h"
+#include "engine/renderer/device.h"
 
 namespace editor
 {

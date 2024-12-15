@@ -7,7 +7,7 @@
 #include "hittables/scene.h"
 
 #include "nlohmann/json.hpp"
-#include "persistence/object_persistence.h"
+#include "engine/persistence/object_persistence.h"
 
 namespace editor
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ui/ui.h"
-#include "core/window.h"
+#include "engine/window.h"
 
 namespace engine
 {

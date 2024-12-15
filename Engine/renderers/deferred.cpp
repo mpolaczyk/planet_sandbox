@@ -1,9 +1,9 @@
 
-#include "object/object_registry.h"
-#include "object/object_visitor.h"
+#include "core/rtti/object_registry.h"
+#include "core/rtti/object_visitor.h"
 #include "deferred.h"
 
-#include "renderer/command_list.h"
+#include "engine/renderer/command_list.h"
 
 using namespace DirectX;
 

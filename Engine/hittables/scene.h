@@ -5,9 +5,9 @@
 
 #include <DirectXMath.h>
 
-#include "hittables.h"
-#include "math/camera.h"
-#include "renderer/scene_acceleration.h"
+#include "engine/hittable.h"
+#include "engine/math/camera.h"
+#include "engine/renderer/scene_acceleration.h"
 
 namespace engine
 {

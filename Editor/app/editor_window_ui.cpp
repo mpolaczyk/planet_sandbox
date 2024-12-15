@@ -7,9 +7,8 @@
 #include "ui/draw_edit_panel.h"
 #include "imgui.h"
 
-#include "math/chunk_generator.h"
-#include "renderer/renderer_base.h"
-#include "math/camera.h"
+#include "engine/renderer/renderer_base.h"
+#include "engine/math/camera.h"
 
 #include "core/core.h"
 #include "engine.h"
@@ -17,10 +16,10 @@
 #include "app/editor_window.h"
 #include "engine/physics.h"
 #include "engine/string_tools.h"
-#include "hittables/hittables.h"
+#include "engine/hittable.h"
 #include "hittables/static_mesh.h"
 #include "hittables/scene.h"
-#include "resources/ffbx.h"
+#include "engine/resources/ffbx.h"
 
 namespace editor
 {

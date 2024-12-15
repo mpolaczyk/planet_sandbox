@@ -1,13 +1,12 @@
 ﻿#pragma once
 
-#include "object/object_visitor.h"
+#include "core/rtti/object_visitor.h"
 
 namespace engine
 {
   class hhittable_base;
   class hscene;
   class hstatic_mesh;
-  class hsphere;
   class hlight;
   class amaterial;
   class rrenderer_base;
@@ -25,7 +24,6 @@ namespace editor
     void visit_rrenderer_base(rrenderer_base& object) const;
 
     virtual void visit(hstatic_mesh& object) const override;
-    virtual void visit(hsphere& object) const override;
     virtual void visit(hlight& object) const override;
     virtual void visit(amaterial& object) const override;
     virtual void visit(rforward& object) const override;

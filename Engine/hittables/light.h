@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "hittables.h"
-#include "renderer/aligned_structs.h"
+#include "engine/hittable.h"
+#include "engine/renderer/aligned_structs.h"
 
 namespace engine
 {

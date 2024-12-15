@@ -2,11 +2,11 @@
 
 #include "core/application.h"
 #include "core/windows_minimal.h"
-#include "core/exceptions.h"
-#include "core/window.h"
+#include "core/exceptions/windows_error.h"
+#include "engine/window.h"
 #include "engine/log.h"
 #include "engine/string_tools.h"
-#include "renderer/dx12_lib.h"
+#include "engine/renderer/dx12_lib.h"
 
 using namespace engine;
 

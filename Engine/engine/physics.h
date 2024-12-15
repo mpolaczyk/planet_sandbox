@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "core/core.h"
-#include "math/vec3.h"
+#include "engine/math/vec3.h"
 
 namespace reactphysics3d
 {

@@ -4,8 +4,8 @@
 #include "core/application.h"
 #include "engine/log.h"
 #include "hittables/scene.h"
-#include "math/aabb.h"
-#include "math/math.h"
+#include "engine/math/aabb.h"
+#include "engine/math/math.h"
 
 #include "reactphysics3d/engine/PhysicsCommon.h"
 #include "reactphysics3d/engine/PhysicsWorld.h"

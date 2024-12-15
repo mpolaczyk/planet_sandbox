@@ -1,10 +1,10 @@
 ﻿
-#include "object/object_registry.h"
-#include "object/object_visitor.h"
+#include "core/rtti/object_registry.h"
+#include "core/rtti/object_visitor.h"
 #include "forward.h"
 
 #include "engine/log.h"
-#include "renderer/command_list.h"
+#include "engine/renderer/command_list.h"
 
 namespace engine
 {

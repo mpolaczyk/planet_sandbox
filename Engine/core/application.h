@@ -4,8 +4,8 @@
 #include <wrl/client.h>
 
 #include "core/core.h"
-#include "math/camera.h"
-#include "profile/benchmark.h"
+#include "engine/math/camera.h"
+#include "engine/profile/benchmark.h"
 
 #if USE_NSIGHT_AFTERMATH
 #include "gpu_crash_handler.h"

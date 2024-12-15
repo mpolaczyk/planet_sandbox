@@ -3,10 +3,10 @@
 #include "texture.h"
 #include "core/core.h"
 
-#include "object/object.h"
-#include "asset/asset.h"
-#include "asset/soft_asset_ptr.h"
-#include "renderer/aligned_structs.h"
+#include "core/rtti/object.h"
+#include "engine/asset/asset.h"
+#include "engine/asset/soft_asset_ptr.h"
+#include "engine/renderer/aligned_structs.h"
 
 namespace engine
 {

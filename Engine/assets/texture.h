@@ -2,9 +2,9 @@
 
 #include "core/core.h"
 
-#include "object/object.h"
-#include "asset/asset.h"
-#include "renderer/gpu_resources.h"
+#include "core/rtti/object.h"
+#include "engine/asset/asset.h"
+#include "engine/renderer/gpu_resources.h"
   
 namespace engine
 {

@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 
 #include "imgui.h"
 
@@ -8,9 +8,8 @@
 
 #include "ui_helper.h"
 #include "engine/physics.h"
-#include "hittables/hittables.h"
+#include "engine/hittable.h"
 #include "hittables/light.h"
-#include "hittables/sphere.h"
 #include "hittables/static_mesh.h"
 
 #include "renderers/forward.h"
@@ -68,12 +67,6 @@ namespace editor
         object.material_asset_ptr.set_name(model.selected_object->name);
       }
     }
-  }
-
-  void vdraw_edit_panel::visit(hsphere& object) const
-  {
-    visit_hhittable_base(object);
-    ImGui::InputFloat("Radius", &object.radius);
   }
 
   void vdraw_edit_panel::visit(hlight& object) const

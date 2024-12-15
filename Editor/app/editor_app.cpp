@@ -11,7 +11,7 @@
 
 #include "app/editor_window.h"
 #include "hittables/scene.h"
-#include "renderer/command_queue.h"
+#include "engine/renderer/command_queue.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
