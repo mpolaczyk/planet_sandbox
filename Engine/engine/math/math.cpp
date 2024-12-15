@@ -6,6 +6,7 @@
 #include <DirectXMath.h>
 
 #include "engine/math/math.h"
+#include "engine/math/vertex_data.h"
 
 namespace engine
 {
@@ -357,25 +358,25 @@ namespace engine
     return fvec3(a.x, a.y, a.z);
   }
 
-  DirectX::XMFLOAT4 fmath::to_xmfloat4(const fvec3& a)
+  void fmath::to_xmfloat4(const fvec3& a, DirectX::XMFLOAT4& out_value)
   {
-    return DirectX::XMFLOAT4(a.x, a.y, a.z, 1.0f);
+    out_value = DirectX::XMFLOAT4(a.x, a.y, a.z, 1.0f);
   }
 
-  DirectX::XMFLOAT4 fmath::uint32_to_colorf(uint32_t value)
+  void fmath::uint32_to_colorf(uint32_t value, DirectX::XMFLOAT4& out_value)
   {
-    float af = static_cast<float>(static_cast<uint8_t>(value)) / 255.0f;
-    float bf = static_cast<float>(static_cast<uint8_t>(value >> 8)) / 255.0f;
-    float cf = static_cast<float>(static_cast<uint8_t>(value >> 16)) / 255.0f;
-    return DirectX::XMFLOAT4(af, bf, cf, 1.0f);
+    const float af = static_cast<float>(static_cast<uint8_t>(value)) / 255.0f;
+    const float bf = static_cast<float>(static_cast<uint8_t>(value >> 8)) / 255.0f;
+    const float cf = static_cast<float>(static_cast<uint8_t>(value >> 16)) / 255.0f;
+    out_value = DirectX::XMFLOAT4(af, bf, cf, 1.0f);
   }
 
-  DirectX::XMUINT4 fmath::uint32_to_colori(uint32_t value)
+  void fmath::uint32_to_colori(uint32_t value, DirectX::XMUINT4& out_value)
   {
-    uint8_t af = static_cast<uint8_t>(value);
-    uint8_t bf = static_cast<uint8_t>(value >> 8);
-    uint8_t cf = static_cast<uint8_t>(value >> 16);
-    return DirectX::XMUINT4(af, bf, cf, 255);
+    const uint8_t af = static_cast<uint8_t>(value);
+    const uint8_t bf = static_cast<uint8_t>(value >> 8);
+    const uint8_t cf = static_cast<uint8_t>(value >> 16);
+    out_value = DirectX::XMUINT4(af, bf, cf, 255);
   }
 
   uint32_t fmath::to_uint32(uint64_t value)

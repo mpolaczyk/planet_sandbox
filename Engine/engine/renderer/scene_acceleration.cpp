@@ -6,7 +6,9 @@
 #include "hittables/static_mesh.h"
 #include "engine/math/math.h"
 #include "core/rtti/object_registry.h"
-
+#include "assets/texture.h"
+#include "assets/mesh.h"
+#include "assets/material.h"
 namespace engine
 {
   constexpr int32_t GPU_INDEX_NONE = -1;
@@ -116,7 +118,7 @@ namespace engine
         if(light->properties.enabled)
         {
           lights_buffer.push_back(light->properties);
-          lights_buffer.back().position = fmath::to_xmfloat4(light->origin);
+          fmath::to_xmfloat4(light->origin, lights_buffer.back().position);
         }
       }
 
@@ -147,5 +149,45 @@ namespace engine
       return false;
     }
     return true; 
+  }
+
+  uint32_t fscene_acceleration::get_num_meshes() const
+  {
+    return fmath::to_uint32(h_meshes.size());
+  }
+
+  hstatic_mesh* fscene_acceleration::get_mesh(uint32_t index) const
+  {
+    return h_meshes[index];
+  }
+
+  uint32_t fscene_acceleration::get_num_textures() const
+  {
+    return fmath::to_uint32(a_textures.size());
+  }
+
+  atexture* fscene_acceleration::get_first_texture() const
+  {
+    return a_textures[0];
+  }
+
+  atexture* fscene_acceleration::get_texture(uint32_t index) const
+  {
+    return a_textures[index];
+  }
+
+  const fobject_data* fscene_acceleration::get_object_data(uint32_t index) const
+  {
+    return &object_buffer[index];
+  }
+
+  const fmaterial_properties* fscene_acceleration::get_material_properties() const
+  {
+    return materials_buffer.data();
+  }
+
+  const flight_properties* fscene_acceleration::get_light_properties() const
+  {
+    return lights_buffer.data();
   }
 }

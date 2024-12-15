@@ -1,21 +1,17 @@
 #pragma once
 
 #include <memory>
-#include <wrl/client.h>
 
 #include "engine/asset/soft_asset_ptr.h"
-#include "assets/pixel_shader.h"
-#include "assets/vertex_shader.h"
 #include "engine/renderer/graphics_pipeline.h"
 
 struct ID3D12GraphicsCommandList;
 
 namespace engine
 {
+  class apixel_shader;
+  class avertex_shader;
   struct fgraphics_command_list;
-  
-  using Microsoft::WRL::ComPtr;
-  
   struct frenderer_context;
   
   struct fpass_base

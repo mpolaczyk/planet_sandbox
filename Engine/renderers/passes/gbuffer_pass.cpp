@@ -1,15 +1,16 @@
-#include "gbuffer_pass.h"
 
 #include <DirectXColors.h>
 
+#include "gbuffer_pass.h"
+
 #include "core/application.h"
-#include "engine/window.h"
-#include "engine/renderer/render_context.h"
 #include "assets/material.h"
+#include "assets/mesh.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
 #include "engine/math/math.h"
 #include "engine/math/vertex_data.h"
+#include "engine/renderer/render_context.h"
 #include "engine/renderer/command_list.h"
 #include "engine/renderer/device.h"
 #include "engine/renderer/scene_acceleration.h"
@@ -75,7 +76,6 @@ namespace engine
     
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
     ID3D12GraphicsCommandList* command_list_com = command_list->com.Get();
-    const uint32_t N = fmath::to_uint32(scene_acceleration.h_meshes.size());
 
     // Cleanup and setup
     for(uint32_t i = 0; i < fgbuffer_pass::num_render_targets; i++)
@@ -88,11 +88,11 @@ namespace engine
     update_vertex_and_index_buffers(command_list);
     
     // Draw
-    for(uint32_t i = 0; i < N; i++)
+    for(uint32_t i = 0; i < scene_acceleration.get_num_meshes(); i++)
     {
-      const fstatic_mesh_resource& smrs = context->scene->scene_acceleration.h_meshes[i]->mesh_asset_ptr.get()->resource;
+      const fstatic_mesh_resource& smrs = context->scene->scene_acceleration.get_mesh(i)->mesh_asset_ptr.get()->resource;
 
-      command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, fmath::to_uint32(sizeof(fobject_data))/4, &scene_acceleration.object_buffer[i], 0);
+      command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, fmath::to_uint32(sizeof(fobject_data))/4, scene_acceleration.get_object_data(i), 0);
       command_list_com->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list_com->IASetIndexBuffer(&smrs.index_buffer_view);
       command_list_com->DrawIndexedInstanced(smrs.vertex_num, 1, 0, 0, 0);

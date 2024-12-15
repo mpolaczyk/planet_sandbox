@@ -1,13 +1,10 @@
 
-#include "engine/log.h"
-#include "engine/math/hash.h"
-#include "hittables/scene.h"
-#include "core/rtti/object_registry.h"
-#include "engine/profile/benchmark.h"
 #include "engine/renderer/renderer_base.h"
 
+#include "engine/log.h"
+#include "hittables/scene.h"
+#include "core/rtti/object_registry.h"
 #include "core/application.h"
-#include "engine/renderer/command_list.h"
 
 namespace engine
 {

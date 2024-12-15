@@ -34,7 +34,23 @@ namespace engine
     void build_texture_buffer();
     void build_scene_buffers(hscene* scene);
     bool validate() const;
-        
+    
+    inline uint32_t get_num_meshes() const;
+    inline hstatic_mesh* get_mesh(uint32_t index) const;
+    inline uint32_t get_num_textures() const;
+    inline atexture* get_first_texture() const;
+    inline atexture* get_texture(uint32_t index) const;
+    inline const fobject_data* get_object_data(uint32_t index) const;
+    const fmaterial_properties* get_material_properties() const;
+    const flight_properties* get_light_properties() const;
+
+  private:
+    void pre_frame_clear();
+    int32_t get_material_gpu_id(amaterial* material);
+    int32_t get_texture_gpu_id(atexture* texture);
+    int32_t register_material(amaterial* material);
+    int32_t register_texture(atexture* texture);
+
     // All static meshes on the scene
     std::vector<hstatic_mesh*> h_meshes;
     
@@ -49,14 +65,6 @@ namespace engine
 
     // All lights on the scene
     std::vector<flight_properties> lights_buffer;
-
-  private:
-    void pre_frame_clear();
-    
-    int32_t get_material_gpu_id(amaterial* material);
-    int32_t get_texture_gpu_id(atexture* texture);
-    int32_t register_material(amaterial* material);
-    int32_t register_texture(atexture* texture);
 
     // Object pointer to GPU index
     std::unordered_map<amaterial*, int32_t> material_map;

@@ -2,17 +2,16 @@
 #include "engine/asset/asset.h"
 #include "core/rtti/object_registry.h"
 #include "engine/log.h"
-#include <cassert>
 
 namespace engine
 {
-  template <derives_from<aasset_base> T>
+  template <typename T>
   fsoft_asset_ptr<T>::fsoft_asset_ptr(const std::string& in_name)
   {
     set_name(in_name);
   }
 
-  template <derives_from<aasset_base> T>
+  template <typename T>
   void fsoft_asset_ptr<T>::set_name(const std::string& in_name)
   {
     if(in_name != name)
@@ -22,25 +21,25 @@ namespace engine
     }
   }
 
-  template <derives_from<aasset_base> T>
+  template <typename T>
   std::string fsoft_asset_ptr<T>::get_name() const
   {
     return name;
   }
 
-  template <derives_from<aasset_base> T>
+  template <typename T>
   bool fsoft_asset_ptr<T>::is_loaded() const
   {
     return asset_ptr != nullptr;
   }
 
-  template <derives_from<aasset_base> T>
+  template <typename T>
   bool fsoft_asset_ptr<T>::is_set() const
   {
     return !name.empty();
   }
   
-  template <derives_from<aasset_base> T>
+  template <typename T>
   const T* fsoft_asset_ptr<T>::get() const
   {
     if(!is_loaded() && !name.empty())
@@ -58,13 +57,12 @@ namespace engine
           return nullptr;
         }
       }
-      assert(asset_ptr_temp);
       asset_ptr = asset_ptr_temp;
     }
     return asset_ptr;
   }
   
-  template <derives_from<aasset_base> T>
+  template <typename T>
   T* fsoft_asset_ptr<T>::get()
   {
     return const_cast<T*>(const_cast<const fsoft_asset_ptr<T>*>(this)->get());

@@ -3,7 +3,6 @@
 #include <string>
 
 #include "core/core.h"
-#include "core/concepts.h"
 
 namespace engine
 {
@@ -24,8 +23,7 @@ namespace engine
   // Second get() call will return cached pointer
   // No ref counting, no ownership
   // set_name can be called multiple times with different values, this will invalidate existing pointer and load different asset
-  // FIX Using derives_from<asset_base> requires to include T. Forward declare does not work!
-  template <derives_from<aasset_base> T>
+  template <typename T>
   struct ENGINE_API fsoft_asset_ptr : public fsoft_asset_ptr_base
   {
     fsoft_asset_ptr(const std::string& in_name);

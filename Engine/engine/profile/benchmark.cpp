@@ -12,6 +12,8 @@
 
 namespace engine
 {
+  using namespace std::chrono;
+
   void ftimer_instance::start()
   {
     is_started = true;
@@ -19,7 +21,7 @@ namespace engine
     PIXBeginEvent(PIX_COLOR(155, 112, 0), name.c_str());
 #endif
 #if USE_BENCHMARK
-    start_point = std::chrono::high_resolution_clock::now();
+    start_point = time_point_cast<microseconds>(high_resolution_clock::now()).time_since_epoch().count();
 #endif
   }  
   void ftimer_instance::start(const std::string& in_name)
@@ -54,10 +56,8 @@ namespace engine
     PIXEndEvent();
 #endif
 #if USE_BENCHMARK
-    end_point = std::chrono::high_resolution_clock::now();
-    uint64_t begin = time_point_cast<std::chrono::microseconds>(start_point).time_since_epoch().count();
-    uint64_t end = time_point_cast<std::chrono::microseconds>(end_point).time_since_epoch().count();
-    last_time_us = end - begin;
+    end_point = time_point_cast<microseconds>(high_resolution_clock::now()).time_since_epoch().count();
+    last_time_us = end_point - start_point;
     if(log)
     {
       LOG_TRACE("Benchmark: {0} {1}[us] = {2}[ms] = {3}[s]", name, last_time_us, last_time_us / 1000, last_time_us / 1000000);

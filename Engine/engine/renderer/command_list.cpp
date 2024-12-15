@@ -7,11 +7,11 @@
 
 #include "engine/renderer/command_list.h"
 
-#include "assets/texture.h"
 #include "core/application.h"
-#include "engine/log.h"
-#include "engine/string_tools.h"
+#include "assets/texture.h"
 #include "hittables/static_mesh.h"
+#include "assets/mesh.h"
+#include "engine/log.h"
 #include "engine/math/math.h"
 #include "engine/math/vertex_data.h"
 #include "engine/renderer/dx12_lib.h"

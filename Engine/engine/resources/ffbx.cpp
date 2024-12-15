@@ -11,6 +11,8 @@
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
 #include "nlohmann/json.hpp"
+#include "assets/mesh.h"
+#include "assets/material.h"
 
 #include "assimp/Importer.hpp"
 #include "assimp/Exporter.hpp"

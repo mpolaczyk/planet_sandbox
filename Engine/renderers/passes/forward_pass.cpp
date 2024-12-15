@@ -8,9 +8,10 @@
 #include "d3dx12/d3dx12_root_signature.h"
 
 #include "core/application.h"
-#include "engine/window.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
+#include "assets/mesh.h"
+#include "engine/window.h"
 #include "engine/math/math.h"
 #include "engine/renderer/aligned_structs.h"
 #include "engine/renderer/command_list.h"
@@ -52,7 +53,7 @@ namespace engine
   void fforward_pass::init_pipeline()
   {
     fpass_base::init_pipeline();
-    const uint32_t num_textures = fmath::to_uint32(context->scene->scene_acceleration.a_textures.size());
+    const uint32_t num_textures = context->scene->scene_acceleration.get_num_textures();
     graphics_pipeline->reserve_parameters(root_parameter_type::num);
     graphics_pipeline->add_constant_parameter(root_parameter_type::object_data, 0, 0, fmath::to_uint32(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_VERTEX);
     graphics_pipeline->add_constant_buffer_view_parameter(root_parameter_type::frame_data, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
@@ -116,7 +117,6 @@ namespace engine
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
     ID3D12GraphicsCommandList* command_list_com = command_list->com.Get();
     const uint32_t back_buffer_index = context->back_buffer_index;
-    const uint32_t N = fmath::to_uint32(scene_acceleration.h_meshes.size());
     
     command_list->clear_render_target(&color, DirectX::Colors::Black);
     command_list->clear_depth_stencil(&depth);
@@ -134,8 +134,8 @@ namespace engine
 
     // Process light and material SRVs
     {
-      lights_data[back_buffer_index].upload(scene_acceleration.lights_buffer.data());
-      materials_data[back_buffer_index].upload(scene_acceleration.materials_buffer.data());
+      lights_data[back_buffer_index].upload(scene_acceleration.get_light_properties());
+      materials_data[back_buffer_index].upload(scene_acceleration.get_material_properties());
     }
     
     update_vertex_and_index_buffers(command_list);
@@ -146,10 +146,10 @@ namespace engine
     command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::lights, lights_data[back_buffer_index].resource->GetGPUVirtualAddress());
     command_list_com->SetGraphicsRootShaderResourceView(root_parameter_type::materials, materials_data[back_buffer_index].resource->GetGPUVirtualAddress());
     command_list_com->SetGraphicsRootDescriptorTable(root_parameter_type::textures, get_textures_gpu_handle());
-    for(uint32_t i = 0; i < N; i++)
+    for(uint32_t i = 0; i < scene_acceleration.get_num_meshes(); i++)
     {
-      const fstatic_mesh_resource& smrs = context->scene->scene_acceleration.h_meshes[i]->mesh_asset_ptr.get()->resource;
-      command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, fmath::to_uint32(sizeof(fobject_data))/4, &scene_acceleration.object_buffer[i], 0);
+      const fstatic_mesh_resource& smrs = context->scene->scene_acceleration.get_mesh(i)->mesh_asset_ptr.get()->resource;
+      command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, fmath::to_uint32(sizeof(fobject_data))/4, scene_acceleration.get_object_data(i), 0);
       command_list_com->SetGraphicsRootConstantBufferView(root_parameter_type::frame_data, frame_data[back_buffer_index].resource->GetGPUVirtualAddress());
       command_list_com->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
       command_list_com->IASetIndexBuffer(&smrs.index_buffer_view);

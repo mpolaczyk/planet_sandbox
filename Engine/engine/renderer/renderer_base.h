@@ -1,20 +1,12 @@
 #pragma once
 
-#include <string>
-#include <wrl/client.h>
-
-#include "engine/asset/soft_asset_ptr.h"
-#include "assets/material.h"
 #include "core/rtti/object.h"
 #include "engine/renderer/render_context.h"
 
-struct ID3D12GraphicsCommandList;
-
 namespace engine
 {
-  class hscene;
-  class fwindow;
   struct fshader_resource;
+  struct ftexture_resource;
   struct fgraphics_command_list;
   
   // The responsibility of this class is to render to a texture

@@ -2,14 +2,16 @@
 
 #include "hittables/static_mesh.h"
 
+#include "core/rtti/object_registry.h"
+#include "core/rtti/object_visitor.h"
 #include "core/application.h"
 #include "engine/hittable.h"
 #include "engine/log.h"
 #include "engine/math/hash.h"
 #include "engine/physics.h"
 #include "engine/math/math.h"
-#include "core/rtti/object_registry.h"
-#include "core/rtti/object_visitor.h"
+#include "assets/mesh.h"
+#include "assets/material.h"
 
 #include "reactphysics3d/collision/shapes/BoxShape.h"
 

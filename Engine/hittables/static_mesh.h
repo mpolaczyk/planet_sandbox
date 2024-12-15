@@ -3,11 +3,12 @@
 #include <string>
 
 #include "engine/hittable.h"
-
 #include "engine/asset/soft_asset_ptr.h"
-#include "assets/mesh.h"
-#include "assets/material.h"
 
+namespace DirectX
+{
+  struct XMFLOAT4X4;
+}
 namespace reactphysics3d
 {
   class BoxShape;
@@ -16,6 +17,10 @@ namespace reactphysics3d
 
 namespace engine
 {
+  struct fobject_data;
+  class astatic_mesh;
+  class amaterial;
+  
   class ENGINE_API hstatic_mesh : public hhittable_base
   {
   public:
@@ -34,7 +39,7 @@ namespace engine
 
     virtual void transform(const fvec3& in_origin, const fvec3& in_rotation, const fvec3& in_scale) override;
 
-    void get_object_matrices(const XMFLOAT4X4& view_projection, fobject_data& out_data) const;
+    void get_object_matrices(const DirectX::XMFLOAT4X4& view_projection, fobject_data& out_data) const;
 
     // Persistent state
     fsoft_asset_ptr<astatic_mesh> mesh_asset_ptr;

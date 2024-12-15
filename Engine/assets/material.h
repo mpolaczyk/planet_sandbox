@@ -1,6 +1,5 @@
 #pragma once
 
-#include "texture.h"
 #include "core/core.h"
 
 #include "core/rtti/object.h"
@@ -10,6 +9,8 @@
 
 namespace engine
 {
+  class atexture;
+  
   using namespace DirectX;
 
   class ENGINE_API amaterial : public aasset_base

@@ -9,6 +9,7 @@
 #include "engine/window.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
+#include "assets/mesh.h"
 #include "engine/math/math.h"
 #include "engine/renderer/aligned_structs.h"
 #include "engine/renderer/command_list.h"
@@ -98,9 +99,9 @@ namespace engine
     // Find selected object
     if(!context->selected_object) return;
     uint32_t index = 0;
-    for(uint32_t i = 0; i < fmath::to_uint32(scene_acceleration.h_meshes.size()); i++)
+    for(uint32_t i = 0; i < scene_acceleration.get_num_meshes(); i++)
     {
-      if(context->selected_object == scene_acceleration.h_meshes[i])
+      if(context->selected_object == scene_acceleration.get_mesh(i))
       {
         index = i;
         break;
@@ -110,8 +111,8 @@ namespace engine
     update_vertex_and_index_buffers(command_list);
 
     // Draw
-    const fstatic_mesh_resource& smrs = context->scene->scene_acceleration.h_meshes[index]->mesh_asset_ptr.get()->resource;
-    command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, fmath::to_uint32(sizeof(fobject_data))/4, &scene_acceleration.object_buffer[index], 0);
+    const fstatic_mesh_resource& smrs = context->scene->scene_acceleration.get_mesh(index)->mesh_asset_ptr.get()->resource;
+    command_list_com->SetGraphicsRoot32BitConstants(root_parameter_type::object_data, fmath::to_uint32(sizeof(fobject_data))/4, scene_acceleration.get_object_data(index), 0);
     command_list_com->SetGraphicsRootConstantBufferView(root_parameter_type::frame_data, frame_data[back_buffer_index].resource->GetGPUVirtualAddress());
     command_list_com->IASetVertexBuffers(0, 1, &smrs.vertex_buffer_view);
     command_list_com->IASetIndexBuffer(&smrs.index_buffer_view);

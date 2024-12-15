@@ -1,12 +1,15 @@
 
 #include "renderers/passes/pass_base.h"
 
-#include "assets/texture.h"
 #include "core/application.h"
-#include "engine/window.h"
-#include "engine/log.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
+#include "assets/pixel_shader.h"
+#include "assets/vertex_shader.h"
+#include "assets/texture.h"
+#include "assets/mesh.h"
+#include "engine/window.h"
+#include "engine/log.h"
 #include "engine/math/math.h"
 #include "engine/math/vertex_data.h"
 #include "engine/renderer/command_list.h"
@@ -83,12 +86,11 @@ namespace engine
   void fpass_base::update_vertex_and_index_buffers(fgraphics_command_list* command_list) const
   {
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
-    const uint32_t N = fmath::to_uint32(scene_acceleration.h_meshes.size());
 
     // Update vertex and index buffers
-    for(uint32_t i = 0; i < N; i++)
+    for(uint32_t i = 0; i < scene_acceleration.get_num_meshes(); i++)
     {
-      hstatic_mesh* hmesh = scene_acceleration.h_meshes[i];
+      hstatic_mesh* hmesh = scene_acceleration.get_mesh(i);
       astatic_mesh* amesh = hmesh->mesh_asset_ptr.get();
       if(!amesh->is_resource_online)
       {
@@ -111,9 +113,9 @@ namespace engine
 
     // Process all textures: create SRVs and upload
     // This should happen once in the first draw
-    for(uint32_t i = 0; i < scene_acceleration.a_textures.size(); i++)
+    for(uint32_t i = 0; i < scene_acceleration.get_num_textures(); i++)
     {
-      atexture* texture = scene_acceleration.a_textures[i];
+      atexture* texture = scene_acceleration.get_texture(i);
       if(!texture->gpu_resource.com)
       {
         device->create_texture_buffer(heap, texture, texture->get_display_name().c_str());
@@ -128,8 +130,6 @@ namespace engine
 
   CD3DX12_GPU_DESCRIPTOR_HANDLE fpass_base::get_textures_gpu_handle() const
   {
-    fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
-
-    return scene_acceleration.a_textures[0]->gpu_resource.srv.gpu_descriptor_handle;
+    return context->scene->scene_acceleration.get_first_texture()->gpu_resource.srv.gpu_descriptor_handle;
   }
 }

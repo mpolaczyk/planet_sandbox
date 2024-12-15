@@ -1,13 +1,12 @@
 #pragma once
 
-#include <wrl/client.h>
-
-#include "hittables/static_mesh.h"
 #include "renderers/passes/pass_base.h"
+#include "engine/renderer/aligned_structs.h"
+#include "engine/renderer/gpu_resources.h"
 
 namespace engine
 {
-  using Microsoft::WRL::ComPtr;
+  class astatic_mesh;
   
   struct fdeferred_lighting_pass : public fpass_base
   {

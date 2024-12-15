@@ -6,7 +6,7 @@
 #include "core/application.h"
 #include "core/core.h"
 #include "hittables/scene.h"
-#include "hittables/static_mesh.h"
+#include "assets/mesh.h"
 #include "engine/math/math.h"
 #include "engine/renderer/aligned_structs.h"
 #include "engine/renderer/command_list.h"
@@ -46,7 +46,7 @@ namespace engine
   void fdeferred_lighting_pass::init_pipeline()
   {
     fpass_base::init_pipeline();
-    const uint32_t num_textures = fmath::to_uint32(context->scene->scene_acceleration.a_textures.size());
+    const uint32_t num_textures = context->scene->scene_acceleration.get_num_textures();
     graphics_pipeline->reserve_parameters(root_parameter_type::num);
     // b
     graphics_pipeline->add_constant_parameter(root_parameter_type::frame_data, 0, 0, fmath::to_uint32(sizeof(fframe_data)), D3D12_SHADER_VISIBILITY_PIXEL);
@@ -122,8 +122,8 @@ namespace engine
 
     // Process light and material SRVs
     {
-      lights_data[back_buffer_index].upload(scene_acceleration.lights_buffer.data());
-      materials_data[back_buffer_index].upload(scene_acceleration.materials_buffer.data());
+      lights_data[back_buffer_index].upload(scene_acceleration.get_light_properties());
+      materials_data[back_buffer_index].upload(scene_acceleration.get_material_properties());
     }
     
     // Upload quad mesh

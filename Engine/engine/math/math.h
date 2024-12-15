@@ -1,21 +1,24 @@
 #pragma once
 
 #include <float.h>
+#include <stdint.h>
 
 #include "core/core.h"
 
 #include "engine/math/vec3.h"
 #include "engine/math/ray.h"
 #include "engine/math/hit.h"
-#include "vertex_data.h"
 
 namespace DirectX
 {
   struct XMFLOAT4;
+  struct XMUINT4;
 }
 
 namespace engine
 {
+  struct ftriangle_face;
+  
   class ENGINE_API fmath
   {
   public:
@@ -63,9 +66,9 @@ namespace engine
     static fvec3 max3(const fvec3& a, const fvec3& b);
     static void get_sphere_uv(const fvec3& p, float& out_u, float& out_v);
     static fvec3 to_vec3(const DirectX::XMFLOAT4& a);
-    static DirectX::XMFLOAT4 to_xmfloat4(const fvec3& a);
-    static DirectX::XMFLOAT4 uint32_to_colorf(uint32_t value);
-    static DirectX::XMUINT4 uint32_to_colori(uint32_t value);
+    static void to_xmfloat4(const fvec3& a, DirectX::XMFLOAT4& out_value);
+    static void uint32_to_colorf(uint32_t value, DirectX::XMFLOAT4& out_value);
+    static void uint32_to_colori(uint32_t value, DirectX::XMUINT4& out_value);
     static uint32_t to_uint32(uint64_t value);
     static uint32_t to_uint32(int64_t value);
   };

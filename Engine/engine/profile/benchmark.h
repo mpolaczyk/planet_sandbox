@@ -1,7 +1,8 @@
 #pragma once
 
-#include <chrono>
 #include "core/core.h"
+
+#include <string>
 
 namespace std
 {
@@ -19,12 +20,13 @@ namespace engine
     inline uint64_t once(const std::string& name, const std::function<void()>& func); // microseconds
     inline uint64_t stop(bool log = false); // microseconds
     inline bool is_working() const { return is_started; }
-    inline uint64_t get_last_time_us() { return last_time_us; }
-    inline float get_last_time_ms() { return static_cast<float>(last_time_us) / 1000.0f; }
+    inline uint64_t get_last_time_us() const { return last_time_us; }
+    inline float get_last_time_ms() const { return static_cast<float>(last_time_us) / 1000.0f; }
 
   private:
-    std::chrono::time_point<std::chrono::high_resolution_clock> start_point, end_point;
-    uint64_t last_time_us = 0;
+    uint64_t start_point{};
+    uint64_t end_point{};
+    uint64_t last_time_us{};
     std::string name;
     bool is_started = false;
   };

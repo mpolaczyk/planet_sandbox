@@ -1,14 +1,11 @@
 #pragma once
 
-#include <wrl/client.h>
-
 #include "renderers/passes/pass_base.h"
 #include "engine/renderer/gpu_resources.h"
 
 namespace engine
 {
   struct fgraphics_command_list;
-  using Microsoft::WRL::ComPtr;
   
   struct fdebug_pass : public fpass_base
   {

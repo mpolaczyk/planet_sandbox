@@ -8,6 +8,7 @@ namespace engine
   class hscene;
   class hhittable_base;
   struct fshader_resource;
+  struct ftexture_resource;
   struct fscene_acceleration;
   struct fdescriptor_heap;
   

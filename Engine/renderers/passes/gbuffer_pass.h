@@ -1,15 +1,10 @@
 #pragma once
 
-#include <wrl/client.h>
-
-#include "dxcapi.h"
-
+#include "engine/renderer/gpu_resources.h"
 #include "renderers/passes/pass_base.h"
 
 namespace engine
 {
-  using Microsoft::WRL::ComPtr;
-  
   struct fgbuffer_pass : public fpass_base
   {
     virtual void init_shaders();
