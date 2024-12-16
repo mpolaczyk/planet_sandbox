@@ -1,17 +1,16 @@
 #pragma once
 
-#include <wrl/client.h>
 #include <string>
 
 #include "core/core.h"
+#include "core/com_pointer.h"
+
 
 struct ID3D10Blob;
 struct IDxcBlob;
 
 namespace engine
 {
-  using Microsoft::WRL::ComPtr;
-
   struct ENGINE_API fshader_tools
   {
     static bool load_compiled_shader(const std::string& file_name, ComPtr<IDxcBlob>& out_shader_blob);

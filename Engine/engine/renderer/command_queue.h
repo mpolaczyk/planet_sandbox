@@ -1,17 +1,15 @@
 #pragma once
 
 #include <vector>
-#include <wrl/client.h>
 
 #include "core/core.h"
+#include "core/com_pointer.h"
 #include "engine/renderer/command_list.h"
 
 struct ID3D12CommandQueue;
 struct ID3D12CommandAllocator;
 struct ID3D12GraphicsCommandList;
 struct ID3D12Fence;
-
-using Microsoft::WRL::ComPtr;
 
 namespace engine
 {

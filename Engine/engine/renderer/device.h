@@ -1,9 +1,9 @@
 #pragma once
 
-#include <wrl/client.h>
 #include <vector>
 
 #include "core/core.h"
+#include "core/com_pointer.h"
 
 struct ID3D12Resource;
 struct ID3D12CommandQueue;
@@ -37,8 +37,6 @@ namespace engine
   struct fdescriptor_heap;
   struct fdsv_resource;
   struct frtv_resource;
-  
-  using namespace Microsoft::WRL;
   
   struct ENGINE_API fdevice final
   {

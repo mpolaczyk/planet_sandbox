@@ -1,9 +1,9 @@
 #pragma once
 
-#include <wrl/client.h>
 #include <string>
 
 #include "core/core.h"
+#include "core/com_pointer.h"
 
 struct IDXGISwapChain4;
 struct IDXGIFactory4;
@@ -31,8 +31,6 @@ typedef HWND__* HWND;
 
 namespace engine
 {
-  using Microsoft::WRL::ComPtr;
-
   // Container for all code that does not fit one of the classes: fdevice, fcommand_list or fgraphics_pipeline etc.
   struct ENGINE_API fdx12
   {

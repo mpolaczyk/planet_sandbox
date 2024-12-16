@@ -1,12 +1,12 @@
 #pragma once
 
 #include <list>
-#include <wrl/client.h>
 #include <vector>
 
 #include "d3dx12/d3dx12_root_signature.h"
 #include "d3dx12/d3dx12_core.h"
 
+#include "core/com_pointer.h"
 #include "engine/log.h"
 
 struct IDxcBlob;
@@ -15,8 +15,6 @@ struct ID3D12PipelineState;
 
 namespace engine
 {
-  using Microsoft::WRL::ComPtr;
-  
   struct fgraphics_pipeline
   {
     void reserve_parameters(uint32_t num);

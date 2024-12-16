@@ -1,9 +1,9 @@
 #pragma once
 
 #include <memory>
-#include <wrl/client.h>
 
 #include "core/core.h"
+#include "core/com_pointer.h"
 #include "engine/math/camera.h"
 #include "engine/profile/benchmark.h"
 
@@ -16,8 +16,6 @@ namespace reactphysics3d
   class PhysicsCommon;
   class PhysicsWorld;
 }
-
-using Microsoft::WRL::ComPtr;
 
 namespace engine
 {

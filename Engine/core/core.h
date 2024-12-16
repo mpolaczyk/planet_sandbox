@@ -31,6 +31,7 @@
 #define USE_TLAS 1
 #endif
 
+#define USE_CUSTOM_COM_POINTER 0
 #define USE_NSIGHT_AFTERMATH 0
 #define USE_NSIGHT_GRAPHICS 0
 #define USE_FXC 0         // 0 means use DXC

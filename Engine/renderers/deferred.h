@@ -1,8 +1,7 @@
 #pragma once
 
-#include <wrl/client.h>
-
 #include "core/core.h"
+#include "core/com_pointer.h"
 #include "engine/renderer/renderer_base.h"
 #include "passes/debug_pass.h"
 #include "passes/deferred_lighting_pass.h"
@@ -15,8 +14,6 @@ namespace engine
   class hstatic_mesh;
   class hlight;
   
-  using Microsoft::WRL::ComPtr;
-
   class ENGINE_API rdeferred : public rrenderer_base
   {
   public:

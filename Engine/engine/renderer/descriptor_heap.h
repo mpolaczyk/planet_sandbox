@@ -1,12 +1,12 @@
 #pragma once
 
-#include <wrl/client.h>
 #include <vector>
 
 #include "d3d12.h"
 #include "d3dx12/d3dx12_root_signature.h"
 
 #include "core/core.h"
+#include "core/com_pointer.h"
 #if BUILD_DEBUG
 #include <string>
 #endif
@@ -15,8 +15,6 @@ struct ID3D12DescriptorHeap;
 
 namespace engine
 {
-  using namespace Microsoft::WRL;
-
   struct fdescriptor_heap;
 
   // Copyable descriptor. Holds reference to a heap and handles.

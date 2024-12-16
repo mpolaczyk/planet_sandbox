@@ -1,11 +1,10 @@
 #pragma once
 
 #include <dxgi1_6.h>
-#include <memory>
 #include <vector>
-#include <wrl/client.h>
 
 #include "core/core.h"
+#include "core/com_pointer.h"
 #include "engine/renderer/descriptor_heap.h"
 #include "engine/renderer/gpu_resources.h"
 
@@ -13,8 +12,6 @@ struct ID3D12RootSignature;
 struct ID3D12DescriptorHeap;
 struct ID3D12Resource;
 struct ID3D12CommandQueue;
-
-using Microsoft::WRL::ComPtr;
 
 namespace engine
 {

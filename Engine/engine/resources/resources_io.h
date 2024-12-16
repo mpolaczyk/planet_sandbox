@@ -1,14 +1,11 @@
 #pragma once
 
-#include <wrl/client.h>
 #include <string>
 
 #include "core/core.h"
 
 namespace engine
 {
-  using Microsoft::WRL::ComPtr;
-
   class astatic_mesh;
   class atexture;
 

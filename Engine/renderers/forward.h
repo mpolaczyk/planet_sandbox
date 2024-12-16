@@ -1,7 +1,5 @@
 #pragma once
 
-#include <wrl/client.h>
-
 #include "core/core.h"
 #include "engine/renderer/renderer_base.h"
 #include "passes/forward_pass.h"
@@ -13,8 +11,6 @@ namespace engine
 {
   class hstatic_mesh;
   class hlight;
-
-  using Microsoft::WRL::ComPtr;
   
   class ENGINE_API rforward : public rrenderer_base
   {

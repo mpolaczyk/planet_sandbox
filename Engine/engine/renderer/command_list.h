@@ -1,9 +1,9 @@
 #pragma once
 
 #include <cstdint>
-#include <wrl/client.h>
 
 #include "core/core.h"
+#include "core/com_pointer.h"
 
 struct ID3D12GraphicsCommandList;
 struct ID3D12Resource;
@@ -15,8 +15,6 @@ namespace engine
   class astatic_mesh;
   struct fdescriptor_heap;
   struct ftexture_resource;
-  
-  using namespace Microsoft::WRL;
     
   struct ENGINE_API fgraphics_command_list final
   {

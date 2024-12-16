@@ -1,8 +1,9 @@
 #pragma once
 
-#include <wrl/client.h>
+#include "core/com_pointer.h"
+#include "dxcapi.h"   // IDxcBlob is possible to forward declare, but causes really strange compilation issues in client.h
+// It also needs ComPtr to be included first.
 
-#include "dxcapi.h"   // IDxcBlob possible to forward declare, but causes really strange compilation issues in client.h
 #include "engine/renderer/descriptor_heap.h"
 #include "engine/renderer/dx12_lib.h"
 
@@ -12,8 +13,6 @@ struct D3D12_INDEX_BUFFER_VIEW;
 
 namespace engine
 {
-  using namespace Microsoft::WRL;
-
   struct ENGINE_API fbuffer
   {
     ComPtr<ID3D12Resource> resource;

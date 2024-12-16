@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <wrl/client.h>
 
 #include "core/core.h"
 
