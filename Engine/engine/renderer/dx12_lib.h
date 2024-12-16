@@ -16,7 +16,7 @@ enum DXC_OUT_KIND;
 enum DXGI_FORMAT;
 
 #if !defined(_WINDEF_) && !defined(__INTELLISENSE__)
-class HWND__;
+struct HWND__;
 typedef HWND__* HWND;
 #endif
 

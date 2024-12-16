@@ -31,7 +31,7 @@ namespace engine
   {
     uint32_t success = 1;
     ComPtr<IDXGIFactory5> factory5;
-    if(SUCCEEDED(factory.As(&factory5)))
+    if(SUCCEEDED(factory->QueryInterface(IID_PPV_ARGS(factory5.GetAddressOf()))))
     {
       success = FAILED(factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &success, sizeof(success))) ? 0 : 1;
     }
@@ -66,7 +66,7 @@ namespace engine
     ComPtr<IDXGISwapChain1> swap_chain1;
     THROW_IF_FAILED(factory->CreateSwapChainForHwnd(command_queue, hwnd, &desc, nullptr, nullptr, &swap_chain1))
     THROW_IF_FAILED(factory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER))
-    THROW_IF_FAILED(swap_chain1.As(&out_swap_chain))
+    THROW_IF_FAILED(swap_chain1->QueryInterface(IID_PPV_ARGS(out_swap_chain.GetAddressOf())))
   }
   
   void fdx12::resize_swap_chain(IDXGISwapChain4* swap_chain, uint32_t backbuffer_count, uint32_t width, uint32_t height)

@@ -29,7 +29,7 @@ namespace engine
     return false;
 #endif
     ComPtr<IDxcUtils> utils;
-    if(FAILED(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&utils))))
+    if(FAILED(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(utils.GetAddressOf()))))
     {
       LOG_ERROR("Failed to create dxc utils instance.");
       return false;
@@ -107,12 +107,12 @@ namespace engine
     // Initialize the dxc
     // TODO: compiler and utils does not have to be created for each invocation
     //       but keep in mind thread safety: utils, compiler and include handler needs to exist per thread
-    if(FAILED(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&utils))))
+    if(FAILED(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(utils.GetAddressOf()))))
     {
       LOG_ERROR("Failed to create dxc utils instance.");
       return false;
     }
-    if(FAILED(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&compiler))))
+    if(FAILED(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(compiler.GetAddressOf()))))
     {
       LOG_ERROR("Failed to create dxc instance.");
       return false;

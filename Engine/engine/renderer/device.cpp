@@ -249,7 +249,7 @@ namespace engine
     desc.NumDescriptors = MAX_DSV_DESCRIPTORS;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-    THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&out_descriptor_heap.com)));
+    THROW_IF_FAILED(com->CreateDescriptorHeap(&desc, IID_PPV_ARGS(out_descriptor_heap.com.GetAddressOf())));
 
 #if BUILD_DEBUG
     DX_SET_NAME(out_descriptor_heap.com, "DSV heap: {}", name)
