@@ -4,12 +4,12 @@
 #include <wrl/client.h>
 #include <vector>
 
-#include "dxcapi.h"
 #include "d3dx12/d3dx12_root_signature.h"
 #include "d3dx12/d3dx12_core.h"
 
 #include "engine/log.h"
 
+struct IDxcBlob;
 struct ID3D12RootSignature;
 struct ID3D12PipelineState;
 

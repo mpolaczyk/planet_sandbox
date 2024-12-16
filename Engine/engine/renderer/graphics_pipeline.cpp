@@ -1,7 +1,9 @@
 
-#include "graphics_pipeline.h"
 
 #include "d3dx12/d3dx12_core.h"
+#include "dxcapi.h"
+
+#include "graphics_pipeline.h"
 
 #include "core/application.h"
 #include "engine/math/math.h"

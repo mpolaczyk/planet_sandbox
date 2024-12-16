@@ -2,7 +2,7 @@
 
 #include <wrl/client.h>
 
-#include "dxcapi.h"
+#include "dxcapi.h"   // IDxcBlob possible to forward declare, but causes really strange compilation issues in client.h
 #include "engine/renderer/descriptor_heap.h"
 #include "engine/renderer/dx12_lib.h"
 
