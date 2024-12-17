@@ -9,10 +9,6 @@ struct IDXGISwapChain4;
 struct IDXGIFactory4;
 struct ID3D12CommandQueue;
 struct ID3D12Resource;
-struct IDxcResult;
-struct IDxcBlobUtf8;
-struct IDxcBlob;
-enum DXC_OUT_KIND;
 enum DXGI_FORMAT;
 
 #if !defined(_WINDEF_) && !defined(__INTELLISENSE__)
@@ -46,11 +42,6 @@ namespace engine
     
     static void upload_host_buffer(ID3D12Resource* resource, uint32_t buffer_size, const void* in_buffer);
     
-    static bool get_dxc_hash(IDxcResult* result, std::string& out_hash);
-    static bool get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlob>& out_blob);
-    static bool get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlobUtf8>& out_blob);
-    static bool save_dxc_blob(IDxcBlob* blob, const char* path);
-
     static std::string get_resource_name(ID3D12Resource* resource);
     
     static uint32_t align_size_to(uint32_t size, uint32_t value)

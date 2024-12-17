@@ -1,17 +1,21 @@
 #include <filesystem>
-#include <random>
+
 #include <fstream>
 #include <cassert>
 
 #include "engine/resources/shader_tools.h"
+#include "dxcapi.h"
 
 #include "d3d12.h"
-#include "dxcapi.h"
+
 #pragma comment(lib, "dxcompiler.lib")
 
 #if USE_FXC
 #include <d3dcompiler.h>
 #endif
+
+#include <dbghelp.h>
+#include <d3dx12/d3dx12_core.h>
 
 #include "engine/log.h"
 #include "engine/io.h"
@@ -19,7 +23,6 @@
 #include "core/application.h"
 #include "engine/string_tools.h"
 #include "engine/math/math.h"
-#include "engine/renderer/dx12_lib.h"
 
 namespace engine
 {
@@ -149,7 +152,7 @@ namespace engine
 
     // Print warnings and errors, fail if errors
     ComPtr<IDxcBlobUtf8> errors = nullptr;
-    fdx12::get_dxc_blob(dxc_result.Get(), DXC_OUT_ERRORS, errors);
+    get_dxc_blob(dxc_result.Get(), DXC_OUT_ERRORS, errors);
     if (errors != nullptr && errors->GetStringLength() != 0)
     {
       LOG_ERROR("Warnings and errors:\n {0}", errors->GetStringPointer());
@@ -165,8 +168,8 @@ namespace engine
     // Object file
     {
       std::string obj_path = shader_path + ".cso";
-      if(!fdx12::get_dxc_blob(dxc_result.Get(), DXC_OUT_OBJECT, out_shader_blob)) { return false; }
-      if(!fdx12::save_dxc_blob(out_shader_blob.Get(), obj_path.c_str())) { return false; }
+      if(!get_dxc_blob(dxc_result.Get(), DXC_OUT_OBJECT, out_shader_blob)) { return false; }
+      if(!save_dxc_blob(out_shader_blob.Get(), obj_path.c_str())) { return false; }
 #if USE_NSIGHT_AFTERMATH
       fapplication::get_instance()->gpu_crash_handler.add_shader_binary(out_shader_blob.Get());
 #endif
@@ -177,14 +180,85 @@ namespace engine
     {
       ComPtr<IDxcBlob> pdb_blob;
       std::string pdb_path = shader_path + ".pdb";
-      if(!fdx12::get_dxc_blob(dxc_result.Get(), DXC_OUT_PDB, pdb_blob)) { return false; }
-      if(!fdx12::save_dxc_blob(pdb_blob.Get(), pdb_path.c_str())) { return false; }
+      if(!get_dxc_blob(dxc_result.Get(), DXC_OUT_PDB, pdb_blob)) { return false; }
+      if(!save_dxc_blob(pdb_blob.Get(), pdb_path.c_str())) { return false; }
 #if USE_NSIGHT_AFTERMATH
       fapplication::get_instance()->gpu_crash_handler.add_source_shader_debug_data(out_shader_blob.Get(), pdb_blob.Get());
 #endif
     }
 #endif
     return true;
+  }
+
+  bool fshader_tools::get_dxc_hash(IDxcResult* result, std::string& out_hash)
+  {
+    ComPtr<IDxcBlob> hash = nullptr;
+    char hash_string[32] = {'\0'};
+    if(get_dxc_blob(result, DXC_OUT_SHADER_HASH, hash) && hash != nullptr)
+    {
+      auto* hash_buffer = static_cast<DxcShaderHash*>(hash->GetBufferPointer());
+      for(size_t i = 0; i < _countof(hash_buffer->HashDigest); ++i)
+      {
+        snprintf(hash_string + i, 16, "%X", hash_buffer->HashDigest[i]);
+      }
+      out_hash = std::string(hash_string);
+      return true;
+    }
+    return false;
+  }
+  
+  bool fshader_tools::get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlob>& out_blob)
+  {
+    ComPtr<IDxcBlobUtf16> name = nullptr;
+    if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), name.GetAddressOf())) && out_blob != nullptr)
+    {
+      LOG_ERROR("Unable to get dxc blob {0}", static_cast<int32_t>(blob_type));
+      return false;
+    }
+    return true;
+  }
+  
+  bool fshader_tools::get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlobUtf8>& out_blob)
+  {
+    ComPtr<IDxcBlobUtf16> name = nullptr;
+    if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), name.GetAddressOf())) && out_blob != nullptr)
+    {
+      LOG_ERROR("Unable to get dxc blob {0}", static_cast<int32_t>(blob_type))
+      return false;
+    }
+    return true;
+  } 
+  
+  bool fshader_tools::save_dxc_blob(IDxcBlob* blob, const char* path)
+  {
+    FILE* file = nullptr;
+    std::wstring w_path = fstring_tools::to_utf16(path);
+    errno_t open_result = _wfopen_s(&file, w_path.c_str(), L"wb");
+    if(open_result != 0)
+    {
+      // See https://learn.microsoft.com/en-us/cpp/c-runtime-library/errno-constants
+      LOG_ERROR("Failed to write dxc blob. Error code {0}", static_cast<int32_t>(open_result))
+      return false;
+    }
+    fwrite(blob->GetBufferPointer(), blob->GetBufferSize(), 1, file);
+    fclose(file);
+    return true;
+  }
+
+  CD3DX12_SHADER_BYTECODE fshader_tools::get_shader_byte_code(IDxcBlob* shader)
+  {
+    return CD3DX12_SHADER_BYTECODE(shader->GetBufferPointer(), shader->GetBufferSize());
+  }
+
+  void fshader_tools::get_blob_pointer_and_size(IDxcBlob* in_blob, uint8_t* out_address, size_t& out_size)
+  {
+    out_address = static_cast<uint8_t*>(const_cast<void*>(in_blob->GetBufferPointer()));
+    out_size = in_blob->GetBufferSize();
+  }
+
+  void fshader_tools::copy(ComPtr<IDxcBlob>& destination_blob, const ComPtr<IDxcBlob>& source_blob)
+  {
+    destination_blob = source_blob;
   }
 
 #if USE_FXC

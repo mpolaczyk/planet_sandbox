@@ -2,11 +2,12 @@
 
 #include "core/com_pointer.h"
 #include "dxcapi.h"   // IDxcBlob is possible to forward declare, but causes really strange compilation issues in client.h
-// It also needs ComPtr to be included first.
+//// It also needs ComPtr to be included first.
 
 #include "engine/renderer/descriptor_heap.h"
 #include "engine/renderer/dx12_lib.h"
 
+struct IDxcBlob;
 struct ID3D12Resource;
 struct D3D12_VERTEX_BUFFER_VIEW;
 struct D3D12_INDEX_BUFFER_VIEW;

@@ -6,7 +6,6 @@
 
 #include "d3d12.h"
 #include "d3dx12/d3dx12_core.h"
-#include "dxcapi.h"
 
 #include "engine/renderer/dx12_lib.h"
 
@@ -90,61 +89,6 @@ namespace engine
     THROW_IF_FAILED(resource->Map(0, &read_range, reinterpret_cast<void**>(&mapping)))
     memcpy(mapping, in_buffer, buffer_size);
     resource->Unmap(0, nullptr);
-  }
-
-  bool fdx12::get_dxc_hash(IDxcResult* result, std::string& out_hash)
-  {
-    ComPtr<IDxcBlob> hash = nullptr;
-    char hash_string[32] = {'\0'};
-    if(fdx12::get_dxc_blob(result, DXC_OUT_SHADER_HASH, hash) && hash != nullptr)
-    {
-      auto* hash_buffer = static_cast<DxcShaderHash*>(hash->GetBufferPointer());
-      for(size_t i = 0; i < _countof(hash_buffer->HashDigest); ++i)
-      {
-        snprintf(hash_string + i, 16, "%X", hash_buffer->HashDigest[i]);
-      }
-      out_hash = std::string(hash_string);
-      return true;
-    }
-    return false;
-  }
-  
-  bool fdx12::get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlob>& out_blob)
-  {
-    ComPtr<IDxcBlobUtf16> name = nullptr;
-    if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), name.GetAddressOf())) && out_blob != nullptr)
-    {
-      LOG_ERROR("Unable to get dxc blob {0}", static_cast<int32_t>(blob_type));
-      return false;
-    }
-    return true;
-  }
-  
-  bool fdx12::get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlobUtf8>& out_blob)
-  {
-    ComPtr<IDxcBlobUtf16> name = nullptr;
-    if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), name.GetAddressOf())) && out_blob != nullptr)
-    {
-      LOG_ERROR("Unable to get dxc blob {0}", static_cast<int32_t>(blob_type))
-      return false;
-    }
-    return true;
-  } 
-  
-  bool fdx12::save_dxc_blob(IDxcBlob* blob, const char* path)
-  {
-    FILE* file = nullptr;
-    std::wstring w_path = fstring_tools::to_utf16(path);
-    errno_t open_result = _wfopen_s(&file, w_path.c_str(), L"wb");
-    if(open_result != 0)
-    {
-      // See https://learn.microsoft.com/en-us/cpp/c-runtime-library/errno-constants
-      LOG_ERROR("Failed to write dxc blob. Error code {0}", static_cast<int32_t>(open_result))
-      return false;
-    }
-    fwrite(blob->GetBufferPointer(), blob->GetBufferSize(), 1, file);
-    fclose(file);
-    return true;
   }
 
   std::string fdx12::get_resource_name(ID3D12Resource* resource)

@@ -27,8 +27,9 @@
 
 #include "NsightAftermathGpuCrashTracker.h"
 
-#include "dxcapi.h"
-#include "engine/log.h" // WATCH OUT! dependency on the project, but I want logging to be consistent
+// WATCH OUT! dependency on the project!
+#include "engine/log.h"                       // For logging to be consistent    
+#include "engine/resources/shader_tools.h"    // to avoid including dxcapi.h here
 
 GpuCrashTracker::~GpuCrashTracker()
 {
@@ -124,7 +125,7 @@ void GpuCrashTracker::WaitForDump(std::string& outMsg)
 
 uint64_t GpuCrashTracker::AddShaderBinary(IDxcBlob* shaderBlob)
 {
-  const D3D12_SHADER_BYTECODE shader{ shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize() };
+  const D3D12_SHADER_BYTECODE shader = engine::fshader_tools::get_shader_byte_code(shaderBlob);
 
   GFSDK_Aftermath_ShaderBinaryHash hash;
   AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_GetShaderHash(GFSDK_Aftermath_Version_API, &shader, &hash));
@@ -138,13 +139,15 @@ uint64_t GpuCrashTracker::AddShaderBinary(IDxcBlob* shaderBlob)
 
 std::string GpuCrashTracker::AddSourceShaderDebugData(IDxcBlob* shaderBlob, IDxcBlob* pdbBlob)
 {
-  const D3D12_SHADER_BYTECODE shader{ shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize() };
+  const D3D12_SHADER_BYTECODE shader = engine::fshader_tools::get_shader_byte_code(shaderBlob);
 
   GFSDK_Aftermath_ShaderDebugName debug_name;
   AFTERMATH_CHECK_ERROR(GFSDK_Aftermath_GetShaderDebugName(GFSDK_Aftermath_Version_API, &shader, &debug_name));
 
-  uint8_t* buff = static_cast<uint8_t*>(const_cast<void*>(pdbBlob->GetBufferPointer()));
-  size_t length = pdbBlob->GetBufferSize();
+  uint8_t* buff{};
+  size_t length{};
+  engine::fshader_tools::get_blob_pointer_and_size(pdbBlob, buff, length);
+
   std::vector<uint8_t> data(buff, buff + length);
   m_sourceShaderDebugData[debug_name].swap(data);
   return debug_name.name;

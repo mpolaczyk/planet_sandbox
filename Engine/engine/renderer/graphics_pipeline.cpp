@@ -1,7 +1,5 @@
 
-
 #include "d3dx12/d3dx12_core.h"
-#include "dxcapi.h"
 
 #include "graphics_pipeline.h"
 
@@ -9,6 +7,7 @@
 #include "engine/math/math.h"
 #include "engine/renderer/device.h"
 #include "engine/renderer/pipeline_state.h"
+#include "engine/resources/shader_tools.h"
 
 // https://asawicki.info/news_1754_direct3d_12_long_way_to_access_data
 
@@ -71,12 +70,12 @@ namespace engine
 
   void fgraphics_pipeline::bind_pixel_shader(ComPtr<IDxcBlob>& shader)
   {
-    pixel_shader = shader;  
+    fshader_tools::copy(pixel_shader, shader); // Trick to avoid including "dxcapi.h"
   }
 
   void fgraphics_pipeline::bind_vertex_shader(ComPtr<IDxcBlob>& shader)
   {
-    vertex_shader = shader;  
+    fshader_tools::copy(vertex_shader, shader); // Trick to avoid including "dxcapi.h"
   }
 
   void fgraphics_pipeline::bind_command_list(ID3D12GraphicsCommandList* command_list)
@@ -123,8 +122,8 @@ namespace engine
     pipeline_state_stream.root_signature = root_signature.Get();
     pipeline_state_stream.input_layout = { input_layout.data(), fmath::to_uint32(input_layout.size()) };
     pipeline_state_stream.primitive_topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-    pipeline_state_stream.vertex_shader = CD3DX12_SHADER_BYTECODE(vertex_shader->GetBufferPointer(), vertex_shader->GetBufferSize());
-    pipeline_state_stream.pixel_shader = CD3DX12_SHADER_BYTECODE(pixel_shader->GetBufferPointer(), pixel_shader->GetBufferSize());
+    pipeline_state_stream.vertex_shader = fshader_tools::get_shader_byte_code(vertex_shader.Get());
+    pipeline_state_stream.pixel_shader = fshader_tools::get_shader_byte_code(pixel_shader.Get());
     pipeline_state_stream.depth_stencil_format = depth_buffer_format;
     pipeline_state_stream.render_target_formats = render_target_formats;
     pipeline_state_stream.blend_desc = blend_desc;
