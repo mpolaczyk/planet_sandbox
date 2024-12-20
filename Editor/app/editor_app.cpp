@@ -1,17 +1,7 @@
 #include "stdafx.h"
 
-#include "core/windows_minimal.h"
-
-#include <tchar.h>
-
-#include "imgui.h"
-#include "imgui_impl_win32.h"
-
 #include "app/editor_app.h"
-
 #include "app/editor_window.h"
-#include "hittables/scene.h"
-#include "engine/renderer/command_queue.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

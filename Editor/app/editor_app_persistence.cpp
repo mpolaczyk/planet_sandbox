@@ -1,18 +1,10 @@
 #include "stdafx.h"
 
-#include <fstream>
-
 #include "app/editor_app.h"
 #include "app/editor_window.h"
-#include "hittables/scene.h"
-
-#include "nlohmann/json.hpp"
-#include "engine/persistence/object_persistence.h"
 
 namespace editor
 {
-  using namespace engine;
-  
   void feditor_app::load_window_state() const
   {
     LOG_INFO("Loading: window state");

@@ -1,15 +1,6 @@
 #include "stdafx.h"
 
-#include "imgui.h"
-
-#include <stdexcept>
-#include <functional>
-#include <DirectXMath.h>
-
-#include "ui_helper.h"
-
-#include "assets/pixel_shader.h"
-#include "assets/vertex_shader.h"
+#include "app/ui/ui_helper.h"
 
 namespace editor
 {

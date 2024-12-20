@@ -1,7 +1,6 @@
 #pragma once
 
-#include "ui/ui.h"
-#include "engine/window.h"
+#include "app/ui/ui.h"
 
 namespace engine
 {

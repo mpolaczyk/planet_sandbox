@@ -1,17 +1,27 @@
 #pragma once
 
-// Common library headers
+#include <stdio.h>
+#include <ppl.h>
+#include <tchar.h>
+
 #include <string>
 #include <vector>
 #include <cassert>
-
-#include <ppl.h>
 #include <sstream>
+#include <fstream>
+#include <functional>
+#include <stdexcept>
+
+#include <DirectXMath.h>
+
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+#include "imgui_impl_dx12.h"
+
+#include "nlohmann/json.hpp"
 
 #include "engine.h"
 using namespace engine;
-
-
 
 #define IMGUI_DISABLE_DEMO_WINDOWS
 #define IMGUI_DISABLE_METRICS_WINDOW

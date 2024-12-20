@@ -1,25 +1,8 @@
 #include "stdafx.h"
 
-#include <stdio.h>
-
-#include "core/windows_minimal.h"
-
-#include "ui/draw_edit_panel.h"
-#include "imgui.h"
-
-#include "engine/renderer/renderer_base.h"
-#include "engine/math/camera.h"
-
-#include "core/core.h"
-#include "engine.h"
 #include "app/editor_app.h"
 #include "app/editor_window.h"
-#include "engine/physics.h"
-#include "engine/string_tools.h"
-#include "engine/hittable.h"
-#include "hittables/static_mesh.h"
-#include "hittables/scene.h"
-#include "engine/resources/ffbx.h"
+#include "app/ui/draw_edit_panel.h"
 
 namespace editor
 {

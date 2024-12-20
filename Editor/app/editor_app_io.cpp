@@ -1,14 +1,9 @@
 #include "stdafx.h"
 
-#include <ppl.h>
-#include <fstream>
-
 #include "app/editor_app.h"
 
 namespace editor
 {
-  using namespace engine;
-  
   void feditor_app::save_materials() 
   {
     LOG_INFO("Saving: materials");
@@ -22,8 +17,6 @@ namespace editor
 
   void feditor_app::load_assets() 
   {
-    using namespace engine;
-
     LOG_INFO("Loading: textures");
     {
       std::vector<std::string> texture_names = fio::discover_texture_files(false);

@@ -1,13 +1,7 @@
 #include "stdafx.h"
 
-#include "imgui.h"
-#include "imgui_impl_win32.h"
-#include "imgui_impl_dx12.h"
-
-#include "editor_window.h"
+#include "app/editor_window.h"
 #include "app/editor_app.h"
-#include "engine/renderer/command_queue.h"
-#include "engine/renderer/device.h"
 
 namespace editor
 {

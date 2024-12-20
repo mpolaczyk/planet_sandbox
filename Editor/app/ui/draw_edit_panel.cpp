@@ -1,19 +1,7 @@
 #include "stdafx.h"
 
-#include "imgui.h"
-
-#include "draw_edit_panel.h"
-
-#include <reactphysics3d/collision/shapes/BoxShape.h>
-
-#include "ui_helper.h"
-#include "engine/physics.h"
-#include "engine/hittable.h"
-#include "hittables/light.h"
-#include "hittables/static_mesh.h"
-
-#include "renderers/forward.h"
-#include "renderers/deferred.h"
+#include "app/ui/draw_edit_panel.h"
+#include "app/ui/ui_helper.h"
 
 namespace editor
 {
