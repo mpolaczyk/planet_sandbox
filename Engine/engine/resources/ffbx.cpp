@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "ffbx.h"
 
 #include <tchar.h>
@@ -19,8 +21,6 @@
 #include "assimp/LogStream.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
-
-#include "third_party/ofbx.h"
 
 /*
  * Summary after 3 evenings of struggle with FBX importing - Hacky code here!
@@ -88,74 +88,74 @@ namespace engine
     aiProcess_Debone |
     aiProcess_GenBoundingBoxes;
 
-  void ffbx::save_as_obj_ofbx(const ofbx::Mesh& mesh, const char* path)
-  {
-    FILE* fp = fopen(path, "wb");
-    if(!fp) return;
-    int indices_offset = 0;
-    int mesh_idx = 0;
-
-    const ofbx::GeometryData& geom = mesh.getGeometryData();
-    const ofbx::Vec3Attributes positions = geom.getPositions();
-    const ofbx::Vec3Attributes normals = geom.getNormals();
-    const ofbx::Vec2Attributes uvs = geom.getUVs();
-
-    // each ofbx::Mesh can have several materials == partitions
-    for(int partition_idx = 0; partition_idx < geom.getPartitionCount(); ++partition_idx)
-    {
-      fprintf(fp, "o obj%d_%d\ng grp%d\n", mesh_idx, partition_idx, mesh_idx);
-      const ofbx::GeometryPartition& partition = geom.getPartition(partition_idx);
-
-      // partitions most likely have several polygons, they are not triangles necessarily, use ofbx::triangulate if you want triangles
-      for(int polygon_idx = 0; polygon_idx < partition.polygon_count; ++polygon_idx)
-      {
-        const ofbx::GeometryPartition::Polygon& polygon = partition.polygons[polygon_idx];
-
-        for(int i = polygon.from_vertex; i < polygon.from_vertex + polygon.vertex_count; ++i)
-        {
-          ofbx::Vec3 v = positions.get(i);
-          fprintf(fp, "v %f %f %f\n", v.x, v.y, v.z);
-        }
-
-        bool has_normals = normals.values != nullptr;
-        if(has_normals)
-        {
-          // normals.indices might be different than positions.indices
-          // but normals.get(i) is normal for positions.get(i)
-          for(int i = polygon.from_vertex; i < polygon.from_vertex + polygon.vertex_count; ++i)
-          {
-            ofbx::Vec3 n = normals.get(i);
-            fprintf(fp, "vn %f %f %f\n", n.x, n.y, n.z);
-          }
-        }
-
-        bool has_uvs = uvs.values != nullptr;
-        if(has_uvs)
-        {
-          for(int i = polygon.from_vertex; i < polygon.from_vertex + polygon.vertex_count; ++i)
-          {
-            ofbx::Vec2 uv = uvs.get(i);
-            fprintf(fp, "vt %f %f\n", uv.x, uv.y);
-          }
-        }
-      }
-
-      for(int polygon_idx = 0; polygon_idx < partition.polygon_count; ++polygon_idx)
-      {
-        const ofbx::GeometryPartition::Polygon& polygon = partition.polygons[polygon_idx];
-        fputs("f ", fp);
-        for(int i = polygon.from_vertex; i < polygon.from_vertex + polygon.vertex_count; ++i)
-        {
-          fprintf(fp, "%d ", 1 + i + indices_offset);
-        }
-        fputs("\n", fp);
-      }
-
-      indices_offset += positions.count;
-    }
-
-    fclose(fp);
-  }
+  //void ffbx::save_as_obj_ofbx(const ofbx::Mesh& mesh, const char* path)
+  //{
+  //  FILE* fp = fopen(path, "wb");
+  //  if(!fp) return;
+  //  int indices_offset = 0;
+  //  int mesh_idx = 0;
+  //
+  //  const ofbx::GeometryData& geom = mesh.getGeometryData();
+  //  const ofbx::Vec3Attributes positions = geom.getPositions();
+  //  const ofbx::Vec3Attributes normals = geom.getNormals();
+  //  const ofbx::Vec2Attributes uvs = geom.getUVs();
+  //
+  //  // each ofbx::Mesh can have several materials == partitions
+  //  for(int partition_idx = 0; partition_idx < geom.getPartitionCount(); ++partition_idx)
+  //  {
+  //    fprintf(fp, "o obj%d_%d\ng grp%d\n", mesh_idx, partition_idx, mesh_idx);
+  //    const ofbx::GeometryPartition& partition = geom.getPartition(partition_idx);
+  //
+  //    // partitions most likely have several polygons, they are not triangles necessarily, use ofbx::triangulate if you want triangles
+  //    for(int polygon_idx = 0; polygon_idx < partition.polygon_count; ++polygon_idx)
+  //    {
+  //      const ofbx::GeometryPartition::Polygon& polygon = partition.polygons[polygon_idx];
+  //
+  //      for(int i = polygon.from_vertex; i < polygon.from_vertex + polygon.vertex_count; ++i)
+  //      {
+  //        ofbx::Vec3 v = positions.get(i);
+  //        fprintf(fp, "v %f %f %f\n", v.x, v.y, v.z);
+  //      }
+  //
+  //      bool has_normals = normals.values != nullptr;
+  //      if(has_normals)
+  //      {
+  //        // normals.indices might be different than positions.indices
+  //        // but normals.get(i) is normal for positions.get(i)
+  //        for(int i = polygon.from_vertex; i < polygon.from_vertex + polygon.vertex_count; ++i)
+  //        {
+  //          ofbx::Vec3 n = normals.get(i);
+  //          fprintf(fp, "vn %f %f %f\n", n.x, n.y, n.z);
+  //        }
+  //      }
+  //
+  //      bool has_uvs = uvs.values != nullptr;
+  //      if(has_uvs)
+  //      {
+  //        for(int i = polygon.from_vertex; i < polygon.from_vertex + polygon.vertex_count; ++i)
+  //        {
+  //          ofbx::Vec2 uv = uvs.get(i);
+  //          fprintf(fp, "vt %f %f\n", uv.x, uv.y);
+  //        }
+  //      }
+  //    }
+  //
+  //    for(int polygon_idx = 0; polygon_idx < partition.polygon_count; ++polygon_idx)
+  //    {
+  //      const ofbx::GeometryPartition::Polygon& polygon = partition.polygons[polygon_idx];
+  //      fputs("f ", fp);
+  //      for(int i = polygon.from_vertex; i < polygon.from_vertex + polygon.vertex_count; ++i)
+  //      {
+  //        fprintf(fp, "%d ", 1 + i + indices_offset);
+  //      }
+  //      fputs("\n", fp);
+  //    }
+  //
+  //    indices_offset += positions.count;
+  //  }
+  //
+  //  fclose(fp);
+  //}
 
   void ffbx::save_as_obj_assimp(aiMesh* mesh, aiMaterial* material, const char* path)
   {
@@ -187,37 +187,37 @@ namespace engine
     }
   }
 
-  void ffbx::import_material_from_blender_4_1_principled_brdf(const ofbx::Material* material, fmaterial_properties& out_material_properties)
-  {
-    // Base Color on the Principled BRDF node is saved in FBX as Specular
-    // Use it as Specular and Diffuse here
+  //void ffbx::import_material_from_blender_4_1_principled_brdf(const ofbx::Material* material, fmaterial_properties& out_material_properties)
+  //{
+  //  // Base Color on the Principled BRDF node is saved in FBX as Specular
+  //  // Use it as Specular and Diffuse here
+  //
+  //  ofbx::Color emissive = material->getEmissiveColor();
+  //  ofbx::Color diffuse = material->getDiffuseColor();
+  //  ofbx::Color ambient = material->getAmbientColor();
+  //  ofbx::Color specular = material->getSpecularColor();
+  //
+  //  //out_material_properties.emissive = { emissive.r, emissive.g, emissive.b, 1.0f };
+  //  out_material_properties.diffuse = {specular.r, specular.g, specular.b, 1.0f};
+  //  //out_material_properties.ambient = { ambient.r, ambient.g, ambient.b, 1.0f };
+  //  out_material_properties.specular = {specular.r, specular.g, specular.b, 1.0f};
+  //}
 
-    ofbx::Color emissive = material->getEmissiveColor();
-    ofbx::Color diffuse = material->getDiffuseColor();
-    ofbx::Color ambient = material->getAmbientColor();
-    ofbx::Color specular = material->getSpecularColor();
-
-    //out_material_properties.emissive = { emissive.r, emissive.g, emissive.b, 1.0f };
-    out_material_properties.diffuse = {specular.r, specular.g, specular.b, 1.0f};
-    //out_material_properties.ambient = { ambient.r, ambient.g, ambient.b, 1.0f };
-    out_material_properties.specular = {specular.r, specular.g, specular.b, 1.0f};
-  }
-
-  void ffbx::import_material_from_unity_2022_3_urp(const ofbx::Material* material, fmaterial_properties& out_material_properties)
-  {
-    // Base Color on the URP is saved in FBX as Diffuse
-    // Use it as Specular and Diffuse here
-
-    ofbx::Color emissive = material->getEmissiveColor();
-    ofbx::Color diffuse = material->getDiffuseColor();
-    ofbx::Color ambient = material->getAmbientColor();
-    ofbx::Color specular = material->getSpecularColor();
-
-    //out_material_properties.emissive = { emissive.r, emissive.g, emissive.b, 1.0f };
-    out_material_properties.diffuse = {diffuse.r, diffuse.g, diffuse.b, 1.0f};
-    out_material_properties.ambient = {ambient.r, ambient.g, ambient.b, 1.0f};
-    out_material_properties.specular = {diffuse.r, diffuse.g, diffuse.b, 1.0f};
-  }
+  //void ffbx::import_material_from_unity_2022_3_urp(const ofbx::Material* material, fmaterial_properties& out_material_properties)
+  //{
+  //  // Base Color on the URP is saved in FBX as Diffuse
+  //  // Use it as Specular and Diffuse here
+  //
+  //  ofbx::Color emissive = material->getEmissiveColor();
+  //  ofbx::Color diffuse = material->getDiffuseColor();
+  //  ofbx::Color ambient = material->getAmbientColor();
+  //  ofbx::Color specular = material->getSpecularColor();
+  //
+  //  //out_material_properties.emissive = { emissive.r, emissive.g, emissive.b, 1.0f };
+  //  out_material_properties.diffuse = {diffuse.r, diffuse.g, diffuse.b, 1.0f};
+  //  out_material_properties.ambient = {ambient.r, ambient.g, ambient.b, 1.0f};
+  //  out_material_properties.specular = {diffuse.r, diffuse.g, diffuse.b, 1.0f};
+  //}
 
   void print_hierarhy(aiNode* node, int level)
   {
@@ -304,124 +304,124 @@ namespace engine
     }
   }
 
-  void ffbx::load_fbx_ofbx(const std::string& file_name, hscene* scene_object)
-  {
-    std::string project_dir = fio::get_project_dir();
-    std::string meshes_dir = fio::get_meshes_dir();
-    std::ostringstream fbx_file;
-    fbx_file << project_dir << file_name;
-
-    FILE* fp = fopen(fbx_file.str().c_str(), "rb");
-    if(!fp)
-    {
-      LOG_ERROR("Unable to find file {0} in the content directory", file_name);
-      return;
-    }
-
-    fseek(fp, 0, SEEK_END);
-    long file_size = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    auto* content = new ofbx::u8[file_size];
-    fread(content, 1, file_size, fp);
-
-    // Ignoring certain nodes will only stop them from being processed not tokenised (i.e. they will still be in the tree)
-    ofbx::LoadFlags flags =
-      //ofbx::LoadFlags::IGNORE_MODELS | ofbx::LoadFlags::IGNORE_TEXTURES | ofbx::LoadFlags::IGNORE_MATERIALS | ofbx::LoadFlags::IGNORE_MESHES |
-      ofbx::LoadFlags::IGNORE_SKIN | ofbx::LoadFlags::IGNORE_BONES | ofbx::LoadFlags::IGNORE_PIVOTS |
-      ofbx::LoadFlags::IGNORE_BLEND_SHAPES | ofbx::LoadFlags::IGNORE_CAMERAS | ofbx::LoadFlags::IGNORE_LIGHTS |
-      ofbx::LoadFlags::IGNORE_POSES | ofbx::LoadFlags::IGNORE_VIDEOS | ofbx::LoadFlags::IGNORE_LIMBS |
-      ofbx::LoadFlags::IGNORE_ANIMATIONS;
-
-    LOG_ERROR("Opening fbx: {0}", fbx_file.str());
-
-    ofbx::IScene* g_scene = ofbx::load((ofbx::u8*)content, file_size, (ofbx::u16)flags);
-
-    // a registry of already created asset resources
-    std::vector<std::string> g_material_assets;
-
-    for(int i = 0; i < g_scene->getMeshCount(); i++)
-    {
-      // Iterate over scene objects, not geometry assets
-      // FBX constains one geometry object per mesh, even if they are the same meshes
-      const ofbx::Mesh* mesh = g_scene->getMesh(i);
-      std::string mesh_name = mesh->name;
-      fstring_tools::replace(mesh_name, "::", "_");
-      fstring_tools::replace(mesh_name, "|", "_");
-
-      // Get static mesh, export object file and save json
-      // Mesh assset object will be available in the object registry at the end
-      {
-        astatic_mesh* mesh_object = astatic_mesh::spawn();
-        mesh_object->name = mesh_name;
-
-        // Export obj file
-        std::ostringstream mesh_obj_file;
-        {
-          std::ostringstream mesh_obj_file_path;
-          mesh_obj_file_path << meshes_dir << mesh_name << ".obj";
-          mesh_obj_file << mesh_name << ".obj";
-          save_as_obj_ofbx(*mesh, mesh_obj_file_path.str().c_str());
-        }
-        mesh_object->obj_file_name = mesh_obj_file.str();
-
-        mesh_object->save();
-        mesh_object->load(mesh_name);
-      }
-
-      // Get all materials in a mesh and save json
-      // Material object will be available in the object registry at the end
-      {
-        for(int y = 0; y < mesh->getMaterialCount(); y++)
-        {
-          const ofbx::Material* material = mesh->getMaterial(y);
-          std::string material_name = material->name;
-          fstring_tools::replace(mesh_name, "::", "_");
-          fstring_tools::replace(mesh_name, "|", "_");
-
-          if(std::find(g_material_assets.begin(), g_material_assets.end(), material_name) != g_material_assets.end())
-          {
-            continue;
-          }
-          g_material_assets.push_back(material_name);
-
-          amaterial* material_object = amaterial::spawn();
-          material_object->name = "default"; //material_name;
-
-          import_material_from_unity_2022_3_urp(material, material_object->properties);
-
-          material_object->save();
-          material_object->load(material_name);
-        }
-      }
-
-      // Scene object - spawn it
-      {
-        double scale = 0.01;
-        double flip_z = -1;
-        hstatic_mesh* object = hstatic_mesh::spawn();
-        std::ostringstream display_name;
-        display_name << mesh_name << i;
-        object->set_display_name(display_name.str());
-        object->mesh_asset_ptr.set_name(mesh_name);
-        if(mesh->getMaterialCount() > 0)
-        {
-          //std::string material_name = mesh->getMaterial(0)->name;
-          //fstring_tools::replace(mesh_name, "::", "_");
-          //fstring_tools::replace(mesh_name, "|", "_");
-          //object->material_asset_ptr.set_name(material_name);
-          object->material_asset_ptr.set_name("default");
-        }
-        object->origin = fvec3(mesh->getLocalTranslation().x * scale, mesh->getLocalTranslation().y * scale, flip_z * mesh->getLocalTranslation().z * scale);
-        object->rotation = fvec3(mesh->getLocalRotation().x, mesh->getLocalRotation().y, mesh->getLocalRotation().z);
-        object->scale = fvec3(mesh->getLocalScaling().x * scale, mesh->getLocalScaling().y * scale, mesh->getLocalScaling().z * scale);
-        object->load_resources();
-
-        scene_object->add(object);
-      }
-
-      //scene_object->load_resources();
-    }
-    delete[] content;
-    fclose(fp);
-  }
+  //void ffbx::load_fbx_ofbx(const std::string& file_name, hscene* scene_object)
+  //{
+  //  std::string project_dir = fio::get_project_dir();
+  //  std::string meshes_dir = fio::get_meshes_dir();
+  //  std::ostringstream fbx_file;
+  //  fbx_file << project_dir << file_name;
+  //
+  //  FILE* fp = fopen(fbx_file.str().c_str(), "rb");
+  //  if(!fp)
+  //  {
+  //    LOG_ERROR("Unable to find file {0} in the content directory", file_name);
+  //    return;
+  //  }
+  //
+  //  fseek(fp, 0, SEEK_END);
+  //  long file_size = ftell(fp);
+  //  fseek(fp, 0, SEEK_SET);
+  //  auto* content = new ofbx::u8[file_size];
+  //  fread(content, 1, file_size, fp);
+  //
+  //  // Ignoring certain nodes will only stop them from being processed not tokenised (i.e. they will still be in the tree)
+  //  ofbx::LoadFlags flags =
+  //    //ofbx::LoadFlags::IGNORE_MODELS | ofbx::LoadFlags::IGNORE_TEXTURES | ofbx::LoadFlags::IGNORE_MATERIALS | ofbx::LoadFlags::IGNORE_MESHES |
+  //    ofbx::LoadFlags::IGNORE_SKIN | ofbx::LoadFlags::IGNORE_BONES | ofbx::LoadFlags::IGNORE_PIVOTS |
+  //    ofbx::LoadFlags::IGNORE_BLEND_SHAPES | ofbx::LoadFlags::IGNORE_CAMERAS | ofbx::LoadFlags::IGNORE_LIGHTS |
+  //    ofbx::LoadFlags::IGNORE_POSES | ofbx::LoadFlags::IGNORE_VIDEOS | ofbx::LoadFlags::IGNORE_LIMBS |
+  //    ofbx::LoadFlags::IGNORE_ANIMATIONS;
+  //
+  //  LOG_ERROR("Opening fbx: {0}", fbx_file.str());
+  //
+  //  ofbx::IScene* g_scene = ofbx::load((ofbx::u8*)content, file_size, (ofbx::u16)flags);
+  //
+  //  // a registry of already created asset resources
+  //  std::vector<std::string> g_material_assets;
+  //
+  //  for(int i = 0; i < g_scene->getMeshCount(); i++)
+  //  {
+  //    // Iterate over scene objects, not geometry assets
+  //    // FBX constains one geometry object per mesh, even if they are the same meshes
+  //    const ofbx::Mesh* mesh = g_scene->getMesh(i);
+  //    std::string mesh_name = mesh->name;
+  //    fstring_tools::replace(mesh_name, "::", "_");
+  //    fstring_tools::replace(mesh_name, "|", "_");
+  //
+  //    // Get static mesh, export object file and save json
+  //    // Mesh assset object will be available in the object registry at the end
+  //    {
+  //      astatic_mesh* mesh_object = astatic_mesh::spawn();
+  //      mesh_object->name = mesh_name;
+  //
+  //      // Export obj file
+  //      std::ostringstream mesh_obj_file;
+  //      {
+  //        std::ostringstream mesh_obj_file_path;
+  //        mesh_obj_file_path << meshes_dir << mesh_name << ".obj";
+  //        mesh_obj_file << mesh_name << ".obj";
+  //        save_as_obj_ofbx(*mesh, mesh_obj_file_path.str().c_str());
+  //      }
+  //      mesh_object->obj_file_name = mesh_obj_file.str();
+  //
+  //      mesh_object->save();
+  //      mesh_object->load(mesh_name);
+  //    }
+  //
+  //    // Get all materials in a mesh and save json
+  //    // Material object will be available in the object registry at the end
+  //    {
+  //      for(int y = 0; y < mesh->getMaterialCount(); y++)
+  //      {
+  //        const ofbx::Material* material = mesh->getMaterial(y);
+  //        std::string material_name = material->name;
+  //        fstring_tools::replace(mesh_name, "::", "_");
+  //        fstring_tools::replace(mesh_name, "|", "_");
+  //
+  //        if(std::find(g_material_assets.begin(), g_material_assets.end(), material_name) != g_material_assets.end())
+  //        {
+  //          continue;
+  //        }
+  //        g_material_assets.push_back(material_name);
+  //
+  //        amaterial* material_object = amaterial::spawn();
+  //        material_object->name = "default"; //material_name;
+  //
+  //        import_material_from_unity_2022_3_urp(material, material_object->properties);
+  //
+  //        material_object->save();
+  //        material_object->load(material_name);
+  //      }
+  //    }
+  //
+  //    // Scene object - spawn it
+  //    {
+  //      double scale = 0.01;
+  //      double flip_z = -1;
+  //      hstatic_mesh* object = hstatic_mesh::spawn();
+  //      std::ostringstream display_name;
+  //      display_name << mesh_name << i;
+  //      object->set_display_name(display_name.str());
+  //      object->mesh_asset_ptr.set_name(mesh_name);
+  //      if(mesh->getMaterialCount() > 0)
+  //      {
+  //        //std::string material_name = mesh->getMaterial(0)->name;
+  //        //fstring_tools::replace(mesh_name, "::", "_");
+  //        //fstring_tools::replace(mesh_name, "|", "_");
+  //        //object->material_asset_ptr.set_name(material_name);
+  //        object->material_asset_ptr.set_name("default");
+  //      }
+  //      object->origin = fvec3(mesh->getLocalTranslation().x * scale, mesh->getLocalTranslation().y * scale, flip_z * mesh->getLocalTranslation().z * scale);
+  //      object->rotation = fvec3(mesh->getLocalRotation().x, mesh->getLocalRotation().y, mesh->getLocalRotation().z);
+  //      object->scale = fvec3(mesh->getLocalScaling().x * scale, mesh->getLocalScaling().y * scale, mesh->getLocalScaling().z * scale);
+  //      object->load_resources();
+  //
+  //      scene_object->add(object);
+  //    }
+  //
+  //    //scene_object->load_resources();
+  //  }
+  //  delete[] content;
+  //  fclose(fp);
+  //}
 }

@@ -60,13 +60,9 @@ NVidia R445 or newer is required
 
 [STB Image] v2.27
 
-[Tiny obj] v1.0.6
-
 [spdlog] v1.x
 
 [assimp] v5.4.1
-
-[openfbx] 
 
 [React Physics 3D] v0.10.2
 
@@ -79,10 +75,8 @@ NVidia R445 or newer is required
    [nlohmann/json]: <https://github.com/nlohmann/json>
    [PIX for Windows]: <https://devblogs.microsoft.com/pix/download>
    [STB Image]: <http://nothings.org/stb>
-   [Tiny obj]: <https://github.com/tinyobjloader/tinyobjloader>
    [spdlog]: <https://github.com/gabime/spdlog/tree/v1.x>
    [assimp]: <https://github.com/assimp/assimp>
-   [openfbx]: <https://github.com/nem0/OpenFBX>
    [Cozy Kitchen]: <https://www.blender.org/download/demo-files>
    [DirectX 12 Agility SDK]: <https://www.nuget.org/packages/Microsoft.Direct3D.D3D12/1.614.0>
    [DirectX Shader Compiler]: <https://github.com/microsoft/DirectXShaderCompiler/releases/tag/v1.8.2407>
