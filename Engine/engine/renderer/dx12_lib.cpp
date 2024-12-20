@@ -1,4 +1,3 @@
-
 #include <winerror.h>
 #include <dxgidebug.h>
 #include <dxgi1_6.h>
@@ -63,7 +62,7 @@ namespace engine
     desc.Stereo = FALSE;
 
     ComPtr<IDXGISwapChain1> swap_chain1;
-    THROW_IF_FAILED(factory->CreateSwapChainForHwnd(command_queue, hwnd, &desc, nullptr, nullptr, &swap_chain1))
+    THROW_IF_FAILED(factory->CreateSwapChainForHwnd(command_queue, hwnd, &desc, nullptr, nullptr, swap_chain1.GetAddressOf()))
     THROW_IF_FAILED(factory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER))
     THROW_IF_FAILED(swap_chain1->QueryInterface(IID_PPV_ARGS(out_swap_chain.GetAddressOf())))
   }

@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "ffbx.h"
 
 #include <tchar.h>

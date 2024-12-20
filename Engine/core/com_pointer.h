@@ -62,7 +62,7 @@ public:
     }
 
     template<class U>
-    ComPtr(_In_opt_ U *other) throw() : ptr_(other)
+    ComPtr(U *other) throw() : ptr_(other)
     {
         InternalAddRef();
     }
@@ -80,7 +80,7 @@ public:
     //    InternalAddRef();
     //}
 
-    ComPtr(_Inout_ ComPtr &&other) throw() : ptr_(nullptr)
+    ComPtr(ComPtr &&other) throw() : ptr_(nullptr)
     {
         if (this != reinterpret_cast<ComPtr*>(&reinterpret_cast<unsigned char&>(other)))
         {
@@ -111,7 +111,7 @@ public:
         return *this;
     }
 
-    ComPtr& operator=(_In_opt_ T *other) throw()
+    ComPtr& operator=(T *other) throw()
     {
         if (ptr_ != other)
         {
@@ -121,7 +121,7 @@ public:
     }
 
     template <typename U>
-    ComPtr& operator=(_In_opt_ U *other) throw()
+    ComPtr& operator=(U *other) throw()
     {
         ComPtr(other).Swap(*this);
         return *this;
@@ -143,14 +143,14 @@ public:
         return *this;
     }
 
-    ComPtr& operator=(_Inout_ ComPtr &&other) throw()
+    ComPtr& operator=(ComPtr &&other) throw()
     {
         ComPtr(static_cast<ComPtr&&>(other)).Swap(*this);
         return *this;
     }
 
     template<class U>
-    ComPtr& operator=(_Inout_ ComPtr<U>&& other) throw()
+    ComPtr& operator=(ComPtr<U>&& other) throw()
     {
         ComPtr(static_cast<ComPtr<U>&&>(other)).Swap(*this);
         return *this;
@@ -158,14 +158,14 @@ public:
 #pragma endregion
 
 #pragma region modifiers
-    void Swap(_Inout_ ComPtr&& r) throw()
+    void Swap(ComPtr&& r) throw()
     {
         T* tmp = ptr_;
         ptr_ = r.ptr_;
         r.ptr_ = tmp;
     }
 
-    void Swap(_Inout_ ComPtr& r) throw()
+    void Swap(ComPtr& r) throw()
     {
         T* tmp = ptr_;
         ptr_ = r.ptr_;
@@ -228,7 +228,7 @@ public:
         return ptr;
     }
 
-    void Attach(_In_opt_ InterfaceType* other) throw()
+    void Attach(InterfaceType* other) throw()
     {
         if (ptr_ != nullptr)
         {

@@ -57,7 +57,7 @@ namespace engine
     switch(msg)
     {
     case WM_SIZE:
-      if(device->com != nullptr && wParam != SIZE_MINIMIZED)
+      if(device->com.Get() != nullptr && wParam != SIZE_MINIMIZED)
       {
         window->request_resize(LOWORD(lParam), HIWORD(lParam));
       }

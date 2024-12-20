@@ -1,4 +1,3 @@
-
 #include "d3d12.h"
 #include <dxgi1_6.h>
 
@@ -54,7 +53,7 @@ namespace engine
 
     if(adapter1.Get() == nullptr)
     {
-      for(int adapter_index = 0; SUCCEEDED(factory->EnumAdapters1(adapter_index, &adapter1)); ++adapter_index)
+      for(int adapter_index = 0; SUCCEEDED(factory->EnumAdapters1(adapter_index, adapter1.GetAddressOf())); ++adapter_index)
       {
         DXGI_ADAPTER_DESC1 desc;
         adapter1->GetDesc1(&desc);
@@ -89,7 +88,7 @@ namespace engine
     //THROW_IF_FAILED(D3D12EnableExperimentalFeatures(1, experimental_features, nullptr, nullptr));
     
     ComPtr<IDXGIAdapter1> adapter1;
-    get_hw_adapter(factory, &adapter1, true);
+    get_hw_adapter(factory, adapter1.GetAddressOf(), true);
     DXGI_ADAPTER_DESC adapter_desc;
     adapter1->GetDesc(&adapter_desc);
     std::string adapter_name =  fstring_tools::to_utf8(adapter_desc.Description);

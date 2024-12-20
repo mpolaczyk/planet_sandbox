@@ -193,13 +193,9 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClInclude Include="engine\math\vec3.h" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json_fwd.hpp" />
-    <ClInclude Include="third_party\libdeflate.h" />
     <ClInclude Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathGpuCrashTracker.h" />
     <ClInclude Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathHelpers.h" />
-    <ClInclude Include="third_party\ofbx.h" />
     <ClInclude Include="third_party\stb_image.h" />
-    <ClInclude Include="third_party\tiny_obj_loader.h" />
-    <ClInclude Include="third_party\WaveFrontReader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assets\shader.cpp" />
@@ -881,9 +877,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClCompile Include="engine\math\ray.cpp" />
     <ClCompile Include="engine\persistence\persistence_helper.cpp" />
     <ClCompile Include="engine\profile\benchmark.cpp" />
-    <ClCompile Include="third_party\libdeflate.c" />
     <ClCompile Include="third_party\nsight-aftermath-samples\D3D12HelloNsightAftermath\NsightAftermathGpuCrashTracker.cpp" />
-    <ClCompile Include="third_party\ofbx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
