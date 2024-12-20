@@ -1,8 +1,10 @@
 #pragma once
 
-// Header generated automatically, don't modify!
+// Header generated automatically by generate_engine_header.py
+// It contains only header files that export symbols with ENGINE_API
 // It should be included only by external projects!
 
+#include "core\entry_point.h"
 #include "assets\material.h"
 #include "assets\mesh.h"
 #include "assets\pixel_shader.h"
@@ -11,15 +13,10 @@
 #include "assets\vertex_shader.h"
 #include "core\application.h"
 #include "core\com_pointer.h"
-#include "core\concepts.h"
 #include "core\core.h"
-#include "core\entry_point.h"
-#include "core\windows_minimal.h"
 #include "core\exceptions\floating_point.h"
-#include "core\exceptions\gpu_crash_handler.h"
 #include "core\exceptions\windows_error.h"
 #include "core\rtti\object.h"
-#include "core\rtti\object_defines.h"
 #include "core\rtti\object_registry.h"
 #include "core\rtti\object_visitor.h"
 #include "engine\hittable.h"
@@ -51,8 +48,6 @@
 #include "engine\renderer\device.h"
 #include "engine\renderer\dx12_lib.h"
 #include "engine\renderer\gpu_resources.h"
-#include "engine\renderer\graphics_pipeline.h"
-#include "engine\renderer\pipeline_state.h"
 #include "engine\renderer\renderer_base.h"
 #include "engine\renderer\render_context.h"
 #include "engine\renderer\scene_acceleration.h"
@@ -65,8 +60,3 @@
 #include "hittables\static_mesh.h"
 #include "renderers\deferred.h"
 #include "renderers\forward.h"
-#include "renderers\passes\debug_pass.h"
-#include "renderers\passes\deferred_lighting_pass.h"
-#include "renderers\passes\forward_pass.h"
-#include "renderers\passes\gbuffer_pass.h"
-#include "renderers\passes\pass_base.h"
