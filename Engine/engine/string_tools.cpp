@@ -1,5 +1,4 @@
-#include <memory>
-#include <Windows.h>
+#include "stdafx.h"
 
 #include "string_tools.h"
 
@@ -44,5 +43,13 @@ namespace engine
       return filename.substr(0, pos);
     }
     return filename;
+  }
+
+  std::string fstring_tools::format(const char* text, int value)
+  {
+    // Simple helper to avoid inclufding <format>
+    std::ostringstream oss;
+    oss << text << value;
+    return oss.str();
   }
 }

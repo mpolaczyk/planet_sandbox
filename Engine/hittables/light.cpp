@@ -1,12 +1,10 @@
-#include <sstream>
+#include "stdafx.h"
+
 
 #include "hittables/light.h"
 #include "engine/hittable.h"
-#include "engine/log.h"
 #include "engine/math/hash.h"
 #include "engine/math/math.h"
-#include "core/rtti/object_registry.h"
-#include "core/rtti/object_visitor.h"
 
 namespace engine
 {

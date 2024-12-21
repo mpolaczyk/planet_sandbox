@@ -48,7 +48,7 @@ namespace engine
     //
     int32_t light_type{flight_type::point}; // 4 
     int32_t enabled{0}; // 4 
-    int32_t padding[2]; // 8
+    int32_t padding[2]{}; // 8
   };
 
   ALIGNED_STRUCT_END(flight_properties)

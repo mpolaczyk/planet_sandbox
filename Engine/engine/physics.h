@@ -1,9 +1,9 @@
 #pragma once
 
-#include <memory>
-
 #include "core/core.h"
+
 #include "engine/math/vec3.h"
+#include "engine/shared_ptr.h"
 
 namespace reactphysics3d
 {
@@ -32,7 +32,7 @@ namespace engine
       : body(in_body), world_point(std::move(in_world_point))
     {}
     
-    Body* body;
+    Body* body = nullptr;
     fvec3 world_point;
   };
   
@@ -58,9 +58,8 @@ namespace engine
     static fphysics* instance;
 
   public:
-    CTOR_DEFAULT(fphysics)
+    CTOR_DTOR(fphysics)
     CTOR_MOVE_COPY_DELETE(fphysics)
-    ~fphysics();
 
     // Main state management
     void create_physics(hscene* in_scene_root);
@@ -74,9 +73,8 @@ namespace engine
     void toggle_simulating() { wants_to_update = !wants_to_update; }
     
     // Third party library resources, ownership
-    std::shared_ptr<PhysicsCommon> physics_common;
-    PhysicsWorld* physics_world = nullptr;
-    //std::shared_ptr<PhysicsWorld> physics_world;  // TODO some nonsense compilation issues
+    fshared_ptr<PhysicsCommon> physics_common;
+    PhysicsWorld* physics_world;  // Can't use smart poitners because destructors are not public...
 
   private:
     hscene* scene_root = nullptr; // no ownership

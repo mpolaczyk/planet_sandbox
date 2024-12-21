@@ -7,6 +7,7 @@
 
 #include "core/core.h"
 #include "core/com_pointer.h"
+
 #if BUILD_DEBUG
 #include <string>
 #endif
@@ -61,8 +62,8 @@ private:
     
     std::vector<fdescriptor> descriptors;
     std::vector<bool> is_valid;             // index is descriptor index
-    uint32_t max_descriptors;
+    uint32_t max_descriptors{};
     uint32_t increment_size = 0;
-    D3D12_DESCRIPTOR_HEAP_TYPE heap_type;
+    D3D12_DESCRIPTOR_HEAP_TYPE heap_type{};
   };
 }

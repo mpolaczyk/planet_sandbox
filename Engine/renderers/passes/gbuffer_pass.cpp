@@ -1,19 +1,21 @@
-
-#include <DirectXColors.h>
+#include "stdafx.h"
 
 #include "gbuffer_pass.h"
 
-#include "core/application.h"
 #include "assets/material.h"
 #include "assets/mesh.h"
+
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
+
 #include "engine/math/math.h"
 #include "engine/math/vertex_data.h"
+
 #include "engine/renderer/render_context.h"
 #include "engine/renderer/command_list.h"
 #include "engine/renderer/device.h"
 #include "engine/renderer/scene_acceleration.h"
+#include "engine/renderer/graphics_pipeline.h"
 
 namespace engine
 {
@@ -78,9 +80,10 @@ namespace engine
     ID3D12GraphicsCommandList* command_list_com = command_list->com.Get();
 
     // Cleanup and setup
+    const float black[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     for(uint32_t i = 0; i < fgbuffer_pass::num_render_targets; i++)
     {
-      command_list->clear_render_target(render_targets[i], DirectX::Colors::Black);
+      command_list->clear_render_target(render_targets[i], black);
     }
     command_list->clear_depth_stencil(&depth);
     command_list->set_render_targets(num_render_targets, render_targets, &depth);

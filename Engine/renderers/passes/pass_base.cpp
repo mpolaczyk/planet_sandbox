@@ -1,23 +1,30 @@
+#include "stdafx.h"
 
 #include "renderers/passes/pass_base.h"
 
-#include "core/application.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
+
 #include "assets/pixel_shader.h"
 #include "assets/vertex_shader.h"
 #include "assets/texture.h"
 #include "assets/mesh.h"
+
 #include "engine/window.h"
-#include "engine/log.h"
 #include "engine/math/math.h"
 #include "engine/math/vertex_data.h"
+
 #include "engine/renderer/command_list.h"
 #include "engine/renderer/device.h"
 #include "engine/renderer/render_context.h"
+#include "engine/renderer/graphics_pipeline.h"
 
 namespace engine
 {
+  // Because funique_ptr<forward declared type> requires destructor where the type is complete
+  fpass_base::fpass_base() = default;
+  fpass_base::~fpass_base() = default;
+
   bool fpass_base::init(frenderer_context* in_context)
   {
     context = in_context;
@@ -40,11 +47,10 @@ namespace engine
 
   void fpass_base::init_pipeline()
   {
-    if(graphics_pipeline)
+    if(!graphics_pipeline)
     {
-      graphics_pipeline.reset(nullptr);
+      graphics_pipeline.reset(new fgraphics_pipeline());
     }
-    graphics_pipeline = std::make_unique<fgraphics_pipeline>();
     graphics_pipeline->bind_pixel_shader(pixel_shader_asset.get()->resource.blob);
     graphics_pipeline->bind_vertex_shader(vertex_shader_asset.get()->resource.blob);
     graphics_pipeline->setup_input_layout(fvertex_data::input_layout);

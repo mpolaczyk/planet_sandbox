@@ -1,10 +1,10 @@
 #pragma once
 
 #include <cstdint>
-#include <memory>
 #include <string>
 
 #include "core/core.h"
+#include "engine/unique_ptr.h"
 
 #include "NsightAftermathGpuCrashTracker.h"
 
@@ -32,6 +32,6 @@ namespace engine
     std::string add_source_shader_debug_data(IDxcBlob* shader_blob, IDxcBlob* pdb_blob);
     
   private:
-    std::unique_ptr<GpuCrashTracker> impl;
+    funique_ptr<GpuCrashTracker> impl;
   };
 }

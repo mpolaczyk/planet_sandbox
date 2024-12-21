@@ -26,11 +26,11 @@ namespace engine
     std::vector<float> data_hdr;
     std::vector<uint8_t> data_ldr;
     bool is_hdr = false;
-    uint32_t width;
-    uint32_t height;
-    uint32_t channels;
-    uint32_t element_size;
-    DXGI_FORMAT format;
+    uint32_t width{};
+    uint32_t height{};
+    uint32_t channels{};
+    uint32_t element_size{};
+    DXGI_FORMAT format{};
 
     bool is_online = false;
     ftexture_resource gpu_resource;

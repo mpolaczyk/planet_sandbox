@@ -1,22 +1,25 @@
-
-#include <format>
-
-#include "d3dx12/d3dx12.h"
+#include "stdafx.h"
 
 #include "debug_pass.h"
 
-#include "core/application.h"
 #include "engine/window.h"
+
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
+
 #include "assets/mesh.h"
+
 #include "engine/math/math.h"
+
 #include "engine/renderer/aligned_structs.h"
 #include "engine/renderer/command_list.h"
 #include "engine/renderer/render_context.h"
 #include "engine/renderer/scene_acceleration.h"
 #include "engine/renderer/gpu_resources.h"
 #include "engine/renderer/device.h"
+#include "engine/renderer/graphics_pipeline.h"
+
+#include "engine/string_tools.h"
 
 namespace engine
 {
@@ -68,7 +71,7 @@ namespace engine
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
       fconst_buffer buffer;
-      device->create_const_buffer(heap, fmath::to_uint32(sizeof(fdebug_frame_data)), buffer, std::format("CBV frame: back buffer {}", i).c_str());
+      device->create_const_buffer(heap, fmath::to_uint32(sizeof(fdebug_frame_data)), buffer, fstring_tools::format("CBV frame: back buffer {}", i).c_str());
       frame_data.emplace_back(buffer);
     }
   }

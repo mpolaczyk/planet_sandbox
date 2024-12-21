@@ -15,7 +15,7 @@ namespace engine
 
     // Outputs
     static constexpr uint32_t num_render_targets =  4;
-    ftexture_resource* render_targets[num_render_targets];  // Helper, set at runtime
+    ftexture_resource* render_targets[num_render_targets]{};  // Helper, set at runtime
     ftexture_resource position;
     ftexture_resource normal;
     ftexture_resource uv;

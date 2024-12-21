@@ -1,15 +1,22 @@
 #pragma once
 
-#include <memory>
-
 #include "core/core.h"
-#include "core/com_pointer.h"
-#include "engine/math/camera.h"
+#include "engine/shared_ptr.h"
 #include "engine/profile/benchmark.h"
 
 #if USE_NSIGHT_AFTERMATH
 #include "gpu_crash_handler.h"
 #endif
+
+// Hacky forward declares
+#include "vadefs.h"
+typedef unsigned int UINT;
+typedef uintptr_t UINT_PTR;
+typedef intptr_t LONG_PTR;
+typedef UINT_PTR WPARAM;
+typedef LONG_PTR LPARAM;
+typedef LONG_PTR LRESULT;
+typedef struct HWND__* HWND;
 
 namespace reactphysics3d
 {
@@ -34,9 +41,8 @@ namespace engine
     
   public:
 
-    CTOR_DEFAULT(fapplication)
+    CTOR_DTOR(fapplication)
     CTOR_MOVE_COPY_DELETE(fapplication)
-    virtual ~fapplication();
 
     static ftimer_instance stat_frame_time;
     static ftimer_instance stat_update_time;
@@ -59,13 +65,13 @@ namespace engine
     void set_window(fwindow* in_window);
     void main_loop();
 
-    std::shared_ptr<fphysics> physics;
+    fshared_ptr<fphysics> physics;
     hscene* scene_root = nullptr; // managed object does not work well with shared_ptr, because they need to be destroyed through object registry
     
     bool is_running = true;
-    std::shared_ptr<fwindow> window;
-    std::shared_ptr<fdevice> device;
-    std::shared_ptr<fcommand_queue> command_queue;
+    fshared_ptr<fwindow> window;
+    fshared_ptr<fdevice> device;
+    fshared_ptr<fcommand_queue> command_queue;
 
 #if USE_NSIGHT_AFTERMATH
     fgpu_crash_tracker gpu_crash_handler;

@@ -1,11 +1,10 @@
 #pragma once
 
-#include <memory>
-
+#include "engine/unique_ptr.h"
 #include "engine/asset/soft_asset_ptr.h"
-#include "engine/renderer/graphics_pipeline.h"
 
 struct ID3D12GraphicsCommandList;
+struct CD3DX12_GPU_DESCRIPTOR_HANDLE;
 
 namespace engine
 {
@@ -13,12 +12,12 @@ namespace engine
   class avertex_shader;
   struct fgraphics_command_list;
   struct frenderer_context;
-  
+  struct fgraphics_pipeline;
+
   struct fpass_base
   {
-    CTOR_DEFAULT(fpass_base)
+    CTOR_VDTOR(fpass_base)
     CTOR_MOVE_COPY_DELETE(fpass_base)
-    VDTOR_DEFAULT(fpass_base)
 
     // Main interface
     bool init(frenderer_context* in_context);
@@ -41,7 +40,7 @@ namespace engine
     CD3DX12_GPU_DESCRIPTOR_HANDLE get_textures_gpu_handle() const;
     
     frenderer_context* context = nullptr; // weak ptr, owned by renderer
-    std::unique_ptr<fgraphics_pipeline> graphics_pipeline;
+    funique_ptr<fgraphics_pipeline> graphics_pipeline;
   };
 
 }

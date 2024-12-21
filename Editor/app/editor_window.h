@@ -19,7 +19,7 @@ namespace editor
     CTOR_MOVE_COPY_DELETE(feditor_window)
     virtual ~feditor_window() override;
 
-    virtual void init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory, const wchar_t* name) override;
+    virtual void init(WNDPROC wnd_proc, IDXGIFactory4* factory, const wchar_t* name) override;
     virtual void update() override;
     virtual void draw() override;
 

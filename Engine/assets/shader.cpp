@@ -1,16 +1,11 @@
-#include <fstream>
-#include <sstream>
+#include "stdafx.h"
 
 #include "engine/renderer/dx12_lib.h"
 
-#include "nlohmann/json.hpp"
-
 #include "assets/pixel_shader.h"
 
-#include "engine/log.h"
 #include "engine/io.h"
 #include "engine/resources/shader_tools.h"
-#include "core/rtti/object_registry.h"
 #include "engine/persistence/object_persistence.h"
 
 #include "assets/shader.h"

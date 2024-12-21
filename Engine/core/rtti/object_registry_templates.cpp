@@ -1,6 +1,4 @@
 #include <cassert>
-#include <algorithm>
-#include <string>
 
 #include "core/rtti/object_registry.h"
 #include "engine/log.h"

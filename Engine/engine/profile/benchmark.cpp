@@ -1,7 +1,7 @@
 #include <functional>
-#include <chrono>
 
 #include "engine/profile/benchmark.h"
+#include "engine/time.h"
 
 #if USE_PIX
 #include "core/windows_minimal.h"
@@ -12,8 +12,6 @@
 
 namespace engine
 {
-  using namespace std::chrono;
-
   void ftimer_instance::start()
   {
     is_started = true;
@@ -21,7 +19,7 @@ namespace engine
     PIXBeginEvent(PIX_COLOR(155, 112, 0), name.c_str());
 #endif
 #if USE_BENCHMARK
-    start_point = time_point_cast<microseconds>(high_resolution_clock::now()).time_since_epoch().count();
+    start_point = ftime::get_now_us();
 #endif
   }  
   void ftimer_instance::start(const std::string& in_name)
@@ -56,7 +54,7 @@ namespace engine
     PIXEndEvent();
 #endif
 #if USE_BENCHMARK
-    end_point = time_point_cast<microseconds>(high_resolution_clock::now()).time_since_epoch().count();
+    end_point = ftime::get_now_us();
     last_time_us = end_point - start_point;
     if(log)
     {

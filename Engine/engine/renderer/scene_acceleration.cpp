@@ -1,14 +1,18 @@
 #include "scene_acceleration.h"
 
+#include "core/rtti/object_registry.h"
+
 #include "engine/log.h"
+#include "engine/math/math.h"
+
 #include "hittables/light.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
-#include "engine/math/math.h"
-#include "core/rtti/object_registry.h"
+
 #include "assets/texture.h"
 #include "assets/mesh.h"
 #include "assets/material.h"
+
 namespace engine
 {
   constexpr int32_t GPU_INDEX_NONE = -1;

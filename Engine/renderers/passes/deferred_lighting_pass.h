@@ -17,10 +17,10 @@ namespace engine
     virtual void draw(frenderer_context* in_context, fgraphics_command_list* command_list) override;
     
     // Input: GBuffer
-    ftexture_resource* position;
-    ftexture_resource* normal;
-    ftexture_resource* uv;
-    ftexture_resource* material_id;
+    ftexture_resource* position{};
+    ftexture_resource* normal{};
+    ftexture_resource* uv{};
+    ftexture_resource* material_id{};
 
     // Output
     ftexture_resource color;

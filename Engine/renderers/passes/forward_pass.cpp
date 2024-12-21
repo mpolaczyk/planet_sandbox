@@ -1,24 +1,23 @@
+#include "stdafx.h"
 
 #include "forward_pass.h"
 
-#include <DirectXColors.h>
-#include <format>
-
-#include "d3dx12/d3dx12.h"
-#include "d3dx12/d3dx12_root_signature.h"
-
-#include "core/application.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
+
 #include "assets/mesh.h"
+
 #include "engine/window.h"
 #include "engine/math/math.h"
+#include "engine/string_tools.h"
+
 #include "engine/renderer/aligned_structs.h"
 #include "engine/renderer/command_list.h"
 #include "engine/renderer/render_context.h"
 #include "engine/renderer/scene_acceleration.h"
 #include "engine/renderer/gpu_resources.h"
 #include "engine/renderer/device.h"
+#include "engine/renderer/graphics_pipeline.h"
 
 namespace engine
 {
@@ -75,7 +74,7 @@ namespace engine
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
       fconst_buffer buffer;
-      device->create_const_buffer(heap, fmath::to_uint32(sizeof(fframe_data)), buffer, std::format("CBV frame: back buffer {}", i).c_str());
+      device->create_const_buffer(heap, fmath::to_uint32(sizeof(fframe_data)), buffer, fstring_tools::format("CBV frame: back buffer {}", i).c_str());
       frame_data.emplace_back(buffer);
     }
 
@@ -83,13 +82,13 @@ namespace engine
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
       fshader_resource_buffer buffer;
-      device->create_shader_resource_buffer(heap, sizeof(flight_properties) * MAX_LIGHTS, buffer, std::format("SRV lights: back buffer {}", i).c_str());
+      device->create_shader_resource_buffer(heap, sizeof(flight_properties) * MAX_LIGHTS, buffer, fstring_tools::format("SRV lights: back buffer {}", i).c_str());
       lights_data.emplace_back(buffer);
     }
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
       fshader_resource_buffer buffer;
-      device->create_shader_resource_buffer(heap, sizeof(fmaterial_properties) * MAX_MATERIALS, buffer, std::format("SRV materials: back buffer {}", i).c_str());
+      device->create_shader_resource_buffer(heap, sizeof(fmaterial_properties) * MAX_MATERIALS, buffer, fstring_tools::format("SRV materials: back buffer {}", i).c_str());
       materials_data.emplace_back(buffer);
     }
   }
@@ -118,7 +117,8 @@ namespace engine
     ID3D12GraphicsCommandList* command_list_com = command_list->com.Get();
     const uint32_t back_buffer_index = context->back_buffer_index;
     
-    command_list->clear_render_target(&color, DirectX::Colors::Black);
+    const float black[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    command_list->clear_render_target(&color, black);
     command_list->clear_depth_stencil(&depth);
     command_list->set_render_targets1(&color, &depth);
 

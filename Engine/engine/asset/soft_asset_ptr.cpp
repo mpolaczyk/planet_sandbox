@@ -1,6 +1,7 @@
+#include "core/rtti/object_registry.h"
+
 #include "engine/asset/soft_asset_ptr.h"
 #include "engine/asset/asset.h"
-#include "core/rtti/object_registry.h"
 #include "engine/log.h"
 
 namespace engine

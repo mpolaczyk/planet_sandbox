@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "core/rtti/object_registry_templates.cpp"
 
 #include "engine/asset/asset.h"

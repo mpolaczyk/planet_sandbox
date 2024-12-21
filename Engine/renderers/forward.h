@@ -1,9 +1,9 @@
 #pragma once
 
 #include "core/core.h"
+#include "engine/unique_ptr.h"
+
 #include "engine/renderer/renderer_base.h"
-#include "passes/forward_pass.h"
-#include "passes/debug_pass.h"
 
 struct ID3D12GraphicsCommandList;
 
@@ -11,16 +11,21 @@ namespace engine
 {
   class hstatic_mesh;
   class hlight;
+  struct fforward_pass;
+  struct fdebug_pass;
   
   class ENGINE_API rforward : public rrenderer_base
   {
   public:
+    CTOR_VDTOR(rforward)
+    CTOR_MOVE_COPY_DELETE(rforward)
+
     OBJECT_DECLARE(rforward, rrenderer_base)
     OBJECT_DECLARE_VISITOR
 
     // Runtime members
-    fforward_pass forward_pass;
-    fdebug_pass debug_pass;
+    funique_ptr<fforward_pass> forward_pass;
+    funique_ptr<fdebug_pass> debug_pass;
 
     virtual ftexture_resource* get_color() override;
     virtual ftexture_resource* get_depth() override;

@@ -26,23 +26,27 @@ namespace engine
     fray get_screen_space_ray(uint32_t ss_width, uint32_t ss_height, uint32_t ss_x, uint32_t ss_y) const;
 
     // Camera movement
-    int32_t input_forward, input_left, input_backward, input_right = 0;
-    int32_t input_down, input_up = 0;
+    int32_t input_forward = 0;
+    int32_t input_left = 0;
+    int32_t input_backward = 0;
+    int32_t input_right = 0;
+    int32_t input_down = 0;
+    int32_t input_up = 0;
     int32_t input_yaw = 0;
     int32_t input_pitch = 0;
     float move_speed = 15.f;
     float rotate_speed = 7.f;
 
     // Runtime members
-    XMFLOAT4X4 view_projection;
-    XMFLOAT4X4 view;
-    XMFLOAT4X4 projection;
-    XMFLOAT4 forward;
-    XMFLOAT4 right;
-    XMFLOAT4 up;
+    XMFLOAT4X4 view_projection{};
+    XMFLOAT4X4 view{};
+    XMFLOAT4X4 projection{};
+    XMFLOAT4 forward{};
+    XMFLOAT4 right{};
+    XMFLOAT4 up{};
 
     // Persistent members
-    fvec3 location;
+    fvec3 location{};
     float pitch = 0.0f;
     float yaw = 0.0f;
     float field_of_view = 70.0f;

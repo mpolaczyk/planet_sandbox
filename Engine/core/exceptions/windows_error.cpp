@@ -1,20 +1,14 @@
+#include "stdafx.h"
 
 #include <signal.h>
-#include "core/windows_minimal.h"
 #include "dbghelp.h"
 #pragma comment(lib,"dbghelp.lib")
-#include <sstream>
+
 #include <system_error>
-#include <format>
-
-#include "core/exceptions/windows_error.h"
-
 #include <exception>
-#include <fstream>
 #include <mutex>
 
 #include "engine/io.h"
-#include "engine/log.h"
 #include "engine/string_tools.h"
 
 /*
@@ -349,6 +343,12 @@ namespace engine
   void fwindows_error::test_std_exit()
   {
     std::exit(-1);
+  }
+
+  fhresult_exception::fhresult_exception(HRESULT in_code, const std::string& in_file, int in_line, const std::string& in_function)
+    : std::runtime_error("HRESULT exception"), code(in_code)
+  {
+    context = std::format("{0} in {1} line {2}\n", in_function, in_file, in_line);
   }
 
   char const* fhresult_exception::what() const

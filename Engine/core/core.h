@@ -47,6 +47,8 @@
 
 #define ALIGN(x) __declspec(align(x))
 
+#define CTOR_DTOR(NAME) NAME(); ~NAME();
+#define CTOR_VDTOR(NAME) NAME(); virtual ~NAME();
 #define CTOR_DEFAULT(NAME) NAME() = default;
 #define CTOR_DELETE(NAME) NAME() = delete;
 #define DTOR_DEFAULT(NAME) ~NAME() = default;

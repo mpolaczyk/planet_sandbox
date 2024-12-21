@@ -1,4 +1,6 @@
 
+#include "d3d12.h"
+
 #include "engine/math/vertex_data.h"
 
 namespace engine

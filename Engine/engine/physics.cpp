@@ -1,8 +1,7 @@
+#include "stdafx.h"
 
 #include "engine/physics.h"
 
-#include "core/application.h"
-#include "engine/log.h"
 #include "hittables/scene.h"
 #include "engine/math/aabb.h"
 #include "engine/math/math.h"
@@ -42,6 +41,8 @@ namespace engine
     }
   };
   
+  fphysics::fphysics() = default; // Because fshared_ptr<forward declared type> requires destructor where the type is complete
+
   fphysics::~fphysics()
   {
     if(physics_world)
@@ -163,7 +164,7 @@ namespace engine
     scene_root = in_scene_root;
 
     // Physics common
-    physics_common = std::make_shared<PhysicsCommon>();
+    physics_common.reset(new PhysicsCommon());
     DefaultLogger* logger = physics_common->createDefaultLogger();
     uint log_level = static_cast<uint>(static_cast<uint>(Logger::Level::Warning) | static_cast<uint>(Logger::Level::Error));
     logger->addStreamDestination(std::cout, log_level, DefaultLogger::Format::Text);

@@ -1,13 +1,12 @@
-#include "gpu_crash_handler.h"
+#include "stdafx.h"
 
-#include "core/exceptions/windows_error.h"
-#include "engine/log.h"
+#include "gpu_crash_handler.h"
 
 namespace engine
 {
   void fgpu_crash_tracker::pre_device_creation(uint32_t back_buffer_count)
   {
-    impl = std::make_unique<GpuCrashTracker>();
+    impl.reset(new GpuCrashTracker());
     impl->PreDeviceInitialize(back_buffer_count, "planetSandbox");
     LOG_DEBUG("Nsight Aftermath is enabled.")
   }

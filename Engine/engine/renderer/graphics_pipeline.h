@@ -3,7 +3,6 @@
 #include <list>
 #include <vector>
 
-#include "d3dx12/d3dx12_root_signature.h"
 #include "d3dx12/d3dx12_core.h"
 
 #include "core/com_pointer.h"
@@ -12,10 +11,13 @@
 struct IDxcBlob;
 struct ID3D12RootSignature;
 struct ID3D12PipelineState;
+struct CD3DX12_ROOT_PARAMETER1;
+struct CD3DX12_DESCRIPTOR_RANGE1;
+struct CD3DX12_STATIC_SAMPLER_DESC;
 
 namespace engine
 {
-  struct fgraphics_pipeline
+  struct fgraphics_pipeline final
   {
     void reserve_parameters(uint32_t num);
     void add_constant_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, uint32_t size, D3D12_SHADER_VISIBILITY visibility);
@@ -36,24 +38,9 @@ namespace engine
 
     void init(const char* name);
 
-    DXGI_FORMAT get_depth_format() const
-    {
-      if(depth_buffer_format == DXGI_FORMAT_UNKNOWN)
-      {
-        LOG_ERROR("Invalid depth format")
-      }
-      return depth_buffer_format;
-    }
+    DXGI_FORMAT get_depth_format() const;
     
-    DXGI_FORMAT get_rtv_format(uint32_t index) const
-    {
-      DXGI_FORMAT format = render_target_formats.RTFormats[index];
-      if(format == DXGI_FORMAT_UNKNOWN)
-      {
-        LOG_ERROR("Invalid rtv format")
-      }
-      return format;
-    }
+    DXGI_FORMAT get_rtv_format(uint32_t index) const;
   
   private:
     std::vector<CD3DX12_ROOT_PARAMETER1> parameters;  // Keep in memory. This need to exist until root signature is created
@@ -63,7 +50,7 @@ namespace engine
     ComPtr<ID3D12PipelineState> pipeline_state;
     ComPtr<IDxcBlob> vertex_shader;
     ComPtr<IDxcBlob> pixel_shader;
-    DXGI_FORMAT depth_buffer_format = DXGI_FORMAT_UNKNOWN;
+    DXGI_FORMAT depth_buffer_format{};
     D3D12_RT_FORMAT_ARRAY render_target_formats{};
     std::vector<D3D12_INPUT_ELEMENT_DESC> input_layout;
     CD3DX12_BLEND_DESC blend_desc{D3D12_DEFAULT};

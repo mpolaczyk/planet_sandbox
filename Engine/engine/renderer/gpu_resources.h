@@ -50,12 +50,12 @@ namespace engine
 
   struct ENGINE_API fstatic_mesh_resource
   {
-    uint32_t vertex_num;
+    uint32_t vertex_num{};
     ComPtr<ID3D12Resource> vertex_buffer;
     ComPtr<ID3D12Resource> index_buffer;
     ComPtr<ID3D12Resource> vertex_buffer_upload;
     ComPtr<ID3D12Resource> index_buffer_upload;
-    D3D12_VERTEX_BUFFER_VIEW vertex_buffer_view;
-    D3D12_INDEX_BUFFER_VIEW index_buffer_view;
+    D3D12_VERTEX_BUFFER_VIEW vertex_buffer_view{};
+    D3D12_INDEX_BUFFER_VIEW index_buffer_view{};
   };
 }

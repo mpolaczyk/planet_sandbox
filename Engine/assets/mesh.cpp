@@ -1,14 +1,9 @@
-#include <fstream>
-#include <sstream>
-
-#include "nlohmann/json.hpp"
+#include "stdafx.h"
 
 #include "assets/mesh.h"
 
-#include "engine/log.h"
 #include "engine/io.h"
 #include "engine/resources/resources_io.h"
-#include "core/rtti/object_registry.h"
 #include "engine/persistence/object_persistence.h"
 
 namespace engine

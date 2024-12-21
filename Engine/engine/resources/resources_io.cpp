@@ -1,8 +1,8 @@
+#include "stdafx.h"
+
 #define NOMINMAX  // Required for assimp
 
-#include <filesystem>
 #include <random>
-#include <fstream>
 #include <cassert>
 
 #include "engine/resources/resources_io.h"
@@ -25,7 +25,6 @@
 
 #include "assets/mesh.h"
 #include "assets/texture.h"
-#include "core/application.h"
 
 namespace engine
 {
@@ -117,8 +116,8 @@ namespace engine
       // Bounding box
       const aiAABB& box = ai_mesh->mAABB;
       const fvec3 min(box.mMin.x, box.mMin.y, box.mMin.z);
-      const fvec3 max(box.mMax.x, box.mMax.y, box.mMax.z);
-      out_static_mesh->bounding_box = fbounding_box::from_min_max(min, max);
+      const fvec3 maxx(box.mMax.x, box.mMax.y, box.mMax.z);
+      out_static_mesh->bounding_box = fbounding_box::from_min_max(min, maxx);
     }
     else
     {

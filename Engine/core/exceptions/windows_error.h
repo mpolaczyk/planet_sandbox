@@ -2,7 +2,6 @@
 
 #include <stdexcept>
 #include <string>
-#include <format>
 
 #include "core/core.h"
 
@@ -46,11 +45,7 @@ namespace engine
     fhresult_exception(HRESULT in_code, const std::string&& in_context)
       : std::runtime_error("HRESULT exception"), code(in_code), context(in_context) {}
 
-    fhresult_exception(HRESULT in_code, const std::string& in_file, int in_line, const std::string& in_function)
-      : std::runtime_error("HRESULT exception"), code(in_code)
-    {
-      context = std::format("{0} in {1} line {2}\n", in_function, in_file, in_line);
-    }
+    fhresult_exception(HRESULT in_code, const std::string& in_file, int in_line, const std::string& in_function);
     
     virtual char const* what() const override;
     

@@ -1,10 +1,10 @@
 #include "engine/math/random.h"
 #include "engine/math/math.h"
+#include "engine/time.h"
 
 #include <random>
 #include <intsafe.h>
 #include <cassert>
-#include <chrono>
 
 namespace engine
 {
@@ -107,7 +107,7 @@ namespace engine
     // Fill float cache
     std::uniform_real_distribution<float> distribution;
     distribution = std::uniform_real_distribution<float>(-1.0f, 1.0f);
-    std::mt19937 generator(static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count()));
+    std::mt19937 generator(static_cast<uint32_t>(ftime::get_now_us()));
     for(int s = 0; s < float_cache.len(); s++)
     {
       float_cache.add(distribution(generator));

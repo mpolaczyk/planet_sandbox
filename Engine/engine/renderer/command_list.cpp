@@ -1,17 +1,10 @@
-#include <DirectXColors.h>
-#include "d3d12.h"
-#include "d3dx12/d3dx12_barriers.h"
-#include "d3dx12/d3dx12_core.h"
-#include "d3dx12/d3dx12_root_signature.h"
-#include "d3dx12/d3dx12_resource_helpers.h"
+#include "stdafx.h"
 
 #include "engine/renderer/command_list.h"
 
-#include "core/application.h"
 #include "assets/texture.h"
 #include "hittables/static_mesh.h"
 #include "assets/mesh.h"
-#include "engine/log.h"
 #include "engine/math/math.h"
 #include "engine/math/vertex_data.h"
 #include "engine/renderer/dx12_lib.h"

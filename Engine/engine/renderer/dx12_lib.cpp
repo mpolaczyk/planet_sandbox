@@ -1,15 +1,9 @@
-#include <winerror.h>
-#include <dxgidebug.h>
-#include <dxgi1_6.h>
-#include <fstream>
+#include "stdafx.h"
 
-#include "d3d12.h"
-#include "d3dx12/d3dx12_core.h"
+#include <dxgidebug.h>
 
 #include "engine/renderer/dx12_lib.h"
 
-#include "core/exceptions/windows_error.h"
-#include "engine/log.h"
 #include "engine/string_tools.h"
 
 namespace engine

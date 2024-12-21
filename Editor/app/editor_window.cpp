@@ -19,7 +19,7 @@ namespace editor
     ImGui::DestroyContext();
   }
 
-  void feditor_window::init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory, const wchar_t* name)
+  void feditor_window::init(WNDPROC wnd_proc, IDXGIFactory4* factory, const wchar_t* name)
   {
     fwindow::init(wnd_proc, factory, name);
     

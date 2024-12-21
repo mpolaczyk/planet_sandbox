@@ -3,6 +3,7 @@
 #include "core/application.h"
 #include "core/windows_minimal.h"
 #include "core/exceptions/windows_error.h"
+#include "engine/unique_ptr.h"
 #include "engine/window.h"
 #include "engine/log.h"
 #include "engine/string_tools.h"
@@ -28,7 +29,7 @@ void inline main_impl(int argc, char** argv)
 
   // Application lifecycle scope, don't remove brackets.
   {
-    std::unique_ptr<fapplication> app;
+    funique_ptr<fapplication> app;
     app.reset(create_application());
     fapplication::set_instance(app.get());
     app->set_window(create_window());

@@ -1,26 +1,20 @@
-#include "core/application.h"
+#include "stdafx.h"
 
-#include <dxgi1_5.h>
-#include <fstream>
+#include "assets/shader.h"
 
-#include "core/exceptions/windows_error.h"
-#include "engine/window.h"
-#include "rtti/object_registry.h"
-#include "engine/io.h"
-#include "engine/physics.h"
-#include "engine/log.h"
 #include "hittables/scene.h"
+
+#include "engine/window.h"
+#include "engine/io.h"
 #include "engine/math/random.h"
+#include "engine/physics.h"
 #include "engine/persistence/object_persistence.h"
 #include "engine/persistence/persistence_helper.h"
-#include "assets/shader.h"
 #include "engine/renderer/dx12_lib.h"
 #include "engine/renderer/command_queue.h"
 #include "engine/renderer/renderer_base.h"
 #include "engine/renderer/device.h"
 #include "engine/resources/assimp_logger.h"
-
-#include "nlohmann/json.hpp"
 
 namespace engine
 {
@@ -35,6 +29,8 @@ namespace engine
   {
     return fapplication::get_instance()->wnd_proc(hWnd, msg, wParam, lParam);
   }
+
+  fapplication::fapplication() = default; // Because fshared_ptr<forward declared type> requires destructor where the type is complete
 
   fapplication::~fapplication()
   {
@@ -128,11 +124,11 @@ namespace engine
     load_scene_state();
     
     LOG_INFO("Creating physics scene");
-    physics = std::make_shared<fphysics>();
+    physics.reset(new fphysics);
     physics->create_physics(scene_root);
 
     LOG_INFO("Initiating the window");
-    window->init(WndProc, factory, L"Editor");
+    window->init(WndProc, factory.Get(), L"Editor");
     window->show();
     
     LOG_INFO("Application init done, starting the main loop");

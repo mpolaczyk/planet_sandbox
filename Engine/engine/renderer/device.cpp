@@ -1,25 +1,16 @@
-#include "d3d12.h"
-#include <dxgi1_6.h>
-
-#include "d3dx12/d3dx12_core.h"
-#include "d3dx12/d3dx12_root_signature.h"
-#include "d3dx12/d3dx12_resource_helpers.h"
-
-#include "engine/renderer/device.h"
-
-#include <DirectXColors.h>
-#include <sstream>
+#include "stdafx.h"
 
 #include "assets/texture.h"
-#include "core/exceptions/windows_error.h"
-#include "engine/log.h"
+
 #include "engine/string_tools.h"
 #include "engine/math/math.h"
+
 #include "engine/renderer/aligned_structs.h"
 #include "engine/renderer/descriptor_heap.h"
 #include "engine/renderer/dx12_lib.h"
 #include "engine/renderer/gpu_resources.h"
 #include "engine/renderer/pipeline_state.h"
+#include "engine/renderer/device.h"
 
 namespace engine
 {
@@ -329,7 +320,8 @@ namespace engine
 
   void fdevice::create_frame_buffer(fdescriptor_heap* main_heap, fdescriptor_heap* rtv_heap, ftexture_resource* out_texture, uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_STATES initial_state, const char* name) const
   {
-    const CD3DX12_CLEAR_VALUE clear_color = { format, DirectX::Colors::Black };
+    const float black[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    const CD3DX12_CLEAR_VALUE clear_color(format, black);
     const CD3DX12_HEAP_PROPERTIES default_heap(D3D12_HEAP_TYPE_DEFAULT);
 
     if(out_texture->com)

@@ -1,9 +1,6 @@
+#include "stdafx.h"
+
 #include "descriptor_heap.h"
-
-#include "d3d12.h"
-
-#include "core/application.h"
-#include "engine/log.h"
 
 namespace engine
 {

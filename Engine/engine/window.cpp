@@ -1,21 +1,15 @@
-
-#include <dxgi1_6.h>
-#include "d3d12.h"
+#include "stdafx.h"
 
 #include "engine/window.h"
 
-#include <algorithm>
-#include <format>
-
-#include "core/application.h"
-#include "core/exceptions/windows_error.h"
+#include "engine/math/math.h"
+#include "engine/renderer/command_list.h"
 #include "engine/renderer/dx12_lib.h"
 #include "engine/renderer/renderer_base.h"
 #include "engine/renderer/command_queue.h"
 #include "engine/renderer/device.h"
+
 #include "hittables/scene.h"
-#include "engine/math/math.h"
-#include "engine/renderer/command_list.h"
 
 namespace engine
 {
@@ -25,7 +19,7 @@ namespace engine
     ::UnregisterClass(wc.lpszClassName, wc.hInstance);
   }
 
-  void fwindow::init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory, const wchar_t* name)
+  void fwindow::init(WNDPROC wnd_proc, IDXGIFactory4* factory, const wchar_t* name)
   {
     wc = {sizeof(WNDCLASSEX), CS_CLASSDC, wnd_proc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, name, NULL};
     ::RegisterClassEx(&wc);
@@ -35,7 +29,7 @@ namespace engine
     fdevice* device = fapplication::get_instance()->device.get();
     
     screen_tearing = fdx12::enable_screen_tearing(factory);
-    fdx12::create_swap_chain(hwnd, factory.Get(), command_queue->com.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM, screen_tearing, swap_chain);
+    fdx12::create_swap_chain(hwnd, factory, command_queue->com.Get(), back_buffer_count, DXGI_FORMAT_R8G8B8A8_UNORM, screen_tearing, swap_chain);
     
     device->create_render_target_descriptor_heap(rtv_descriptor_heap, "main");
     device->create_depth_stencil_descriptor_heap(dsv_descriptor_heap, "main");
@@ -148,7 +142,7 @@ namespace engine
     for(uint32_t n = 0; n < back_buffer_count; n++)
     {
       rtv.emplace_back(ftexture_resource());
-      device->create_back_buffer(swap_chain.Get(), n, rtv_descriptor_heap, rtv.back(), std::format("{}",n).c_str());
+      device->create_back_buffer(swap_chain.Get(), n, rtv_descriptor_heap, rtv.back(), "");
     }
     device->create_depth_stencil(&dsv_descriptor_heap, &dsv, width, height, DXGI_FORMAT_D32_FLOAT, D3D12_RESOURCE_STATE_DEPTH_READ, "main");
     return true;

@@ -12,6 +12,7 @@ struct ID3D12RootSignature;
 struct ID3D12DescriptorHeap;
 struct ID3D12Resource;
 struct ID3D12CommandQueue;
+struct IDXGIFactory4;
 
 namespace engine
 {
@@ -26,7 +27,7 @@ namespace engine
     CTOR_MOVE_COPY_DELETE(fwindow)
     virtual ~fwindow();
 
-    virtual void init(WNDPROC wnd_proc, ComPtr<IDXGIFactory4> factory, const wchar_t* name);
+    virtual void init(WNDPROC wnd_proc, IDXGIFactory4* factory, const wchar_t* name);
     void show() const;
     void hide() const;
     virtual void update() = 0;
@@ -53,8 +54,8 @@ namespace engine
     ftexture_resource dsv;
 
   protected:    
-    HWND hwnd;
-    WNDCLASSEX wc;
+    HWND hwnd{};
+    WNDCLASSEX wc{};
     
     bool screen_tearing = false;
     bool vsync = true;

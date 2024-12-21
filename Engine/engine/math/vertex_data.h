@@ -1,12 +1,13 @@
 #pragma once
 
 #include <DirectXMath.h>
-#include "d3d12.h"
 
 #include <vector>
 
 #include "core/core.h"
 #include "engine/math/vec3.h"
+
+struct D3D12_INPUT_ELEMENT_DESC;
 
 namespace engine
 {

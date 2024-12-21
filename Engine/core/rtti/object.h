@@ -63,7 +63,7 @@ namespace engine
     std::string get_parent_class_name() const { return parent_class_name; }
 
   private:
-    spawn_instance_func_type spawn_instance_func;
+    spawn_instance_func_type spawn_instance_func{};
     std::string class_name;
     std::string parent_class_name;
   };

@@ -1,10 +1,8 @@
+#include "stdafx.h"
 
 #include "engine/renderer/renderer_base.h"
 
-#include "engine/log.h"
 #include "hittables/scene.h"
-#include "core/rtti/object_registry.h"
-#include "core/application.h"
 
 namespace engine
 {

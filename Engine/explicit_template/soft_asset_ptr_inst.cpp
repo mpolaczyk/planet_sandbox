@@ -1,6 +1,5 @@
 #include "engine/asset/soft_asset_ptr.cpp"
 
-// FIX Replace with forward declarations, see the comment in the soft_asset_ptr class
 #include "assets/mesh.h"
 #include "assets/material.h"
 #include "assets/texture.h"

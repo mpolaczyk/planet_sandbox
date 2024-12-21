@@ -1,18 +1,23 @@
+#include "stdafx.h"
+
 #include "deferred_lighting_pass.h"
 
-#include <DirectXColors.h>
 #include <vector>
 
-#include "core/application.h"
 #include "core/core.h"
+
 #include "hittables/scene.h"
+
 #include "assets/mesh.h"
 #include "engine/math/math.h"
+#include "engine/string_tools.h"
+
 #include "engine/renderer/aligned_structs.h"
 #include "engine/renderer/command_list.h"
 #include "engine/renderer/render_context.h"
 #include "engine/renderer/scene_acceleration.h"
 #include "engine/renderer/device.h"
+#include "engine/renderer/graphics_pipeline.h"
 
 namespace engine
 {
@@ -79,13 +84,13 @@ namespace engine
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
       fshader_resource_buffer buffer;
-      device->create_shader_resource_buffer(heap, sizeof(flight_properties) * MAX_LIGHTS, buffer, std::format("SRV lights: back buffer {}", i).c_str());
+      device->create_shader_resource_buffer(heap, sizeof(flight_properties) * MAX_LIGHTS, buffer, fstring_tools::format("SRV lights: back buffer {}", i).c_str());
       lights_data.emplace_back(buffer);
     }
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
       fshader_resource_buffer buffer;
-      device->create_shader_resource_buffer(heap, sizeof(fmaterial_properties) * MAX_MATERIALS, buffer, std::format("SRV materials: back buffer {}", i).c_str());
+      device->create_shader_resource_buffer(heap, sizeof(fmaterial_properties) * MAX_MATERIALS, buffer, fstring_tools::format("SRV materials: back buffer {}", i).c_str());
       materials_data.emplace_back(buffer);
     }
     
@@ -111,7 +116,8 @@ namespace engine
     const uint32_t back_buffer_index = context->back_buffer_index;
 
     // Clear and setup
-    command_list->clear_render_target(&color, DirectX::Colors::Black);
+    const float black[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    command_list->clear_render_target(&color, black);
     command_list->set_render_targets1(&color, nullptr);
     
     // Process frame data constants

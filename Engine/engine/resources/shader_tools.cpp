@@ -1,12 +1,10 @@
-#include <filesystem>
+#include "stdafx.h"
 
-#include <fstream>
 #include <cassert>
 
 #include "engine/resources/shader_tools.h"
 #include "dxcapi.h"
 
-#include "d3d12.h"
 
 #pragma comment(lib, "dxcompiler.lib")
 
@@ -15,12 +13,9 @@
 #endif
 
 #include <dbghelp.h>
-#include <d3dx12/d3dx12_core.h>
 
-#include "engine/log.h"
 #include "engine/io.h"
 
-#include "core/application.h"
 #include "engine/string_tools.h"
 #include "engine/math/math.h"
 

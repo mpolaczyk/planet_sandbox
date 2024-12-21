@@ -1,16 +1,14 @@
+#include "stdafx.h"
+
 #include "ffbx.h"
 
 #include <tchar.h>
 #include <cstdio>
-#include <fstream>
-#include <sstream>
 
 #include "engine/io.h"
-#include "engine/log.h"
 #include "engine/string_tools.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
-#include "nlohmann/json.hpp"
 #include "assets/mesh.h"
 #include "assets/material.h"
 

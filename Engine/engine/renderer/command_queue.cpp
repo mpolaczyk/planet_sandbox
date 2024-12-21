@@ -1,11 +1,7 @@
-#include "d3d12.h"
-#include <iostream>
-#include <format>
+#include "stdafx.h"
 
 #include "command_queue.h"
 
-#include "core/exceptions/windows_error.h"
-#include "engine/log.h"
 #include "engine/renderer/device.h"
 #include "engine/renderer/dx12_lib.h"
 

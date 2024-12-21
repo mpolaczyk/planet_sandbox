@@ -1,9 +1,7 @@
-
-#include "d3dx12/d3dx12_core.h"
+#include "stdafx.h"
 
 #include "graphics_pipeline.h"
 
-#include "core/application.h"
 #include "engine/math/math.h"
 #include "engine/renderer/device.h"
 #include "engine/renderer/pipeline_state.h"
@@ -15,34 +13,34 @@ namespace engine
 {
   void fgraphics_pipeline::reserve_parameters(uint32_t num)
   {
-    CD3DX12_ROOT_PARAMETER1 param = {};
+    CD3DX12_ROOT_PARAMETER1 param{};
     parameters.resize(num, param);
   }
 
   void fgraphics_pipeline::add_constant_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, uint32_t size, D3D12_SHADER_VISIBILITY visibility)
   {
-    CD3DX12_ROOT_PARAMETER1 param;
+    CD3DX12_ROOT_PARAMETER1 param{};
     param.InitAsConstants(size / 4, shader_register, register_space);
     parameters[index] = param;
   }
 
   void fgraphics_pipeline::add_shader_resource_view_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, D3D12_ROOT_DESCRIPTOR_FLAGS flags, D3D12_SHADER_VISIBILITY visibility)
   {
-    CD3DX12_ROOT_PARAMETER1 param;
+    CD3DX12_ROOT_PARAMETER1 param{};
     param.InitAsShaderResourceView(shader_register, register_space, flags, visibility);
     parameters[index] = param;
   }
 
   void fgraphics_pipeline::add_constant_buffer_view_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, D3D12_ROOT_DESCRIPTOR_FLAGS flags, D3D12_SHADER_VISIBILITY visibility)
   {
-    CD3DX12_ROOT_PARAMETER1 param;
+    CD3DX12_ROOT_PARAMETER1 param{};
     param.InitAsConstantBufferView(shader_register, register_space, flags, visibility);
     parameters[index] = param;
   }
 
   void fgraphics_pipeline::add_unordered_access_view_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, D3D12_ROOT_DESCRIPTOR_FLAGS flags, D3D12_SHADER_VISIBILITY visibility)
   {
-    CD3DX12_ROOT_PARAMETER1 param;
+    CD3DX12_ROOT_PARAMETER1 param{};
     param.InitAsUnorderedAccessView(shader_register, register_space, flags, visibility);
     parameters[index] = param;
   }
@@ -56,7 +54,7 @@ namespace engine
     CD3DX12_DESCRIPTOR_RANGE1 range(range_type, num_descriptors, shader_register, register_space, range_flags, offset_in_descriptors_from_table_start);
     ranges.push_back(range);
     
-    CD3DX12_ROOT_PARAMETER1 param;
+    CD3DX12_ROOT_PARAMETER1 param{};
     //uint32_t num_descriptor_ranges = fmath::to_uint32(ranges.size());
     param.InitAsDescriptorTable(1, &ranges.back(), visibility);
     parameters[index] = param;
@@ -128,5 +126,24 @@ namespace engine
     pipeline_state_stream.render_target_formats = render_target_formats;
     pipeline_state_stream.blend_desc = blend_desc;
     device->create_pipeline_state(pipeline_state_stream, pipeline_state, name);
+  }
+
+  DXGI_FORMAT fgraphics_pipeline::get_depth_format() const
+  {
+    if (depth_buffer_format == DXGI_FORMAT_UNKNOWN)
+    {
+      LOG_ERROR("Invalid depth format")
+    }
+    return depth_buffer_format;
+  }
+
+  DXGI_FORMAT fgraphics_pipeline::get_rtv_format(uint32_t index) const
+  {
+    DXGI_FORMAT format = render_target_formats.RTFormats[index];
+    if (format == DXGI_FORMAT_UNKNOWN)
+    {
+      LOG_ERROR("Invalid rtv format")
+    }
+    return format;
   }
 }

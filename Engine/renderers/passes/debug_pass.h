@@ -16,7 +16,7 @@ namespace engine
     virtual void draw(frenderer_context* in_context, fgraphics_command_list* command_list) override;
     
     // Output
-    ftexture_resource* blend_on;
+    ftexture_resource* blend_on = nullptr;
 
   private:
     std::vector<fconst_buffer> frame_data; // index is back buffer id
