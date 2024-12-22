@@ -21,12 +21,12 @@
 
 namespace engine
 {
-  bool fshader_tools::load_compiled_shader(const std::string& name, ComPtr<IDxcBlob>& out_shader_blob)
+  bool fshader_tools::load_compiled_shader(const std::string& name, fcom_ptr<IDxcBlob>& out_shader_blob)
   {
 #if FORCE_COMPILE_SHADERS_ON_START
     return false;
 #endif
-    ComPtr<IDxcUtils> utils;
+    fcom_ptr<IDxcUtils> utils;
     if(FAILED(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(utils.GetAddressOf()))))
     {
       LOG_ERROR("Failed to create dxc utils instance.");
@@ -35,7 +35,7 @@ namespace engine
 
     // Load shader object
     {
-      ComPtr<IDxcBlobEncoding> cso_blob;
+      fcom_ptr<IDxcBlobEncoding> cso_blob;
       const std::wstring w_cso_path = fstring_tools::to_utf16(fio::get_shader_file_path(name.c_str()) + ".cso");
       if(FAILED(utils->LoadFile(w_cso_path.c_str(), nullptr, cso_blob.GetAddressOf())))
       {
@@ -51,7 +51,7 @@ namespace engine
     // Load and register pdb file if using aftermath
 #if USE_NSIGHT_AFTERMATH
     {
-      ComPtr<IDxcBlobEncoding> pdb_blob;
+      fcom_ptr<IDxcBlobEncoding> pdb_blob;
       const std::wstring w_pdb_path = fstring_tools::to_utf16(fio::get_shader_file_path(name.c_str()) + ".pdb");
       if(FAILED(utils->LoadFile(w_pdb_path.c_str(), nullptr, pdb_blob.GetAddressOf())))
       {
@@ -70,11 +70,11 @@ namespace engine
   // https://github.com/microsoft/DirectXShaderCompiler/wiki/Using-dxc.exe-and-dxcompiler.dll
   // https://simoncoenen.com/blog/programming/graphics/DxcCompiling
   // https://youtu.be/tyyKeTsdtmo?t=1132
-  bool fshader_tools::load_and_compile_hlsl(const std::string& hlsl_file_name, const std::string& entrypoint, const std::string& target, ComPtr<IDxcBlob>& out_shader_blob, std::string& out_hash)
+  bool fshader_tools::load_and_compile_hlsl(const std::string& hlsl_file_name, const std::string& entrypoint, const std::string& target, fcom_ptr<IDxcBlob>& out_shader_blob, std::string& out_hash)
   {
-    ComPtr<IDxcUtils> utils;
-    ComPtr<IDxcCompiler3> compiler;
-    ComPtr<IDxcIncludeHandler> include_handler;
+    fcom_ptr<IDxcUtils> utils;
+    fcom_ptr<IDxcCompiler3> compiler;
+    fcom_ptr<IDxcIncludeHandler> include_handler;
 
     std::string hlsl_file_path = fio::get_shader_file_path(hlsl_file_name.c_str());
     std::string shader_path = fstring_tools::remove_file_extension(hlsl_file_path) + "_" + entrypoint;
@@ -122,10 +122,10 @@ namespace engine
     }
 
     // Load hlsl and compile shader
-    ComPtr<IDxcResult> dxc_result;
+    fcom_ptr<IDxcResult> dxc_result;
     {
       // Load shader source
-      ComPtr<IDxcBlobEncoding> source_blob;
+      fcom_ptr<IDxcBlobEncoding> source_blob;
       std::wstring w_hlsl_file_path = fstring_tools::to_utf16(hlsl_file_path);
       if(FAILED(utils->LoadFile(w_hlsl_file_path.c_str(), nullptr, source_blob.GetAddressOf())))
       {
@@ -146,7 +146,7 @@ namespace engine
     }
 
     // Print warnings and errors, fail if errors
-    ComPtr<IDxcBlobUtf8> errors = nullptr;
+    fcom_ptr<IDxcBlobUtf8> errors = nullptr;
     get_dxc_blob(dxc_result.Get(), DXC_OUT_ERRORS, errors);
     if (errors != nullptr && errors->GetStringLength() != 0)
     {
@@ -173,7 +173,7 @@ namespace engine
     // Debug symbols
 #if BUILD_DEBUG
     {
-      ComPtr<IDxcBlob> pdb_blob;
+      fcom_ptr<IDxcBlob> pdb_blob;
       std::string pdb_path = shader_path + ".pdb";
       if(!get_dxc_blob(dxc_result.Get(), DXC_OUT_PDB, pdb_blob)) { return false; }
       if(!save_dxc_blob(pdb_blob.Get(), pdb_path.c_str())) { return false; }
@@ -187,7 +187,7 @@ namespace engine
 
   bool fshader_tools::get_dxc_hash(IDxcResult* result, std::string& out_hash)
   {
-    ComPtr<IDxcBlob> hash = nullptr;
+    fcom_ptr<IDxcBlob> hash = nullptr;
     char hash_string[32] = {'\0'};
     if(get_dxc_blob(result, DXC_OUT_SHADER_HASH, hash) && hash != nullptr)
     {
@@ -202,9 +202,9 @@ namespace engine
     return false;
   }
   
-  bool fshader_tools::get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlob>& out_blob)
+  bool fshader_tools::get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, fcom_ptr<IDxcBlob>& out_blob)
   {
-    ComPtr<IDxcBlobUtf16> name = nullptr;
+    fcom_ptr<IDxcBlobUtf16> name = nullptr;
     if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), name.GetAddressOf())) && out_blob != nullptr)
     {
       LOG_ERROR("Unable to get dxc blob {0}", static_cast<int32_t>(blob_type));
@@ -213,9 +213,9 @@ namespace engine
     return true;
   }
   
-  bool fshader_tools::get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, ComPtr<IDxcBlobUtf8>& out_blob)
+  bool fshader_tools::get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, fcom_ptr<IDxcBlobUtf8>& out_blob)
   {
-    ComPtr<IDxcBlobUtf16> name = nullptr;
+    fcom_ptr<IDxcBlobUtf16> name = nullptr;
     if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), name.GetAddressOf())) && out_blob != nullptr)
     {
       LOG_ERROR("Unable to get dxc blob {0}", static_cast<int32_t>(blob_type))
@@ -251,7 +251,7 @@ namespace engine
     out_size = in_blob->GetBufferSize();
   }
 
-  void fshader_tools::copy(ComPtr<IDxcBlob>& destination_blob, const ComPtr<IDxcBlob>& source_blob)
+  void fshader_tools::copy(fcom_ptr<IDxcBlob>& destination_blob, const fcom_ptr<IDxcBlob>& source_blob)
   {
     destination_blob = source_blob;
   }
@@ -260,11 +260,11 @@ namespace engine
   // https://asawicki.info/news_1719_two_shader_compilers_of_direct3d_12
   // https://github.com/NVIDIAGameWorks/ShaderMake/blob/470bbc7d0c343bc82c988072ee8a1fb2210647ce/src/ShaderMake.cpp#L988
   // https://devblogs.microsoft.com/pix/using-automatic-shader-pdb-resolution-in-pix/
-  bool fshader_tools::load_hlsl_fxc(const std::string& file_name, const std::string& entrypoint, const std::string& target, ComPtr<ID3D10Blob>& out_shader_blob)
+  bool fshader_tools::load_hlsl_fxc(const std::string& file_name, const std::string& entrypoint, const std::string& target, fcom_ptr<ID3D10Blob>& out_shader_blob)
   {
     std::string hlsl_path = fio::get_shader_file_path(file_name.c_str());
 
-    ComPtr<ID3DBlob> shader_compiler_errors_blob;
+    fcom_ptr<ID3DBlob> shader_compiler_errors_blob;
     UINT flags1 = D3DCOMPILE_ENABLE_UNBOUNDED_DESCRIPTOR_TABLES;
 #if BUILD_DEBUG
     flags1 |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_DEBUG_NAME_FOR_BINARY;
@@ -295,11 +295,11 @@ namespace engine
     // Save the PDB file
     {
       // Retrieve the debug info part of the shader
-      ComPtr<ID3DBlob> pdb;
+      fcom_ptr<ID3DBlob> pdb;
       D3DGetBlobPart(out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize(), D3D_BLOB_PDB, 0, &pdb);
       
       // Retrieve the suggested name for the debug data file
-      ComPtr<ID3DBlob> pdb_name;
+      fcom_ptr<ID3DBlob> pdb_name;
       D3DGetBlobPart(out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize(), D3D_BLOB_DEBUG_NAME, 0, &pdb_name);
       
       // This struct represents the first four bytes of the name blob
@@ -325,7 +325,7 @@ namespace engine
     }
 #elif BUILD_RELEASE
     // Strip reflection
-    ComPtr<ID3DBlob> stripped_blob;
+    fcom_ptr<ID3DBlob> stripped_blob;
     UINT flags = D3DCOMPILER_STRIP_REFLECTION_DATA | D3DCOMPILER_STRIP_DEBUG_INFO | D3DCOMPILER_STRIP_TEST_BLOBS | D3DCOMPILER_STRIP_PRIVATE_DATA;
     D3DStripShader(out_shader_blob->GetBufferPointer(), out_shader_blob->GetBufferSize(), flags, &stripped_blob);
     out_shader_blob = stripped_blob;

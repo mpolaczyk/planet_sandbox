@@ -55,7 +55,7 @@ namespace engine
     fdescriptor* get(uint32_t index);
     void log_audit() const;
     
-    ComPtr<ID3D12DescriptorHeap> com;
+    fcom_ptr<ID3D12DescriptorHeap> com;
     
 private:
     uint32_t find_free_index() const;

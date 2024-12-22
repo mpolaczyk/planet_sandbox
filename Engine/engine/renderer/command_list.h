@@ -28,12 +28,12 @@ namespace engine
     void clear_render_target(const ftexture_resource* rtv, const float color[4]) const;
     void clear_depth_stencil(const ftexture_resource* dsv) const;
 
-    void upload_buffer_resource(uint32_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource) const;
+    void upload_buffer_resource(uint32_t buffer_size, const void* in_buffer, fcom_ptr<ID3D12Resource>& out_upload_intermediate, fcom_ptr<ID3D12Resource>& out_gpu_resource) const;
     void upload_vertex_buffer(astatic_mesh* mesh, const char* name) const;
     void upload_index_buffer(astatic_mesh* mesh, const char* name) const;
     void upload_texture(atexture* texture_asset) const;
     
-    ComPtr<ID3D12GraphicsCommandList> com;
+    fcom_ptr<ID3D12GraphicsCommandList> com;
   };
 
   // Helper struct used as a scope guard. Sets resource transition on construction and applies the oppposite one on destruction.

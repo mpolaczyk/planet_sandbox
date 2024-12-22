@@ -58,7 +58,7 @@ namespace engine
     com->ClearDepthStencilView(dsv->dsv.cpu_descriptor_handle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
   }
 
-  void fgraphics_command_list::upload_buffer_resource(uint32_t buffer_size, const void* in_buffer, ComPtr<ID3D12Resource>& out_upload_intermediate, ComPtr<ID3D12Resource>& out_gpu_resource) const
+  void fgraphics_command_list::upload_buffer_resource(uint32_t buffer_size, const void* in_buffer, fcom_ptr<ID3D12Resource>& out_upload_intermediate, fcom_ptr<ID3D12Resource>& out_gpu_resource) const
   {
     fdevice* device = fapplication::get_instance()->device.get();
 

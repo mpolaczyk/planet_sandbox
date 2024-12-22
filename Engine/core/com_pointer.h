@@ -5,10 +5,9 @@
 #if !USE_CUSTOM_COM_POINTER
 
 #include <wrl/client.h>
-namespace engine
-{
-  using Microsoft::WRL::ComPtr;
-}
+
+template<typename T>
+using fcom_ptr = Microsoft::WRL::ComPtr<T>;
 
 #else
 
@@ -20,14 +19,14 @@ namespace engine
   * Shameless copy from wrl/client.h
   */
   template <typename T>
-  class ENGINE_API ComPtr
+  class ENGINE_API fcom_ptr
   {
   public:
     typedef T InterfaceType;
 
 protected:
     InterfaceType *ptr_;
-    template<class U> friend class ComPtr;
+    template<class U> friend class fcom_ptr;
 
     void InternalAddRef() const throw()
     {
@@ -53,119 +52,103 @@ protected:
 
 public:
 #pragma region constructors
-    ComPtr() throw() : ptr_(nullptr)
+    fcom_ptr() throw() : ptr_(nullptr)
     {
     }
 
-    ComPtr(decltype(__nullptr)) throw() : ptr_(nullptr)
+    fcom_ptr(decltype(__nullptr)) throw() : ptr_(nullptr)
     {
     }
 
     template<class U>
-    ComPtr(U *other) throw() : ptr_(other)
+    fcom_ptr(U *other) throw() : ptr_(other)
     {
         InternalAddRef();
     }
 
-    ComPtr(const ComPtr& other) throw() : ptr_(other.ptr_)
+    fcom_ptr(const fcom_ptr& other) throw() : ptr_(other.ptr_)
     {
         InternalAddRef();
     }
 
-    //// copy constructor that allows to instantiate class when U* is convertible to T*
-    //template<class U>
-    //ComPtr(const ComPtr<U> &other, typename Details::EnableIf<Details::IsConvertible<U*, T*>::value, void *>::type * = 0) throw() :
-    //    ptr_(other.ptr_)
-    //{
-    //    InternalAddRef();
-    //}
-
-    ComPtr(ComPtr &&other) throw() : ptr_(nullptr)
+    fcom_ptr(fcom_ptr &&other) throw() : ptr_(nullptr)
     {
-        if (this != reinterpret_cast<ComPtr*>(&reinterpret_cast<unsigned char&>(other)))
+        if (this != reinterpret_cast<fcom_ptr*>(&reinterpret_cast<unsigned char&>(other)))
         {
             Swap(other);
         }
     }
-
-    //// Move constructor that allows instantiation of a class when U* is convertible to T*
-    //template<class U>
-    //ComPtr(_Inout_ ComPtr<U>&& other, typename Details::EnableIf<Details::IsConvertible<U*, T*>::value, void *>::type * = 0) throw() :
-    //    ptr_(other.ptr_)
-    //{
-    //    other.ptr_ = nullptr;
-    //}
 #pragma endregion
 
 #pragma region destructor
-    ~ComPtr() throw()
+    ~fcom_ptr() throw()
     {
         InternalRelease();
     }
 #pragma endregion
 
 #pragma region assignment
-    ComPtr& operator=(decltype(__nullptr)) throw()
+    fcom_ptr& operator=(decltype(__nullptr)) throw()
     {
         InternalRelease();
         return *this;
     }
 
-    ComPtr& operator=(T *other) throw()
+    fcom_ptr& operator=(T *other) throw()
     {
         if (ptr_ != other)
         {
-            ComPtr(other).Swap(*this);
+            fcom_ptr(other).Swap(*this);
         }
         return *this;
     }
 
     template <typename U>
-    ComPtr& operator=(U *other) throw()
+    fcom_ptr& operator=(U *other) throw()
     {
-        ComPtr(other).Swap(*this);
+        fcom_ptr(other).Swap(*this);
         return *this;
     }
 
-    ComPtr& operator=(const ComPtr &other) throw()
+    fcom_ptr& operator=(const fcom_ptr &other) throw()
     {
         if (ptr_ != other.ptr_)
         {
-            ComPtr(other).Swap(*this);
+            fcom_ptr(other).Swap(*this);
         }
         return *this;
     }
 
     template<class U>
-    ComPtr& operator=(const ComPtr<U>& other) throw()
+    fcom_ptr& operator=(const fcom_ptr<U>& other) throw()
     {
-        ComPtr(other).Swap(*this);
+        fcom_ptr(other).Swap(*this);
         return *this;
     }
 
-    ComPtr& operator=(ComPtr &&other) throw()
+    fcom_ptr& operator=(fcom_ptr &&other) throw()
     {
-        ComPtr(static_cast<ComPtr&&>(other)).Swap(*this);
+        fcom_ptr(static_cast<fcom_ptr&&>(other)).Swap(*this);
         return *this;
     }
 
     template<class U>
-    ComPtr& operator=(ComPtr<U>&& other) throw()
+    fcom_ptr& operator=(fcom_ptr<U>&& other) throw()
     {
-        ComPtr(static_cast<ComPtr<U>&&>(other)).Swap(*this);
+        fcom_ptr(static_cast<fcom_ptr<U>&&>(other)).Swap(*this);
         return *this;
     }
 #pragma endregion
 
 #pragma region modifiers
-    void Swap(ComPtr&& r) throw()
+    void Swap(fcom_ptr&& r) throw()
     {
         T* tmp = ptr_;
         ptr_ = r.ptr_;
         r.ptr_ = tmp;
     }
 
-    void Swap(ComPtr& r) throw()
+    void Swap(fcom_ptr& r) throw()
     {
         T* tmp = ptr_;
         ptr_ = r.ptr_;
@@ -183,27 +166,10 @@ public:
         return ptr_;
     }
 
-//#if (defined(_DEBUG) || defined(DBG)) && defined(__REMOVE_IUNKNOWN_METHODS__)
-//    typename Details::RemoveIUnknown<InterfaceType>::ReturnType* operator->() const throw()
-//    {
-//        return static_cast<typename Details::RemoveIUnknown<InterfaceType>::ReturnType*>(ptr_);
-//    }
-//#else
     InterfaceType* operator->() const throw()
     {
         return ptr_;
     }
-//#endif
-
-    //Details::ComPtrRef<ComPtr<T>> operator&() throw()
-    //{
-    //    return Details::ComPtrRef<ComPtr<T>>(this);
-    //}
-    //
-    //const Details::ComPtrRef<const ComPtr<T>> operator&() const throw()
-    //{
-    //    return Details::ComPtrRef<const ComPtr<T>>(this);
-    //}
 
     T* const* GetAddressOf() const throw()
     {
@@ -234,9 +200,6 @@ public:
         {
             auto ref = ptr_->Release();
             (void)ref;
-            // Attaching to the same object only works if duplicate references are being coalesced. Otherwise
-            // re-attaching will cause the pointer to be released and may cause a crash on a subsequent dereference.
-            //__WRL_ASSERT__(ref != 0 || ptr_ != other);
         }
 
         ptr_ = other;
@@ -246,79 +209,7 @@ public:
     {
         return InternalRelease();
     }
-
-    // Previously, unsafe behavior could be triggered when 'this' is ComPtr<IInspectable> or ComPtr<IUnknown> and CopyTo is used to copy to another type U.
-    // The user will use operator& to convert the destination into a ComPtrRef, which can then implicit cast to IInspectable** and IUnknown**.
-    // If this overload of CopyTo is not present, it will implicitly cast to IInspectable or IUnknown and match CopyTo(InterfaceType**) instead.
-    // A valid polymoprhic downcast requires run-time type checking via QueryInterface, so CopyTo(InterfaceType**) will break type safety.
-    // This overload matches ComPtrRef before the implicit cast takes place, preventing the unsafe downcast.
-    //template <typename U>
-    //HRESULT CopyTo(Details::ComPtrRef<ComPtr<U>> ptr, typename Details::EnableIf<
-    //  ((Details::IsSame<T, IInspectable>::value && !Details::IsSame<U, IUnknown>::value) || (Details::IsSame<T, IUnknown>::value))
-    //  && !Details::IsSame<U*, T*>::value, void *>::type * = 0) const throw()
-    //{
-    //    return ptr_->QueryInterface(__uuidof(U), ptr);
-    //}
-    //
-    //HRESULT CopyTo(_Outptr_result_maybenull_ InterfaceType** ptr) const throw()
-    //{
-    //    InternalAddRef();
-    //    *ptr = ptr_;
-    //    return S_OK;
-    //}
-    //
-    //HRESULT CopyTo(REFIID riid, _Outptr_result_nullonfailure_ void** ptr) const throw()
-    //{
-    //    return ptr_->QueryInterface(riid, ptr);
-    //}
-    //
-    //template<typename U>
-    //HRESULT CopyTo(_Outptr_result_nullonfailure_ U** ptr) const throw()
-    //{
-    //    return ptr_->QueryInterface(__uuidof(U), reinterpret_cast<void**>(ptr));
-    //}
-    //
-    //// query for U interface
-    //template<typename U>
-    //HRESULT As(_Inout_ Details::ComPtrRef<ComPtr<U>> p) const throw()
-    //{
-    //    return ptr_->QueryInterface(__uuidof(U), p);
-    //}
-    //
-    //// query for U interface
-    //template<typename U>
-    //HRESULT As(_Out_ ComPtr<U>* p) const throw()
-    //{
-    //    return ptr_->QueryInterface(__uuidof(U), reinterpret_cast<void**>(p->ReleaseAndGetAddressOf()));
-    //}
-    //
-    //// query for riid interface and return as IUnknown
-    //HRESULT AsIID(REFIID riid, _Out_ ComPtr<IUnknown>* p) const throw()
-    //{
-    //    return ptr_->QueryInterface(riid, reinterpret_cast<void**>(p->ReleaseAndGetAddressOf()));
-    //}
-    //
-    //HRESULT AsWeak(_Out_ WeakRef* pWeakRef) const throw()
-    //{
-    //    return ::Microsoft::WRL::AsWeak(ptr_, pWeakRef);
-    //}
-
-//#pragma region Application Family or OneCore Family
-//#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP | WINAPI_PARTITION_SYSTEM)
-//
-//#if (NTDDI_VERSION >= NTDDI_WINBLUE)
-//
-//    HRESULT AsAgile(_Out_ AgileRef* pAgile) const throw()
-//    {
-//        return ::Microsoft::WRL::AsAgile(ptr_, pAgile);
-//    }
-//
-//#endif // (NTDDI_VERSION >= NTDDI_WINBLUE)
-//
-//#endif /* WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP | WINAPI_PARTITION_SYSTEM) */
-//#pragma endregion
-
-  };    // ComPtr
+  };
 }
 
 #endif

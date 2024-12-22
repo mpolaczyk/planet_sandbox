@@ -18,8 +18,8 @@ namespace engine
   {
     *out_adapter = nullptr;
 
-    ComPtr<IDXGIAdapter1> adapter1;
-    ComPtr<IDXGIFactory6> factory6;
+    fcom_ptr<IDXGIAdapter1> adapter1;
+    fcom_ptr<IDXGIFactory6> factory6;
 
     if(SUCCEEDED(factory->QueryInterface(IID_PPV_ARGS(factory6.GetAddressOf()))))
     {
@@ -78,7 +78,7 @@ namespace engine
     //const UUID experimental_features[] = { D3D12ExperimentalShaderModels };
     //THROW_IF_FAILED(D3D12EnableExperimentalFeatures(1, experimental_features, nullptr, nullptr));
     
-    ComPtr<IDXGIAdapter1> adapter1;
+    fcom_ptr<IDXGIAdapter1> adapter1;
     get_hw_adapter(factory, adapter1.GetAddressOf(), true);
     DXGI_ADAPTER_DESC adapter_desc;
     adapter1->GetDesc(&adapter_desc);
@@ -91,7 +91,7 @@ namespace engine
     }
 #endif
     
-    ComPtr<ID3D12Device2> temp_device;  // Used only to check feature level and shader model
+    fcom_ptr<ID3D12Device2> temp_device;  // Used only to check feature level and shader model
     THROW_IF_FAILED((D3D12CreateDevice(adapter1.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(temp_device.GetAddressOf()))))
 
     // Check shader model
@@ -122,7 +122,7 @@ namespace engine
     }
   }
 
-  void fdevice::create_root_signature(const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, const std::vector<CD3DX12_STATIC_SAMPLER_DESC>& static_samplers, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, ComPtr<ID3D12RootSignature>& out_root_signature, const char* name) const
+  void fdevice::create_root_signature(const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, const std::vector<CD3DX12_STATIC_SAMPLER_DESC>& static_samplers, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, fcom_ptr<ID3D12RootSignature>& out_root_signature, const char* name) const
   {
     D3D12_FEATURE_DATA_ROOT_SIGNATURE feature_data = {};
     feature_data.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
@@ -132,8 +132,8 @@ namespace engine
     }
       
     // Serialize the root signature.
-    ComPtr<ID3DBlob> root_signature_serialized;
-    ComPtr<ID3DBlob> error_blob;
+    fcom_ptr<ID3DBlob> root_signature_serialized;
+    fcom_ptr<ID3DBlob> error_blob;
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC root_signature_desc;
     root_signature_desc.Init_1_1(fmath::to_uint32(root_parameters.size()), root_parameters.data(), fmath::to_uint32(static_samplers.size()), static_samplers.data(), root_signature_flags);
     
@@ -161,7 +161,7 @@ namespace engine
 #endif
   }
 
-  void fdevice::create_pipeline_state(fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state, const char* name) const
+  void fdevice::create_pipeline_state(fpipeline_state_stream& pipeline_state_stream, fcom_ptr<ID3D12PipelineState>& out_pipeline_state, const char* name) const
   {
     const D3D12_PIPELINE_STATE_STREAM_DESC pipeline_state_stream_desc(sizeof(fpipeline_state_stream), &pipeline_state_stream);
     THROW_IF_FAILED(com->CreatePipelineState(&pipeline_state_stream_desc, IID_PPV_ARGS(out_pipeline_state.GetAddressOf())));
@@ -170,7 +170,7 @@ namespace engine
 #endif
   }
 
-  void fdevice::create_pipeline_state(const D3D12_GRAPHICS_PIPELINE_STATE_DESC& pso_desc, ComPtr<ID3D12PipelineState>& out_pipeline_state, const char* name) const
+  void fdevice::create_pipeline_state(const D3D12_GRAPHICS_PIPELINE_STATE_DESC& pso_desc, fcom_ptr<ID3D12PipelineState>& out_pipeline_state, const char* name) const
   {
     THROW_IF_FAILED(com->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(out_pipeline_state.GetAddressOf())));
 #if BUILD_DEBUG
@@ -178,7 +178,7 @@ namespace engine
 #endif
   }
 
-  void fdevice::create_command_queue(ComPtr<ID3D12CommandQueue>& out_command_queue) const 
+  void fdevice::create_command_queue(fcom_ptr<ID3D12CommandQueue>& out_command_queue) const 
   {
     D3D12_COMMAND_QUEUE_DESC desc = {};
     desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -187,7 +187,7 @@ namespace engine
     THROW_IF_FAILED(com->CreateCommandQueue(&desc, IID_PPV_ARGS(out_command_queue.GetAddressOf())))
   }
 
-  void fdevice::create_command_list(uint32_t back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators) const 
+  void fdevice::create_command_list(uint32_t back_buffer_count, fcom_ptr<ID3D12GraphicsCommandList>& out_command_list, std::vector<fcom_ptr<ID3D12CommandAllocator>>& out_command_allocators) const 
   {
     out_command_allocators.reserve(back_buffer_count);
     for(uint32_t n = 0; n < back_buffer_count; n++)
@@ -198,7 +198,7 @@ namespace engine
     THROW_IF_FAILED(com->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, out_command_allocators[0].Get(), nullptr, IID_PPV_ARGS(out_command_list.GetAddressOf())))
   }
 
-  void fdevice::create_synchronisation(uint32_t back_buffer_count, uint64_t initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values) const 
+  void fdevice::create_synchronisation(uint32_t back_buffer_count, uint64_t initial_fence_value, fcom_ptr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values) const 
   {
     THROW_IF_FAILED(com->CreateFence(initial_fence_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(out_fence.GetAddressOf())))
 
@@ -458,7 +458,7 @@ namespace engine
     create_texture_buffer(heap, texture_asset->gpu_resource, texture_asset->width, texture_asset->height, texture_asset->format, name);
   }
 
-  void fdevice::create_upload_resource(uint32_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const
+  void fdevice::create_upload_resource(uint32_t buffer_size, fcom_ptr<ID3D12Resource>& out_resource) const
   {
     if(out_resource)
     {
@@ -476,7 +476,7 @@ namespace engine
       IID_PPV_ARGS(out_resource.GetAddressOf())));
   }
 
-  void fdevice::create_buffer_resource(uint32_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const
+  void fdevice::create_buffer_resource(uint32_t buffer_size, fcom_ptr<ID3D12Resource>& out_resource) const
   {
     if(out_resource)
     {
@@ -517,7 +517,7 @@ namespace engine
   
   void fdevice::enable_info_queue() const
   {
-    ComPtr<ID3D12InfoQueue> info_queue;
+    fcom_ptr<ID3D12InfoQueue> info_queue;
     com->QueryInterface(IID_PPV_ARGS(info_queue.GetAddressOf()));
     info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
     info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);

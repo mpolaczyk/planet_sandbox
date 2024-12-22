@@ -66,12 +66,12 @@ namespace engine
     static_samplers.emplace_back(desc);
   }
 
-  void fgraphics_pipeline::bind_pixel_shader(ComPtr<IDxcBlob>& shader)
+  void fgraphics_pipeline::bind_pixel_shader(fcom_ptr<IDxcBlob>& shader)
   {
     fshader_tools::copy(pixel_shader, shader); // Trick to avoid including "dxcapi.h"
   }
 
-  void fgraphics_pipeline::bind_vertex_shader(ComPtr<IDxcBlob>& shader)
+  void fgraphics_pipeline::bind_vertex_shader(fcom_ptr<IDxcBlob>& shader)
   {
     fshader_tools::copy(vertex_shader, shader); // Trick to avoid including "dxcapi.h"
   }

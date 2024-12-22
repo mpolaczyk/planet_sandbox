@@ -28,8 +28,8 @@ namespace engine
 
     void add_static_sampler(uint32_t shader_register, D3D12_FILTER filter);
 
-    void bind_pixel_shader(ComPtr<IDxcBlob>& shader);
-    void bind_vertex_shader(ComPtr<IDxcBlob>& shader);
+    void bind_pixel_shader(fcom_ptr<IDxcBlob>& shader);
+    void bind_vertex_shader(fcom_ptr<IDxcBlob>& shader);
     void bind_command_list(ID3D12GraphicsCommandList* command_list);
     
     void setup_formats(uint32_t num_rtv_formats, const DXGI_FORMAT* rtv_formats, DXGI_FORMAT depth_buffer);
@@ -46,10 +46,10 @@ namespace engine
     std::vector<CD3DX12_ROOT_PARAMETER1> parameters;  // Keep in memory. This need to exist until root signature is created
     std::list<CD3DX12_DESCRIPTOR_RANGE1> ranges;      // Keep in memory. This need to exist until root signature is created
     std::vector<CD3DX12_STATIC_SAMPLER_DESC> static_samplers;
-    ComPtr<ID3D12RootSignature> root_signature;
-    ComPtr<ID3D12PipelineState> pipeline_state;
-    ComPtr<IDxcBlob> vertex_shader;
-    ComPtr<IDxcBlob> pixel_shader;
+    fcom_ptr<ID3D12RootSignature> root_signature;
+    fcom_ptr<ID3D12PipelineState> pipeline_state;
+    fcom_ptr<IDxcBlob> vertex_shader;
+    fcom_ptr<IDxcBlob> pixel_shader;
     DXGI_FORMAT depth_buffer_format{};
     D3D12_RT_FORMAT_ARRAY render_target_formats{};
     std::vector<D3D12_INPUT_ELEMENT_DESC> input_layout;

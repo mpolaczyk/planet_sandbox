@@ -16,7 +16,7 @@ namespace engine
 {
   struct ENGINE_API fbuffer
   {
-    ComPtr<ID3D12Resource> resource;
+    fcom_ptr<ID3D12Resource> resource;
     uint32_t size = 0;
 
     void upload(const void* data) const;
@@ -36,8 +36,8 @@ namespace engine
   {
     void release();
 
-    ComPtr<ID3D12Resource> com;
-    ComPtr<ID3D12Resource> upload_com;
+    fcom_ptr<ID3D12Resource> com;
+    fcom_ptr<ID3D12Resource> upload_com;
     fdescriptor srv;
     fdescriptor rtv;
     fdescriptor dsv;
@@ -45,16 +45,16 @@ namespace engine
 
   struct ENGINE_API fshader_resource
   {
-    ComPtr<IDxcBlob> blob;
+    fcom_ptr<IDxcBlob> blob;
   };
 
   struct ENGINE_API fstatic_mesh_resource
   {
     uint32_t vertex_num{};
-    ComPtr<ID3D12Resource> vertex_buffer;
-    ComPtr<ID3D12Resource> index_buffer;
-    ComPtr<ID3D12Resource> vertex_buffer_upload;
-    ComPtr<ID3D12Resource> index_buffer_upload;
+    fcom_ptr<ID3D12Resource> vertex_buffer;
+    fcom_ptr<ID3D12Resource> index_buffer;
+    fcom_ptr<ID3D12Resource> vertex_buffer_upload;
+    fcom_ptr<ID3D12Resource> index_buffer_upload;
     D3D12_VERTEX_BUFFER_VIEW vertex_buffer_view{};
     D3D12_INDEX_BUFFER_VIEW index_buffer_view{};
   };

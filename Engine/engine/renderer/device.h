@@ -47,13 +47,13 @@ namespace engine
     static void get_hw_adapter(IDXGIFactory1* factory, IDXGIAdapter1** out_adapter, bool prefer_high_performance_adapter = false);
     static fdevice* create(IDXGIFactory4* factory);
     
-    void create_root_signature(const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, const std::vector<CD3DX12_STATIC_SAMPLER_DESC>& static_samplers, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, ComPtr<ID3D12RootSignature>& out_root_signature, const char* name) const;
-    void create_pipeline_state(fpipeline_state_stream& pipeline_state_stream, ComPtr<ID3D12PipelineState>& out_pipeline_state, const char* name) const;
-    void create_pipeline_state(const D3D12_GRAPHICS_PIPELINE_STATE_DESC& pso_desc, ComPtr<ID3D12PipelineState>& out_pipeline_state, const char* name) const;
+    void create_root_signature(const std::vector<CD3DX12_ROOT_PARAMETER1>& root_parameters, const std::vector<CD3DX12_STATIC_SAMPLER_DESC>& static_samplers, D3D12_ROOT_SIGNATURE_FLAGS root_signature_flags, fcom_ptr<ID3D12RootSignature>& out_root_signature, const char* name) const;
+    void create_pipeline_state(fpipeline_state_stream& pipeline_state_stream, fcom_ptr<ID3D12PipelineState>& out_pipeline_state, const char* name) const;
+    void create_pipeline_state(const D3D12_GRAPHICS_PIPELINE_STATE_DESC& pso_desc, fcom_ptr<ID3D12PipelineState>& out_pipeline_state, const char* name) const;
     
-    void create_command_queue(ComPtr<ID3D12CommandQueue>& out_command_queue) const;
-    void create_command_list(uint32_t back_buffer_count, ComPtr<ID3D12GraphicsCommandList>& out_command_list, std::vector<ComPtr<ID3D12CommandAllocator>>& out_command_allocators) const;
-    void create_synchronisation(uint32_t back_buffer_count, uint64_t initial_fence_value, ComPtr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values) const;
+    void create_command_queue(fcom_ptr<ID3D12CommandQueue>& out_command_queue) const;
+    void create_command_list(uint32_t back_buffer_count, fcom_ptr<ID3D12GraphicsCommandList>& out_command_list, std::vector<fcom_ptr<ID3D12CommandAllocator>>& out_command_allocators) const;
+    void create_synchronisation(uint32_t back_buffer_count, uint64_t initial_fence_value, fcom_ptr<ID3D12Fence>& out_fence, HANDLE& out_fence_event, std::vector<uint64_t>& out_fence_values) const;
 
     void create_render_target_descriptor_heap(fdescriptor_heap& out_descriptor_heap, const char* name) const;
     void create_depth_stencil_descriptor_heap(fdescriptor_heap& out_descriptor_heap, const char* name) const;
@@ -67,12 +67,12 @@ namespace engine
     void create_texture_buffer(fdescriptor_heap* heap, ftexture_resource& out_resource, uint32_t width, uint32_t height, DXGI_FORMAT format, const char* name) const;
     void create_texture_buffer(fdescriptor_heap* heap, atexture* texture_asset, const char* name) const;
 
-    void create_upload_resource(uint32_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const;
-    void create_buffer_resource(uint32_t buffer_size, ComPtr<ID3D12Resource>& out_resource) const;
+    void create_upload_resource(uint32_t buffer_size, fcom_ptr<ID3D12Resource>& out_resource) const;
+    void create_buffer_resource(uint32_t buffer_size, fcom_ptr<ID3D12Resource>& out_resource) const;
 
     DXGI_SAMPLE_DESC get_multisample_quality_levels(DXGI_FORMAT format, uint32_t num_samples, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags) const;
     void enable_info_queue() const;
 
-    ComPtr<ID3D12Device2> com;
+    fcom_ptr<ID3D12Device2> com;
   };
 }

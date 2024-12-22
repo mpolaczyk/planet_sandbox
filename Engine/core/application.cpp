@@ -89,7 +89,7 @@ namespace engine
     REG.create_class_objects();
 
     LOG_INFO("Creating rendering resources");
-    ComPtr<IDXGIFactory4> factory;
+    fcom_ptr<IDXGIFactory4> factory;
     fdx12::create_factory(factory);
 #if USE_NSIGHT_AFTERMATH
     gpu_crash_handler.pre_device_creation(window->back_buffer_count);

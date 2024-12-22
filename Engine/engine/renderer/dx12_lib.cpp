@@ -10,8 +10,8 @@ namespace engine
 {
   void fdx12::enable_debug_layer_and_gpu_validation()
   {
-    ComPtr<ID3D12Debug> debug;
-    ComPtr<ID3D12Debug1> debug1;
+    fcom_ptr<ID3D12Debug> debug;
+    fcom_ptr<ID3D12Debug1> debug1;
     THROW_IF_FAILED(D3D12GetDebugInterface(IID_PPV_ARGS(debug.GetAddressOf())))
     THROW_IF_FAILED(debug->QueryInterface(IID_PPV_ARGS(debug1.GetAddressOf())))
     debug1->SetEnableGPUBasedValidation(true);
@@ -19,10 +19,10 @@ namespace engine
     LOG_DEBUG("Enabled debug layer and GPU validation")
   }
 
-  bool fdx12::enable_screen_tearing(ComPtr<IDXGIFactory4> factory)
+  bool fdx12::enable_screen_tearing(fcom_ptr<IDXGIFactory4> factory)
   {
     uint32_t success = 1;
-    ComPtr<IDXGIFactory5> factory5;
+    fcom_ptr<IDXGIFactory5> factory5;
     if(SUCCEEDED(factory->QueryInterface(IID_PPV_ARGS(factory5.GetAddressOf()))))
     {
       success = FAILED(factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &success, sizeof(success))) ? 0 : 1;
@@ -30,7 +30,7 @@ namespace engine
     return success == 1;
   }
   
-  void fdx12::create_factory(ComPtr<IDXGIFactory4>& out_factory4)
+  void fdx12::create_factory(fcom_ptr<IDXGIFactory4>& out_factory4)
   {
     uint32_t factory_flags = 0;
 #if BUILD_DEBUG && !USE_NSIGHT_AFTERMATH
@@ -39,7 +39,7 @@ namespace engine
     THROW_IF_FAILED(CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(out_factory4.GetAddressOf())))
   }
   
-  void fdx12::create_swap_chain(HWND hwnd, IDXGIFactory4* factory, ID3D12CommandQueue* command_queue, uint32_t back_buffer_count, DXGI_FORMAT format, bool allow_screen_tearing, ComPtr<IDXGISwapChain4>& out_swap_chain)
+  void fdx12::create_swap_chain(HWND hwnd, IDXGIFactory4* factory, ID3D12CommandQueue* command_queue, uint32_t back_buffer_count, DXGI_FORMAT format, bool allow_screen_tearing, fcom_ptr<IDXGISwapChain4>& out_swap_chain)
   {
     DXGI_SWAP_CHAIN_DESC1 desc = {};
     desc.BufferCount = back_buffer_count;
@@ -55,7 +55,7 @@ namespace engine
     desc.SampleDesc.Quality = 0;
     desc.Stereo = FALSE;
 
-    ComPtr<IDXGISwapChain1> swap_chain1;
+    fcom_ptr<IDXGISwapChain1> swap_chain1;
     THROW_IF_FAILED(factory->CreateSwapChainForHwnd(command_queue, hwnd, &desc, nullptr, nullptr, swap_chain1.GetAddressOf()))
     THROW_IF_FAILED(factory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER))
     THROW_IF_FAILED(swap_chain1->QueryInterface(IID_PPV_ARGS(out_swap_chain.GetAddressOf())))
@@ -70,7 +70,7 @@ namespace engine
   
   void fdx12::report_live_objects()
   {
-    ComPtr<IDXGIDebug1> debug;
+    fcom_ptr<IDXGIDebug1> debug;
     THROW_IF_FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(debug.GetAddressOf())))
     debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
   }

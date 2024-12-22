@@ -32,9 +32,9 @@ namespace engine
   {
     static void enable_debug_layer_and_gpu_validation();
     
-    static bool enable_screen_tearing(ComPtr<IDXGIFactory4> factory);
-    static void create_factory(ComPtr<IDXGIFactory4>& out_factory4);
-    static void create_swap_chain(HWND hwnd, IDXGIFactory4* factory, ID3D12CommandQueue* command_queue, uint32_t back_buffer_count, DXGI_FORMAT format, bool allow_screen_tearing, ComPtr<IDXGISwapChain4>& out_swap_chain);
+    static bool enable_screen_tearing(fcom_ptr<IDXGIFactory4> factory);
+    static void create_factory(fcom_ptr<IDXGIFactory4>& out_factory4);
+    static void create_swap_chain(HWND hwnd, IDXGIFactory4* factory, ID3D12CommandQueue* command_queue, uint32_t back_buffer_count, DXGI_FORMAT format, bool allow_screen_tearing, fcom_ptr<IDXGISwapChain4>& out_swap_chain);
     
     static void resize_swap_chain(IDXGISwapChain4* swap_chain, uint32_t backbuffer_count, uint32_t width, uint32_t height);
     

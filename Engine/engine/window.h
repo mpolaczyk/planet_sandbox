@@ -43,7 +43,7 @@ namespace engine
     uint32_t get_back_buffer_index() const { return back_buffer_index; }
     HWND get_window_handle() const { return hwnd; }
     
-    ComPtr<IDXGISwapChain4> swap_chain;
+    fcom_ptr<IDXGISwapChain4> swap_chain;
 
     // TODO move heaps to the fdevice
     fdescriptor_heap rtv_descriptor_heap;
