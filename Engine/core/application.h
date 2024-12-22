@@ -5,7 +5,7 @@
 #include "engine/profile/benchmark.h"
 
 #if USE_NSIGHT_AFTERMATH
-#include "gpu_crash_handler.h"
+#include "core/exceptions/gpu_crash_handler.h"
 #endif
 
 // Hacky forward declares
