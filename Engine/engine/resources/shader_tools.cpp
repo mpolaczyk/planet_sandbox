@@ -245,9 +245,9 @@ namespace engine
     return CD3DX12_SHADER_BYTECODE(shader->GetBufferPointer(), shader->GetBufferSize());
   }
 
-  void fshader_tools::get_blob_pointer_and_size(IDxcBlob* in_blob, uint8_t* out_address, size_t& out_size)
+  void fshader_tools::get_blob_pointer_and_size(IDxcBlob* in_blob, uint8_t** out_address, size_t& out_size)
   {
-    out_address = static_cast<uint8_t*>(const_cast<void*>(in_blob->GetBufferPointer()));
+    *out_address = static_cast<uint8_t*>(const_cast<void*>(in_blob->GetBufferPointer()));
     out_size = in_blob->GetBufferSize();
   }
 

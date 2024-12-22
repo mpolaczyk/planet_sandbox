@@ -146,7 +146,7 @@ std::string GpuCrashTracker::AddSourceShaderDebugData(IDxcBlob* shaderBlob, IDxc
 
   uint8_t* buff{};
   size_t length{};
-  engine::fshader_tools::get_blob_pointer_and_size(pdbBlob, buff, length);
+  engine::fshader_tools::get_blob_pointer_and_size(pdbBlob, &buff, length);
 
   std::vector<uint8_t> data(buff, buff + length);
   m_sourceShaderDebugData[debug_name].swap(data);

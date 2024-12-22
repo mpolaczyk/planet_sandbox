@@ -26,7 +26,7 @@ namespace engine
     static bool save_dxc_blob(IDxcBlob* blob, const char* path);
 
     static CD3DX12_SHADER_BYTECODE get_shader_byte_code(IDxcBlob* shader);
-    static void get_blob_pointer_and_size(IDxcBlob* in_blob, uint8_t* out_address, size_t& out_size);
+    static void get_blob_pointer_and_size(IDxcBlob* in_blob, uint8_t** out_address, size_t& out_size);
     static void copy(ComPtr<IDxcBlob>& destination_blob, const ComPtr<IDxcBlob>& source_blob);
 
 
