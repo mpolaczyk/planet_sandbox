@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include "d3d12.h"
 #include "d3dx12/d3dx12_root_signature.h"
 
 #include "core/core.h"
@@ -13,6 +12,7 @@
 #endif
 
 struct ID3D12DescriptorHeap;
+enum D3D12_DESCRIPTOR_HEAP_TYPE;
 
 namespace engine
 {

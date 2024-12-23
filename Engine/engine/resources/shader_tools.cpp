@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <dbghelp.h>
-#include "dxcapi.h"
 
 #pragma comment(lib, "dxcompiler.lib")
 
@@ -14,8 +13,6 @@
 #include "engine/io.h"
 #include "engine/string_tools.h"
 #include "engine/math/math.h"
-
-#include "core/com_pointer.h"
 
 namespace engine
 {

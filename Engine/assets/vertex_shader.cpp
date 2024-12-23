@@ -1,8 +1,8 @@
+#include "stdafx.h"
+
 #include "assets/vertex_shader.h"
 
 #include "engine/io.h"
-#include "core/rtti/object_registry.h"
-#include "core/rtti/object_visitor.h"
 
 namespace engine
 {

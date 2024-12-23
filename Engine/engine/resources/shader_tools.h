@@ -3,7 +3,7 @@
 #include <string>
 
 #include "core/core.h"
-#include "engine/renderer/graphics_pipeline.h"
+#include "core/com_pointer.h"
 
 struct IDxcBlob;
 struct CD3DX12_SHADER_BYTECODE;
@@ -11,6 +11,11 @@ enum DXC_OUT_KIND;
 
 namespace engine
 {
+  struct ENGINE_API fshader_resource
+  {
+    fcom_ptr<IDxcBlob> blob;
+  };
+  
   struct ENGINE_API fshader_tools
   {
     static bool load_compiled_shader(const std::string& file_name, fcom_ptr<IDxcBlob>& out_shader_blob);

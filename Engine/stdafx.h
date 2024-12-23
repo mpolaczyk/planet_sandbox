@@ -10,6 +10,7 @@
 
 #include <DirectXMath.h>
 #include <dxgi1_6.h>
+#include "dxcapi.h"
 
 #include "d3dx12/d3dx12.h"
 #include "d3dx12/d3dx12_barriers.h"
@@ -20,6 +21,7 @@
 #include "core/core.h"
 #include "core/windows_minimal.h"
 #include "core/exceptions/windows_error.h"
+#include "core/com_pointer.h"
 #include "core/application.h"
 #include "core/rtti/object_registry.h"
 #include "core/rtti/object_visitor.h"

@@ -1,8 +1,6 @@
+#include "stdafx.h"
 
 #include "deferred.h"
-
-#include "core/rtti/object_registry.h"
-#include "core/rtti/object_visitor.h"
 
 #include "passes/debug_pass.h"
 #include "passes/deferred_lighting_pass.h"

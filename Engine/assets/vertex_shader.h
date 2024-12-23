@@ -2,7 +2,6 @@
 
 #include "core/core.h"
 
-#include "core/rtti/object.h"
 #include "assets/shader.h"
 
 namespace engine

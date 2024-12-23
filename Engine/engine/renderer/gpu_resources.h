@@ -1,11 +1,7 @@
 #pragma once
 
 #include "core/com_pointer.h"
-#include "dxcapi.h"   // IDxcBlob is possible to forward declare, but causes really strange compilation issues in client.h
-//// It also needs ComPtr to be included first.
-
 #include "engine/renderer/descriptor_heap.h"
-#include "engine/renderer/dx12_lib.h"
 
 struct IDxcBlob;
 struct ID3D12Resource;
@@ -41,11 +37,6 @@ namespace engine
     fdescriptor srv;
     fdescriptor rtv;
     fdescriptor dsv;
-  };
-
-  struct ENGINE_API fshader_resource
-  {
-    fcom_ptr<IDxcBlob> blob;
   };
 
   struct ENGINE_API fstatic_mesh_resource

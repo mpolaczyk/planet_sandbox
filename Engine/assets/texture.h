@@ -2,7 +2,6 @@
 
 #include "core/core.h"
 
-#include "core/rtti/object.h"
 #include "engine/asset/asset.h"
 #include "engine/renderer/gpu_resources.h"
   

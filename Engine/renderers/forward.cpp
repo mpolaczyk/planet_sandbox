@@ -1,13 +1,10 @@
+#include "stdafx.h"
 
 #include "forward.h"
-
-#include "core/rtti/object_registry.h"
-#include "core/rtti/object_visitor.h"
 
 #include "passes/debug_pass.h"
 #include "passes/forward_pass.h"
 
-#include "engine/log.h"
 #include "engine/renderer/command_list.h"
 
 namespace engine
