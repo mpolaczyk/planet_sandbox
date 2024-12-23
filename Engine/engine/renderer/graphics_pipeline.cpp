@@ -2,6 +2,8 @@
 
 #include "graphics_pipeline.h"
 
+#include "assets/vertex_shader.h"
+#include "assets/pixel_shader.h"
 #include "engine/math/math.h"
 #include "engine/renderer/device.h"
 #include "engine/renderer/pipeline_state.h"
@@ -66,14 +68,14 @@ namespace engine
     static_samplers.emplace_back(desc);
   }
 
-  void fgraphics_pipeline::bind_pixel_shader(fcom_ptr<IDxcBlob>& shader)
+  void fgraphics_pipeline::bind_pixel_shader(fsoft_asset_ptr<apixel_shader>& shader)
   {
-    fshader_tools::copy(pixel_shader, shader); // Trick to avoid including "dxcapi.h"
+    pixel_shader_asset = shader;
   }
 
-  void fgraphics_pipeline::bind_vertex_shader(fcom_ptr<IDxcBlob>& shader)
+  void fgraphics_pipeline::bind_vertex_shader(fsoft_asset_ptr<avertex_shader>& shader)
   {
-    fshader_tools::copy(vertex_shader, shader); // Trick to avoid including "dxcapi.h"
+    vertex_shader_asset = shader;
   }
 
   void fgraphics_pipeline::bind_command_list(ID3D12GraphicsCommandList* command_list)
@@ -120,8 +122,8 @@ namespace engine
     pipeline_state_stream.root_signature = root_signature.Get();
     pipeline_state_stream.input_layout = { input_layout.data(), fmath::to_uint32(input_layout.size()) };
     pipeline_state_stream.primitive_topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-    pipeline_state_stream.vertex_shader = fshader_tools::get_shader_byte_code(vertex_shader.Get());
-    pipeline_state_stream.pixel_shader = fshader_tools::get_shader_byte_code(pixel_shader.Get());
+    pipeline_state_stream.pixel_shader = fshader_tools::get_shader_byte_code(pixel_shader_asset.get()->resource.blob.Get());
+    pipeline_state_stream.vertex_shader = fshader_tools::get_shader_byte_code(vertex_shader_asset.get()->resource.blob.Get());
     pipeline_state_stream.depth_stencil_format = depth_buffer_format;
     pipeline_state_stream.render_target_formats = render_target_formats;
     pipeline_state_stream.blend_desc = blend_desc;

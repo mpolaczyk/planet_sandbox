@@ -2,15 +2,14 @@
 
 #include "debug_pass.h"
 
-#include "engine/window.h"
-
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
 
 #include "assets/mesh.h"
 
+#include "engine/window.h"
 #include "engine/math/math.h"
-
+#include "engine/string_tools.h"
 #include "engine/renderer/aligned_structs.h"
 #include "engine/renderer/command_list.h"
 #include "engine/renderer/render_context.h"
@@ -18,8 +17,6 @@
 #include "engine/renderer/gpu_resources.h"
 #include "engine/renderer/device.h"
 #include "engine/renderer/graphics_pipeline.h"
-
-#include "engine/string_tools.h"
 
 namespace engine
 {

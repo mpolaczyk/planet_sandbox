@@ -1,10 +1,8 @@
 #include "stdafx.h"
 
 #include <cassert>
-
-#include "engine/resources/shader_tools.h"
+#include <dbghelp.h>
 #include "dxcapi.h"
-
 
 #pragma comment(lib, "dxcompiler.lib")
 
@@ -12,15 +10,73 @@
 #include <d3dcompiler.h>
 #endif
 
-#include <dbghelp.h>
-
+#include "engine/resources/shader_tools.h"
 #include "engine/io.h"
-
 #include "engine/string_tools.h"
 #include "engine/math/math.h"
 
+#include "core/com_pointer.h"
+
 namespace engine
 {
+  namespace
+  {
+    bool get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, fcom_ptr<IDxcBlob>& out_blob)
+    {
+      fcom_ptr<IDxcBlobUtf16> name = nullptr;
+      if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), name.GetAddressOf())) && out_blob.Get() != nullptr)
+      {
+        LOG_ERROR("Unable to get dxc blob {0}", static_cast<int32_t>(blob_type));
+        return false;
+      }
+      return true;
+    }
+  
+    bool get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, fcom_ptr<IDxcBlobUtf8>& out_blob)
+    {
+      fcom_ptr<IDxcBlobUtf16> name = nullptr;
+      if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), name.GetAddressOf())) && out_blob.Get() != nullptr)
+      {
+        LOG_ERROR("Unable to get dxc blob {0}", static_cast<int32_t>(blob_type))
+        return false;
+      }
+      return true;
+    } 
+
+    bool get_dxc_hash(IDxcResult* result, std::string& out_hash)
+    {
+      fcom_ptr<IDxcBlob> hash = nullptr;
+      char hash_string[32] = {'\0'};
+      if(get_dxc_blob(result, DXC_OUT_SHADER_HASH, hash) && hash.Get() != nullptr)
+      {
+        auto* hash_buffer = static_cast<DxcShaderHash*>(hash->GetBufferPointer());
+        for(size_t i = 0; i < _countof(hash_buffer->HashDigest); ++i)
+        {
+          snprintf(hash_string + i, 16, "%X", hash_buffer->HashDigest[i]);
+        }
+        out_hash = std::string(hash_string);
+        return true;
+      }
+      return false;
+    }
+    
+    bool save_dxc_blob(IDxcBlob* blob, const char* path)
+    {
+      FILE* file = nullptr;
+      std::wstring w_path = fstring_tools::to_utf16(path);
+      errno_t open_result = _wfopen_s(&file, w_path.c_str(), L"wb");
+      if(open_result != 0)
+      {
+        // See https://learn.microsoft.com/en-us/cpp/c-runtime-library/errno-constants
+        LOG_ERROR("Failed to write dxc blob. Error code {0}", static_cast<int32_t>(open_result))
+        return false;
+      }
+      fwrite(blob->GetBufferPointer(), blob->GetBufferSize(), 1, file);
+      fclose(file);
+      return true;
+    }
+  }
+  
   bool fshader_tools::load_compiled_shader(const std::string& name, fcom_ptr<IDxcBlob>& out_shader_blob)
   {
 #if FORCE_COMPILE_SHADERS_ON_START
@@ -42,6 +98,11 @@ namespace engine
         LOG_INFO("Unable to find shader in cache or load failed.");
         return false;
       }
+      // TODO - This is the only thing missing before I can start using custom lightweight com pointer
+      // Error C2440 : '<function-style-cast>': cannot convert from 'const engine::fcom_ptr<IDxcBlobEncoding>' to 'engine::fcom_ptr<IDxcBlob>'
+      // It missed the copy constructor:
+      // ComPtr(const ComPtr<U> &other, typename Details::EnableIf<Details::IsConvertible<U*, T*>::value, void *>::type * = 0) throw()
+      // Possible workaround, use IDxcBlobEncoding instead of IDxcBlob in shader resurce types.
       out_shader_blob = cso_blob;
 #if USE_NSIGHT_AFTERMATH
       fapplication::get_instance()->gpu_crash_handler.add_shader_binary(cso_blob.Get());
@@ -59,7 +120,7 @@ namespace engine
       }
       else
       {
-        fapplication::get_instance()->gpu_crash_handler.add_source_shader_debug_data(out_shader_blob.Get(), pdb_blob.Get());
+        fapplication::get_instance()->gpu_crash_handler.add_source_shader_debug_data(com_out_shader_blob.Get(), pdb_blob.Get());
       }
     }
 #endif
@@ -76,16 +137,16 @@ namespace engine
     fcom_ptr<IDxcCompiler3> compiler;
     fcom_ptr<IDxcIncludeHandler> include_handler;
 
-    std::string hlsl_file_path = fio::get_shader_file_path(hlsl_file_name.c_str());
-    std::string shader_path = fstring_tools::remove_file_extension(hlsl_file_path) + "_" + entrypoint;
-    std::string shader_name = fstring_tools::remove_file_extension(hlsl_file_name) + "_" + entrypoint;
+    const std::string hlsl_file_path = fio::get_shader_file_path(hlsl_file_name.c_str());
+    const std::string shader_path = fstring_tools::remove_file_extension(hlsl_file_path) + "_" + entrypoint;
+    const std::string shader_name = fstring_tools::remove_file_extension(hlsl_file_name) + "_" + entrypoint;
     out_hash = shader_name;
     
     std::vector<LPCWSTR> arguments;
-    std::wstring w_shader_directory = fstring_tools::to_utf16(fio::get_shaders_dir());
-    std::wstring w_entrypoint = fstring_tools::to_utf16(entrypoint);
-    std::wstring w_target = fstring_tools::to_utf16(target);
-    std::wstring w_hlsl_file_name = fstring_tools::to_utf16(hlsl_file_name);
+    const std::wstring w_shader_directory = fstring_tools::to_utf16(fio::get_shaders_dir());
+    const std::wstring w_entrypoint = fstring_tools::to_utf16(entrypoint);
+    const std::wstring w_target = fstring_tools::to_utf16(target);
+    const std::wstring w_hlsl_file_name = fstring_tools::to_utf16(hlsl_file_name);
     arguments.push_back(L"-E");
     arguments.push_back(w_entrypoint.c_str());
     arguments.push_back(L"-T");
@@ -115,7 +176,7 @@ namespace engine
       LOG_ERROR("Failed to create dxc instance.");
       return false;
     }
-    if(FAILED(utils->CreateDefaultIncludeHandler(&include_handler)))
+    if(FAILED(utils->CreateDefaultIncludeHandler(include_handler.GetAddressOf())))
     {
       LOG_ERROR("Failed to create dxc include handler.");
       return false;
@@ -148,7 +209,7 @@ namespace engine
     // Print warnings and errors, fail if errors
     fcom_ptr<IDxcBlobUtf8> errors = nullptr;
     get_dxc_blob(dxc_result.Get(), DXC_OUT_ERRORS, errors);
-    if (errors != nullptr && errors->GetStringLength() != 0)
+    if (errors.Get() != nullptr && errors->GetStringLength() != 0)
     {
       LOG_ERROR("Warnings and errors:\n {0}", errors->GetStringPointer());
     }
@@ -166,7 +227,7 @@ namespace engine
       if(!get_dxc_blob(dxc_result.Get(), DXC_OUT_OBJECT, out_shader_blob)) { return false; }
       if(!save_dxc_blob(out_shader_blob.Get(), obj_path.c_str())) { return false; }
 #if USE_NSIGHT_AFTERMATH
-      fapplication::get_instance()->gpu_crash_handler.add_shader_binary(out_shader_blob.Get());
+      fapplication::get_instance()->gpu_crash_handler.add_shader_binary(com_out_shader_blob.Get());
 #endif
     }
 
@@ -178,65 +239,10 @@ namespace engine
       if(!get_dxc_blob(dxc_result.Get(), DXC_OUT_PDB, pdb_blob)) { return false; }
       if(!save_dxc_blob(pdb_blob.Get(), pdb_path.c_str())) { return false; }
 #if USE_NSIGHT_AFTERMATH
-      fapplication::get_instance()->gpu_crash_handler.add_source_shader_debug_data(out_shader_blob.Get(), pdb_blob.Get());
+      fapplication::get_instance()->gpu_crash_handler.add_source_shader_debug_data(com_out_shader_blob.Get(), pdb_blob.Get());
 #endif
     }
 #endif
-    return true;
-  }
-
-  bool fshader_tools::get_dxc_hash(IDxcResult* result, std::string& out_hash)
-  {
-    fcom_ptr<IDxcBlob> hash = nullptr;
-    char hash_string[32] = {'\0'};
-    if(get_dxc_blob(result, DXC_OUT_SHADER_HASH, hash) && hash != nullptr)
-    {
-      auto* hash_buffer = static_cast<DxcShaderHash*>(hash->GetBufferPointer());
-      for(size_t i = 0; i < _countof(hash_buffer->HashDigest); ++i)
-      {
-        snprintf(hash_string + i, 16, "%X", hash_buffer->HashDigest[i]);
-      }
-      out_hash = std::string(hash_string);
-      return true;
-    }
-    return false;
-  }
-  
-  bool fshader_tools::get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, fcom_ptr<IDxcBlob>& out_blob)
-  {
-    fcom_ptr<IDxcBlobUtf16> name = nullptr;
-    if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), name.GetAddressOf())) && out_blob != nullptr)
-    {
-      LOG_ERROR("Unable to get dxc blob {0}", static_cast<int32_t>(blob_type));
-      return false;
-    }
-    return true;
-  }
-  
-  bool fshader_tools::get_dxc_blob(IDxcResult* result, DXC_OUT_KIND blob_type, fcom_ptr<IDxcBlobUtf8>& out_blob)
-  {
-    fcom_ptr<IDxcBlobUtf16> name = nullptr;
-    if(FAILED(result->GetOutput(blob_type, IID_PPV_ARGS(out_blob.GetAddressOf()), name.GetAddressOf())) && out_blob != nullptr)
-    {
-      LOG_ERROR("Unable to get dxc blob {0}", static_cast<int32_t>(blob_type))
-      return false;
-    }
-    return true;
-  } 
-  
-  bool fshader_tools::save_dxc_blob(IDxcBlob* blob, const char* path)
-  {
-    FILE* file = nullptr;
-    std::wstring w_path = fstring_tools::to_utf16(path);
-    errno_t open_result = _wfopen_s(&file, w_path.c_str(), L"wb");
-    if(open_result != 0)
-    {
-      // See https://learn.microsoft.com/en-us/cpp/c-runtime-library/errno-constants
-      LOG_ERROR("Failed to write dxc blob. Error code {0}", static_cast<int32_t>(open_result))
-      return false;
-    }
-    fwrite(blob->GetBufferPointer(), blob->GetBufferSize(), 1, file);
-    fclose(file);
     return true;
   }
 
@@ -249,11 +255,6 @@ namespace engine
   {
     *out_address = static_cast<uint8_t*>(const_cast<void*>(in_blob->GetBufferPointer()));
     out_size = in_blob->GetBufferSize();
-  }
-
-  void fshader_tools::copy(fcom_ptr<IDxcBlob>& destination_blob, const fcom_ptr<IDxcBlob>& source_blob)
-  {
-    destination_blob = source_blob;
   }
 
 #if USE_FXC

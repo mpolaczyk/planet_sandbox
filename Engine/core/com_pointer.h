@@ -71,6 +71,14 @@ public:
         InternalAddRef();
     }
 
+    // copy constructor that allows to instantiate class when U* is convertible to T*
+    //template<class U>
+    //fcom_ptr(const fcom_ptr<U> &other, typename Details::EnableIf<Details::IsConvertible<U*, T*>::value, void *>::type * = 0) throw() :
+    //    ptr_(other.ptr_)
+    //{
+    //  InternalAddRef();
+    //}
+
     fcom_ptr(fcom_ptr &&other) throw() : ptr_(nullptr)
     {
         if (this != reinterpret_cast<fcom_ptr*>(&reinterpret_cast<unsigned char&>(other)))
@@ -78,6 +86,14 @@ public:
             Swap(other);
         }
     }
+
+    // Move constructor that allows instantiation of a class when U* is convertible to T*
+    //template<class U>
+    //fcom_ptr(fcom_ptr<U>&& other, typename Details::EnableIf<Details::IsConvertible<U*, T*>::value, void *>::type * = 0) throw() :
+    //    ptr_(other.ptr_)
+    //{
+    //  other.ptr_ = nullptr;
+    //}
 #pragma endregion
 
 #pragma region destructor

@@ -6,7 +6,7 @@
 #include "d3dx12/d3dx12_core.h"
 
 #include "core/com_pointer.h"
-#include "engine/log.h"
+#include "engine/asset/soft_asset_ptr.h"
 
 struct IDxcBlob;
 struct ID3D12RootSignature;
@@ -17,6 +17,9 @@ struct CD3DX12_STATIC_SAMPLER_DESC;
 
 namespace engine
 {
+  class apixel_shader;
+  class avertex_shader;
+  
   struct fgraphics_pipeline final
   {
     void reserve_parameters(uint32_t num);
@@ -28,8 +31,8 @@ namespace engine
 
     void add_static_sampler(uint32_t shader_register, D3D12_FILTER filter);
 
-    void bind_pixel_shader(fcom_ptr<IDxcBlob>& shader);
-    void bind_vertex_shader(fcom_ptr<IDxcBlob>& shader);
+    void bind_pixel_shader(fsoft_asset_ptr<apixel_shader>& shader);
+    void bind_vertex_shader(fsoft_asset_ptr<avertex_shader>& shader);
     void bind_command_list(ID3D12GraphicsCommandList* command_list);
     
     void setup_formats(uint32_t num_rtv_formats, const DXGI_FORMAT* rtv_formats, DXGI_FORMAT depth_buffer);
@@ -48,8 +51,8 @@ namespace engine
     std::vector<CD3DX12_STATIC_SAMPLER_DESC> static_samplers;
     fcom_ptr<ID3D12RootSignature> root_signature;
     fcom_ptr<ID3D12PipelineState> pipeline_state;
-    fcom_ptr<IDxcBlob> vertex_shader;
-    fcom_ptr<IDxcBlob> pixel_shader;
+    fsoft_asset_ptr<apixel_shader> pixel_shader_asset;
+    fsoft_asset_ptr<avertex_shader> vertex_shader_asset;
     DXGI_FORMAT depth_buffer_format{};
     D3D12_RT_FORMAT_ARRAY render_target_formats{};
     std::vector<D3D12_INPUT_ELEMENT_DESC> input_layout;

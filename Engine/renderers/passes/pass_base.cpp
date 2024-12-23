@@ -13,7 +13,6 @@
 #include "engine/window.h"
 #include "engine/math/math.h"
 #include "engine/math/vertex_data.h"
-
 #include "engine/renderer/command_list.h"
 #include "engine/renderer/device.h"
 #include "engine/renderer/render_context.h"
@@ -51,8 +50,8 @@ namespace engine
     {
       graphics_pipeline.reset(new fgraphics_pipeline());
     }
-    graphics_pipeline->bind_pixel_shader(pixel_shader_asset.get()->resource.blob);
-    graphics_pipeline->bind_vertex_shader(vertex_shader_asset.get()->resource.blob);
+    graphics_pipeline->bind_pixel_shader(pixel_shader_asset);
+    graphics_pipeline->bind_vertex_shader(vertex_shader_asset);
     graphics_pipeline->setup_input_layout(fvertex_data::input_layout);
   }
 

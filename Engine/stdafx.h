@@ -17,6 +17,7 @@
 #include "d3dx12/d3dx12_root_signature.h"
 #include "d3dx12/d3dx12_resource_helpers.h"
 
+#include "core/core.h"
 #include "core/windows_minimal.h"
 #include "core/exceptions/windows_error.h"
 #include "core/application.h"
