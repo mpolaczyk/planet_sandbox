@@ -281,6 +281,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     </ClCompile>
     <ClCompile Include="engine\time.cpp" />
     <ClCompile Include="engine\window.cpp" />
+    <ClCompile Include="explicit_template\com_ptr_inst.cpp" />
     <ClCompile Include="explicit_template\object_registry_inst.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdafx.h</PrecompiledHeaderFile>
