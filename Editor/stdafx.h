@@ -23,6 +23,8 @@
 #include "engine.h"
 using namespace engine;
 
+#define RENDER_IMGUI 1
+
 #define IMGUI_DISABLE_DEMO_WINDOWS
 #define IMGUI_DISABLE_METRICS_WINDOW
 
