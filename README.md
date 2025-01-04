@@ -15,7 +15,7 @@ Features added so far:
 [2.0] - DX12 version
 - All points included in [1.0] release
 - GPU resources and heap management
-- Multi pass architecture
+- Multi-pass architecture
 - Bindless textures (dynamic indexing and unbounded arrays)
 - Hot-reloadable DXC shader compilation pipeline with shader cache
 - Physics system for object selection and simulations
@@ -69,7 +69,7 @@ NVidia R445 or newer is required
 [//]: # (links)
 
    [1.0]: <https://bitbucket.org/planet620/planetsandbox/src/release_1.0/>
-   [2.0]: <https://bitbucket.org/planet620/planetsandbox/src/release_1.0/>
+   [2.0]: <https://bitbucket.org/planet620/planetsandbox/src/release_2.0/>
    [2.3]: <https://bitbucket.org/planet620/raytracer/src/release_2.3/>
    [ocornut/imgui]: <https://github.com/ocornut/imgui>
    [nlohmann/json]: <https://github.com/nlohmann/json>
