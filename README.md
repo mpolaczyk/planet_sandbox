@@ -13,17 +13,20 @@ Features added so far:
  - in progress
 
 [2.0] - DX12 version
-- All points included in [1.0] release
+- All features included in [1.0] release
 - GPU resources and heap management
 - Multi-pass architecture
 - Bindless textures (dynamic indexing and unbounded arrays)
 - Hot-reloadable DXC shader compilation pipeline with shader cache
-- Physics system for object selection and simulations
+- Physics system for object selection and rigid body simulation
 - Crash handling and dumping for both C++ and structured exceptions
 - Aftermath integration for GPU crash handling and crash dumps
+ 
+![Example output](screen2.jpg)
 
 [1.0] - DX11 version
-- Simple scene rendering, forward renderer, deferred renderer, Phong lighting model
+- Simple scene rendering, forward renderer, deferred renderer
+- Phong lighting model
 - Engine and editor separated to a DLL and EXE
 - Custom RTTI and memory manegament for resources like scene objects, assets, shaders etc.
 - Persistent soft asset pointers
