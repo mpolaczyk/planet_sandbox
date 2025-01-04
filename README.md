@@ -69,7 +69,7 @@ NVidia R445 or newer is required
 [//]: # (links)
 
    [1.0]: <https://bitbucket.org/planet620/planetsandbox/src/release_1.0/>
-   [2.0]: <https://bitbucket.org/planet620/planetsandbox/src/release_2.0/>
+   [2.0]: <https://github.com/mpolaczyk/planet_sandbox/tree/release_2.0/>
    [2.3]: <https://bitbucket.org/planet620/raytracer/src/release_2.3/>
    [ocornut/imgui]: <https://github.com/ocornut/imgui>
    [nlohmann/json]: <https://github.com/nlohmann/json>
