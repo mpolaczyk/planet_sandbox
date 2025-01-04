@@ -84,13 +84,13 @@ namespace engine
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
       fshader_resource_buffer buffer;
-      device->create_shader_resource_buffer(heap, sizeof(flight_properties) * MAX_LIGHTS, buffer, fstring_tools::format("SRV lights: back buffer {}", i).c_str());
+      device->create_shader_resource_buffer(heap, sizeof(flight_properties) * MAX_LIGHTS, buffer, fstring_tools::append("SRV lights: back buffer ", i).c_str());
       lights_data.emplace_back(buffer);
     }
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
       fshader_resource_buffer buffer;
-      device->create_shader_resource_buffer(heap, sizeof(fmaterial_properties) * MAX_MATERIALS, buffer, fstring_tools::format("SRV materials: back buffer {}", i).c_str());
+      device->create_shader_resource_buffer(heap, sizeof(fmaterial_properties) * MAX_MATERIALS, buffer, fstring_tools::append("SRV materials: back buffer ", i).c_str());
       materials_data.emplace_back(buffer);
     }
     

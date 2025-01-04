@@ -122,8 +122,8 @@ namespace editor
     });
 
     // Resolution
-    ImGui::Text(fstring_tools::format("Width: {}", width).c_str());
-    ImGui::Text(fstring_tools::format("Height: {}", height).c_str());
+    ImGui::Text(fstring_tools::append("Width: ", width).c_str());
+    ImGui::Text(fstring_tools::append("Height: ", height).c_str());
     
     // Renderer class selection combo box
     rrenderer_base* renderer = get_editor_app()->scene_root->renderer;

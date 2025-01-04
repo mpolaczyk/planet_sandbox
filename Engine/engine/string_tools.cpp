@@ -45,7 +45,7 @@ namespace engine
     return filename;
   }
 
-  std::string fstring_tools::format(const char* text, int value)
+  std::string fstring_tools::append(const char* text, int value)
   {
     // Simple helper to avoid inclufding <format>
     std::ostringstream oss;

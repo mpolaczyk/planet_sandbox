@@ -68,7 +68,7 @@ namespace engine
     for(uint32_t i = 0; i < back_buffer_count; i++)
     {
       fconst_buffer buffer;
-      device->create_const_buffer(heap, fmath::to_uint32(sizeof(fdebug_frame_data)), buffer, fstring_tools::format("CBV frame: back buffer {}", i).c_str());
+      device->create_const_buffer(heap, fmath::to_uint32(sizeof(fdebug_frame_data)), buffer, fstring_tools::append("CBV frame: back buffer ", i).c_str());
       frame_data.emplace_back(buffer);
     }
   }
