@@ -11,6 +11,7 @@ namespace engine
 {
   class apixel_shader;
   class avertex_shader;
+  class aray_tracing_shader;
   struct fcommand_list;
   struct frenderer_context;
   struct fpipeline;
@@ -27,6 +28,7 @@ namespace engine
 
     fsoft_asset_ptr<apixel_shader> pixel_shader_asset;
     fsoft_asset_ptr<avertex_shader> vertex_shader_asset;
+    fsoft_asset_ptr<aray_tracing_shader> ray_tracing_shader_asset;
     
   protected:
     // Initialization flow

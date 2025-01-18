@@ -4,6 +4,7 @@
 
 #include "assets/vertex_shader.h"
 #include "assets/pixel_shader.h"
+#include "assets/ray_tracing_shader.h"
 #include "engine/math/math.h"
 #include "engine/renderer/device.h"
 #include "engine/renderer/pipeline_state.h"
@@ -13,6 +14,11 @@
 
 namespace engine
 {
+  const wchar_t* fpipeline::c_hitGroupName = L"MyHitGroup";   // TODO move to ray tracing shader asset properties
+  const wchar_t* fpipeline::c_raygenShaderName = L"MyRaygenShader";
+  const wchar_t* fpipeline::c_closestHitShaderName = L"MyClosestHitShader";
+  const wchar_t* fpipeline::c_missShaderName = L"MyMissShader";
+  
   void fpipeline::setup_formats(uint32_t num_rtv_formats, const DXGI_FORMAT* rtv_formats, DXGI_FORMAT depth_buffer)
   {
     if(num_rtv_formats > 8)
@@ -52,6 +58,11 @@ namespace engine
     vertex_shader_asset = shader;
   }
 
+  void fpipeline::bind_ray_tracing_shader(fsoft_asset_ptr<aray_tracing_shader>& shader)
+  {
+    ray_tracing_shader_asset = shader;
+  }
+
   void fpipeline::bind_command_list(ID3D12GraphicsCommandList* command_list)
   {
     if(type == epipeline_type::rasterization)
@@ -70,9 +81,7 @@ namespace engine
   {
     input_layout = in_input_layout;
   }
-
   
-
   void fpipeline::init(const char* name)
   {
     fdevice* device = fapplication::get_instance()->device.get();
@@ -97,6 +106,38 @@ namespace engine
       device->create_root_signature(root_signature_ray_tracing_global.parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_NONE, root_signature_ray_tracing_global.com, name);
 
       device->create_root_signature(root_signature_ray_tracing_local.parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE, root_signature_ray_tracing_local.com, name);
+
+      // Create 7 subobjects that combine into a RTPSO:
+      // Subobjects need to be associated with DXIL exports (i.e. shaders) either by way of default or explicit associations.
+      // Default association applies to every exported shader entrypoint that doesn't have any of the same type of subobject associated with it.
+      // This simple sample utilizes default shader association except for local root signature subobject
+      // which has an explicit association specified purely for demonstration purposes.
+      // 1 - DXIL library
+      // 1 - Triangle hit group
+      // 1 - Shader config
+      // 2 - Local root signature and association
+      // 1 - Global root signature
+      // 1 - Pipeline config
+      CD3DX12_STATE_OBJECT_DESC raytracingPipeline{ D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE };
+
+      // DXIL library
+      // This contains the shaders and their entrypoints for the state object.
+      // Since shaders are not considered a subobject, they need to be passed in via DXIL library subobjects.
+      auto lib = raytracingPipeline.CreateSubobject<CD3DX12_DXIL_LIBRARY_SUBOBJECT>();
+      D3D12_SHADER_BYTECODE libdxil = fshader_tools::get_shader_byte_code(ray_tracing_shader_asset.get()->resource.blob.Get());
+      lib->SetDXILLibrary(&libdxil);
+      // Define which shader exports to surface from the library.
+      // If no shader exports are defined for a DXIL library subobject, all shaders will be surfaced.
+      // In this sample, this could be ommited for convenience since the sample uses all shaders in the library. 
+      {
+        lib->DefineExport(c_raygenShaderName);
+        lib->DefineExport(c_closestHitShaderName);
+        lib->DefineExport(c_missShaderName);
+      }
+
+
+
+      
     }
   }
 

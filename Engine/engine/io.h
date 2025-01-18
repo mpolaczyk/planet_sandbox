@@ -15,6 +15,7 @@ namespace engine
     static std::string texture_extension;
     static std::string pixel_shader_extension;
     static std::string vertex_shader_extension;
+    static std::string ray_tracing_shader_extension;
     static std::string working_dir;
     static std::string workspace_dir;
     static std::string project_dir;
@@ -33,7 +34,8 @@ namespace engine
     static std::string get_texture_extension();
     static std::string get_pixel_shader_extension();
     static std::string get_vertex_shader_extension();
-    
+    static std::string get_ray_tracing_shader_extension();
+
     // Directories
     static std::string get_working_dir();
     static std::string get_workspace_dir();

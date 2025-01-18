@@ -13,6 +13,7 @@ namespace engine
   std::string fio::texture_extension = ".texture";
   std::string fio::pixel_shader_extension = ".pixel_shader";
   std::string fio::vertex_shader_extension = ".vertex_shader";
+  std::string fio::ray_tracing_shader_extension = ".ray_tracing_shader";
   std::string fio::working_dir;
   std::string fio::workspace_dir;
   std::string fio::project_dir;
@@ -90,6 +91,11 @@ namespace engine
   std::string fio::get_vertex_shader_extension()
   {
     return vertex_shader_extension;
+  }
+
+  std::string fio::get_ray_tracing_shader_extension()
+  {
+    return ray_tracing_shader_extension;
   }
   
   std::string fio::get_working_dir()

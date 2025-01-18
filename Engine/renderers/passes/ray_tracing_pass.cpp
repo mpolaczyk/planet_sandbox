@@ -42,7 +42,7 @@ namespace engine
 
   void fray_tracing_pass::init_shaders()
   {
-    
+    ray_tracing_shader_asset.set_name("ray_tracing");
   }
   
   void fray_tracing_pass::init_pipeline()

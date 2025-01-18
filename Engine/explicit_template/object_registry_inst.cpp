@@ -9,6 +9,7 @@
 #include "assets/shader.h"
 #include "assets/vertex_shader.h"
 #include "assets/pixel_shader.h"
+#include "assets/ray_tracing_shader.h"
 #include "engine/renderer/renderer_base.h"
 #include "renderers/forward.h"
 #include "renderers/deferred.h"
@@ -50,6 +51,7 @@ namespace engine
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(ashader)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(avertex_shader)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(apixel_shader)
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(aray_tracing_shader)
 
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rrenderer_base)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rforward)
@@ -82,6 +84,7 @@ namespace engine
     CLASS_OBJECT_REGISTER(ashader, aasset_base)
     CLASS_OBJECT_REGISTER(avertex_shader, ashader)
     CLASS_OBJECT_REGISTER(apixel_shader, ashader)
+    CLASS_OBJECT_REGISTER(aray_tracing_shader, ashader)
 
     CLASS_OBJECT_REGISTER(rrenderer_base, oobject)
     CLASS_OBJECT_REGISTER(rforward, rrenderer_base)

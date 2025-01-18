@@ -7,6 +7,7 @@
 
 #include "assets/pixel_shader.h"
 #include "assets/vertex_shader.h"
+#include "assets/ray_tracing_shader.h"
 #include "assets/texture.h"
 #include "assets/mesh.h"
 
@@ -38,7 +39,7 @@ namespace engine
     }
     else if(type == epipeline_type::ray_tracing)
     {
-      
+      ray_tracing_shader_asset.get();
     }
     
     if(!can_draw())
@@ -68,7 +69,7 @@ namespace engine
     }
     else if(type == epipeline_type::ray_tracing)
     {
-      
+      pipeline->bind_ray_tracing_shader(ray_tracing_shader_asset);
     }
   }
 
@@ -90,7 +91,13 @@ namespace engine
     }
     else if(type == epipeline_type::ray_tracing)
     {
-      
+      if(ray_tracing_shader_asset.get()->hot_swap_requested)
+      {
+        LOG_INFO("Recreating pipeline state.")
+        pipeline.reset(nullptr);
+        init_pipeline();
+        ray_tracing_shader_asset.get()->hot_swap_done = true;
+      }
     }
 
     // Handle resize
@@ -115,7 +122,7 @@ namespace engine
     }
     else if(type == epipeline_type::ray_tracing)
     {
-      return true;
+      return ray_tracing_shader_asset.is_loaded() && ray_tracing_shader_asset.get()->compilation_successful;
     }
     return false;
   }

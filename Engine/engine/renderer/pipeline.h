@@ -11,6 +11,7 @@ namespace engine
 {
   class apixel_shader;
   class avertex_shader;
+  class aray_tracing_shader;
   
   struct fpipeline
   {
@@ -21,6 +22,7 @@ namespace engine
 
     void bind_pixel_shader(fsoft_asset_ptr<apixel_shader>& shader);
     void bind_vertex_shader(fsoft_asset_ptr<avertex_shader>& shader);
+    void bind_ray_tracing_shader(fsoft_asset_ptr<aray_tracing_shader>& shader);
     void bind_command_list(ID3D12GraphicsCommandList* command_list);
     
     void setup_input_layout(const std::vector<D3D12_INPUT_ELEMENT_DESC>& in_input_layout);
@@ -45,6 +47,13 @@ namespace engine
     fsoft_asset_ptr<apixel_shader> pixel_shader_asset;
     fsoft_asset_ptr<avertex_shader> vertex_shader_asset;
     std::vector<D3D12_INPUT_ELEMENT_DESC> input_layout;
+
+    // Ray tracing
+    static const wchar_t* c_hitGroupName;
+    static const wchar_t* c_raygenShaderName;
+    static const wchar_t* c_closestHitShaderName;
+    static const wchar_t* c_missShaderName;
+    fsoft_asset_ptr<aray_tracing_shader> ray_tracing_shader_asset;
     
     // Common
     fcom_ptr<ID3D12PipelineState> pipeline_state;
