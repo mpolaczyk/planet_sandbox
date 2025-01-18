@@ -31,12 +31,12 @@ namespace engine
 
     // Get shader names, load and compile them, make sure they are valid
     init_shaders();
-    if(type == epass_type::raster)
+    if(type == epipeline_type::raster)
     {
       pixel_shader_asset.get();
       vertex_shader_asset.get();
     }
-    else if(type == epass_type::dxr)
+    else if(type == epipeline_type::dxr)
     {
       
     }
@@ -55,17 +55,18 @@ namespace engine
 
   void fpass_base::init_pipeline()
   {
-    if(type == epass_type::raster)
+    if(!pipeline)
     {
-      if(!raster_pipeline)
-      {
-        raster_pipeline.reset(new fraster_pipeline());
-      }
-      raster_pipeline->bind_pixel_shader(pixel_shader_asset);
-      raster_pipeline->bind_vertex_shader(vertex_shader_asset);
-      raster_pipeline->setup_input_layout(fvertex_data::input_layout);
+      pipeline.reset(new fpipeline());
+      pipeline->type = type;
     }
-    else if(type == epass_type::dxr)
+    if(type == epipeline_type::raster)
+    {
+      pipeline->bind_pixel_shader(pixel_shader_asset);
+      pipeline->bind_vertex_shader(vertex_shader_asset);
+      pipeline->setup_input_layout(fvertex_data::input_layout);
+    }
+    else if(type == epipeline_type::dxr)
     {
       
     }
@@ -76,18 +77,18 @@ namespace engine
     context = in_context;
 
     // Handle shaders hotswap
-    if(type == epass_type::raster)
+    if(type == epipeline_type::raster)
     {
       if(pixel_shader_asset.get()->hot_swap_requested || vertex_shader_asset.get()->hot_swap_requested)
       {
         LOG_INFO("Recreating pipeline state.")
-        raster_pipeline.reset(nullptr);
+        pipeline.reset(nullptr);
         init_pipeline();
         pixel_shader_asset.get()->hot_swap_done = true;
         vertex_shader_asset.get()->hot_swap_done = true;
       }
     }
-    else if(type == epass_type::dxr)
+    else if(type == epipeline_type::dxr)
     {
       
     }
@@ -99,7 +100,7 @@ namespace engine
     }
 
     // Handle command list
-    raster_pipeline->bind_command_list(command_list->com.Get());
+    pipeline->bind_command_list(command_list->com.Get());
     command_list->com.Get()->SetDescriptorHeaps(1, context->main_descriptor_heap->com.GetAddressOf());
     command_list->set_viewport(context->width, context->height);
     command_list->set_scissor(context->width, context->height);
@@ -107,12 +108,12 @@ namespace engine
 
   bool fpass_base::can_draw() const
   {
-    if(type == epass_type::raster)
+    if(type == epipeline_type::raster)
     {
       return pixel_shader_asset.is_loaded() && pixel_shader_asset.get()->compilation_successful
         && vertex_shader_asset.is_loaded() && vertex_shader_asset.get()->compilation_successful;
     }
-    else if(type == epass_type::dxr)
+    else if(type == epipeline_type::dxr)
     {
       return true;
     }

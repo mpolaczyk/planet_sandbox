@@ -48,9 +48,9 @@ namespace engine
     froot_signature sig;
     sig.reserve_parameters(root_parameter_type::num);
     sig.add_constant_parameter(root_parameter_type::object_data, 0, 0, fmath::to_uint32(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_PIXEL);
-    raster_pipeline->root_signature = sig;
-    raster_pipeline->setup_formats(fgbuffer_pass::num_render_targets, rtv_formats, depth_format);
-    raster_pipeline->init("GBuffer pass");
+    pipeline->raster = sig;
+    pipeline->setup_formats(fgbuffer_pass::num_render_targets, rtv_formats, depth_format);
+    pipeline->init("GBuffer pass");
   }
 
   void fgbuffer_pass::init_size_independent_resources()

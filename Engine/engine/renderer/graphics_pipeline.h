@@ -7,6 +7,7 @@
 
 #include "core/com_pointer.h"
 #include "engine/asset/soft_asset_ptr.h"
+#include "engine/renderer/pipeline_type.h"
 
 struct IDxcBlob;
 struct ID3D12RootSignature;
@@ -39,22 +40,6 @@ namespace engine
     void setup_formats(uint32_t num_rtv_formats, const DXGI_FORMAT* rtv_formats, DXGI_FORMAT depth_buffer);
     void setup_blend(uint32_t render_target_index, D3D12_BLEND source_blend, D3D12_BLEND destination_blend, D3D12_BLEND_OP blend_operation);
 
-    fcom_ptr<ID3D12PipelineState> pipeline_state;
-    D3D12_RT_FORMAT_ARRAY render_target_formats{};
-    DXGI_FORMAT depth_buffer_format{};
-    CD3DX12_BLEND_DESC blend_desc{D3D12_DEFAULT};
-  };
-
-  struct fdxr_pipeline : public fpipeline
-  {
-    //void init(const char* name);
-    
-    froot_signature global_root_signature;
-    froot_signature local_root_signature;
-  };
-  
-  struct fraster_pipeline : public fpipeline
-  {
     void add_static_sampler(uint32_t shader_register, D3D12_FILTER filter);
 
     void bind_pixel_shader(fsoft_asset_ptr<apixel_shader>& shader);
@@ -68,15 +53,26 @@ namespace engine
     DXGI_FORMAT get_depth_format() const;
     
     DXGI_FORMAT get_rtv_format(uint32_t index) const;
-    
-    froot_signature root_signature;
+
+    epipeline_type type = epipeline_type::undefined;
+
+    froot_signature raster;
+    froot_signature dxr_global;
+    froot_signature dxr_local;
     
   private:
 
     std::vector<CD3DX12_STATIC_SAMPLER_DESC> static_samplers;
-    
+
+    // Raster
     fsoft_asset_ptr<apixel_shader> pixel_shader_asset;
     fsoft_asset_ptr<avertex_shader> vertex_shader_asset;
     std::vector<D3D12_INPUT_ELEMENT_DESC> input_layout;
+
+    // Common
+    fcom_ptr<ID3D12PipelineState> pipeline_state;
+    D3D12_RT_FORMAT_ARRAY render_target_formats{};
+    DXGI_FORMAT depth_buffer_format{};
+    CD3DX12_BLEND_DESC blend_desc{D3D12_DEFAULT};
   };
 }

@@ -86,43 +86,43 @@ namespace engine
   }
 
   
-  void fraster_pipeline::add_static_sampler(uint32_t shader_register, D3D12_FILTER filter)
+  void fpipeline::add_static_sampler(uint32_t shader_register, D3D12_FILTER filter)
   {
     CD3DX12_STATIC_SAMPLER_DESC desc(shader_register, filter);
     static_samplers.emplace_back(desc);
   }
 
-  void fraster_pipeline::bind_pixel_shader(fsoft_asset_ptr<apixel_shader>& shader)
+  void fpipeline::bind_pixel_shader(fsoft_asset_ptr<apixel_shader>& shader)
   {
     pixel_shader_asset = shader;
   }
 
-  void fraster_pipeline::bind_vertex_shader(fsoft_asset_ptr<avertex_shader>& shader)
+  void fpipeline::bind_vertex_shader(fsoft_asset_ptr<avertex_shader>& shader)
   {
     vertex_shader_asset = shader;
   }
 
-  void fraster_pipeline::bind_command_list(ID3D12GraphicsCommandList* command_list)
+  void fpipeline::bind_command_list(ID3D12GraphicsCommandList* command_list)
   {
-    command_list->SetGraphicsRootSignature(root_signature.com.Get());
+    command_list->SetGraphicsRootSignature(raster.com.Get());
     command_list->SetPipelineState(pipeline_state.Get());
     command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
   }
 
-  void fraster_pipeline::setup_input_layout(const std::vector<D3D12_INPUT_ELEMENT_DESC>& in_input_layout)
+  void fpipeline::setup_input_layout(const std::vector<D3D12_INPUT_ELEMENT_DESC>& in_input_layout)
   {
     input_layout = in_input_layout;
   }
 
   
 
-  void fraster_pipeline::init(const char* name)
+  void fpipeline::init(const char* name)
   {
     fdevice* device = fapplication::get_instance()->device.get();
-    device->create_root_signature(root_signature.parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature.com, name);
+    device->create_root_signature(raster.parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, raster.com, name);
 
     fraster_pipeline_state_stream pipeline_state_stream;
-    pipeline_state_stream.root_signature = root_signature.com.Get();
+    pipeline_state_stream.root_signature = raster.com.Get();
     pipeline_state_stream.input_layout = { input_layout.data(), fmath::to_uint32(input_layout.size()) };
     pipeline_state_stream.primitive_topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     pipeline_state_stream.pixel_shader = fshader_tools::get_shader_byte_code(pixel_shader_asset.get()->resource.blob.Get());
@@ -133,7 +133,7 @@ namespace engine
     device->create_pipeline_state(pipeline_state_stream, pipeline_state, name);
   }
 
-  DXGI_FORMAT fraster_pipeline::get_depth_format() const
+  DXGI_FORMAT fpipeline::get_depth_format() const
   {
     if (depth_buffer_format == DXGI_FORMAT_UNKNOWN)
     {
@@ -142,7 +142,7 @@ namespace engine
     return depth_buffer_format;
   }
 
-  DXGI_FORMAT fraster_pipeline::get_rtv_format(uint32_t index) const
+  DXGI_FORMAT fpipeline::get_rtv_format(uint32_t index) const
   {
     DXGI_FORMAT format = render_target_formats.RTFormats[index];
     if (format == DXGI_FORMAT_UNKNOWN)

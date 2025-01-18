@@ -2,6 +2,7 @@
 
 #include "engine/unique_ptr.h"
 #include "engine/asset/soft_asset_ptr.h"
+#include "engine/renderer/pipeline_type.h"
 
 struct ID3D12GraphicsCommandList;
 struct CD3DX12_GPU_DESCRIPTOR_HANDLE;
@@ -12,16 +13,7 @@ namespace engine
   class avertex_shader;
   struct fcommand_list;
   struct frenderer_context;
-  struct fraster_pipeline;
-  struct fdxr_pipeline;
-
-  enum epass_type : int
-  {
-    undefined = 0,
-    raster,
-    dxr,
-    num
-  };
+  struct fpipeline;
   
   struct fpass_base
   {
@@ -38,7 +30,7 @@ namespace engine
     
   protected:
     // Initialization flow
-    virtual epass_type init_type() = 0;
+    virtual epipeline_type init_type() = 0;
     virtual void init_shaders() = 0;
     virtual void init_pipeline();
     virtual void init_size_independent_resources() = 0;
@@ -49,10 +41,9 @@ namespace engine
     void upload_all_textures_once(fcommand_list* command_list) const;
     CD3DX12_GPU_DESCRIPTOR_HANDLE get_textures_gpu_handle() const;
 
-    epass_type type = epass_type::undefined;
+    epipeline_type type = epipeline_type::undefined;
     frenderer_context* context = nullptr; // weak ptr, owned by renderer
-    funique_ptr<fraster_pipeline> raster_pipeline;
-    funique_ptr<fdxr_pipeline> dxr_pipeline;
+    funique_ptr<fpipeline> pipeline;
   };
 
 }

@@ -139,6 +139,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClInclude Include="core\rtti\object_registry.h" />
     <ClInclude Include="core\rtti\object_visitor.h" />
     <ClInclude Include="engine\physics.h" />
+    <ClInclude Include="engine\renderer\pipeline_type.h" />
     <ClInclude Include="engine\resources\assimp_logger.h" />
     <ClInclude Include="engine\resources\bmp.h" />
     <ClInclude Include="engine\resources\ffbx.h" />
@@ -194,6 +195,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClInclude Include="engine\profile\benchmark.h" />
     <ClInclude Include="engine\math\vertex_data.h" />
     <ClInclude Include="engine\math\vec3.h" />
+    <ClInclude Include="renderers\passes\rt_pass.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json_fwd.hpp" />
@@ -419,6 +421,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClCompile Include="engine\math\random.cpp" />
     <ClCompile Include="engine\math\ray.cpp" />
     <ClCompile Include="engine\profile\benchmark.cpp" />
+    <ClCompile Include="renderers\passes\rt_pass.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdafx.h</PrecompiledHeaderFile>

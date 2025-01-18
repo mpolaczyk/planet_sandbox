@@ -10,7 +10,7 @@ namespace engine
   
   struct fdeferred_lighting_pass : public fpass_base
   {
-    virtual epass_type init_type() override { return epass_type::raster; }  // TODO: This can be a compute pass without quad mesh
+    virtual epipeline_type init_type() override { return epipeline_type::raster; }  // TODO: This can be a compute pass without quad mesh
     virtual void init_shaders() override;
     virtual void init_pipeline() override;
     virtual void init_size_independent_resources() override;

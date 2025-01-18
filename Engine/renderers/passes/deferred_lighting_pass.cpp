@@ -70,11 +70,11 @@ namespace engine
     // t space2
     sig.add_descriptor_table_parameter(root_parameter_type::textures, 0, 2, num_textures, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     // s
-    raster_pipeline->root_signature = sig;
+    pipeline->raster = sig;
     
-    raster_pipeline->add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
-    raster_pipeline->setup_formats(1, rtv_formats, DXGI_FORMAT_UNKNOWN);
-    raster_pipeline->init("Deferred lighting pass");
+    pipeline->add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
+    pipeline->setup_formats(1, rtv_formats, DXGI_FORMAT_UNKNOWN);
+    pipeline->init("Deferred lighting pass");
   }
 
   void fdeferred_lighting_pass::init_size_independent_resources()

@@ -53,10 +53,10 @@ namespace engine
     sig.reserve_parameters(root_parameter_type::num);
     sig.add_constant_parameter(root_parameter_type::object_data, 0, 0, fmath::to_uint32(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_VERTEX);
     sig.add_constant_buffer_view_parameter(root_parameter_type::frame_data, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-    raster_pipeline->root_signature = sig;
-    raster_pipeline->setup_formats(1, &rtv_format, DXGI_FORMAT_UNKNOWN);
-    raster_pipeline->setup_blend(0, D3D12_BLEND_SRC_ALPHA, D3D12_BLEND_ONE, D3D12_BLEND_OP_ADD);
-    raster_pipeline->init("Debug pass");
+    pipeline->raster = sig;
+    pipeline->setup_formats(1, &rtv_format, DXGI_FORMAT_UNKNOWN);
+    pipeline->setup_blend(0, D3D12_BLEND_SRC_ALPHA, D3D12_BLEND_ONE, D3D12_BLEND_OP_ADD);
+    pipeline->init("Debug pass");
   }
 
   void fdebug_pass::init_size_independent_resources()
