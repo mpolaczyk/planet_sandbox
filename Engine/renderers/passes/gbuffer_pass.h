@@ -7,7 +7,8 @@ namespace engine
 {
   struct fgbuffer_pass : public fpass_base
   {
-    virtual void init_shaders();
+    virtual epass_type init_type() override { return epass_type::raster; }
+    virtual void init_shaders() override;
     virtual void init_pipeline() override;
     virtual void init_size_independent_resources() override;
     virtual void init_size_dependent_resources(bool cleanup) override;

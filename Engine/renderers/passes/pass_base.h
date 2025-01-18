@@ -15,6 +15,14 @@ namespace engine
   struct fraster_pipeline;
   struct fdxr_pipeline;
 
+  enum epass_type : int
+  {
+    undefined = 0,
+    raster,
+    dxr,
+    num
+  };
+  
   struct fpass_base
   {
     CTOR_VDTOR(fpass_base)
@@ -30,6 +38,7 @@ namespace engine
     
   protected:
     // Initialization flow
+    virtual epass_type init_type() = 0;
     virtual void init_shaders() = 0;
     virtual void init_pipeline();
     virtual void init_size_independent_resources() = 0;
@@ -39,7 +48,8 @@ namespace engine
     void update_vertex_and_index_buffers(fcommand_list* command_list) const;
     void upload_all_textures_once(fcommand_list* command_list) const;
     CD3DX12_GPU_DESCRIPTOR_HANDLE get_textures_gpu_handle() const;
-    
+
+    epass_type type = epass_type::undefined;
     frenderer_context* context = nullptr; // weak ptr, owned by renderer
     funique_ptr<fraster_pipeline> raster_pipeline;
     funique_ptr<fdxr_pipeline> dxr_pipeline;

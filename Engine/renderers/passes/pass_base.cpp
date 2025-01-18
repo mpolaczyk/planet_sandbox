@@ -26,12 +26,21 @@ namespace engine
 
   bool fpass_base::init(frenderer_context* in_context)
   {
+    type = init_type();
     context = in_context;
 
     // Get shader names, load and compile them, make sure they are valid
     init_shaders();
-    pixel_shader_asset.get();
-    vertex_shader_asset.get();
+    if(type == epass_type::raster)
+    {
+      pixel_shader_asset.get();
+      vertex_shader_asset.get();
+    }
+    else if(type == epass_type::dxr)
+    {
+      
+    }
+    
     if(!can_draw())
     {
       return false;
@@ -46,13 +55,20 @@ namespace engine
 
   void fpass_base::init_pipeline()
   {
-    if(!raster_pipeline)
+    if(type == epass_type::raster)
     {
-      raster_pipeline.reset(new fraster_pipeline());
+      if(!raster_pipeline)
+      {
+        raster_pipeline.reset(new fraster_pipeline());
+      }
+      raster_pipeline->bind_pixel_shader(pixel_shader_asset);
+      raster_pipeline->bind_vertex_shader(vertex_shader_asset);
+      raster_pipeline->setup_input_layout(fvertex_data::input_layout);
     }
-    raster_pipeline->bind_pixel_shader(pixel_shader_asset);
-    raster_pipeline->bind_vertex_shader(vertex_shader_asset);
-    raster_pipeline->setup_input_layout(fvertex_data::input_layout);
+    else if(type == epass_type::dxr)
+    {
+      
+    }
   }
 
   void fpass_base::draw(frenderer_context* in_context, fcommand_list* command_list)
@@ -60,13 +76,20 @@ namespace engine
     context = in_context;
 
     // Handle shaders hotswap
-    if(pixel_shader_asset.get()->hot_swap_requested || vertex_shader_asset.get()->hot_swap_requested)
+    if(type == epass_type::raster)
     {
-      LOG_INFO("Recreating pipeline state.")
-      raster_pipeline.reset(nullptr);
-      init_pipeline();
-      pixel_shader_asset.get()->hot_swap_done = true;
-      vertex_shader_asset.get()->hot_swap_done = true;
+      if(pixel_shader_asset.get()->hot_swap_requested || vertex_shader_asset.get()->hot_swap_requested)
+      {
+        LOG_INFO("Recreating pipeline state.")
+        raster_pipeline.reset(nullptr);
+        init_pipeline();
+        pixel_shader_asset.get()->hot_swap_done = true;
+        vertex_shader_asset.get()->hot_swap_done = true;
+      }
+    }
+    else if(type == epass_type::dxr)
+    {
+      
     }
 
     // Handle resize
@@ -84,8 +107,16 @@ namespace engine
 
   bool fpass_base::can_draw() const
   {
-    return pixel_shader_asset.is_loaded() && pixel_shader_asset.get()->compilation_successful
-      && vertex_shader_asset.is_loaded() && vertex_shader_asset.get()->compilation_successful;
+    if(type == epass_type::raster)
+    {
+      return pixel_shader_asset.is_loaded() && pixel_shader_asset.get()->compilation_successful
+        && vertex_shader_asset.is_loaded() && vertex_shader_asset.get()->compilation_successful;
+    }
+    else if(type == epass_type::dxr)
+    {
+      return true;
+    }
+    return false;
   }
 
   void fpass_base::update_vertex_and_index_buffers(fcommand_list* command_list) const

@@ -9,6 +9,7 @@ namespace engine
   
   struct fdebug_pass : public fpass_base
   {
+    virtual epass_type init_type() override { return epass_type::raster; }
     virtual void init_shaders() override;
     virtual void init_pipeline() override;
     virtual void init_size_independent_resources() override;
