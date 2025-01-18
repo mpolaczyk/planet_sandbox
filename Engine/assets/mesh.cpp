@@ -14,12 +14,12 @@ namespace engine
 
   std::string astatic_mesh::get_extension() const
   {
-    return fio::get_mesh_extension().c_str();
+    return fio::get_mesh_extension();
   }
   
   std::string astatic_mesh::get_folder() const
   {
-    return fio::get_meshes_dir().c_str();
+    return fio::get_meshes_dir();
   }
   
   bool astatic_mesh::load(const std::string& name)

@@ -11,6 +11,6 @@ namespace engine
 
     std::string avertex_shader::get_extension() const
   {
-    return fio::get_vertex_shader_extension().c_str();
+    return fio::get_vertex_shader_extension();
   }
 }

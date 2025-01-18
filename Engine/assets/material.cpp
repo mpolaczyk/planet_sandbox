@@ -12,12 +12,12 @@ namespace engine
 
   std::string amaterial::get_extension() const
   {
-    return fio::get_material_extension().c_str();
+    return fio::get_material_extension();
   }
   
   std::string amaterial::get_folder() const
   {
-    return fio::get_materials_dir().c_str();
+    return fio::get_materials_dir();
   }
   
   bool amaterial::load(const std::string& name)

@@ -18,7 +18,7 @@ namespace engine
   
   std::string ashader::get_folder() const
   {
-    return fio::get_shaders_dir().c_str();
+    return fio::get_shaders_dir();
   }
   
   bool ashader::load(const std::string& name)

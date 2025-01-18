@@ -14,12 +14,12 @@ namespace engine
 
   std::string atexture::get_extension() const
   {
-    return fio::get_texture_extension().c_str();
+    return fio::get_texture_extension();
   }
   
   std::string atexture::get_folder() const
   {
-    return fio::get_textures_dir().c_str();
+    return fio::get_textures_dir();
   }
   
   bool atexture::load(const std::string& name)

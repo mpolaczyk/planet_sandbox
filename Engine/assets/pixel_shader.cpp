@@ -11,6 +11,6 @@ namespace engine
 
   std::string apixel_shader::get_extension() const
   {
-    return fio::get_pixel_shader_extension().c_str();
+    return fio::get_pixel_shader_extension();
   }
  }
