@@ -5,7 +5,7 @@
 
 namespace engine
 {
-  struct fgraphics_command_list;
+  struct fcommand_list;
   
   struct fforward_pass : public fpass_base
   {
@@ -13,7 +13,7 @@ namespace engine
     virtual void init_pipeline() override;
     virtual void init_size_independent_resources() override;
     virtual void init_size_dependent_resources(bool cleanup) override;
-    virtual void draw(frenderer_context* in_context, fgraphics_command_list* command_list) override;
+    virtual void draw(frenderer_context* in_context, fcommand_list* command_list) override;
     
     // Output
     ftexture_resource color;

@@ -4,7 +4,7 @@
 
 namespace engine
 {
-  struct fpipeline_state_stream
+  struct fraster_pipeline_state_stream
   {
     CD3DX12_PIPELINE_STATE_STREAM_ROOT_SIGNATURE root_signature;
     CD3DX12_PIPELINE_STATE_STREAM_INPUT_LAYOUT input_layout;

@@ -99,7 +99,7 @@ namespace engine
 #else
     LOG_WARN("Disabling the DX12 debug layer and GPU validation!")
 #endif
-    device.reset(fdevice::create(factory.Get()));
+    device = fdevice::create(factory.Get(), D3D_SHADER_MODEL_6_0, D3D_FEATURE_LEVEL_12_0);
 #if USE_NSIGHT_AFTERMATH
     gpu_crash_handler.post_device_creation(device.get()->com.Get());
 #endif

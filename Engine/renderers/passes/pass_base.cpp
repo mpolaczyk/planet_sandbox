@@ -46,16 +46,16 @@ namespace engine
 
   void fpass_base::init_pipeline()
   {
-    if(!graphics_pipeline)
+    if(!raster_pipeline)
     {
-      graphics_pipeline.reset(new fgraphics_pipeline());
+      raster_pipeline.reset(new fraster_pipeline());
     }
-    graphics_pipeline->bind_pixel_shader(pixel_shader_asset);
-    graphics_pipeline->bind_vertex_shader(vertex_shader_asset);
-    graphics_pipeline->setup_input_layout(fvertex_data::input_layout);
+    raster_pipeline->bind_pixel_shader(pixel_shader_asset);
+    raster_pipeline->bind_vertex_shader(vertex_shader_asset);
+    raster_pipeline->setup_input_layout(fvertex_data::input_layout);
   }
 
-  void fpass_base::draw(frenderer_context* in_context, fgraphics_command_list* command_list)
+  void fpass_base::draw(frenderer_context* in_context, fcommand_list* command_list)
   {
     context = in_context;
 
@@ -63,7 +63,7 @@ namespace engine
     if(pixel_shader_asset.get()->hot_swap_requested || vertex_shader_asset.get()->hot_swap_requested)
     {
       LOG_INFO("Recreating pipeline state.")
-      graphics_pipeline.reset(nullptr);
+      raster_pipeline.reset(nullptr);
       init_pipeline();
       pixel_shader_asset.get()->hot_swap_done = true;
       vertex_shader_asset.get()->hot_swap_done = true;
@@ -76,7 +76,7 @@ namespace engine
     }
 
     // Handle command list
-    graphics_pipeline->bind_command_list(command_list->com.Get());
+    raster_pipeline->bind_command_list(command_list->com.Get());
     command_list->com.Get()->SetDescriptorHeaps(1, context->main_descriptor_heap->com.GetAddressOf());
     command_list->set_viewport(context->width, context->height);
     command_list->set_scissor(context->width, context->height);
@@ -88,7 +88,7 @@ namespace engine
       && vertex_shader_asset.is_loaded() && vertex_shader_asset.get()->compilation_successful;
   }
 
-  void fpass_base::update_vertex_and_index_buffers(fgraphics_command_list* command_list) const
+  void fpass_base::update_vertex_and_index_buffers(fcommand_list* command_list) const
   {
     fscene_acceleration& scene_acceleration = context->scene->scene_acceleration;
 
@@ -107,7 +107,7 @@ namespace engine
     }
   }
   
-  void fpass_base::upload_all_textures_once(fgraphics_command_list* command_list) const
+  void fpass_base::upload_all_textures_once(fcommand_list* command_list) const
   {
     static bool textures_uploaded = false;
     if(textures_uploaded) return;

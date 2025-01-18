@@ -62,7 +62,7 @@ namespace editor
     fwindow::draw();
 
     fcommand_queue* command_queue = fapplication::get_instance()->command_queue.get();
-    fgraphics_command_list* command_list = command_queue->get_command_list(ecommand_list_purpose::ui, back_buffer_index);
+    fcommand_list* command_list = command_queue->get_command_list(ecommand_list_purpose::ui, back_buffer_index);
 
     fresource_barrier_scope a(command_list, rtv[back_buffer_index].com.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 

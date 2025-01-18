@@ -37,7 +37,7 @@ namespace engine
     return gbuffer_pass->init(&context) && deferred_lighting_pass->init(&context) && debug_pass->init(&context);
   }
   
-  void rdeferred::draw_internal(fgraphics_command_list* command_list)
+  void rdeferred::draw_internal(fcommand_list* command_list)
   {
     {
       gbuffer_pass->draw(&context, command_list);

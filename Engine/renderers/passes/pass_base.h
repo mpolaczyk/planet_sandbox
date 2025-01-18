@@ -10,9 +10,10 @@ namespace engine
 {
   class apixel_shader;
   class avertex_shader;
-  struct fgraphics_command_list;
+  struct fcommand_list;
   struct frenderer_context;
-  struct fgraphics_pipeline;
+  struct fraster_pipeline;
+  struct fdxr_pipeline;
 
   struct fpass_base
   {
@@ -21,7 +22,7 @@ namespace engine
 
     // Main interface
     bool init(frenderer_context* in_context);
-    virtual void draw(frenderer_context* in_context, fgraphics_command_list* command_list);
+    virtual void draw(frenderer_context* in_context, fcommand_list* command_list);
     bool can_draw() const;
 
     fsoft_asset_ptr<apixel_shader> pixel_shader_asset;
@@ -35,12 +36,13 @@ namespace engine
     virtual void init_size_dependent_resources(bool cleanup) = 0;
 
     // Pass helpers
-    void update_vertex_and_index_buffers(fgraphics_command_list* command_list) const;
-    void upload_all_textures_once(fgraphics_command_list* command_list) const;
+    void update_vertex_and_index_buffers(fcommand_list* command_list) const;
+    void upload_all_textures_once(fcommand_list* command_list) const;
     CD3DX12_GPU_DESCRIPTOR_HANDLE get_textures_gpu_handle() const;
     
     frenderer_context* context = nullptr; // weak ptr, owned by renderer
-    funique_ptr<fgraphics_pipeline> graphics_pipeline;
+    funique_ptr<fraster_pipeline> raster_pipeline;
+    funique_ptr<fdxr_pipeline> dxr_pipeline;
   };
 
 }

@@ -20,7 +20,7 @@ namespace engine
     context.resolution_changed = resolution_changed;
   }
   
-  bool rrenderer_base::draw(frenderer_context&& in_context, fgraphics_command_list* command_list)
+  bool rrenderer_base::draw(frenderer_context&& in_context, fcommand_list* command_list)
   {
     set_renderer_context(std::move(in_context));
 

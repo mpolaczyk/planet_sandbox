@@ -52,26 +52,29 @@ namespace engine
   {
     fpass_base::init_pipeline();
     const uint32_t num_textures = context->scene->scene_acceleration.get_num_textures();
-    graphics_pipeline->reserve_parameters(root_parameter_type::num);
+    froot_signature sig;
+    sig.reserve_parameters(root_parameter_type::num);
     // b
-    graphics_pipeline->add_constant_parameter(root_parameter_type::frame_data, 0, 0, fmath::to_uint32(sizeof(fframe_data)), D3D12_SHADER_VISIBILITY_PIXEL);
+    sig.add_constant_parameter(root_parameter_type::frame_data, 0, 0, fmath::to_uint32(sizeof(fframe_data)), D3D12_SHADER_VISIBILITY_PIXEL);
     // t space0
-    graphics_pipeline->add_shader_resource_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline->add_shader_resource_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+    sig.add_shader_resource_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+    sig.add_shader_resource_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     // t space1
     // TODO Convert gbuffer to one descriptor table parameter with 1 range and 4 descriptors. I failed to do it, something is wrong somewhere...
     // ID3D12Device::CreateRootSignature: RootParameterIndex [5] defines an empty root descriptor table. This may not have been intended, as it wastes space in the root signature. [ STATE_CREATION WARNING #1347: EMPTY_ROOT_DESCRIPTOR_TABLE]
     // Also, those textures can't be shader resource view parameters - SRV or UAV root descriptors can only be Raw or Structured buffers.
-    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_position, 0, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_normal, 1, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_uv, 2, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::gbuffer_material_id, 3, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+    sig.add_descriptor_table_parameter(root_parameter_type::gbuffer_position, 0, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+    sig.add_descriptor_table_parameter(root_parameter_type::gbuffer_normal, 1, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+    sig.add_descriptor_table_parameter(root_parameter_type::gbuffer_uv, 2, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
+    sig.add_descriptor_table_parameter(root_parameter_type::gbuffer_material_id, 3, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE, D3D12_SHADER_VISIBILITY_PIXEL);
     // t space2
-    graphics_pipeline->add_descriptor_table_parameter(root_parameter_type::textures, 0, 2, num_textures, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
+    sig.add_descriptor_table_parameter(root_parameter_type::textures, 0, 2, num_textures, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     // s
-    graphics_pipeline->add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
-    graphics_pipeline->setup_formats(1, rtv_formats, DXGI_FORMAT_UNKNOWN);
-    graphics_pipeline->init("Deferred lighting pass");
+    raster_pipeline->root_signature = sig;
+    
+    raster_pipeline->add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
+    raster_pipeline->setup_formats(1, rtv_formats, DXGI_FORMAT_UNKNOWN);
+    raster_pipeline->init("Deferred lighting pass");
   }
 
   void fdeferred_lighting_pass::init_size_independent_resources()
@@ -107,7 +110,7 @@ namespace engine
     device->create_frame_buffer(context->main_descriptor_heap, context->rtv_descriptor_heap, &color, context->width, context->height, rtv_formats[0], D3D12_RESOURCE_STATE_RENDER_TARGET, rtv_names[0]);
   }
   
-  void fdeferred_lighting_pass::draw(frenderer_context* in_context, fgraphics_command_list* command_list)
+  void fdeferred_lighting_pass::draw(frenderer_context* in_context, fcommand_list* command_list)
   {
     fpass_base::draw(in_context, command_list);
     

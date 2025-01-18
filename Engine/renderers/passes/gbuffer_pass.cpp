@@ -45,10 +45,12 @@ namespace engine
   void fgbuffer_pass::init_pipeline()
   {
     fpass_base::init_pipeline();
-    graphics_pipeline->reserve_parameters(root_parameter_type::num);
-    graphics_pipeline->add_constant_parameter(root_parameter_type::object_data, 0, 0, fmath::to_uint32(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_PIXEL);
-    graphics_pipeline->setup_formats(fgbuffer_pass::num_render_targets, rtv_formats, depth_format);
-    graphics_pipeline->init("GBuffer pass");
+    froot_signature sig;
+    sig.reserve_parameters(root_parameter_type::num);
+    sig.add_constant_parameter(root_parameter_type::object_data, 0, 0, fmath::to_uint32(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_PIXEL);
+    raster_pipeline->root_signature = sig;
+    raster_pipeline->setup_formats(fgbuffer_pass::num_render_targets, rtv_formats, depth_format);
+    raster_pipeline->init("GBuffer pass");
   }
 
   void fgbuffer_pass::init_size_independent_resources()
@@ -72,7 +74,7 @@ namespace engine
     device->create_depth_stencil(context->dsv_descriptor_heap, &depth, context->width, context->height, depth_format, D3D12_RESOURCE_STATE_DEPTH_WRITE, depth_name);
   }
 
-  void fgbuffer_pass::draw(frenderer_context* in_context, fgraphics_command_list* command_list)
+  void fgbuffer_pass::draw(frenderer_context* in_context, fcommand_list* command_list)
   {
     fpass_base::draw(in_context, command_list);
     

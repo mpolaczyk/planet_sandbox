@@ -5,7 +5,7 @@
 #include "core/core.h"
 #include "core/com_pointer.h"
 
-struct ID3D12GraphicsCommandList;
+struct ID3D12GraphicsCommandList5;
 struct ID3D12Resource;
 enum D3D12_RESOURCE_STATES;
 
@@ -16,7 +16,7 @@ namespace engine
   struct fdescriptor_heap;
   struct ftexture_resource;
     
-  struct ENGINE_API fgraphics_command_list final
+  struct ENGINE_API fcommand_list final
   {
     void resource_barrier(ID3D12Resource* resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after) const;
     
@@ -33,20 +33,20 @@ namespace engine
     void upload_index_buffer(astatic_mesh* mesh, const char* name) const;
     void upload_texture(atexture* texture_asset) const;
     
-    fcom_ptr<ID3D12GraphicsCommandList> com;
+    fcom_ptr<ID3D12GraphicsCommandList5> com;
   };
 
   // Helper struct used as a scope guard. Sets resource transition on construction and applies the oppposite one on destruction.
   struct ENGINE_API fresource_barrier_scope final
   {
-    fresource_barrier_scope(fgraphics_command_list* in_command_list, ID3D12Resource* in_resource, D3D12_RESOURCE_STATES in_before, D3D12_RESOURCE_STATES in_after);
+    fresource_barrier_scope(fcommand_list* in_command_list, ID3D12Resource* in_resource, D3D12_RESOURCE_STATES in_before, D3D12_RESOURCE_STATES in_after);
     ~fresource_barrier_scope();
 
     CTOR_MOVE_COPY_DELETE(fresource_barrier_scope)
     
     D3D12_RESOURCE_STATES before;
     D3D12_RESOURCE_STATES after;
-    fgraphics_command_list* command_list = nullptr;
+    fcommand_list* command_list = nullptr;
     ID3D12Resource* resource = nullptr;
   };
 }

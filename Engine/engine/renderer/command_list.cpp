@@ -12,7 +12,7 @@
 
 namespace engine
 {
-  void fgraphics_command_list::resource_barrier(ID3D12Resource* resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after) const
+  void fcommand_list::resource_barrier(ID3D12Resource* resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after) const
   {
     const CD3DX12_RESOURCE_BARRIER resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource, state_before, state_after);
     com->ResourceBarrier(1, &resource_barrier);
@@ -20,13 +20,13 @@ namespace engine
     //LOG_INFO("Barrier for {} from {} to {}", fdx12::get_resource_name(resource), static_cast<uint32_t>(state_before), static_cast<uint32_t>(state_after));
   }
 
-  void fgraphics_command_list::set_render_targets1(ftexture_resource* render_target, const ftexture_resource* dsv) const
+  void fcommand_list::set_render_targets1(ftexture_resource* render_target, const ftexture_resource* dsv) const
   {
     ftexture_resource* render_target_array[1] = {render_target};
     set_render_targets(1, render_target_array, dsv);
   }
 
-  void fgraphics_command_list::set_render_targets(uint32_t num_render_targets, ftexture_resource** render_targets, const ftexture_resource* dsv) const
+  void fcommand_list::set_render_targets(uint32_t num_render_targets, ftexture_resource** render_targets, const ftexture_resource* dsv) const
   {
     std::vector<CD3DX12_CPU_DESCRIPTOR_HANDLE> rtv_handles;
     for(uint32_t i = 0; i < num_render_targets; i++)
@@ -36,29 +36,29 @@ namespace engine
     com->OMSetRenderTargets(fmath::to_uint32(rtv_handles.size()), rtv_handles.data(), FALSE, dsv ? &dsv->dsv.cpu_descriptor_handle : nullptr);
   }
 
-  void fgraphics_command_list::set_viewport(uint32_t width, uint32_t height) const
+  void fcommand_list::set_viewport(uint32_t width, uint32_t height) const
   {
     CD3DX12_VIEWPORT viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height));
     com->RSSetViewports(1, &viewport);
   }
 
-  void fgraphics_command_list::set_scissor(uint32_t width, uint32_t height) const
+  void fcommand_list::set_scissor(uint32_t width, uint32_t height) const
   {
     CD3DX12_RECT scissor_rect = CD3DX12_RECT(0, 0, static_cast<LONG>(width), static_cast<LONG>(height));
     com->RSSetScissorRects(1, &scissor_rect);
   }
 
-  void fgraphics_command_list::clear_render_target(const ftexture_resource* rtv, const float color[4]) const
+  void fcommand_list::clear_render_target(const ftexture_resource* rtv, const float color[4]) const
   {
     com->ClearRenderTargetView(rtv->rtv.cpu_descriptor_handle, color, 0, nullptr);
   }
 
-  void fgraphics_command_list::clear_depth_stencil(const ftexture_resource* dsv) const
+  void fcommand_list::clear_depth_stencil(const ftexture_resource* dsv) const
   {
     com->ClearDepthStencilView(dsv->dsv.cpu_descriptor_handle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
   }
 
-  void fgraphics_command_list::upload_buffer_resource(uint32_t buffer_size, const void* in_buffer, fcom_ptr<ID3D12Resource>& out_upload_intermediate, fcom_ptr<ID3D12Resource>& out_gpu_resource) const
+  void fcommand_list::upload_buffer_resource(uint32_t buffer_size, const void* in_buffer, fcom_ptr<ID3D12Resource>& out_upload_intermediate, fcom_ptr<ID3D12Resource>& out_gpu_resource) const
   {
     fdevice* device = fapplication::get_instance()->device.get();
 
@@ -76,7 +76,7 @@ namespace engine
     }
   }
 
-  void fgraphics_command_list::upload_vertex_buffer(astatic_mesh* mesh, const char* name) const
+  void fcommand_list::upload_vertex_buffer(astatic_mesh* mesh, const char* name) const
   {
     fstatic_mesh_resource& smr = mesh->resource;
     const uint32_t vertex_list_size = fmath::to_uint32(mesh->vertex_list.size() * sizeof(fvertex_data));
@@ -98,7 +98,7 @@ namespace engine
     mesh->is_resource_online = true;
   }
 
-  void fgraphics_command_list::upload_index_buffer(astatic_mesh* mesh, const char* name) const
+  void fcommand_list::upload_index_buffer(astatic_mesh* mesh, const char* name) const
   {
     fstatic_mesh_resource& smr = mesh->resource;
     const uint32_t face_list_size = fmath::to_uint32(mesh->face_list.size() * sizeof(fface_data));
@@ -119,7 +119,7 @@ namespace engine
     mesh->is_resource_online = true;
   }
 
-  void fgraphics_command_list::upload_texture(atexture* texture_asset) const
+  void fcommand_list::upload_texture(atexture* texture_asset) const
   {
     ftexture_resource& gpur = texture_asset->gpu_resource;
 
@@ -139,7 +139,7 @@ namespace engine
     texture_asset->is_online = true;
   }
 
-  fresource_barrier_scope::fresource_barrier_scope(fgraphics_command_list* in_command_list, ID3D12Resource* in_resource, D3D12_RESOURCE_STATES in_before, D3D12_RESOURCE_STATES in_after)
+  fresource_barrier_scope::fresource_barrier_scope(fcommand_list* in_command_list, ID3D12Resource* in_resource, D3D12_RESOURCE_STATES in_before, D3D12_RESOURCE_STATES in_after)
     : command_list(in_command_list), resource(in_resource), before(in_before), after(in_after)
   {
     command_list->resource_barrier(resource, before, after);

@@ -50,7 +50,7 @@ namespace engine
   void fwindow::draw()
   {
     fcommand_queue* command_queue = fapplication::get_instance()->command_queue.get();
-    fgraphics_command_list* command_list = command_queue->get_command_list(ecommand_list_purpose::main, back_buffer_index);
+    fcommand_list* command_list = command_queue->get_command_list(ecommand_list_purpose::main, back_buffer_index);
     
     if(hscene* scene_root = fapplication::get_instance()->scene_root)
     {

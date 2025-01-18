@@ -25,7 +25,7 @@ namespace engine
   struct ENGINE_API fcommand_pair final
   {
     std::vector<fcom_ptr<ID3D12CommandAllocator>> command_allocator;  // index is back buffers id
-    fgraphics_command_list command_list;   // TODO afaik I can use one command list for all back buffers, need to test it later
+    fcommand_list command_list;   // TODO afaik I can use one command list for all back buffers, need to test it later
   };
   
   struct ENGINE_API fcommand_queue final
@@ -43,7 +43,7 @@ namespace engine
     
     void reset_allocator(uint32_t back_buffer_id) const;
 
-    fgraphics_command_list* get_command_list(ecommand_list_purpose type, uint32_t back_buffer_id);
+    fcommand_list* get_command_list(ecommand_list_purpose type, uint32_t back_buffer_id);
     uint64_t execute_command_lists(uint32_t back_buffer_id);
 
     fcom_ptr<ID3D12CommandQueue> com;

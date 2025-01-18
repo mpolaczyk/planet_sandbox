@@ -34,6 +34,6 @@ namespace engine
 
   protected:
     virtual bool init_passes() override;
-    virtual void draw_internal(fgraphics_command_list* command_list) override;
+    virtual void draw_internal(fcommand_list* command_list) override;
   };
 }

@@ -69,11 +69,9 @@ namespace engine
     *out_adapter = adapter1.Detach();
   }
 
-  fdevice* fdevice::create(IDXGIFactory4* factory)
+  fshared_ptr<fdevice> fdevice::create(IDXGIFactory4* factory, D3D_SHADER_MODEL required_shader_model, D3D_FEATURE_LEVEL required_feature_level)
   {
-    fdevice* device = new fdevice();
-    constexpr D3D_SHADER_MODEL required_shader_model = D3D_SHADER_MODEL_6_0;                
-    constexpr D3D_FEATURE_LEVEL required_feature_level = D3D_FEATURE_LEVEL_12_0;            
+    fshared_ptr<fdevice> device(new fdevice());
     
     //const UUID experimental_features[] = { D3D12ExperimentalShaderModels };
     //THROW_IF_FAILED(D3D12EnableExperimentalFeatures(1, experimental_features, nullptr, nullptr));
@@ -103,6 +101,16 @@ namespace engine
       }
     }
 
+    // Check if raytracing is supported
+    {
+      D3D12_FEATURE_DATA_D3D12_OPTIONS5 feature_data = {};
+      if(FAILED(temp_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &feature_data, sizeof(feature_data)))
+        || feature_data.RaytracingTier == D3D12_RAYTRACING_TIER_NOT_SUPPORTED)
+      {
+        throw std::runtime_error("Raytracing is not supported!");
+      } 
+    }
+
     // Check feature support and create highest possible device
     {
       const D3D_FEATURE_LEVEL feature_levels[] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_2 };
@@ -111,7 +119,8 @@ namespace engine
       feature_level.pFeatureLevelsRequested = feature_levels;
       feature_level.NumFeatureLevels = _countof(feature_levels);
       
-      if(FAILED(temp_device->CheckFeatureSupport(D3D12_FEATURE_FEATURE_LEVELS, &feature_level, sizeof(feature_level))) || feature_level.MaxSupportedFeatureLevel < required_feature_level)
+      if(FAILED(temp_device->CheckFeatureSupport(D3D12_FEATURE_FEATURE_LEVELS, &feature_level, sizeof(feature_level)))
+        || feature_level.MaxSupportedFeatureLevel < required_feature_level)
       {
         throw std::runtime_error("Feature level is not high enough!");
       }
@@ -155,15 +164,16 @@ namespace engine
     {
       throw fhresult_exception(hr, oss.str());
     }
+    // TODO nodeMask is 1 in the ray tracing sample!
     THROW_IF_FAILED(com->CreateRootSignature(0, root_signature_serialized->GetBufferPointer(), root_signature_serialized->GetBufferSize(), IID_PPV_ARGS(out_root_signature.GetAddressOf())));
 #if BUILD_DEBUG
     DX_SET_NAME(out_root_signature, "Root signature: {}", name)
 #endif
   }
 
-  void fdevice::create_pipeline_state(fpipeline_state_stream& pipeline_state_stream, fcom_ptr<ID3D12PipelineState>& out_pipeline_state, const char* name) const
+  void fdevice::create_pipeline_state(fraster_pipeline_state_stream& pipeline_state_stream, fcom_ptr<ID3D12PipelineState>& out_pipeline_state, const char* name) const
   {
-    const D3D12_PIPELINE_STATE_STREAM_DESC pipeline_state_stream_desc(sizeof(fpipeline_state_stream), &pipeline_state_stream);
+    const D3D12_PIPELINE_STATE_STREAM_DESC pipeline_state_stream_desc(sizeof(fraster_pipeline_state_stream), &pipeline_state_stream);
     THROW_IF_FAILED(com->CreatePipelineState(&pipeline_state_stream_desc, IID_PPV_ARGS(out_pipeline_state.GetAddressOf())));
 #if BUILD_DEBUG
     DX_SET_NAME(out_pipeline_state, "Pipeline state: {}", name)
@@ -187,7 +197,7 @@ namespace engine
     THROW_IF_FAILED(com->CreateCommandQueue(&desc, IID_PPV_ARGS(out_command_queue.GetAddressOf())))
   }
 
-  void fdevice::create_command_list(uint32_t back_buffer_count, fcom_ptr<ID3D12GraphicsCommandList>& out_command_list, std::vector<fcom_ptr<ID3D12CommandAllocator>>& out_command_allocators) const 
+  void fdevice::create_command_list(uint32_t back_buffer_count, fcom_ptr<ID3D12GraphicsCommandList5>& out_command_list, std::vector<fcom_ptr<ID3D12CommandAllocator>>& out_command_allocators) const 
   {
     out_command_allocators.reserve(back_buffer_count);
     for(uint32_t n = 0; n < back_buffer_count; n++)

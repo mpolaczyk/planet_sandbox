@@ -13,41 +13,41 @@
 
 namespace engine
 {
-  void fgraphics_pipeline::reserve_parameters(uint32_t num)
+  void froot_signature::reserve_parameters(uint32_t num)
   {
     CD3DX12_ROOT_PARAMETER1 param{};
     parameters.resize(num, param);
   }
 
-  void fgraphics_pipeline::add_constant_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, uint32_t size, D3D12_SHADER_VISIBILITY visibility)
+  void froot_signature::add_constant_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, uint32_t size, D3D12_SHADER_VISIBILITY visibility)
   {
     CD3DX12_ROOT_PARAMETER1 param{};
     param.InitAsConstants(size / 4, shader_register, register_space);
     parameters[index] = param;
   }
 
-  void fgraphics_pipeline::add_shader_resource_view_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, D3D12_ROOT_DESCRIPTOR_FLAGS flags, D3D12_SHADER_VISIBILITY visibility)
+  void froot_signature::add_shader_resource_view_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, D3D12_ROOT_DESCRIPTOR_FLAGS flags, D3D12_SHADER_VISIBILITY visibility)
   {
     CD3DX12_ROOT_PARAMETER1 param{};
     param.InitAsShaderResourceView(shader_register, register_space, flags, visibility);
     parameters[index] = param;
   }
 
-  void fgraphics_pipeline::add_constant_buffer_view_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, D3D12_ROOT_DESCRIPTOR_FLAGS flags, D3D12_SHADER_VISIBILITY visibility)
+  void froot_signature::add_constant_buffer_view_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, D3D12_ROOT_DESCRIPTOR_FLAGS flags, D3D12_SHADER_VISIBILITY visibility)
   {
     CD3DX12_ROOT_PARAMETER1 param{};
     param.InitAsConstantBufferView(shader_register, register_space, flags, visibility);
     parameters[index] = param;
   }
 
-  void fgraphics_pipeline::add_unordered_access_view_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, D3D12_ROOT_DESCRIPTOR_FLAGS flags, D3D12_SHADER_VISIBILITY visibility)
+  void froot_signature::add_unordered_access_view_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, D3D12_ROOT_DESCRIPTOR_FLAGS flags, D3D12_SHADER_VISIBILITY visibility)
   {
     CD3DX12_ROOT_PARAMETER1 param{};
     param.InitAsUnorderedAccessView(shader_register, register_space, flags, visibility);
     parameters[index] = param;
   }
   
-  void fgraphics_pipeline::add_descriptor_table_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, uint32_t num_descriptors, uint32_t offset_in_descriptors_from_table_start, D3D12_DESCRIPTOR_RANGE_TYPE range_type, D3D12_DESCRIPTOR_RANGE_FLAGS range_flags, D3D12_SHADER_VISIBILITY visibility)
+  void froot_signature::add_descriptor_table_parameter(uint32_t index, uint32_t shader_register, uint32_t register_space, uint32_t num_descriptors, uint32_t offset_in_descriptors_from_table_start, D3D12_DESCRIPTOR_RANGE_TYPE range_type, D3D12_DESCRIPTOR_RANGE_FLAGS range_flags, D3D12_SHADER_VISIBILITY visibility)
   {
     if(offset_in_descriptors_from_table_start == 0)
     {
@@ -62,31 +62,8 @@ namespace engine
     parameters[index] = param;
   }
 
-  void fgraphics_pipeline::add_static_sampler(uint32_t shader_register, D3D12_FILTER filter)
-  {
-    CD3DX12_STATIC_SAMPLER_DESC desc(shader_register, filter);
-    static_samplers.emplace_back(desc);
-  }
 
-  void fgraphics_pipeline::bind_pixel_shader(fsoft_asset_ptr<apixel_shader>& shader)
-  {
-    pixel_shader_asset = shader;
-  }
-
-  void fgraphics_pipeline::bind_vertex_shader(fsoft_asset_ptr<avertex_shader>& shader)
-  {
-    vertex_shader_asset = shader;
-  }
-
-  void fgraphics_pipeline::bind_command_list(ID3D12GraphicsCommandList* command_list)
-  {
-    command_list->SetGraphicsRootSignature(root_signature.Get());
-    command_list->SetPipelineState(pipeline_state.Get());
-    command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-  }
-
-
-  void fgraphics_pipeline::setup_formats(uint32_t num_rtv_formats, const DXGI_FORMAT* rtv_formats, DXGI_FORMAT depth_buffer)
+  void fpipeline::setup_formats(uint32_t num_rtv_formats, const DXGI_FORMAT* rtv_formats, DXGI_FORMAT depth_buffer)
   {
     if(num_rtv_formats > 8)
     {
@@ -100,12 +77,7 @@ namespace engine
     depth_buffer_format = depth_buffer;
   }
 
-  void fgraphics_pipeline::setup_input_layout(const std::vector<D3D12_INPUT_ELEMENT_DESC>& in_input_layout)
-  {
-    input_layout = in_input_layout;
-  }
-
-  void fgraphics_pipeline::setup_blend(uint32_t render_target_index, D3D12_BLEND source_blend, D3D12_BLEND destination_blend, D3D12_BLEND_OP blend_operation)
+  void fpipeline::setup_blend(uint32_t render_target_index, D3D12_BLEND source_blend, D3D12_BLEND destination_blend, D3D12_BLEND_OP blend_operation)
   {
     blend_desc.RenderTarget[render_target_index].BlendEnable = true;
     blend_desc.RenderTarget[render_target_index].SrcBlend = source_blend;
@@ -113,13 +85,44 @@ namespace engine
     blend_desc.RenderTarget[render_target_index].BlendOp = blend_operation;
   }
 
-  void fgraphics_pipeline::init(const char* name)
+  
+  void fraster_pipeline::add_static_sampler(uint32_t shader_register, D3D12_FILTER filter)
+  {
+    CD3DX12_STATIC_SAMPLER_DESC desc(shader_register, filter);
+    static_samplers.emplace_back(desc);
+  }
+
+  void fraster_pipeline::bind_pixel_shader(fsoft_asset_ptr<apixel_shader>& shader)
+  {
+    pixel_shader_asset = shader;
+  }
+
+  void fraster_pipeline::bind_vertex_shader(fsoft_asset_ptr<avertex_shader>& shader)
+  {
+    vertex_shader_asset = shader;
+  }
+
+  void fraster_pipeline::bind_command_list(ID3D12GraphicsCommandList* command_list)
+  {
+    command_list->SetGraphicsRootSignature(root_signature.com.Get());
+    command_list->SetPipelineState(pipeline_state.Get());
+    command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+  }
+
+  void fraster_pipeline::setup_input_layout(const std::vector<D3D12_INPUT_ELEMENT_DESC>& in_input_layout)
+  {
+    input_layout = in_input_layout;
+  }
+
+  
+
+  void fraster_pipeline::init(const char* name)
   {
     fdevice* device = fapplication::get_instance()->device.get();
-    device->create_root_signature(parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature, name);
+    device->create_root_signature(root_signature.parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature.com, name);
 
-    fpipeline_state_stream pipeline_state_stream;
-    pipeline_state_stream.root_signature = root_signature.Get();
+    fraster_pipeline_state_stream pipeline_state_stream;
+    pipeline_state_stream.root_signature = root_signature.com.Get();
     pipeline_state_stream.input_layout = { input_layout.data(), fmath::to_uint32(input_layout.size()) };
     pipeline_state_stream.primitive_topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     pipeline_state_stream.pixel_shader = fshader_tools::get_shader_byte_code(pixel_shader_asset.get()->resource.blob.Get());
@@ -130,7 +133,7 @@ namespace engine
     device->create_pipeline_state(pipeline_state_stream, pipeline_state, name);
   }
 
-  DXGI_FORMAT fgraphics_pipeline::get_depth_format() const
+  DXGI_FORMAT fraster_pipeline::get_depth_format() const
   {
     if (depth_buffer_format == DXGI_FORMAT_UNKNOWN)
     {
@@ -139,7 +142,7 @@ namespace engine
     return depth_buffer_format;
   }
 
-  DXGI_FORMAT fgraphics_pipeline::get_rtv_format(uint32_t index) const
+  DXGI_FORMAT fraster_pipeline::get_rtv_format(uint32_t index) const
   {
     DXGI_FORMAT format = render_target_formats.RTFormats[index];
     if (format == DXGI_FORMAT_UNKNOWN)

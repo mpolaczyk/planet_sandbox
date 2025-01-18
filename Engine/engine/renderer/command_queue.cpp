@@ -73,7 +73,7 @@ namespace engine
     wait_for_fence_value(signal());
   }
 
-  fgraphics_command_list* fcommand_queue::get_command_list(ecommand_list_purpose type, uint32_t back_buffer_id)
+  fcommand_list* fcommand_queue::get_command_list(ecommand_list_purpose type, uint32_t back_buffer_id)
   {
     return &command_pairs[type].command_list;
   }

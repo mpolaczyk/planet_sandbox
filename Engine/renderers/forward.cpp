@@ -30,7 +30,7 @@ namespace engine
     return forward_pass->init(&context) && debug_pass->init(&context);
   }
 
-  void rforward::draw_internal(fgraphics_command_list* command_list)
+  void rforward::draw_internal(fcommand_list* command_list)
   {
     forward_pass->draw(&context, command_list);
 

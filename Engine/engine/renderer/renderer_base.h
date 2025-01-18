@@ -7,7 +7,7 @@ namespace engine
 {
   struct fshader_resource;
   struct ftexture_resource;
-  struct fgraphics_command_list;
+  struct fcommand_list;
   
   // The responsibility of this class is to render to a texture
   class ENGINE_API rrenderer_base : public oobject
@@ -23,14 +23,14 @@ namespace engine
     frenderer_context context;
     
     // Main public interface
-    bool draw(frenderer_context&& in_context, fgraphics_command_list* command_list);
+    bool draw(frenderer_context&& in_context, fcommand_list* command_list);
     virtual ftexture_resource* get_color() = 0;
     virtual ftexture_resource* get_depth() = 0;
     
   protected:
     bool can_draw() const;
     virtual bool init_passes() = 0;
-    virtual void draw_internal(fgraphics_command_list* command_list) = 0;
+    virtual void draw_internal(fcommand_list* command_list) = 0;
   
   private:
     void set_renderer_context(frenderer_context&& in_context);
