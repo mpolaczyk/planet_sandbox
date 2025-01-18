@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "renderers/passes/pass_base.h"
+#include "engine/renderer/pass_base.h"
 
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"

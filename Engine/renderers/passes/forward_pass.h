@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderers/passes/pass_base.h"
+#include "engine/renderer/pass_base.h"
 #include "engine/renderer/gpu_resources.h"
 
 namespace engine

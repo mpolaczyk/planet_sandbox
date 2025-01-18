@@ -1,7 +1,7 @@
 #pragma once
 
 #include "engine/renderer/gpu_resources.h"
-#include "renderers/passes/pass_base.h"
+#include "engine/renderer/pass_base.h"
 
 namespace engine
 {
