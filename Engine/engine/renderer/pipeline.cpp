@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "graphics_pipeline.h"
+#include "pipeline.h"
 
 #include "assets/vertex_shader.h"
 #include "assets/pixel_shader.h"
@@ -104,9 +104,16 @@ namespace engine
 
   void fpipeline::bind_command_list(ID3D12GraphicsCommandList* command_list)
   {
-    command_list->SetGraphicsRootSignature(raster.com.Get());
-    command_list->SetPipelineState(pipeline_state.Get());
-    command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    if(type == epipeline_type::rasterization)
+    {
+      command_list->SetGraphicsRootSignature(root_signature_rasterization.com.Get());
+      command_list->SetPipelineState(pipeline_state.Get());
+      command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    }
+    else if(type == epipeline_type::ray_tracing)
+    {
+      // TODO
+    }
   }
 
   void fpipeline::setup_input_layout(const std::vector<D3D12_INPUT_ELEMENT_DESC>& in_input_layout)
@@ -119,18 +126,30 @@ namespace engine
   void fpipeline::init(const char* name)
   {
     fdevice* device = fapplication::get_instance()->device.get();
-    device->create_root_signature(raster.parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, raster.com, name);
 
-    fraster_pipeline_state_stream pipeline_state_stream;
-    pipeline_state_stream.root_signature = raster.com.Get();
-    pipeline_state_stream.input_layout = { input_layout.data(), fmath::to_uint32(input_layout.size()) };
-    pipeline_state_stream.primitive_topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-    pipeline_state_stream.pixel_shader = fshader_tools::get_shader_byte_code(pixel_shader_asset.get()->resource.blob.Get());
-    pipeline_state_stream.vertex_shader = fshader_tools::get_shader_byte_code(vertex_shader_asset.get()->resource.blob.Get());
-    pipeline_state_stream.depth_stencil_format = depth_buffer_format;
-    pipeline_state_stream.render_target_formats = render_target_formats;
-    pipeline_state_stream.blend_desc = blend_desc;
-    device->create_pipeline_state(pipeline_state_stream, pipeline_state, name);
+    if(type == epipeline_type::rasterization)
+    {
+      device->create_root_signature(root_signature_rasterization.parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT, root_signature_rasterization.com, name);
+
+      fraster_pipeline_state_stream pipeline_state_stream;
+      pipeline_state_stream.root_signature = root_signature_rasterization.com.Get();
+      pipeline_state_stream.input_layout = { input_layout.data(), fmath::to_uint32(input_layout.size()) };
+      pipeline_state_stream.primitive_topology = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+      pipeline_state_stream.pixel_shader = fshader_tools::get_shader_byte_code(pixel_shader_asset.get()->resource.blob.Get());
+      pipeline_state_stream.vertex_shader = fshader_tools::get_shader_byte_code(vertex_shader_asset.get()->resource.blob.Get());
+      pipeline_state_stream.depth_stencil_format = depth_buffer_format;
+      pipeline_state_stream.render_target_formats = render_target_formats;
+      pipeline_state_stream.blend_desc = blend_desc;
+      device->create_pipeline_state(pipeline_state_stream, pipeline_state, name);
+    }
+    else if(type == epipeline_type::ray_tracing)
+    {
+      device->create_root_signature(root_signature_ray_tracing_global.parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_NONE, root_signature_ray_tracing_global.com, name);
+
+      device->create_root_signature(root_signature_ray_tracing_local.parameters, static_samplers, D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE, root_signature_ray_tracing_local.com, name);
+
+      
+    }
   }
 
   DXGI_FORMAT fpipeline::get_depth_format() const

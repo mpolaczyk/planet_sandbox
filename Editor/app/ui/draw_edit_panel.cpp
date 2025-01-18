@@ -124,4 +124,9 @@ namespace editor
   {
     visit_rrenderer_base(object);
   }
+
+  void vdraw_edit_panel::visit(rray_tracing& object) const
+  {
+    // TODO
+  }
 }

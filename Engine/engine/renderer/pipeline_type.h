@@ -5,8 +5,9 @@ namespace engine
   enum epipeline_type : int
   {
     undefined = 0,
-    raster,
-    dxr,
+    rasterization,
+    compute,      // TODO Not implemented yet
+    ray_tracing,
     num
   };
 }

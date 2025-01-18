@@ -19,6 +19,7 @@
 #include "engine/renderer/renderer_base.h"
 #include "renderers/forward.h"
 #include "renderers/deferred.h"
+#include "renderers/ray_tracing.h"
 
 #include "hittables/light.h"
 #include "core/rtti/object_registry.h"
@@ -297,6 +298,11 @@ namespace engine
     visit_rrenderer_base(object);
   }
 
+  void vserialize_object::visit(rray_tracing& object) const
+  {
+    // TODO
+  }
+
   void vdeserialize_object::visit(amaterial& object) const
   {
     nlohmann::json jproperties;
@@ -417,5 +423,10 @@ namespace engine
   void vdeserialize_object::visit(rdeferred& object) const
   {
     visit_rrenderer_base(object);
+  }
+  
+  void vdeserialize_object::visit(rray_tracing& object) const
+  {
+    // TODO
   }
 }

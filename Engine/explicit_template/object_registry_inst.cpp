@@ -12,6 +12,7 @@
 #include "engine/renderer/renderer_base.h"
 #include "renderers/forward.h"
 #include "renderers/deferred.h"
+#include "renderers/ray_tracing.h"
 #include "hittables/scene.h"
 #include "hittables/static_mesh.h"
 #include "hittables/light.h"
@@ -53,6 +54,7 @@ namespace engine
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rrenderer_base)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rforward)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rdeferred)
+  OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(rray_tracing)
 
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(hhittable_base)
   OBJECT_REGISTRY_EXPLICIT_INSTANTIATE(hscene)
@@ -84,6 +86,7 @@ namespace engine
     CLASS_OBJECT_REGISTER(rrenderer_base, oobject)
     CLASS_OBJECT_REGISTER(rforward, rrenderer_base)
     CLASS_OBJECT_REGISTER(rdeferred, rrenderer_base)
+    CLASS_OBJECT_REGISTER(rray_tracing, rrenderer_base)
 
     CLASS_OBJECT_REGISTER(hhittable_base, oobject)
     CLASS_OBJECT_REGISTER(hscene, hhittable_base)

@@ -172,7 +172,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClInclude Include="engine\renderer\command_queue.h" />
     <ClInclude Include="engine\renderer\descriptor_heap.h" />
     <ClInclude Include="engine\renderer\device.h" />
-    <ClInclude Include="engine\renderer\graphics_pipeline.h" />
+    <ClInclude Include="engine\renderer\pipeline.h" />
     <ClInclude Include="engine\renderer\pipeline_state.h" />
     <ClInclude Include="engine\renderer\renderer_base.h" />
     <ClInclude Include="engine\renderer\dx12_lib.h" />
@@ -195,7 +195,8 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClInclude Include="engine\profile\benchmark.h" />
     <ClInclude Include="engine\math\vertex_data.h" />
     <ClInclude Include="engine\math\vec3.h" />
-    <ClInclude Include="renderers\passes\rt_pass.h" />
+    <ClInclude Include="renderers\passes\ray_tracing_pass.h" />
+    <ClInclude Include="renderers\ray_tracing.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json.hpp" />
     <ClInclude Include="third_party\json-3.10.5\include\nlohmann\json_fwd.hpp" />
@@ -386,7 +387,7 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="engine\renderer\graphics_pipeline.cpp">
+    <ClCompile Include="engine\renderer\pipeline.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -421,7 +422,8 @@ copy $(ProjectDir)third_party\NVIDIA_Nsight_Aftermath_SDK_2024.2.0.24200\lib\x64
     <ClCompile Include="engine\math\random.cpp" />
     <ClCompile Include="engine\math\ray.cpp" />
     <ClCompile Include="engine\profile\benchmark.cpp" />
-    <ClCompile Include="renderers\passes\rt_pass.cpp" />
+    <ClCompile Include="renderers\passes\ray_tracing_pass.cpp" />
+    <ClCompile Include="renderers\ray_tracing.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdafx.h</PrecompiledHeaderFile>

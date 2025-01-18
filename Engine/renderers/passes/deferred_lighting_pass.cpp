@@ -17,7 +17,7 @@
 #include "engine/renderer/render_context.h"
 #include "engine/renderer/scene_acceleration.h"
 #include "engine/renderer/device.h"
-#include "engine/renderer/graphics_pipeline.h"
+#include "engine/renderer/pipeline.h"
 
 namespace engine
 {
@@ -70,7 +70,7 @@ namespace engine
     // t space2
     sig.add_descriptor_table_parameter(root_parameter_type::textures, 0, 2, num_textures, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     // s
-    pipeline->raster = sig;
+    pipeline->root_signature_rasterization = sig;
     
     pipeline->add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
     pipeline->setup_formats(1, rtv_formats, DXGI_FORMAT_UNKNOWN);

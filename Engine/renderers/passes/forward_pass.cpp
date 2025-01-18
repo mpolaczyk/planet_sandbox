@@ -17,7 +17,7 @@
 #include "engine/renderer/scene_acceleration.h"
 #include "engine/renderer/gpu_resources.h"
 #include "engine/renderer/device.h"
-#include "engine/renderer/graphics_pipeline.h"
+#include "engine/renderer/pipeline.h"
 
 namespace engine
 {
@@ -60,7 +60,7 @@ namespace engine
     sig.add_shader_resource_view_parameter(root_parameter_type::lights, 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     sig.add_shader_resource_view_parameter(root_parameter_type::materials, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
     sig.add_descriptor_table_parameter(root_parameter_type::textures, 2, 0, num_textures, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-    pipeline->raster = sig;
+    pipeline->root_signature_rasterization = sig;
     pipeline->add_static_sampler(0, D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR);
     pipeline->setup_formats(1, &rtv_format, depth_format);
     pipeline->init("Forward pass");

@@ -29,6 +29,7 @@ namespace engine
   class rrenderer_base;
   class rforward;
   class rdeferred;
+  class rray_tracing;
 
   // TODO template?
   
@@ -54,6 +55,7 @@ namespace engine
     virtual void visit(rrenderer_base& object) const { vobject_visitor::invalid_operation(); }
     virtual void visit(rforward& object) const { vobject_visitor::invalid_operation(); }
     virtual void visit(rdeferred& object) const { vobject_visitor::invalid_operation(); }
+    virtual void visit(rray_tracing& object) const { vobject_visitor::invalid_operation(); }
 
   private:
     static void invalid_operation()

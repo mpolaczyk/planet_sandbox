@@ -23,9 +23,9 @@ namespace engine
     XMFLOAT4 albedo;
   };
   
-  struct frt_pass : public fpass_base
+  struct fray_tracing_pass : public fpass_base
   {
-    virtual epipeline_type init_type() override { return epipeline_type::dxr; }
+    virtual epipeline_type init_type() override { return epipeline_type::ray_tracing; }
     virtual void init_shaders() override;
     virtual void init_pipeline() override;
     virtual void init_size_independent_resources() override;
@@ -34,6 +34,9 @@ namespace engine
 
     SceneConstantBuffer m_sceneCB[2];
     CubeConstantBuffer m_cubeCB;
+
+    // Output
+    ftexture_resource color;
   };
   
 };

@@ -12,6 +12,7 @@ namespace engine
   class rrenderer_base;
   class rforward;
   class rdeferred;
+  class rray_tracing;
 }
 
 namespace editor
@@ -28,5 +29,6 @@ namespace editor
     virtual void visit(amaterial& object) const override;
     virtual void visit(rforward& object) const override;
     virtual void visit(rdeferred& object) const override;
+    virtual void visit(rray_tracing& object) const override;
   };
 }

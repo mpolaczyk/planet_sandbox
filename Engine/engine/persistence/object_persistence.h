@@ -28,6 +28,7 @@ namespace engine
 
     virtual void visit(rforward& object) const override;
     virtual void visit(rdeferred& object) const override;
+    virtual void visit(rray_tracing& object) const override;
 
     nlohmann::json& j;
   };
@@ -53,6 +54,7 @@ namespace engine
 
     virtual void visit(rforward& object) const override;
     virtual void visit(rdeferred& object) const override;
+    virtual void visit(rray_tracing& object) const override;
 
     const nlohmann::json& j;
   };

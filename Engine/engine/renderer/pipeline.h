@@ -56,15 +56,15 @@ namespace engine
 
     epipeline_type type = epipeline_type::undefined;
 
-    froot_signature raster;
-    froot_signature dxr_global;
-    froot_signature dxr_local;
+    froot_signature root_signature_rasterization;
+    froot_signature root_signature_ray_tracing_global;
+    froot_signature root_signature_ray_tracing_local;
     
   private:
 
     std::vector<CD3DX12_STATIC_SAMPLER_DESC> static_samplers;
 
-    // Raster
+    // Rasterization
     fsoft_asset_ptr<apixel_shader> pixel_shader_asset;
     fsoft_asset_ptr<avertex_shader> vertex_shader_asset;
     std::vector<D3D12_INPUT_ELEMENT_DESC> input_layout;

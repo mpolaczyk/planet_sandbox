@@ -16,7 +16,7 @@
 #include "engine/renderer/scene_acceleration.h"
 #include "engine/renderer/gpu_resources.h"
 #include "engine/renderer/device.h"
-#include "engine/renderer/graphics_pipeline.h"
+#include "engine/renderer/pipeline.h"
 
 namespace engine
 {
@@ -53,7 +53,7 @@ namespace engine
     sig.reserve_parameters(root_parameter_type::num);
     sig.add_constant_parameter(root_parameter_type::object_data, 0, 0, fmath::to_uint32(sizeof(fobject_data)), D3D12_SHADER_VISIBILITY_VERTEX);
     sig.add_constant_buffer_view_parameter(root_parameter_type::frame_data, 1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_PIXEL);
-    pipeline->raster = sig;
+    pipeline->root_signature_rasterization = sig;
     pipeline->setup_formats(1, &rtv_format, DXGI_FORMAT_UNKNOWN);
     pipeline->setup_blend(0, D3D12_BLEND_SRC_ALPHA, D3D12_BLEND_ONE, D3D12_BLEND_OP_ADD);
     pipeline->init("Debug pass");

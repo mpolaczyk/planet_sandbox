@@ -60,3 +60,4 @@
 #include "hittables/static_mesh.h"
 #include "renderers/deferred.h"
 #include "renderers/forward.h"
+#include "renderers/ray_tracing.h"
