@@ -1,0 +1,6 @@
+{
+  "cache_file_name": "ray_tracing",
+  "entrypoint": "",
+  "shader_file_name": "ray_tracing.hlsl",
+  "target": "lib_6_3"
+}

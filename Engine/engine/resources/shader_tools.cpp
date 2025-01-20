@@ -144,8 +144,11 @@ namespace engine
     const std::wstring w_entrypoint = fstring_tools::to_utf16(entrypoint);
     const std::wstring w_target = fstring_tools::to_utf16(target);
     const std::wstring w_hlsl_file_name = fstring_tools::to_utf16(hlsl_file_name);
-    arguments.push_back(L"-E");
-    arguments.push_back(w_entrypoint.c_str());
+    if(entrypoint != "")
+    {
+      arguments.push_back(L"-E");
+      arguments.push_back(w_entrypoint.c_str());
+    }
     arguments.push_back(L"-T");
     arguments.push_back(w_target.c_str());
     arguments.push_back(L"-I");
