@@ -135,9 +135,50 @@ namespace engine
         lib->DefineExport(c_missShaderName);
       }
 
+      // Triangle hit group
+      // A hit group specifies closest hit, any hit and intersection shaders to be executed when a ray intersects the geometry's triangle/AABB.
+      // In this sample, we only use triangle geometry with a closest hit shader, so others are not set.
+      auto hitGroup = raytracingPipeline.CreateSubobject<CD3DX12_HIT_GROUP_SUBOBJECT>();
+      hitGroup->SetClosestHitShaderImport(c_closestHitShaderName);
+      hitGroup->SetHitGroupExport(c_hitGroupName);
+      hitGroup->SetHitGroupType(D3D12_HIT_GROUP_TYPE_TRIANGLES);
 
+      // Shader config
+      // Defines the maximum sizes in bytes for the ray payload and attribute structure.
+      auto shaderConfig = raytracingPipeline.CreateSubobject<CD3DX12_RAYTRACING_SHADER_CONFIG_SUBOBJECT>();
+      UINT payloadSize = sizeof(DirectX::XMFLOAT4);    // float4 pixelColor
+      UINT attributeSize = sizeof(DirectX::XMFLOAT2);  // float2 barycentrics
+      shaderConfig->Config(payloadSize, attributeSize);
 
-      
+      // Local root signature and shader association
+      // This is a root signature that enables a shader to have unique arguments that come from shader tables.
+      // Ray gen and miss shaders in this sample are not using a local root signature and thus one is not associated with them.
+      // CreateLocalRootSignatureSubobjects()
+      // Local root signature to be used in a hit group.
+      auto localRootSignature = raytracingPipeline.CreateSubobject<CD3DX12_LOCAL_ROOT_SIGNATURE_SUBOBJECT>();
+      localRootSignature->SetRootSignature(root_signature_ray_tracing_local.com.Get());
+      // Define explicit shader association for the local root signature. 
+      {
+        auto rootSignatureAssociation = raytracingPipeline.CreateSubobject<CD3DX12_SUBOBJECT_TO_EXPORTS_ASSOCIATION_SUBOBJECT>();
+        rootSignatureAssociation->SetSubobjectToAssociate(*localRootSignature);
+        rootSignatureAssociation->AddExport(c_hitGroupName);
+      }
+
+      // Global root signature
+      // This is a root signature that is shared across all raytracing shaders invoked during a DispatchRays() call.
+      auto globalRootSignature = raytracingPipeline.CreateSubobject<CD3DX12_GLOBAL_ROOT_SIGNATURE_SUBOBJECT>();
+      globalRootSignature->SetRootSignature(root_signature_ray_tracing_global.com.Get());
+
+      // Pipeline config
+      // Defines the maximum TraceRay() recursion depth.
+      auto pipelineConfig = raytracingPipeline.CreateSubobject<CD3DX12_RAYTRACING_PIPELINE_CONFIG_SUBOBJECT>();
+      // PERFOMANCE TIP: Set max recursion depth as low as needed 
+      // as drivers may apply optimization strategies for low recursion depths.
+      UINT maxRecursionDepth = 1; // ~ primary rays only. 
+      pipelineConfig->Config(maxRecursionDepth);
+
+      // Create the state object.
+      THROW_IF_FAILED(device->com.Get()->CreateStateObject(raytracingPipeline, IID_PPV_ARGS(&m_dxrStateObject)));
     }
   }
 

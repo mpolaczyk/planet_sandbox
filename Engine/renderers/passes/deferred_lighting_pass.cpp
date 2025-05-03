@@ -23,6 +23,7 @@ namespace engine
 {
   using namespace DirectX;
 
+
   namespace
   {
     enum root_parameter_type : int

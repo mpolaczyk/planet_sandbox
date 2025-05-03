@@ -54,7 +54,8 @@ namespace engine
     static const wchar_t* c_closestHitShaderName;
     static const wchar_t* c_missShaderName;
     fsoft_asset_ptr<aray_tracing_shader> ray_tracing_shader_asset;
-    
+    fcom_ptr<ID3D12StateObject> m_dxrStateObject;
+
     // Common
     fcom_ptr<ID3D12PipelineState> pipeline_state;
     D3D12_RT_FORMAT_ARRAY render_target_formats{};

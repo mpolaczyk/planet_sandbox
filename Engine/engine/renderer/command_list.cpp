@@ -12,7 +12,7 @@
 
 namespace engine
 {
-  void fcommand_list::resource_barrier(ID3D12Resource* resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after) const
+  void fcommand_list::resource_transition_barrier(ID3D12Resource* resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after) const
   {
     const CD3DX12_RESOURCE_BARRIER resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource, state_before, state_after);
     com->ResourceBarrier(1, &resource_barrier);
@@ -20,6 +20,12 @@ namespace engine
     //LOG_INFO("Barrier for {} from {} to {}", fdx12::get_resource_name(resource), static_cast<uint32_t>(state_before), static_cast<uint32_t>(state_after));
   }
 
+  void fcommand_list::resource_uav_barrier(ID3D12Resource* resource) const
+  {
+    const CD3DX12_RESOURCE_BARRIER resource_barrier = CD3DX12_RESOURCE_BARRIER::UAV(resource);
+    com->ResourceBarrier(1, &resource_barrier);
+  }
+  
   void fcommand_list::set_render_targets1(ftexture_resource* render_target, const ftexture_resource* dsv) const
   {
     ftexture_resource* render_target_array[1] = {render_target};
@@ -93,7 +99,7 @@ namespace engine
     DX_SET_NAME(smr.vertex_buffer_upload, "Vertex buffer upload {}", name)
 #endif
     
-    resource_barrier(smr.vertex_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+    resource_transition_barrier(smr.vertex_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
     mesh->is_resource_online = true;
   }
@@ -114,7 +120,7 @@ namespace engine
     DX_SET_NAME(smr.index_buffer_upload, "Index buffer upload {}", name)
 #endif
     
-    resource_barrier(smr.index_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER);
+    resource_transition_barrier(smr.index_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER);
 
     mesh->is_resource_online = true;
   }
@@ -134,7 +140,7 @@ namespace engine
 
     UpdateSubresources(com.Get(), gpur.com.Get(), gpur.upload_com.Get(), 0, 0, 1, &texture_data);
 
-    resource_barrier(gpur.com.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    resource_transition_barrier(gpur.com.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
     texture_asset->is_online = true;
   }
@@ -142,11 +148,11 @@ namespace engine
   fresource_barrier_scope::fresource_barrier_scope(fcommand_list* in_command_list, ID3D12Resource* in_resource, D3D12_RESOURCE_STATES in_before, D3D12_RESOURCE_STATES in_after)
     : command_list(in_command_list), resource(in_resource), before(in_before), after(in_after)
   {
-    command_list->resource_barrier(resource, before, after);
+    command_list->resource_transition_barrier(resource, before, after);
   }
 
   fresource_barrier_scope::~fresource_barrier_scope()
   {
-    command_list->resource_barrier(resource, after, before);
+    command_list->resource_transition_barrier(resource, after, before);
   }
 }

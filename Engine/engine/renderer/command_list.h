@@ -18,7 +18,8 @@ namespace engine
     
   struct ENGINE_API fcommand_list final
   {
-    void resource_barrier(ID3D12Resource* resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after) const;
+    void resource_transition_barrier(ID3D12Resource* resource, D3D12_RESOURCE_STATES state_before, D3D12_RESOURCE_STATES state_after) const;
+    void resource_uav_barrier(ID3D12Resource* resource) const;
     
     void set_render_targets1(ftexture_resource* render_target, const ftexture_resource* dsv) const;
     void set_render_targets(uint32_t num_render_targets, ftexture_resource** render_targets, const ftexture_resource* dsv) const;
@@ -37,6 +38,7 @@ namespace engine
   };
 
   // Helper struct used as a scope guard. Sets resource transition on construction and applies the oppposite one on destruction.
+  // TODO: Rename to fresource_transition_barrier_scope
   struct ENGINE_API fresource_barrier_scope final
   {
     fresource_barrier_scope(fcommand_list* in_command_list, ID3D12Resource* in_resource, D3D12_RESOURCE_STATES in_before, D3D12_RESOURCE_STATES in_after);

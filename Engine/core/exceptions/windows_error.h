@@ -5,7 +5,9 @@
 
 #include "core/core.h"
 
+// TODO: Rename to THROW_IF_HR_FAILED
 #define THROW_IF_FAILED(code) if(FAILED(code)) throw engine::fhresult_exception(code, __FILE__, __LINE__, __FUNCTION__);
+#define THROW_IF_FALSE(value) THROW_IF_FAILED(value ? S_OK : E_FAIL)
 
 namespace engine
 {

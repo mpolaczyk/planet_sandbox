@@ -54,6 +54,7 @@ namespace engine
     void remove(uint32_t index);
     fdescriptor* get(uint32_t index);
     void log_audit() const;
+    uint32_t get_increment_size() { return increment_size; }  // TODO TEMP!
     
     fcom_ptr<ID3D12DescriptorHeap> com;
     
