@@ -109,16 +109,15 @@ float4 ps_main(fvs_output input) : SV_Target
 
   const flight_components light_final = compute_light(position, normal, material.specular_power);
 
-  float4 tex_color = { 1, 1, 1, 1 };
+  float4 base_color = material.ambient;
   if (texture_id != -1)
   {
-    tex_color = texture_data[NonUniformResourceIndex(texture_id)].Sample(sampler_obj, uv);
+    base_color = texture_data[NonUniformResourceIndex(texture_id)].Sample(sampler_obj, uv);
   }
 
   float4 emissive = material.emissive;
-  float4 ambient = material.ambient * frame_data.ambient_light;
   float4 diffuse = material.diffuse * light_final.diffuse;
   float4 specular = material.specular * light_final.specular;
     
-  return tex_color * (emissive + ambient + diffuse + specular);
+  return base_color * (emissive + diffuse + specular) * frame_data.ambient_light;
 }

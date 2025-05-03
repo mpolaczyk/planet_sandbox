@@ -2,9 +2,9 @@
   "properties": {
     "ambient": {
       "w": 1.0,
-      "x": 0.0,
-      "y": 0.0,
-      "z": 0.0
+      "x": 1.0,
+      "y": 1.0,
+      "z": 1.0
     },
     "diffuse": {
       "w": 1.0,
@@ -20,13 +20,13 @@
     },
     "specular": {
       "w": 1.0,
-      "x": 0.906862735748291,
-      "y": 0.906862735748291,
-      "z": 0.906862735748291
+      "x": 1.0,
+      "y": 1.0,
+      "z": 1.0
     },
-    "specular_power": 1.0
+    "specular_power": 14.199999809265137
   },
   "texture_asset": {
-    "name": "default"
+    "name": "default_contrast"
   }
 }
